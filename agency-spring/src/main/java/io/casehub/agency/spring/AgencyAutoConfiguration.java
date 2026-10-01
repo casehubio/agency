@@ -40,6 +40,8 @@ import io.casehub.neocortex.cognition.drive.DriveOrchestrator;
 import io.casehub.neocortex.cognition.drive.DriveSource;
 import io.casehub.neocortex.cognition.goal.CrossAxisGoalEnricher;
 import io.casehub.neocortex.cognition.goal.DriveGoalFormationStrategy;
+import io.casehub.neocortex.cognition.emergence.NormDetectionConfig;
+import io.casehub.neocortex.cognition.emergence.SocialNormDetector;
 import io.casehub.neocortex.cognition.goal.LlmCrossAxisGoalEnricher;
 import io.casehub.neocortex.cognition.goal.NarrativeGoalEscalationPolicy;
 import io.casehub.neocortex.cognition.goal.DriveGoalMapper;
@@ -282,9 +284,11 @@ public class AgencyAutoConfiguration {
                 civilityConstraints, innerLifeConfig, driveOrchestrator, sessionPipeline);
     }
 
-    // socialNormDetector removed — needs migration to neocortex (follow-up issue)
-    @SuppressWarnings("unused")
-    private void socialNormDetectorPlaceholder() {}
+    @Bean
+    public SocialNormDetector socialNormDetector(
+            CbrRecordStore cbrStore, NormDetectionConfig config) {
+        return new SocialNormDetector(cbrStore, config);
+    }
 
     @Bean
     public io.casehub.agency.social.cognition.CognitionAvatarAdapter cognitionAvatarAdapter(
