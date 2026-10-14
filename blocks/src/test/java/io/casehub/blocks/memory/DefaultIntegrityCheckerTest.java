@@ -33,7 +33,7 @@ class DefaultIntegrityCheckerTest {
     void detectsOrphanedSupersession() {
         var status = new SupersessionStatus("case-1", true, Instant.now(),
                 "missing-case", "consolidation", null);
-        when(store.findSupersededCases("tenant-1", DOMAIN)).thenReturn(List.of(status));
+        when(store.findSupersededCases(DOMAIN, "tenant-1")).thenReturn(List.of(status));
         when(store.getSupersessionStatus("missing-case", "tenant-1"))
                 .thenReturn(SupersessionStatus.NOT_SUPERSEDED);
         when(store.retrieveSimilar(any(), any())).thenReturn(List.of());
@@ -46,7 +46,7 @@ class DefaultIntegrityCheckerTest {
     void noViolationsWhenSupersessionChainIsValid() {
         var status = new SupersessionStatus("case-1", true, Instant.now(),
                 "case-2", "consolidation", null);
-        when(store.findSupersededCases("tenant-1", DOMAIN)).thenReturn(List.of(status));
+        when(store.findSupersededCases(DOMAIN, "tenant-1")).thenReturn(List.of(status));
         when(store.getSupersessionStatus("case-2", "tenant-1"))
                 .thenReturn(new SupersessionStatus("case-2", false, null, null, null, null));
         when(store.retrieveSimilar(any(), any())).thenReturn(List.of());
@@ -57,7 +57,7 @@ class DefaultIntegrityCheckerTest {
 
     @Test
     void returnsEmptyWhenNoIssues() {
-        when(store.findSupersededCases("tenant-1", DOMAIN)).thenReturn(List.of());
+        when(store.findSupersededCases(DOMAIN, "tenant-1")).thenReturn(List.of());
         when(store.retrieveSimilar(any(), any())).thenReturn(List.of());
 
         var violations = checker.check("agent-1", "tenant-1", DOMAIN);
@@ -68,7 +68,7 @@ class DefaultIntegrityCheckerTest {
     void delegatesToSemanticCheckerForFlaggedItems() {
         var status = new SupersessionStatus("case-1", true, Instant.now(),
                 "missing-case", "consolidation", null);
-        when(store.findSupersededCases("tenant-1", DOMAIN)).thenReturn(List.of(status));
+        when(store.findSupersededCases(DOMAIN, "tenant-1")).thenReturn(List.of(status));
         when(store.getSupersessionStatus("missing-case", "tenant-1"))
                 .thenReturn(SupersessionStatus.NOT_SUPERSEDED);
         when(store.retrieveSimilar(any(), any())).thenReturn(List.of());

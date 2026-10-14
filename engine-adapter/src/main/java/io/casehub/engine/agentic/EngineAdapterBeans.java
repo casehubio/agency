@@ -24,7 +24,7 @@ import io.casehub.engine.agentic.judgment.SchemaValidationVerifier;
 import io.casehub.engine.common.internal.event.EventBusAddresses;
 import io.casehub.engine.common.internal.event.JudgmentCompletedEvent;
 import io.casehub.engine.common.spi.EventLogRepository;
-import io.casehub.engine.internal.executor.WorkerRuntimeFactory;
+import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;

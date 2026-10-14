@@ -30,7 +30,7 @@ import io.casehub.blocks.agentic.model.PatternType;
 import io.casehub.blocks.agentic.pattern.Patterns;
 import io.casehub.engine.common.internal.executor.ExecutionMetadata;
 import io.casehub.engine.common.internal.executor.HandlerResult;
-import io.casehub.engine.internal.executor.WorkerRuntimeFactory;
+import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
 import io.casehub.worker.api.WorkerOutcome;
 import java.util.List;
 import java.util.Map;

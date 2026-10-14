@@ -348,7 +348,7 @@ public class BlocksAutoConfiguration {
 
         cognitiveProfile.ifPresent(cp -> {
             var profileParticipant = new io.casehub.neocortex.cognition.core.CognitiveProfileParticipant(
-                    cp, attentionMediator.orElse(null), temporalFocus.orElse(null),
+                    cp, temporalFocus.orElse(null),
                     io.casehub.neocortex.cognition.core.CognitionConfig.all());
             core.addParticipant(io.casehub.neocortex.cognition.core.CognitionPhase.TERMINAL, profileParticipant);
         });

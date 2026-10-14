@@ -10,7 +10,7 @@ import io.casehub.engine.agentic.judgment.LlmEvaluationVerifier;
 import io.casehub.engine.agentic.judgment.LlmJudgmentScheduler;
 import io.casehub.engine.agentic.judgment.SchemaValidationVerifier;
 import io.casehub.engine.common.spi.EventLogRepository;
-import io.casehub.engine.internal.executor.WorkerRuntimeFactory;
+import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationEventPublisher;

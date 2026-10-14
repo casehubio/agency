@@ -66,7 +66,9 @@ public class CognitionCompiler {
                 spec.affiliationDecayThreshold() != null ? spec.affiliationDecayThreshold() : d.affiliationDecayThreshold(),
                 spec.affiliationStaleDuration() != null ? spec.affiliationStaleDuration() : d.affiliationStaleDuration(),
                 spec.autonomyConfidenceFloor() != null ? spec.autonomyConfidenceFloor() : d.autonomyConfidenceFloor(),
-                spec.narrativeModulationStrength() != null ? spec.narrativeModulationStrength() : d.narrativeModulationStrength());
+                spec.narrativeModulationStrength() != null ? spec.narrativeModulationStrength() : d.narrativeModulationStrength(),
+                d.subThoughtModulationStrength(),
+                d.secondaryPleasureModulationFactor());
     }
 
     private MoodConfig compileMood(@Nullable MoodConfigSpec spec) {
@@ -129,7 +131,10 @@ public class CognitionCompiler {
                 spec.staleStateTimeout() != null ? spec.staleStateTimeout() : d.staleStateTimeout(),
                 spec.memoryDomain() != null ? spec.memoryDomain() : d.memoryDomain(),
                 spec.engagementCaseType() != null ? spec.engagementCaseType() : d.engagementCaseType(),
-                spec.profileCaseType() != null ? spec.profileCaseType() : d.profileCaseType());
+                spec.profileCaseType() != null ? spec.profileCaseType() : d.profileCaseType(),
+                d.trendImprovingThreshold(),
+                d.trendDecliningThreshold(),
+                d.maxDimensionDelta());
     }
 
     private MentalModelConfig compileMentalModel(@Nullable MentalModelConfigSpec spec) {
