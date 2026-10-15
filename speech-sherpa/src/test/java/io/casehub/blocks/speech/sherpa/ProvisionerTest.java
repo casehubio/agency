@@ -197,6 +197,12 @@ class ProvisionerTest {
 
     @Test
     void espeakLibName_returnsForCurrentPlatform() {
+        if (SherpaLibrary.platformId().equals("win-x64")) {
+            assertThatThrownBy(Provisioner::espeakLibName)
+                    .isInstanceOf(SherpaException.class)
+                    .hasMessageContaining("No espeak-ng library available");
+            return;
+        }
         String name = Provisioner.espeakLibName();
         assertThat(name).isNotEmpty();
         assertThat(name).containsAnyOf("espeak-ng");

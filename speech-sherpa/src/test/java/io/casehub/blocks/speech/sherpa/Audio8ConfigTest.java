@@ -54,7 +54,7 @@ class Audio8ConfigTest {
     @Test
     void audio8ModelDirReturnsExpectedPath() {
         Path dir = Provisioner.audio8ModelDir("0.1b");
-        assertThat(dir.toString()).endsWith("audio8-tts/0.1b");
+        assertThat(dir.endsWith(Path.of("audio8-tts", "0.1b"))).isTrue();
     }
 
     @Test

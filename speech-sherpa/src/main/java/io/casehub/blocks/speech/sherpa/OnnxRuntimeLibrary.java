@@ -205,21 +205,21 @@ public final class OnnxRuntimeLibrary {
     }
 
     private static SymbolLookup findOnnxRuntime() {
-        // Tier 1: system library path
+        // Prefer the provisioned runtime paired with sherpa-onnx. A system
+        // library may expose an older ORT API and is not necessarily ABI-
+        // compatible with the provisioned sherpa native library.
+        Path provisioned = provisionedLibraryPath();
+        if (provisioned != null) {
+            return SymbolLookup.libraryLookup(provisioned, Arena.global());
+        }
+
+        // Fall back to the system library when no provisioned runtime exists.
         try {
             return SymbolLookup.libraryLookup("onnxruntime", Arena.global());
         } catch (IllegalArgumentException | UnsatisfiedLinkError ignored) {}
 
-        // Tier 2: sherpa-onnx provisioned directory (ORT bundled with sherpa-onnx)
-        Path cacheDir = SherpaLibrary.defaultCacheDir();
-        if (cacheDir != null) {
-            Path onnxLib = cacheDir.resolve(onnxRuntimeLibName());
-            if (Files.exists(onnxLib)) {
-                return SymbolLookup.libraryLookup(onnxLib, Arena.global());
-            }
-        }
-
-        // Tier 3: standalone ORT 1.18.0 (for FP16 model compatibility when no sherpa-onnx)
+        // Standalone ORT 1.18.0 for FP16 model compatibility when no
+        // sherpa-provisioned or system runtime is available.
         Path ort180Dir = Path.of(System.getProperty("user.home"), ".casehub", "ort-1.18.0");
         Path ort180Lib = ort180Dir.resolve(onnxRuntimeLibName());
         if (Files.exists(ort180Lib)) {
@@ -228,6 +228,13 @@ public final class OnnxRuntimeLibrary {
 
         throw new UnsatisfiedLinkError(
                 "onnxruntime not found. Install it system-wide or provision sherpa-onnx first.");
+    }
+
+    static Path provisionedLibraryPath() {
+        Path nativeDir = SherpaLibrary.resolveNativeDir();
+        if (nativeDir == null) { return null; }
+        Path library = nativeDir.resolve(onnxRuntimeLibName());
+        return Files.exists(library) ? library : null;
     }
 
     private static MemorySegment resolveApiBase(SymbolLookup lookup) {

@@ -70,17 +70,18 @@ class SherpaOnnxSpeechToTextTest {
     void transcribesWithSherpa() throws IOException {
         Path modelDir = Path.of(System.getProperty("sherpa.model.dir", "/tmp/sherpa-onnx/sherpa-onnx-whisper-tiny"));
         var  config   = SherpaConfig.defaults(modelDir);
+        var  options  = new TranscriptionOptions("wav", null, "tiny");
 
         try (var stt = new SherpaOnnxSpeechToText(config)) {
             short[] silence = new short[16000];
             Path    wavFile = tempDir.resolve("silence.wav");
             Files.write(wavFile, WavReaderTest.buildWavBytes(1, 16000, 16, silence));
 
-            var result1 = stt.transcribe(wavFile, TranscriptionOptions.defaults());
+            var result1 = stt.transcribe(wavFile, options);
             assertThat(result1).isNotNull();
             assertThat(result1.text()).isNotNull();
 
-            var result2 = stt.transcribe(wavFile, TranscriptionOptions.defaults());
+            var result2 = stt.transcribe(wavFile, options);
             assertThat(result2).isNotNull();
             assertThat(result2.text()).isNotNull();
         }
