@@ -60,11 +60,8 @@ jobs:
             lib-strip: 2
             lib-ext: dylib
 
-          - os: windows-latest
-            platform: win-x64
-            lib-archive: sherpa-onnx-v1.13.6-win-x64-shared-MD-Release-lib.tar.bz2
-            lib-strip: 2
-            lib-ext: dll
+          # Windows native integration tests are temporarily disabled because the
+          # provisioned ONNX Runtime DLL cannot be loaded. Track restoration in #335.
 
     runs-on: ${{ matrix.os }}
     steps:
