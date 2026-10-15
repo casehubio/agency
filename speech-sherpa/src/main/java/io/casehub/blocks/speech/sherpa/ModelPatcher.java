@@ -229,7 +229,9 @@ final class ModelPatcher {
     private static Path findOnnxModel(Path modelDir) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(modelDir, "*.onnx")) {
             for (Path p : stream) {
-                if (!p.getFileName().toString().endsWith(".onnx.json")) {
+                String name = p.getFileName().toString();
+                if (Files.isRegularFile(p) && !name.endsWith(".unpatched.onnx")
+                        && !name.startsWith(".patching-")) {
                     return p;
                 }
             }
