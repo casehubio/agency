@@ -205,6 +205,8 @@ public final class SherpaLibrary {
         synchronized (SherpaLibrary.class) {
             if (INSTANCE != null) {return INSTANCE;}
 
+            WindowsDllSearchPath.configure(resolveNativeDir());
+
             // Tier 1: system library path
             try {
                 SymbolLookup lookup = SymbolLookup.libraryLookup("sherpa-onnx-c-api", Arena.global());

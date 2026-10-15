@@ -210,6 +210,7 @@ public final class OnnxRuntimeLibrary {
         // compatible with the provisioned sherpa native library.
         Path provisioned = provisionedLibraryPath();
         if (provisioned != null) {
+            WindowsDllSearchPath.configure(provisioned.getParent());
             return SymbolLookup.libraryLookup(provisioned, Arena.global());
         }
 
