@@ -33,7 +33,9 @@ class ProvisionerTest {
     @Test
     void nativeLibUrl_osxX64() {
         String url = Provisioner.nativeLibUrl("osx-x64");
-        assertThat(url).contains("osx-x86_64-shared-lib");
+        assertThat(url).isEqualTo(
+            "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.6/"
+            + "sherpa-onnx-v1.13.6-osx-x64-shared-lib.tar.bz2");
     }
 
     @Test

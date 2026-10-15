@@ -31,7 +31,7 @@ public final class Provisioner {
 
     private static final Map<String, String> NATIVE_ASSETS = Map.of(
         "osx-arm64",   "sherpa-onnx-v" + SherpaLibrary.VERSION + "-osx-arm64-shared-lib.tar.bz2",
-        "osx-x64",     "sherpa-onnx-v" + SherpaLibrary.VERSION + "-osx-x86_64-shared-lib.tar.bz2",
+        "osx-x64",     "sherpa-onnx-v" + SherpaLibrary.VERSION + "-osx-x64-shared-lib.tar.bz2",
         "linux-x64",   "sherpa-onnx-v" + SherpaLibrary.VERSION + "-linux-x64-shared-lib.tar.bz2",
         "linux-arm64", "sherpa-onnx-v" + SherpaLibrary.VERSION + "-linux-aarch64-shared-cpu-lib.tar.bz2",
         "win-x64",     "sherpa-onnx-v" + SherpaLibrary.VERSION + "-win-x64-shared-MD-Release-lib.tar.bz2"
@@ -39,7 +39,7 @@ public final class Provisioner {
 
     private static final Map<String, String> NATIVE_CHECKSUMS = Map.of(
         "osx-arm64",   "d628e43aed6b719be163549876f41c909b75df26b8f439a5af69de03896bc6f5",
-        "osx-x64",     "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+        "osx-x64",     "dbe7e7aa269f742efec7366d5c4d8020cc32fc833023b9b87e5d6282d70a62b8",
         "linux-x64",   "bbeb203da0f69e37235b50e168d61d1f64ad2de256490cc64ed5535957415a97",
         "linux-arm64", "3575bde0543da12fc626c814c14287455f70a22b72caa483c7398d5f20f4cb12",
         "win-x64",     "dca033829d3a7e74c127fc0d349a12257fb890fe5038a381ab1706e4b35cf0fa"
@@ -163,12 +163,15 @@ public final class Provisioner {
     }
 
     static Path ensureNativeLibrary() {
-        Path targetDir = nativeCacheDir();
+        return ensureNativeLibrary(SherpaLibrary.platformId());
+    }
+
+    static Path ensureNativeLibrary(String platformId) {
+        Path targetDir = nativeCacheDir(platformId);
         if (Files.isDirectory(targetDir)) { return targetDir; }
 
         synchronized (NATIVE_LOCK) {
             if (Files.isDirectory(targetDir)) { return targetDir; }
-            String platformId = SherpaLibrary.platformId();
             String url = nativeLibUrl(platformId);
             String expectedHash = NATIVE_CHECKSUMS.get(platformId);
             if (expectedHash == null) {
