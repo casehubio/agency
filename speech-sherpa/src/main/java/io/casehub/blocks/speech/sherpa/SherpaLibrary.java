@@ -277,7 +277,7 @@ public final class SherpaLibrary {
         return linker.downcallHandle(symbol.get(), descriptor);
     }
 
-    private static Path resolveNativeDir() {
+    static Path resolveNativeDir() {
         String override = System.getProperty("sherpa.native.dir");
         if (override != null) {return Path.of(override);}
 

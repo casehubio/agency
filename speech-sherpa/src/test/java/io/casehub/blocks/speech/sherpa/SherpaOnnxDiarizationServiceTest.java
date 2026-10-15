@@ -5,7 +5,7 @@ import io.casehub.blocks.speech.DiarizationOptions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,14 +14,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@EnabledIf("hasNativeLibrary")
+@EnabledIfSystemProperty(named = "sherpa.native.tests", matches = "true")
 class SherpaOnnxDiarizationServiceTest {
 
     static SherpaOnnxDiarizationService service;
-
-    static boolean hasNativeLibrary() {
-        return SherpaLibrary.isAvailable();
-    }
 
     @BeforeAll
     static void setup() {

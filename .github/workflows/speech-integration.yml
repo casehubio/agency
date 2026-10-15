@@ -128,7 +128,8 @@ jobs:
         shell: bash
         run: |
           mvn --batch-mode test -pl speech-sherpa -am \
-            -Dsherpa.model.dir=/tmp/${{ env.WHISPER_MODEL }}
+            -Dsherpa.model.dir=/tmp/${{ env.WHISPER_MODEL }} \
+            -Dsherpa.native.tests=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
