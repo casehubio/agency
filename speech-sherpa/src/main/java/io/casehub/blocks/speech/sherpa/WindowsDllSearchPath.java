@@ -4,6 +4,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.FunctionDescriptor;
 import java.lang.foreign.Linker;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -20,7 +21,8 @@ final class WindowsDllSearchPath {
         if (directory == null || !isWindows()) { return; }
 
         Linker linker = Linker.nativeLinker();
-        MemorySegment symbol = linker.defaultLookup().find("SetDllDirectoryW")
+        SymbolLookup kernel32 = SymbolLookup.libraryLookup("kernel32", Arena.global());
+        MemorySegment symbol = kernel32.find("SetDllDirectoryW")
                 .orElseThrow(() -> new SherpaException("SetDllDirectoryW is unavailable"));
         MethodHandle setDllDirectory = linker.downcallHandle(symbol,
                 FunctionDescriptor.of(JAVA_INT, ADDRESS));
