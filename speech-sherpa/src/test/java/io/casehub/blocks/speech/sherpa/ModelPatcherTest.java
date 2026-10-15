@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ModelPatcherTest {
 
@@ -31,6 +32,29 @@ class ModelPatcherTest {
         boolean secondResult = ModelPatcher.patch(modelDir);
         assertThat(secondResult).isFalse();
         assertThat(countOutputs(modelDir)).isEqualTo(2);
+        assertThat(Files.readAllBytes(modelDir.resolve("model.unpatched.onnx")))
+                .isEqualTo(buildMinimalOnnxModel(1));
+    }
+
+    @Test
+    void patch_doesNotSelectBackupAsModel() throws Exception {
+        Path backup = tempDir.resolve("model.unpatched.onnx");
+        byte[] original = buildMinimalOnnxModel(1);
+        Files.write(backup, original);
+
+        assertThatThrownBy(() -> ModelPatcher.patch(tempDir))
+                .isInstanceOf(SherpaException.class)
+                .hasMessageContaining("No .onnx model found");
+        assertThat(Files.readAllBytes(backup)).isEqualTo(original);
+    }
+
+    @Test
+    void patch_doesNotSelectTemporaryModel() throws Exception {
+        Files.write(tempDir.resolve(".patching-interrupted.onnx"), buildMinimalOnnxModel(1));
+
+        assertThatThrownBy(() -> ModelPatcher.patch(tempDir))
+                .isInstanceOf(SherpaException.class)
+                .hasMessageContaining("No .onnx model found");
     }
 
     @Test

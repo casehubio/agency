@@ -3,14 +3,25 @@ package io.casehub.blocks.speech.sherpa;
 import io.casehub.blocks.speech.SpeakerEmbedding;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@EnabledIf("hasNativeLibrary")
 class CampplusSpeakerEmbeddingExtractorTest {
 
     static CampplusSpeakerEmbeddingExtractor extractor;
+
+    static boolean hasNativeLibrary() {
+        try {
+            OnnxRuntimeLibrary.load();
+            return true;
+        } catch (UnsatisfiedLinkError e) {
+            return false;
+        }
+    }
 
     @BeforeAll
     static void setup() {

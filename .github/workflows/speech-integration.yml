@@ -50,7 +50,7 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux-x64
-            lib-archive: sherpa-onnx-v1.13.6-linux-x86_64-shared-cpu-lib.tar.bz2
+            lib-archive: sherpa-onnx-v1.13.6-linux-x64-shared-lib.tar.bz2
             lib-strip: 2
             lib-ext: so
 
