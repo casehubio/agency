@@ -37,8 +37,7 @@ public final class NativePackager {
         Path nativeDir = Provisioner.nativeCacheDir(platformId);
         if (!Files.isDirectory(nativeDir)) {
             if (Provisioner.isAutoDownloadEnabled()) {
-                Provisioner.ensureNativeLibrary();
-                nativeDir = Provisioner.nativeCacheDir(platformId);
+                nativeDir = Provisioner.ensureNativeLibrary(platformId);
             }
             if (!Files.isDirectory(nativeDir)) {
                 throw new IllegalStateException(
