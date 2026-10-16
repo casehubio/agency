@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>casehub-blocks-parent</artifactId>
+  <version>${revision}</version>
   <packaging>pom</packaging>
 
   <properties>
