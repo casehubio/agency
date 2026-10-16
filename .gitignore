@@ -14,3 +14,5 @@ proj
 .playwright-mcp/
 tmp/
 casehub-blocks-parent.iml
+
+.flattened-pom.xml
