@@ -7,13 +7,14 @@
   <parent>
     <groupId>io.casehub</groupId>
     <artifactId>casehub-parent</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>casehub-blocks-parent</artifactId>
   <packaging>pom</packaging>
 
   <properties>
+    <revision>0.4-SNAPSHOT</revision>
     <spring-boot.version>4.1.0</spring-boot.version>
   </properties>
 
