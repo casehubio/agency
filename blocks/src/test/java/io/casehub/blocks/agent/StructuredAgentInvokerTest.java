@@ -39,7 +39,7 @@ class StructuredAgentInvokerTest {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("Hello"),
                 new AgentEvent.TextDelta(" world"),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, 0.001, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, 0.001, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invokeText(provider,
@@ -56,7 +56,7 @@ class StructuredAgentInvokerTest {
     @Test
     void invokeTextReturnsAgentErrorOnBlankResponse() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
-                new AgentEvent.InvocationComplete(0, 0, 0, 0, 0, null, 100L, 80L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(0, 0, 0, 0, 0, null, 100L, 80L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invokeText(provider,
@@ -181,7 +181,7 @@ class StructuredAgentInvokerTest {
     @Test
     void invokeTypedReturnsAgentErrorOnBlankResponse() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
-                new AgentEvent.InvocationComplete(0, 0, 0, 0, 0, null, 100L, 80L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(0, 0, 0, 0, 0, null, 100L, 80L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
