@@ -83,7 +83,7 @@ class StructuredAgentInvokerTest {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.ThinkingDelta("internal reasoning"),
                 new AgentEvent.TextDelta("visible output"),
-                new AgentEvent.InvocationComplete(10, 5, 3, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 3, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invokeText(provider,
@@ -117,7 +117,7 @@ class StructuredAgentInvokerTest {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("""
                         {"goalName": "explore-gaps", "goalDescription": "explore knowledge gaps", "formationReason": "high curiosity"}"""),
-                new AgentEvent.InvocationComplete(15, 10, 0, 0, 0, 0.002, 300L, 250L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(15, 10, 0, 0, 0, 0.002, 300L, 250L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
@@ -137,7 +137,7 @@ class StructuredAgentInvokerTest {
                 new AgentEvent.TextDelta("""
                         {"goalName": "reconnect", "goalDescription": "reconnect with user", "formationReason": "affiliation"}"""),
                 new AgentEvent.TextDelta("\n```"),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
@@ -151,7 +151,7 @@ class StructuredAgentInvokerTest {
     void invokeTypedStripsUnlabelledFences() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("```\n{\"goalName\": \"test\", \"goalDescription\": \"d\", \"formationReason\": \"r\"}\n```"),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
@@ -165,7 +165,7 @@ class StructuredAgentInvokerTest {
     void invokeTypedReturnsParseErrorOnInvalidJson() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("not valid json at all"),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
@@ -206,7 +206,7 @@ class StructuredAgentInvokerTest {
     void invokeTypedHandlesJsonWithSurroundingText() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("Here is the result:\n{\"goalName\": \"test\", \"goalDescription\": \"d\", \"formationReason\": \"r\"}\nDone."),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invoke(provider,
@@ -222,7 +222,7 @@ class StructuredAgentInvokerTest {
     void invokeRawReturnsJsonNode() {
         when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
                 new AgentEvent.TextDelta("{\"agent\": \"worker-1\", \"reason\": \"best fit\"}"),
-                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false)
+                new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 200L, 150L, "s1", 1, false, null, null)
         ));
 
         var result = StructuredAgentInvoker.invokeRaw(provider,
