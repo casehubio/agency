@@ -51,13 +51,13 @@ jobs:
 
       - name: Build (PR)
         if: github.event_name == 'pull_request'
-        run: mvn --batch-mode install
+        run: mvn --batch-mode install -U
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy (push to main)
         if: github.event_name != 'pull_request'
-        run: mvn --batch-mode deploy -DskipTests
+        run: mvn --batch-mode deploy -DskipTests -U
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
