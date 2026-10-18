@@ -113,8 +113,9 @@ class PatternSpecSerializationTest {
         assertThat(spec.name()).isEqualTo("proposal-evaluation");
         assertThat(spec.task()).isEqualTo("evaluation");
         assertThat(spec.aggregation()).isInstanceOf(AggregationSpec.MajorityVote.class);
-        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.termination()).hasSize(2);
         assertThat(spec.termination().get(0)).isInstanceOf(TerminationSpec.SinglePass.class);
+        assertThat(spec.termination().get(1)).isInstanceOf(TerminationSpec.MaxIterations.class);
         assertThat(spec.judgment()).isNotNull();
         assertThat(spec.judgment().trigger()).isInstanceOf(JudgmentSpec.TriggerSpec.ConfidenceThreshold.class);
         assertThat(spec.judgment().caller()).isInstanceOf(JudgmentSpec.CallerSpec.FanOut.class);

@@ -6,6 +6,8 @@ aggregation:
   type: majority-vote
 termination:
   - type: single-pass
+  - type: max-iterations
+    iterations: 3
 judgment:
   trigger:
     type: confidence-threshold
