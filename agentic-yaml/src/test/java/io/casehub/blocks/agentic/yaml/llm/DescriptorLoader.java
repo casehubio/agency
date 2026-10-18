@@ -55,8 +55,12 @@ public class DescriptorLoader {
                     var capName = (String) capMap.get("name");
                     var tags = capMap.get("tags") instanceof List<?> t
                             ? t.stream().map(Object::toString).toList() : List.<String>of();
-                    capabilities.add(new AgentCapability(capName, null, null, null,
-                            null, null, null, Set.of(), List.of(), List.of(), tags,
+                    Double qualityHint = null;
+                    if (capMap.get("qualityHint") instanceof Number qh) {
+                        qualityHint = qh.doubleValue();
+                    }
+                    capabilities.add(new AgentCapability(capName, null, null, qualityHint,
+                            null, null, null, null, List.of(), List.of(), tags,
                             Map.of(), Set.of()));
                 }
             }
@@ -65,11 +69,11 @@ public class DescriptorLoader {
         AgentDisposition disposition = null;
         if (raw.get("disposition") instanceof Map<?, ?> dispMap) {
             disposition = AgentDisposition.builder()
-                    .socialOrient(dispValue(dispMap, "socialOrient"))
-                    .ruleFollowing(dispValue(dispMap, "ruleFollowing"))
-                    .riskAppetite(dispValue(dispMap, "riskAppetite"))
-                    .autonomy(dispValue(dispMap, "autonomy"))
-                    .conflictMode(dispValue(dispMap, "conflictMode"))
+                    .socialOrient(dispValues(dispMap, "socialOrient"))
+                    .ruleFollowing(dispValues(dispMap, "ruleFollowing"))
+                    .riskAppetite(dispValues(dispMap, "riskAppetite"))
+                    .autonomy(dispValues(dispMap, "autonomy"))
+                    .conflictMode(dispValues(dispMap, "conflictMode"))
                     .delegation(Boolean.TRUE.equals(dispMap.get("delegation")))
                     .build();
         }
@@ -109,8 +113,26 @@ public class DescriptorLoader {
                 List.of(), goals, constraints);
     }
 
-    private static List<DispositionValue> dispValue(Map<?, ?> map, String key) {
+    @SuppressWarnings("unchecked")
+    private static List<DispositionValue> dispValues(Map<?, ?> map, String key) {
         var val = map.get(key);
-        return val != null ? List.of(DispositionValue.of(val.toString())) : List.of();
+        if (val == null) {
+            return List.of();
+        }
+        if (val instanceof String s) {
+            return List.of(DispositionValue.of(s));
+        }
+        if (val instanceof List<?> list) {
+            var result = new ArrayList<DispositionValue>();
+            for (var item : list) {
+                if (item instanceof Map<?, ?> m) {
+                    var term = (String) m.get("term");
+                    var weight = m.get("weight") instanceof Number n ? n.doubleValue() : 1.0;
+                    result.add(new DispositionValue(term, weight));
+                }
+            }
+            return List.copyOf(result);
+        }
+        return List.of(DispositionValue.of(val.toString()));
     }
 }
