@@ -1,4 +1,7 @@
 type: conditional
+name: domain-case-router
+description: "Routes cases to domain specialists based on category classification"
+task: routing
 termination:
   - type: agent-count
 failurePolicy:
@@ -6,14 +9,17 @@ failurePolicy:
   onDeadlock: FAIL
 branches:
   - condition: "category == 'medical'"
+    description: "Routes clinical cases requiring specialist medical review"
     agent:
       type: worker
       name: medical-expert
   - condition: "category == 'legal'"
+    description: "Routes matters requiring legal analysis and regulatory review"
     agent:
       type: worker
       name: legal-expert
   - condition: "category == 'financial'"
+    description: "Routes cases requiring financial risk and compliance evaluation"
     agent:
       type: worker
       name: financial-expert

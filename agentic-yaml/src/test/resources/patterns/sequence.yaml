@@ -1,4 +1,7 @@
 type: sequence
+name: data-processing-pipeline
+description: "Three-stage pipeline: collect, transform, and validate data"
+task: data-pipeline
 termination:
   - type: agent-count
 failurePolicy:

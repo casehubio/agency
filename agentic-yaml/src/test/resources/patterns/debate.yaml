@@ -1,4 +1,7 @@
 type: debate
+name: adversarial-review
+description: "Structured adversarial debate between proponent and opponent with arbiter judgment"
+task: deliberation
 maxRounds: 7
 judge:
   type: worker

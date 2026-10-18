@@ -1,4 +1,7 @@
 type: supervisor
+name: expression-routed-supervisor
+description: "Supervisor using expression-based routing to select specialist or generalist"
+task: supervised-dispatch
 routing:
   type: first-match
   guard: "ref.name() == \"specialist\""

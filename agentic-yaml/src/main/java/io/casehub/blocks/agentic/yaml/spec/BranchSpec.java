@@ -1,3 +1,6 @@
 package io.casehub.blocks.agentic.yaml.spec;
 
-public record BranchSpec(String condition, AgentRefSpec agent) {}
+import org.jspecify.annotations.Nullable;
+
+public record BranchSpec(String condition, AgentRefSpec agent,
+                         @Nullable String description) {}

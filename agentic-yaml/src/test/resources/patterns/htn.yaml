@@ -1,4 +1,7 @@
 type: htn
+name: data-processing-hierarchy
+description: "Hierarchical task decomposition: gather data, then clean and analyse in sequence"
+task: hierarchical-processing
 termination:
   - type: agent-count
 failurePolicy:
@@ -10,15 +13,18 @@ rootTask:
   subtasks:
     - type: primitive
       name: gather-data
+      description: "Collects raw data from all configured upstream sources"
       executor: data-agent
     - type: compound
       name: process
       subtasks:
         - type: primitive
           name: clean
+          description: "Normalises, deduplicates, and validates collected data"
           executor: cleaner-agent
         - type: primitive
           name: analyse
+          description: "Performs statistical analysis and generates insight reports"
           executor: analyst-agent
 agents:
   - type: worker

@@ -1,4 +1,7 @@
 type: voting
+name: proposal-evaluation
+description: "Three evaluators assess proposals across technical, financial, and strategic dimensions"
+task: evaluation
 aggregation:
   type: majority-vote
 termination:
@@ -31,9 +34,9 @@ agents:
     capabilities:
       - cost-analysis
       - resource-planning
-  - type: worker
-    name: evaluator-3
-    description: "Evaluates strategic alignment and market fit"
+  - type: human
+    name: domain-expert
+    description: "Provides domain-specific judgment from a human panellist"
     capabilities:
-      - strategic-analysis
-      - market-assessment
+      - domain-expertise
+      - strategic-assessment

@@ -17,7 +17,8 @@ public sealed interface TaskNodeSpec {
 
     String name();
 
-    record Primitive(String name, @Nullable String executor) implements TaskNodeSpec {}
+    record Primitive(String name, @Nullable String executor,
+                     @Nullable String description) implements TaskNodeSpec {}
 
     record Compound(String name, List<TaskNodeSpec> subtasks) implements TaskNodeSpec {}
 }

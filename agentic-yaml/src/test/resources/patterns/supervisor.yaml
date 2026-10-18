@@ -1,4 +1,7 @@
 type: supervisor
+name: supervised-analysis
+description: "Supervisor coordinates analyst and reviewer with oversight governance"
+task: analysis
 routing:
   type: first-match
   guard: "priority > 5"
@@ -7,6 +10,20 @@ termination:
     iterations: 20
 aggregation:
   type: collect-all
+governance:
+  oversight:
+    classifier: risk-based
+    reversible: true
+    candidateGroups:
+      - senior-reviewers
+  trustRouting:
+    threshold: 0.7
+    minimumObservations: 10
+    borderlineMargin: 0.1
+    blendFactor: 0.6
+  attestation:
+    observer: capability-attestation
+    capabilityTag: data-analysis
 agents:
   - type: worker
     name: analyst

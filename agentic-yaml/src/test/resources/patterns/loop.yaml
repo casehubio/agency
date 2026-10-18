@@ -1,4 +1,7 @@
 type: loop
+name: iterative-refinement
+description: "Repeatedly refines output quality until the threshold is met or iterations are exhausted"
+task: refinement
 maxIterations: 15
 exitCondition: "qualityScore > 0.9"
 termination:

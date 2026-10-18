@@ -210,6 +210,9 @@
               },
               "condition" : {
                 "type" : "string"
+              },
+              "description" : {
+                "type" : "string"
               }
             },
             "unevaluatedProperties" : false
@@ -217,6 +220,9 @@
         },
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
+        },
+        "description" : {
+          "type" : "string"
         },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
@@ -226,6 +232,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -260,6 +269,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -274,6 +286,9 @@
         },
         "maxRounds" : {
           "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -517,6 +532,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -525,6 +543,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "rootTask" : {
           "$ref" : "#/$defs/TaskNodeSpec"
@@ -656,6 +677,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "exitCondition" : {
           "type" : "string"
         },
@@ -670,6 +694,9 @@
         },
         "maxIterations" : {
           "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -704,6 +731,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -712,6 +742,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -731,6 +764,9 @@
     "Primitive" : {
       "type" : "object",
       "properties" : {
+        "description" : {
+          "type" : "string"
+        },
         "executor" : {
           "type" : "string"
         },
@@ -802,6 +838,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -810,6 +849,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -844,6 +886,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -852,6 +897,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
@@ -1012,6 +1060,9 @@
         "decomposition" : {
           "$ref" : "#/$defs/DecompositionSpec"
         },
+        "description" : {
+          "type" : "string"
+        },
         "failurePolicy" : {
           "$ref" : "#/$defs/FailurePolicy"
         },
@@ -1020,6 +1071,9 @@
         },
         "judgment" : {
           "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
         },
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"

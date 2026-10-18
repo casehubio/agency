@@ -1,4 +1,7 @@
 type: parallel
+name: multi-source-research
+description: "Concurrent research across web, academic, and internal sources"
+task: research
 aggregation:
   type: collect-all
 termination:
@@ -19,9 +22,9 @@ agents:
     capabilities:
       - academic-search
       - citation-analysis
-  - type: worker
-    name: internal-researcher
-    description: "Retrieves relevant records from internal knowledge bases"
+  - type: external
+    name: data-api
+    description: "Retrieves structured records from an external data service"
     capabilities:
-      - database-query
-      - knowledge-retrieval
+      - api-integration
+      - structured-retrieval

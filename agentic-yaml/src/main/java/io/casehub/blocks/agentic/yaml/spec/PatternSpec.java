@@ -22,6 +22,8 @@ import java.util.List;
 })
 public sealed interface PatternSpec {
 
+    @Nullable String name();
+    @Nullable String description();
     @Nullable RoutingSpec routing();
     @Nullable List<TerminationSpec> termination();
     @Nullable AggregationSpec aggregation();
@@ -34,6 +36,8 @@ public sealed interface PatternSpec {
     @Nullable GovernanceSpec governance();
 
     record Supervisor(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -47,6 +51,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Debate(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -62,6 +68,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Loop(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -77,6 +85,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Parallel(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -90,6 +100,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Voting(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -103,6 +115,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Conditional(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -117,6 +131,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Sequence(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
@@ -130,6 +146,8 @@ public sealed interface PatternSpec {
     ) implements PatternSpec {}
 
     record Htn(
+            @Nullable String name,
+            @Nullable String description,
             @Nullable RoutingSpec routing,
             @Nullable List<TerminationSpec> termination,
             @Nullable AggregationSpec aggregation,
