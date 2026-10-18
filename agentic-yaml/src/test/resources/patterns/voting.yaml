@@ -28,12 +28,14 @@ agents:
     capabilities:
       - technical-assessment
       - risk-analysis
+    model: claude-opus-5
   - type: worker
     name: evaluator-2
     description: "Reviews cost-benefit and resource requirements"
     capabilities:
       - cost-analysis
       - resource-planning
+    model: claude-sonnet-5
   - type: human
     name: domain-expert
     description: "Provides domain-specific judgment from a human panellist"

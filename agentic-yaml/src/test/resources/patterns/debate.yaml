@@ -10,6 +10,7 @@ judge:
   capabilities:
     - argument-evaluation
     - verdict-rendering
+  model: claude-opus-5
 termination:
   - type: all-agreed
     resolvedStatuses:

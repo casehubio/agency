@@ -21,20 +21,26 @@ public sealed interface AgentRefSpec {
     String name();
     @Nullable String description();
     @Nullable List<String> capabilities();
+    @Nullable String model();
 
     record Worker(String name, @Nullable String description,
-                  @Nullable List<String> capabilities) implements AgentRefSpec {}
+                  @Nullable List<String> capabilities,
+                  @Nullable String model) implements AgentRefSpec {}
 
     record Channel(String name, String channelId, @Nullable String description,
-                   @Nullable List<String> capabilities) implements AgentRefSpec {}
+                   @Nullable List<String> capabilities,
+                   @Nullable String model) implements AgentRefSpec {}
 
     record Human(String name, @Nullable String description,
-                 @Nullable List<String> capabilities) implements AgentRefSpec {}
+                 @Nullable List<String> capabilities,
+                 @Nullable String model) implements AgentRefSpec {}
 
     record External(String name, @Nullable String description,
-                    @Nullable List<String> capabilities) implements AgentRefSpec {}
+                    @Nullable List<String> capabilities,
+                    @Nullable String model) implements AgentRefSpec {}
 
     record Composed(String name, @Nullable String description,
                     @Nullable List<String> capabilities,
+                    @Nullable String model,
                     PatternSpec pattern) implements AgentRefSpec {}
 }

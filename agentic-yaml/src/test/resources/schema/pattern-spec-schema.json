@@ -143,6 +143,9 @@
         "description" : {
           "type" : "string"
         },
+        "model" : {
+          "type" : "string"
+        },
         "name" : {
           "type" : "string"
         }
@@ -159,6 +162,9 @@
           }
         },
         "description" : {
+          "type" : "string"
+        },
+        "model" : {
           "type" : "string"
         },
         "name" : {
@@ -388,6 +394,9 @@
         "description" : {
           "type" : "string"
         },
+        "model" : {
+          "type" : "string"
+        },
         "name" : {
           "type" : "string"
         }
@@ -575,6 +584,9 @@
           }
         },
         "description" : {
+          "type" : "string"
+        },
+        "model" : {
           "type" : "string"
         },
         "name" : {
@@ -1100,6 +1112,9 @@
           }
         },
         "description" : {
+          "type" : "string"
+        },
+        "model" : {
           "type" : "string"
         },
         "name" : {

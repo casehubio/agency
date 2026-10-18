@@ -66,6 +66,7 @@ class PatternSpecSerializationTest {
         assertThat(spec.judge().name()).isEqualTo("arbiter");
         assertThat(spec.judge().description()).isEqualTo("Evaluates arguments from both sides and renders a final verdict");
         assertThat(spec.judge().capabilities()).containsExactly("argument-evaluation", "verdict-rendering");
+        assertThat(spec.judge().model()).isEqualTo("claude-opus-5");
         assertThat(spec.termination()).hasSize(2);
         assertThat(spec.agents().get(0).description()).isEqualTo("Argues in favour of the proposed position with supporting evidence");
     }
@@ -121,8 +122,11 @@ class PatternSpecSerializationTest {
         assertThat(spec.agents()).hasSize(3);
         assertThat(spec.agents().get(0).description()).isEqualTo("Assesses technical feasibility and implementation risk");
         assertThat(spec.agents().get(0).capabilities()).containsExactly("technical-assessment", "risk-analysis");
+        assertThat(spec.agents().get(0).model()).isEqualTo("claude-opus-5");
+        assertThat(spec.agents().get(1).model()).isEqualTo("claude-sonnet-5");
         assertThat(spec.agents().get(2)).isInstanceOf(AgentRefSpec.Human.class);
         assertThat(spec.agents().get(2).name()).isEqualTo("domain-expert");
+        assertThat(spec.agents().get(2).model()).isNull();
     }
 
     @Test
@@ -247,6 +251,45 @@ class PatternSpecSerializationTest {
         var spec = mapper.readValue(yaml, PatternSpec.class);
         assertThat(spec.name()).isNull();
         assertThat(spec.description()).isNull();
+    }
+
+    @Test
+    void modelFieldDeserialises() throws IOException {
+        var yaml = """
+                type: supervisor
+                agents:
+                  - type: worker
+                    name: fast-agent
+                    model: claude-sonnet-5
+                  - type: worker
+                    name: smart-agent
+                    model: claude-opus-5
+                  - type: worker
+                    name: no-model-agent
+                """;
+        var spec = mapper.readValue(yaml, PatternSpec.class);
+        assertThat(spec.agents().get(0).model()).isEqualTo("claude-sonnet-5");
+        assertThat(spec.agents().get(1).model()).isEqualTo("claude-opus-5");
+        assertThat(spec.agents().get(2).model()).isNull();
+    }
+
+    @Test
+    void modelFieldOnComposedAgent() throws IOException {
+        var yaml = """
+                type: supervisor
+                agents:
+                  - type: composed
+                    name: team
+                    model: claude-opus-5
+                    pattern:
+                      type: parallel
+                      agents:
+                        - type: worker
+                          name: worker-1
+                """;
+        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var composed = (AgentRefSpec.Composed) spec.agents().get(0);
+        assertThat(composed.model()).isEqualTo("claude-opus-5");
     }
 
     private <T extends PatternSpec> T loadPattern(String name, Class<T> type) throws IOException {

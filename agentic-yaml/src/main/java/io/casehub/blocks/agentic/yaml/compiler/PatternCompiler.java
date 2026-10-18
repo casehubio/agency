@@ -225,6 +225,9 @@ public class PatternCompiler {
                     .map(name -> AgentCapability.builder().name(name).build())
                     .toList());
         }
+        if (spec.model() != null) {
+            builder.modelFamily(spec.model());
+        }
         return builder.build();
     }
 
