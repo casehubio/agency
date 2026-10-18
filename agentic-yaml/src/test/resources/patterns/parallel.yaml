@@ -1,8 +1,27 @@
 type: parallel
+aggregation:
+  type: collect-all
+termination:
+  - type: agent-count
+failurePolicy:
+  onRoutingFailure: FAIL
+  onDeadlock: FAIL
 agents:
   - type: worker
-    name: researcher-1
+    name: web-researcher
+    description: "Searches public web sources for relevant information"
+    capabilities:
+      - web-search
+      - content-extraction
   - type: worker
-    name: researcher-2
+    name: academic-researcher
+    description: "Queries academic databases and citation networks"
+    capabilities:
+      - academic-search
+      - citation-analysis
   - type: worker
-    name: researcher-3
+    name: internal-researcher
+    description: "Retrieves relevant records from internal knowledge bases"
+    capabilities:
+      - database-query
+      - knowledge-retrieval

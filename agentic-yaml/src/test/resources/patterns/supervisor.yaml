@@ -15,3 +15,7 @@ agents:
       - data-analysis
   - type: worker
     name: reviewer
+    description: "Reviews analysis results for accuracy and completeness"
+    capabilities:
+      - quality-review
+      - fact-checking

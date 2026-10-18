@@ -10,5 +10,13 @@ termination:
 agents:
   - type: worker
     name: specialist
+    description: "Handles domain-specific tasks requiring deep expertise"
+    capabilities:
+      - domain-expertise
+      - specialised-analysis
   - type: worker
     name: generalist
+    description: "Handles broad tasks not requiring specialist knowledge"
+    capabilities:
+      - general-processing
+      - triage

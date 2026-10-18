@@ -1,8 +1,29 @@
 type: sequence
+termination:
+  - type: agent-count
+failurePolicy:
+  onRoutingFailure: FAIL
+  agentRetry:
+    maxRetries: 2
+    backoff: PT1S
+    backoffStrategy: FIXED
+    onExhausted: FAIL
 agents:
   - type: worker
-    name: step-1
+    name: data-collector
+    description: "Gathers and validates input data from configured sources"
+    capabilities:
+      - data-ingestion
+      - schema-validation
   - type: worker
-    name: step-2
+    name: transformer
+    description: "Normalises and enriches collected data for downstream processing"
+    capabilities:
+      - data-transformation
+      - enrichment
   - type: worker
-    name: step-3
+    name: output-validator
+    description: "Validates transformed output against quality constraints"
+    capabilities:
+      - quality-assurance
+      - constraint-checking

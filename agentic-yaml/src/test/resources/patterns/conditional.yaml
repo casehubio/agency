@@ -1,4 +1,9 @@
 type: conditional
+termination:
+  - type: agent-count
+failurePolicy:
+  onRoutingFailure: ESCALATE
+  onDeadlock: FAIL
 branches:
   - condition: "category == 'medical'"
     agent:
@@ -8,8 +13,26 @@ branches:
     agent:
       type: worker
       name: legal-expert
+  - condition: "category == 'financial'"
+    agent:
+      type: worker
+      name: financial-expert
 agents:
   - type: worker
     name: medical-expert
+    description: "Analyses medical cases with clinical guideline awareness"
+    capabilities:
+      - clinical-analysis
+      - guideline-compliance
   - type: worker
     name: legal-expert
+    description: "Reviews legal matters against regulatory frameworks"
+    capabilities:
+      - legal-analysis
+      - regulatory-review
+  - type: worker
+    name: financial-expert
+    description: "Evaluates financial cases for risk and compliance"
+    capabilities:
+      - financial-analysis
+      - compliance-checking

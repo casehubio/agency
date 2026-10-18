@@ -1,6 +1,23 @@
 type: loop
 maxIterations: 15
 exitCondition: "qualityScore > 0.9"
+termination:
+  - type: goal-reached
+    when: "qualityScore > 0.95"
+  - type: max-iterations
+    iterations: 15
+judgment:
+  trigger:
+    type: iteration-based
+    every: 5
+  caller:
+    type: single
+    callerName: quality-assessor
 agents:
   - type: worker
     name: improver
+    description: "Iteratively refines output quality through self-critique and revision"
+    capabilities:
+      - content-generation
+      - self-evaluation
+      - revision

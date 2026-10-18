@@ -65,7 +65,9 @@ class PatternCompilerTest {
         var spec = loadPattern("loop");
         var model = compiler.compile(spec);
         assertThat(model.patternType()).isEqualTo(PatternType.LOOP);
-        assertThat(model.termination()).isInstanceOf(MaxIterationsTermination.class);
+        assertThat(model.termination()).isNotNull();
+        assertThat(model.candidateSupplier().get()).hasSize(1);
+        assertThat(model.judgment()).isNotNull();
     }
 
     @Test
@@ -204,8 +206,10 @@ class PatternCompilerTest {
         var reviewer = candidates.get(1);
         assertThat(reviewer.descriptor()).isNotNull();
         assertThat(reviewer.descriptor().name()).isEqualTo("reviewer");
-        assertThat(reviewer.descriptor().briefing()).isNull();
-        assertThat(reviewer.descriptor().capabilities()).isEmpty();
+        assertThat(reviewer.descriptor().briefing()).isEqualTo("Reviews analysis results for accuracy and completeness");
+        assertThat(reviewer.descriptor().capabilities()).hasSize(2);
+        assertThat(reviewer.descriptor().capabilities().get(0).name()).isEqualTo("quality-review");
+        assertThat(reviewer.descriptor().capabilities().get(1).name()).isEqualTo("fact-checking");
     }
 
     @Test

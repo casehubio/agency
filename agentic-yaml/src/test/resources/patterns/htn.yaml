@@ -1,4 +1,9 @@
 type: htn
+termination:
+  - type: agent-count
+failurePolicy:
+  onRoutingFailure: FAIL
+  onDeadlock: ESCALATE
 rootTask:
   type: compound
   name: main-task
@@ -18,7 +23,19 @@ rootTask:
 agents:
   - type: worker
     name: data-agent
+    description: "Collects raw data from configured upstream sources"
+    capabilities:
+      - data-ingestion
+      - source-discovery
   - type: worker
     name: cleaner-agent
+    description: "Normalises, deduplicates, and validates collected data"
+    capabilities:
+      - data-cleansing
+      - deduplication
   - type: worker
     name: analyst-agent
+    description: "Performs statistical analysis and generates insight reports"
+    capabilities:
+      - statistical-analysis
+      - report-generation

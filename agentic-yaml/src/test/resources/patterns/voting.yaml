@@ -1,8 +1,39 @@
 type: voting
+aggregation:
+  type: majority-vote
+termination:
+  - type: single-pass
+judgment:
+  trigger:
+    type: confidence-threshold
+    threshold: 0.7
+    extractor: "result.confidence"
+  caller:
+    type: fan-out
+    callerNames:
+      - senior-reviewer
+      - domain-lead
+    agreement:
+      type: majority
+failurePolicy:
+  onRoutingFailure: FAIL
+  onDeadlock: ESCALATE
 agents:
   - type: worker
     name: evaluator-1
+    description: "Assesses technical feasibility and implementation risk"
+    capabilities:
+      - technical-assessment
+      - risk-analysis
   - type: worker
     name: evaluator-2
+    description: "Reviews cost-benefit and resource requirements"
+    capabilities:
+      - cost-analysis
+      - resource-planning
   - type: worker
     name: evaluator-3
+    description: "Evaluates strategic alignment and market fit"
+    capabilities:
+      - strategic-analysis
+      - market-assessment

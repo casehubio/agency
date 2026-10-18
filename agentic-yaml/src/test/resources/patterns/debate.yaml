@@ -3,9 +3,30 @@ maxRounds: 7
 judge:
   type: worker
   name: arbiter
-  description: "Resolves disputed points"
+  description: "Evaluates arguments from both sides and renders a final verdict"
+  capabilities:
+    - argument-evaluation
+    - verdict-rendering
+termination:
+  - type: all-agreed
+    resolvedStatuses:
+      - RESOLVED
+      - ACCEPTED
+  - type: max-iterations
+    iterations: 14
+failurePolicy:
+  onRoutingFailure: FAIL
+  onDeadlock: ESCALATE
 agents:
   - type: worker
     name: proponent
+    description: "Argues in favour of the proposed position with supporting evidence"
+    capabilities:
+      - argumentation
+      - evidence-gathering
   - type: worker
     name: opponent
+    description: "Challenges the proposed position and identifies weaknesses"
+    capabilities:
+      - critical-analysis
+      - counter-argumentation

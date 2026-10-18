@@ -56,14 +56,70 @@ class PatternSpecSerializationTest {
         var spec = loadPattern("loop", PatternSpec.Loop.class);
         assertThat(spec.maxIterations()).isEqualTo(15);
         assertThat(spec.exitCondition()).isEqualTo("qualityScore > 0.9");
+        assertThat(spec.termination()).hasSize(2);
+        assertThat(spec.termination().get(0)).isInstanceOf(TerminationSpec.GoalReached.class);
+        assertThat(spec.termination().get(1)).isInstanceOf(TerminationSpec.MaxIterations.class);
+        assertThat(spec.judgment()).isNotNull();
+        assertThat(spec.judgment().trigger()).isInstanceOf(JudgmentSpec.TriggerSpec.IterationBased.class);
+        assertThat(spec.agents().get(0).description()).isEqualTo("Iteratively refines output quality through self-critique and revision");
+        assertThat(spec.agents().get(0).capabilities()).containsExactly("content-generation", "self-evaluation", "revision");
     }
 
     @Test
     void conditionalBranches() throws IOException {
         var spec = loadPattern("conditional", PatternSpec.Conditional.class);
-        assertThat(spec.branches()).hasSize(2);
+        assertThat(spec.branches()).hasSize(3);
         assertThat(spec.branches().get(0).condition()).isEqualTo("category == 'medical'");
         assertThat(spec.branches().get(0).agent().name()).isEqualTo("medical-expert");
+        assertThat(spec.branches().get(2).condition()).isEqualTo("category == 'financial'");
+        assertThat(spec.branches().get(2).agent().name()).isEqualTo("financial-expert");
+        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.failurePolicy()).isNotNull();
+        assertThat(spec.agents()).hasSize(3);
+        assertThat(spec.agents().get(0).description()).isEqualTo("Analyses medical cases with clinical guideline awareness");
+        assertThat(spec.agents().get(0).capabilities()).containsExactly("clinical-analysis", "guideline-compliance");
+    }
+
+    @Test
+    void votingFields() throws IOException {
+        var spec = loadPattern("voting", PatternSpec.Voting.class);
+        assertThat(spec.aggregation()).isInstanceOf(AggregationSpec.MajorityVote.class);
+        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.termination().get(0)).isInstanceOf(TerminationSpec.SinglePass.class);
+        assertThat(spec.judgment()).isNotNull();
+        assertThat(spec.judgment().trigger()).isInstanceOf(JudgmentSpec.TriggerSpec.ConfidenceThreshold.class);
+        assertThat(spec.judgment().caller()).isInstanceOf(JudgmentSpec.CallerSpec.FanOut.class);
+        assertThat(spec.failurePolicy()).isNotNull();
+        assertThat(spec.agents()).hasSize(3);
+        assertThat(spec.agents().get(0).description()).isEqualTo("Assesses technical feasibility and implementation risk");
+        assertThat(spec.agents().get(0).capabilities()).containsExactly("technical-assessment", "risk-analysis");
+    }
+
+    @Test
+    void sequenceFields() throws IOException {
+        var spec = loadPattern("sequence", PatternSpec.Sequence.class);
+        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.termination().get(0)).isInstanceOf(TerminationSpec.AgentCount.class);
+        assertThat(spec.failurePolicy()).isNotNull();
+        assertThat(spec.failurePolicy().agentRetry().maxRetries()).isEqualTo(2);
+        assertThat(spec.agents()).hasSize(3);
+        assertThat(spec.agents().get(0).name()).isEqualTo("data-collector");
+        assertThat(spec.agents().get(0).description()).isEqualTo("Gathers and validates input data from configured sources");
+        assertThat(spec.agents().get(1).capabilities()).containsExactly("data-transformation", "enrichment");
+    }
+
+    @Test
+    void parallelFields() throws IOException {
+        var spec = loadPattern("parallel", PatternSpec.Parallel.class);
+        assertThat(spec.aggregation()).isInstanceOf(AggregationSpec.CollectAll.class);
+        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.termination().get(0)).isInstanceOf(TerminationSpec.AgentCount.class);
+        assertThat(spec.failurePolicy()).isNotNull();
+        assertThat(spec.agents()).hasSize(3);
+        assertThat(spec.agents().get(0).name()).isEqualTo("web-researcher");
+        assertThat(spec.agents().get(0).description()).isEqualTo("Searches public web sources for relevant information");
+        assertThat(spec.agents().get(1).name()).isEqualTo("academic-researcher");
+        assertThat(spec.agents().get(2).capabilities()).containsExactly("database-query", "knowledge-retrieval");
     }
 
     @Test
