@@ -86,4 +86,22 @@ class DescriptorLoaderTest {
         assertThat(disp.conflictMode().get(0).term()).isEqualTo("competing");
         assertThat(disp.conflictMode().get(0).weight()).isEqualTo(0.7);
     }
+
+    @Test
+    void modelAndArchetypeFields() {
+        var descriptors = DescriptorLoader.load("historical-encounter");
+        var leonardo = descriptors.get(0);
+
+        assertThat(leonardo.archetype()).isEqualTo("polymath");
+        assertThat(leonardo.provider()).isEqualTo("anthropic");
+        assertThat(leonardo.modelFamily()).isEqualTo("claude");
+        assertThat(leonardo.modelVersion()).isEqualTo("opus-5");
+
+        var nikola = descriptors.get(1);
+        assertThat(nikola.archetype()).isEqualTo("visionary");
+
+        var historian = descriptors.get(2);
+        assertThat(historian.archetype()).isNull();
+        assertThat(historian.provider()).isNull();
+    }
 }

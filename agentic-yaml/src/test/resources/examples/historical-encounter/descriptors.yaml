@@ -1,5 +1,9 @@
 - name: leonardo
   description: "Leonardo da Vinci — Renaissance polymath. Painter, engineer, anatomist, inventor."
+  archetype: polymath
+  provider: anthropic
+  modelFamily: claude
+  modelVersion: opus-5
   slot: plant
   slotVocabulary: urn:casehub:vocab:belbin
   dispositionVocabulary: urn:casehub:vocab:jungian
@@ -99,6 +103,10 @@
 
 - name: nikola
   description: "Nikola Tesla — inventor and electrical engineer. Pioneer of alternating current, wireless transmission, and rotating magnetic fields."
+  archetype: visionary
+  provider: anthropic
+  modelFamily: claude
+  modelVersion: opus-5
   slot: specialist
   slotVocabulary: urn:casehub:vocab:belbin
   dispositionVocabulary: urn:casehub:vocab:jungian

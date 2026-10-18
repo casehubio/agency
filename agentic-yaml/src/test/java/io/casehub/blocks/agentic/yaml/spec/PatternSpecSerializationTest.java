@@ -120,12 +120,14 @@ class PatternSpecSerializationTest {
         assertThat(spec.judgment().caller()).isInstanceOf(JudgmentSpec.CallerSpec.FanOut.class);
         assertThat(spec.failurePolicy()).isNotNull();
         assertThat(spec.agents()).hasSize(3);
-        assertThat(spec.agents().get(0).description()).isEqualTo("Assesses technical feasibility and implementation risk");
-        assertThat(spec.agents().get(0).capabilities()).containsExactly("technical-assessment", "risk-analysis");
+        assertThat(spec.agents().get(0).name()).isEqualTo("quantitative-scorer");
+        assertThat(spec.agents().get(0).description()).isEqualTo("Applies statistical risk models and quantitative analysis to score proposals");
+        assertThat(spec.agents().get(0).capabilities()).containsExactly("risk-modelling", "quantitative-analysis");
         assertThat(spec.agents().get(0).model()).isEqualTo("claude-opus-5");
+        assertThat(spec.agents().get(1).name()).isEqualTo("qualitative-reviewer");
         assertThat(spec.agents().get(1).model()).isEqualTo("claude-sonnet-5");
         assertThat(spec.agents().get(2)).isInstanceOf(AgentRefSpec.Human.class);
-        assertThat(spec.agents().get(2).name()).isEqualTo("domain-expert");
+        assertThat(spec.agents().get(2).name()).isEqualTo("regulatory-checker");
         assertThat(spec.agents().get(2).model()).isNull();
     }
 
