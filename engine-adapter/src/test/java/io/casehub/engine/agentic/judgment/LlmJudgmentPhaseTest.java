@@ -1,14 +1,15 @@
 package io.casehub.engine.agentic.judgment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.response.ChatResponse;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentEvent;
+import io.casehub.platform.agent.AgentProvider;
+import io.casehub.platform.agent.AgentSessionConfig;
+import io.smallrye.mutiny.Multi;
 import io.casehub.api.spi.judgment.CallerConfig;
 import io.casehub.api.spi.judgment.JudgmentVerifier;
 import io.casehub.api.spi.judgment.VerificationContext;
@@ -22,14 +23,11 @@ import org.junit.jupiter.api.Test;
 
 class LlmJudgmentPhaseTest {
 
-  private ChatModel chatModel;
-  private ChatModelProvider provider;
+  private AgentProvider provider;
 
   @BeforeEach
   void setUp() {
-    chatModel = mock(ChatModel.class);
-    provider = mock(ChatModelProvider.class);
-    when(provider.get()).thenReturn(chatModel);
+    provider = mock(AgentProvider.class);
   }
 
   @Test
@@ -81,6 +79,9 @@ class LlmJudgmentPhaseTest {
     var decision = phase.evaluate(ctx);
 
     assertThat(decision).isInstanceOf(JudgmentDecision.Approved.class);
+    var captured = org.mockito.ArgumentCaptor.forClass(AgentSessionConfig.class);
+    verify(provider).invoke(captured.capture());
+    assertThat(captured.getValue().userPrompt()).contains("needs more detail");
   }
 
   @Test
@@ -106,7 +107,7 @@ class LlmJudgmentPhaseTest {
 
   @Test
   void chatModelFailure_returnsEscalated() {
-    when(chatModel.chat(anyList())).thenThrow(new RuntimeException("API error"));
+    when(provider.invoke(any())).thenReturn(Multi.createFrom().failure(new RuntimeException("API error")));
     var config = new PatternJudgmentConfig(
         "Review",
         new CallerConfig.Llm(null, "test-model", null),
@@ -120,9 +121,26 @@ class LlmJudgmentPhaseTest {
     assertThat(decision).isInstanceOf(JudgmentDecision.Escalated.class);
   }
 
+  @Test
+  void errorCompletion_returnsEscalated() {
+    var completion = new AgentEvent.InvocationComplete(
+        0, 0, 0, 0, 0, null, 0, 0, null, 0, true, null, null);
+    when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
+        new AgentEvent.TextDelta("APPROVE"), completion));
+    var config = new PatternJudgmentConfig(
+        "Review", new CallerConfig.Llm(null, "test-model", null),
+        null, List.of(), null, false);
+    var phase = new LlmJudgmentPhase<>(provider, config, null);
+    var ctx = new JudgmentContext<>(
+        (Object) "state", List.of(), new AggregationResult.Resolved("result"), 0, null);
+
+    assertThat(phase.evaluate(ctx)).isInstanceOf(JudgmentDecision.Escalated.class);
+  }
+
   private void mockLlmResponse(String text) {
-    var aiMessage = AiMessage.from(text);
-    var chatResponse = ChatResponse.builder().aiMessage(aiMessage).build();
-    when(chatModel.chat(anyList())).thenReturn(chatResponse);
+    int midpoint = text.length() / 2;
+    when(provider.invoke(any())).thenReturn(Multi.createFrom().items(
+        new AgentEvent.TextDelta(text.substring(0, midpoint)),
+        new AgentEvent.TextDelta(text.substring(midpoint))));
   }
 }

@@ -17,7 +17,7 @@ package io.casehub.engine.agentic;
 
 import io.casehub.api.engine.WorkerRuntime;
 import io.casehub.api.model.WorkerContext;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.api.spi.judgment.CallerConfig;
 import io.casehub.blocks.agentic.judgment.JudgmentPhase;
 import io.casehub.blocks.agentic.model.ExecutionModel;
@@ -42,17 +42,17 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
 
   private final WorkerRuntimeFactory workerRuntimeFactory;
   private final PatternCheckpointStore checkpointStore;
-  private final Optional<ChatModelProvider> chatModelProvider;
+  private final Optional<AgentProvider> agentProvider;
   private final List<io.casehub.api.spi.judgment.JudgmentVerifier> judgmentVerifiers;
 
   public PatternWorkerFunctionHandler(
       WorkerRuntimeFactory workerRuntimeFactory,
       PatternCheckpointStore checkpointStore,
-      Optional<ChatModelProvider> chatModelProvider,
+      Optional<AgentProvider> agentProvider,
       List<io.casehub.api.spi.judgment.JudgmentVerifier> judgmentVerifiers) {
     this.workerRuntimeFactory = workerRuntimeFactory;
     this.checkpointStore = checkpointStore;
-    this.chatModelProvider = chatModelProvider;
+    this.agentProvider = agentProvider;
     this.judgmentVerifiers = judgmentVerifiers;
   }
 
@@ -244,13 +244,13 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
   @SuppressWarnings("unchecked")
   private <T> JudgmentPhase<T> resolveJudgmentPhase(PatternJudgmentConfig config) {
     if (config.callerConfig() instanceof CallerConfig.Llm) {
-      if (chatModelProvider.isEmpty()) {
-        LOG.log(System.Logger.Level.WARNING, "No ChatModelProvider — skipping pattern judgment phase");
+      if (agentProvider.isEmpty()) {
+        LOG.log(System.Logger.Level.WARNING, "No AgentProvider — skipping pattern judgment phase");
         return null;
       }
       var verifier = resolveVerifier(config.verifierStrategy());
       return (JudgmentPhase<T>)
-          new LlmJudgmentPhase<>(chatModelProvider.get(), config, verifier);
+          new LlmJudgmentPhase<>(agentProvider.get(), config, verifier);
     }
     LOG.log(System.Logger.Level.WARNING,
         "Unsupported caller type for pattern judgment: " + config.callerConfig().getClass().getSimpleName());

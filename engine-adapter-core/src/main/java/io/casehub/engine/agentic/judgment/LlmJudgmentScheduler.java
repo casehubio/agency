@@ -16,14 +16,13 @@
 package io.casehub.engine.agentic.judgment;
 
 import io.casehub.api.model.JudgmentTarget;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.engine.common.internal.event.JudgmentCompletedEvent;
 import io.casehub.engine.common.spi.JudgmentPayload;
 import io.casehub.engine.common.spi.JudgmentRequest;
 import io.casehub.engine.common.spi.JudgmentResponse;
 import io.casehub.engine.common.spi.JudgmentScheduleRequest;
 import io.casehub.engine.common.spi.JudgmentScheduler;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,13 +31,13 @@ public class LlmJudgmentScheduler implements JudgmentScheduler {
 
   private static final System.Logger LOG = System.getLogger(LlmJudgmentScheduler.class.getName());
 
-  private final Optional<ChatModelProvider> chatModelProvider;
+  private final Optional<AgentProvider> agentProvider;
   private final Consumer<JudgmentCompletedEvent> judgmentCompletedPublisher;
 
   public LlmJudgmentScheduler(
-      Optional<ChatModelProvider> chatModelProvider,
+      Optional<AgentProvider> agentProvider,
       Consumer<JudgmentCompletedEvent> judgmentCompletedPublisher) {
-    this.chatModelProvider = chatModelProvider;
+    this.agentProvider = agentProvider;
     this.judgmentCompletedPublisher = judgmentCompletedPublisher;
   }
 
@@ -57,9 +56,9 @@ public class LlmJudgmentScheduler implements JudgmentScheduler {
       return;
     }
 
-    if (chatModelProvider.isEmpty()) {
+    if (agentProvider.isEmpty()) {
       LOG.log(System.Logger.Level.WARNING, () ->
-          "No ChatModelProvider on classpath — cannot schedule LLM judgment for caseId=" + request.caseId()
+          "No AgentProvider on classpath — cannot schedule LLM judgment for caseId=" + request.caseId()
               + " binding=" + request.bindingName());
       return;
     }
@@ -78,23 +77,17 @@ public class LlmJudgmentScheduler implements JudgmentScheduler {
 
   private void executeLlmJudgment(JudgmentRequest request, JudgmentPayload.BindingPayload bp) {
     JudgmentTarget target = bp.target();
-    ChatModelProvider provider = chatModelProvider.get();
 
     String prompt = buildPrompt(target, bp);
 
     LOG.log(System.Logger.Level.INFO, () ->
         "Executing LLM judgment: caseId=" + request.caseId() + " binding=" + request.bindingName());
 
-    dev.langchain4j.model.chat.ChatModel chatModel = provider.get();
-    var messages = new ArrayList<dev.langchain4j.data.message.ChatMessage>();
-    messages.add(
-        dev.langchain4j.data.message.SystemMessage.from(
-            "You are a judgment evaluator. Review the context and respond with "
-                + "APPROVE if satisfactory, or REJECT followed by specific feedback."));
-    messages.add(dev.langchain4j.data.message.UserMessage.from(prompt));
-
-    dev.langchain4j.model.chat.response.ChatResponse chatResponse = chatModel.chat(messages);
-    String llmOutput = chatResponse.aiMessage().text();
+    String llmOutput = AgentText.invoke(
+        agentProvider.get(),
+        "You are a judgment evaluator. Review the context and respond with "
+            + "APPROVE if satisfactory, or REJECT followed by specific feedback.",
+        prompt);
 
     String modelName = "llm";
     JudgmentResponse response =

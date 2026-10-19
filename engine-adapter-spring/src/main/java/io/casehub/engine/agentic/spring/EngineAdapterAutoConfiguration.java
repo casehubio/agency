@@ -1,7 +1,7 @@
 package io.casehub.engine.agentic.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.api.spi.judgment.JudgmentVerifier;
 import io.casehub.engine.agentic.PatternCheckpointStore;
 import io.casehub.engine.agentic.PatternWorkerFunctionHandler;
@@ -38,11 +38,11 @@ public class EngineAdapterAutoConfiguration {
     public PatternWorkerFunctionHandler patternWorkerFunctionHandler(
             WorkerRuntimeFactory workerRuntimeFactory,
             PatternCheckpointStore checkpointStore,
-            Optional<ChatModelProvider> chatModelProvider,
+            Optional<AgentProvider> agentProvider,
             List<JudgmentVerifier> judgmentVerifiers) {
         return new PatternWorkerFunctionHandler(
                 workerRuntimeFactory, checkpointStore,
-                chatModelProvider, judgmentVerifiers);
+                agentProvider, judgmentVerifiers);
     }
 
     @Bean
@@ -52,16 +52,16 @@ public class EngineAdapterAutoConfiguration {
 
     @Bean
     public LlmEvaluationVerifier llmEvaluationVerifier(
-            Optional<ChatModelProvider> chatModelProvider) {
-        return new LlmEvaluationVerifier(chatModelProvider);
+            Optional<AgentProvider> agentProvider) {
+        return new LlmEvaluationVerifier(agentProvider);
     }
 
     @Bean
     public LlmJudgmentScheduler llmJudgmentScheduler(
-            Optional<ChatModelProvider> chatModelProvider,
+            Optional<AgentProvider> agentProvider,
             ApplicationEventPublisher publisher) {
         return new LlmJudgmentScheduler(
-                chatModelProvider,
+                agentProvider,
                 event -> publisher.publishEvent(event));
     }
 }

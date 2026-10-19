@@ -16,7 +16,7 @@
 package io.casehub.engine.agentic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.api.spi.judgment.JudgmentVerifier;
 import io.casehub.engine.agentic.judgment.LlmEvaluationVerifier;
 import io.casehub.engine.agentic.judgment.LlmJudgmentScheduler;
@@ -37,7 +37,7 @@ import java.util.stream.StreamSupport;
 @ApplicationScoped
 public class EngineAdapterBeans {
 
-  @Inject Instance<ChatModelProvider> chatModelProviderInstance;
+  @Inject Instance<AgentProvider> agentProviderInstance;
   @Inject Instance<JudgmentVerifier> judgmentVerifierInstance;
   @Inject EventBus eventBus;
 
@@ -61,7 +61,7 @@ public class EngineAdapterBeans {
     return new PatternWorkerFunctionHandler(
         workerRuntimeFactory,
         checkpointStore,
-        optionalFrom(chatModelProviderInstance),
+        optionalFrom(agentProviderInstance),
         listFrom(judgmentVerifierInstance));
   }
 
@@ -74,14 +74,14 @@ public class EngineAdapterBeans {
   @Produces
   @ApplicationScoped
   public LlmEvaluationVerifier llmEvaluationVerifier() {
-    return new LlmEvaluationVerifier(optionalFrom(chatModelProviderInstance));
+    return new LlmEvaluationVerifier(optionalFrom(agentProviderInstance));
   }
 
   @Produces
   @ApplicationScoped
   public LlmJudgmentScheduler llmJudgmentScheduler() {
     return new LlmJudgmentScheduler(
-        optionalFrom(chatModelProviderInstance),
+        optionalFrom(agentProviderInstance),
         event -> eventBus.publish(EventBusAddresses.JUDGMENT_COMPLETED, event));
   }
 
