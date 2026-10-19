@@ -15,23 +15,21 @@
  */
 package io.casehub.engine.agentic.judgment;
 
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.api.spi.judgment.Evidence;
 import io.casehub.api.spi.judgment.JudgmentVerifier;
 import io.casehub.api.spi.judgment.VerificationContext;
 import io.casehub.api.spi.judgment.VerificationResult;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class LlmEvaluationVerifier implements JudgmentVerifier {
 
   private static final System.Logger LOG = System.getLogger(LlmEvaluationVerifier.class.getName());
 
-  private final Optional<ChatModelProvider> chatModelProvider;
+  private final Optional<AgentProvider> agentProvider;
 
-  public LlmEvaluationVerifier(Optional<ChatModelProvider> chatModelProvider) {
-    this.chatModelProvider = chatModelProvider;
+  public LlmEvaluationVerifier(Optional<AgentProvider> agentProvider) {
+    this.agentProvider = agentProvider;
   }
 
   @Override
@@ -41,9 +39,9 @@ public class LlmEvaluationVerifier implements JudgmentVerifier {
 
   @Override
   public VerificationResult verify(VerificationContext context) {
-    if (chatModelProvider.isEmpty()) {
+    if (agentProvider.isEmpty()) {
       LOG.log(System.Logger.Level.WARNING,
-          "No ChatModelProvider on classpath — accepting response without LLM evaluation");
+          "No AgentProvider on classpath — accepting response without LLM evaluation");
       return new VerificationResult.Accepted();
     }
 
@@ -56,22 +54,14 @@ public class LlmEvaluationVerifier implements JudgmentVerifier {
   }
 
   private VerificationResult evaluate(VerificationContext context) {
-    ChatModelProvider provider = chatModelProvider.get();
-    dev.langchain4j.model.chat.ChatModel chatModel = provider.get();
-
     String evaluationPrompt = buildEvaluationPrompt(context);
-
-    List<dev.langchain4j.data.message.ChatMessage> messages = new ArrayList<>();
-    messages.add(
-        dev.langchain4j.data.message.SystemMessage.from(
-            "You are a judgment quality evaluator. Assess whether the response adequately "
-                + "addresses the judgment prompt. Respond with ACCEPT if the response is adequate, "
-                + "or REJECT followed by a brief reason if it is not. "
-                + "Only respond with one of these two formats."));
-    messages.add(dev.langchain4j.data.message.UserMessage.from(evaluationPrompt));
-
-    dev.langchain4j.model.chat.response.ChatResponse chatResponse = chatModel.chat(messages);
-    String evaluation = chatResponse.aiMessage().text().trim();
+    String evaluation = AgentText.invoke(
+        agentProvider.get(),
+        "You are a judgment quality evaluator. Assess whether the response adequately "
+            + "addresses the judgment prompt. Respond with ACCEPT if the response is adequate, "
+            + "or REJECT followed by a brief reason if it is not. "
+            + "Only respond with one of these two formats.",
+        evaluationPrompt).trim();
 
     if (evaluation.toUpperCase().startsWith("ACCEPT")) {
       return new VerificationResult.Accepted();

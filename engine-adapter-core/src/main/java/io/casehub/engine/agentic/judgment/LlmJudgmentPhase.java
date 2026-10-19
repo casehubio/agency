@@ -19,32 +19,31 @@ import io.casehub.api.spi.judgment.CallerConfig;
 import io.casehub.api.spi.judgment.CallerIdentity;
 import io.casehub.api.spi.judgment.Evidence;
 import io.casehub.api.spi.judgment.EvidenceType;
-import io.casehub.api.model.ai.ChatModelProvider;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.blocks.agentic.aggregation.AggregationResult;
 import io.casehub.blocks.agentic.judgment.JudgmentContext;
 import io.casehub.blocks.agentic.judgment.JudgmentDecision;
 import io.casehub.blocks.agentic.judgment.JudgmentPhase;
-import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 public class LlmJudgmentPhase<T> implements JudgmentPhase<T> {
 
-  private final ChatModelProvider chatModelProvider;
+  private final AgentProvider agentProvider;
   private final PatternJudgmentConfig config;
   private final io.casehub.api.spi.judgment.JudgmentVerifier verifier;
 
   public LlmJudgmentPhase(
-      ChatModelProvider chatModelProvider,
+      AgentProvider agentProvider,
       PatternJudgmentConfig config,
       io.casehub.api.spi.judgment.JudgmentVerifier verifier) {
-    this.chatModelProvider = chatModelProvider;
+    this.agentProvider = agentProvider;
     this.config = config;
     this.verifier = verifier;
   }
 
-  public LlmJudgmentPhase(ChatModelProvider chatModelProvider, PatternJudgmentConfig config) {
-    this(chatModelProvider, config, null);
+  public LlmJudgmentPhase(AgentProvider agentProvider, PatternJudgmentConfig config) {
+    this(agentProvider, config, null);
   }
 
   @Override
@@ -58,24 +57,14 @@ public class LlmJudgmentPhase<T> implements JudgmentPhase<T> {
   }
 
   private JudgmentDecision doEvaluate(JudgmentContext<T> context) {
-    var chatModel = chatModelProvider.get();
     String prompt = buildPrompt(context);
-
-    var messages = new ArrayList<dev.langchain4j.data.message.ChatMessage>();
-    if (config.callerConfig() instanceof CallerConfig.Llm llm && llm.systemPrompt() != null) {
-      messages.add(dev.langchain4j.data.message.SystemMessage.from(llm.systemPrompt()));
-    } else {
-      messages.add(
-          dev.langchain4j.data.message.SystemMessage.from(
-              "You are a judgment evaluator. Review the work output and respond with "
-                  + "APPROVE if the output is satisfactory, or REJECT followed by specific "
-                  + "feedback if it needs improvement. Only respond with one of these two "
-                  + "formats."));
-    }
-    messages.add(dev.langchain4j.data.message.UserMessage.from(prompt));
-
-    var chatResponse = chatModel.chat(messages);
-    String llmOutput = chatResponse.aiMessage().text().trim();
+    String systemPrompt =
+        config.callerConfig() instanceof CallerConfig.Llm llm && llm.systemPrompt() != null
+            ? llm.systemPrompt()
+            : "You are a judgment evaluator. Review the work output and respond with "
+                + "APPROVE if the output is satisfactory, or REJECT followed by specific "
+                + "feedback if it needs improvement. Only respond with one of these two formats.";
+    String llmOutput = AgentText.invoke(agentProvider, systemPrompt, prompt).trim();
 
     var evidence = List.of(Evidence.of("llm-reasoning", EvidenceType.REASONING, llmOutput));
     var callerIdentity = buildCallerIdentity();
