@@ -47,6 +47,6 @@
     </dependencies>
 
     <!-- verify-drift: run manually until spring-generator is published to GitHub Packages:
-         mvn io.casehub:casehub-platform-spring-generator:0.2-SNAPSHOT:verify -DquarkusModule=../engine-adapter
+         mvn io.casehub:casehub-platform-spring-generator:0.4-SNAPSHOT:verify -DquarkusModule=../engine-adapter
     -->
 </project>
