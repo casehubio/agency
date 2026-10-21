@@ -350,7 +350,7 @@ public class BlocksBeans {
                                      nullableFrom(goalProposalOrchestratorInstance),
                                      hygieneAdapterForCore,
                                      nullableFrom(innerLifeOrchestratorInstance),
-                                     null, io.casehub.neocortex.cognition.core.CognitionConfig.all(),
+                                     io.casehub.neocortex.cognition.core.CognitionConfig.all(),
                                      nullableFrom(mindMapStoreInstance), null,
                                      nullableFrom(attentionMediatorInstance),
                                      optionalFrom(engagementRecorderInstance)
