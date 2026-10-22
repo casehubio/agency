@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.termination.TerminationContext
+# io.casehub.agency.orchestration.termination.TerminationContext
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `record`
 
@@ -10,7 +10,7 @@
 
 ### `iterationCount` (`int`)
 
-### `results` (`java.util.List<io.casehub.agency.agentic.AgentResult>`)
+### `results` (`java.util.List<io.casehub.agency.core.AgentResult>`)
 
 ### `state` (`T`)
 
@@ -20,20 +20,20 @@
 
 ### `iterationCount` (`int`)
 
-### `results` (`java.util.List<io.casehub.agency.agentic.AgentResult>`)
+### `results` (`java.util.List<io.casehub.agency.core.AgentResult>`)
 
 ### `state` (`T`)
 
 ## Constructors
 
-### `public TerminationContext(T state, int iterationCount, java.time.Duration elapsed, java.util.List<io.casehub.agency.agentic.AgentResult> results)`
+### `public TerminationContext(T state, int iterationCount, java.time.Duration elapsed, java.util.List<io.casehub.agency.core.AgentResult> results)`
 
 #### Parameters
 
 - `state` (`T`)
 - `iterationCount` (`int`)
 - `elapsed` (`java.time.Duration`)
-- `results` (`java.util.List<io.casehub.agency.agentic.AgentResult>`)
+- `results` (`java.util.List<io.casehub.agency.core.AgentResult>`)
 
 ## Methods
 
@@ -49,7 +49,7 @@
 
 ### `public int iterationCount()`
 
-### `public java.util.List<io.casehub.agency.agentic.AgentResult> results()`
+### `public java.util.List<io.casehub.agency.core.AgentResult> results()`
 
 ### `public T state()`
 

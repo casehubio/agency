@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.AcceptancePolicySpec;
-import io.casehub.agency.negotiation.AcceptancePolicy;
-import io.casehub.agency.negotiation.MajorityAcceptance;
-import io.casehub.agency.negotiation.ThresholdAcceptance;
-import io.casehub.agency.negotiation.UnanimousAcceptance;
+import io.casehub.agency.core.yaml.spec.AcceptancePolicySpec;
+import io.casehub.agency.deliberation.negotiation.AcceptancePolicy;
+import io.casehub.agency.deliberation.negotiation.MajorityAcceptance;
+import io.casehub.agency.deliberation.negotiation.ThresholdAcceptance;
+import io.casehub.agency.deliberation.negotiation.UnanimousAcceptance;
 
 public class AcceptancePolicyRegistry {
     public AcceptancePolicy resolve(AcceptancePolicySpec spec) {

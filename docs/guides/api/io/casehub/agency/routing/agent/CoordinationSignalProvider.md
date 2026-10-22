@@ -1,20 +1,20 @@
-# io.casehub.agency.routing.agent.CoordinationSignalProvider
+# io.casehub.agency.governance.routing.agent.CoordinationSignalProvider
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
 ## Fields
 
-### `outcomeWeights` (`io.casehub.agency.routing.agent.CoordinationOutcomeWeights`)
+### `outcomeWeights` (`io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights`)
 
 ## Constructors
 
-### `public CoordinationSignalProvider(io.casehub.agency.routing.agent.CoordinationOutcomeWeights outcomeWeights)`
+### `public CoordinationSignalProvider(io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights outcomeWeights)`
 
 #### Parameters
 
-- `outcomeWeights` (`io.casehub.agency.routing.agent.CoordinationOutcomeWeights`)
+- `outcomeWeights` (`io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights`)
 
 ## Methods
 

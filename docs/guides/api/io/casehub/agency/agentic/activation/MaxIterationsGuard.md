@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.activation.MaxIterationsGuard
+# io.casehub.agency.orchestration.activation.MaxIterationsGuard
 
-**Package:** `io.casehub.agency.agentic.activation`
+**Package:** `io.casehub.agency.orchestration.activation`
 
 **Kind:** `class`
 
@@ -18,8 +18,8 @@
 
 ## Methods
 
-### `public Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.agentic.activation.ActivationContext<T> context)`
+### `public Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.orchestration.activation.ActivationContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.activation.ActivationContext<T>`)
+- `context` (`io.casehub.agency.orchestration.activation.ActivationContext<T>`)

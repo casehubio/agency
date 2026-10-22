@@ -1,12 +1,12 @@
-# io.casehub.agency.conversation.ConvergencePolicies
+# io.casehub.agency.deliberation.conversation.ConvergencePolicies
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
 ## Fields
 
-### `TIEBREAKER` (`java.util.Comparator<io.casehub.agency.conversation.ConvergenceSignal>`)
+### `TIEBREAKER` (`java.util.Comparator<io.casehub.agency.deliberation.conversation.ConvergenceSignal>`)
 
 ## Constructors
 
@@ -14,26 +14,26 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.ConvergencePolicy commonGroundRatio(double consensusThreshold, double deadlockDisputeRatio)`
+### `public static io.casehub.agency.deliberation.conversation.ConvergencePolicy commonGroundRatio(double consensusThreshold, double deadlockDisputeRatio)`
 
 #### Parameters
 
 - `consensusThreshold` (`double`)
 - `deadlockDisputeRatio` (`double`)
 
-### `public static io.casehub.agency.conversation.ConvergencePolicy composite(io.casehub.agency.conversation.ConvergencePolicy[] policies)`
+### `public static io.casehub.agency.deliberation.conversation.ConvergencePolicy composite(io.casehub.agency.deliberation.conversation.ConvergencePolicy[] policies)`
 
 #### Parameters
 
-- `policies` (`io.casehub.agency.conversation.ConvergencePolicy[]`)
+- `policies` (`io.casehub.agency.deliberation.conversation.ConvergencePolicy[]`)
 
-### `private static int severity(io.casehub.agency.conversation.ConvergenceState state)`
+### `private static int severity(io.casehub.agency.deliberation.conversation.ConvergenceState state)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConvergenceState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
-### `public static io.casehub.agency.conversation.ConvergencePolicy structural(double similarityThreshold, int staleRounds)`
+### `public static io.casehub.agency.deliberation.conversation.ConvergencePolicy structural(double similarityThreshold, int staleRounds)`
 
 #### Parameters
 

@@ -227,16 +227,16 @@ The compiler validates the shape name against the known set. This is a thin conf
 
 | Type | Package |
 |------|---------|
-| `AgentParticipantSpec` | `io.casehub.agency.agentic.yaml.spec` (shared) |
-| `ChannelBindingSpec` | `io.casehub.agency.agentic.yaml.spec` |
-| `ChannelExecutionStrategySpec` | `io.casehub.agency.agentic.yaml.spec` |
-| `ConversationProtocolSpec` | `io.casehub.agency.agentic.yaml.spec` |
-| `ProgressRendererSpec` | `io.casehub.agency.agentic.yaml.spec` |
-| `TerminationSpec.Accepted/TerminalOutcome/Deadline` | `io.casehub.agency.agentic.yaml.spec` (existing) |
-| `ConversationCompiler` | `io.casehub.agency.agentic.yaml.compiler` |
-| `CompiledConversation` | `io.casehub.agency.agentic.yaml.compiler` |
-| `NegotiationCompiler` | `io.casehub.agency.agentic.yaml.compiler` |
-| `CompiledNegotiation` | `io.casehub.agency.agentic.yaml.compiler` |
+| `AgentParticipantSpec` | `io.casehub.agency.core.yaml.spec` (shared) |
+| `ChannelBindingSpec` | `io.casehub.agency.core.yaml.spec` |
+| `ChannelExecutionStrategySpec` | `io.casehub.agency.core.yaml.spec` |
+| `ConversationProtocolSpec` | `io.casehub.agency.core.yaml.spec` |
+| `ProgressRendererSpec` | `io.casehub.agency.core.yaml.spec` |
+| `TerminationSpec.Accepted/TerminalOutcome/Deadline` | `io.casehub.agency.core.yaml.spec` (existing) |
+| `ConversationCompiler` | `io.casehub.agency.core.yaml.compiler` |
+| `CompiledConversation` | `io.casehub.agency.core.yaml.compiler` |
+| `NegotiationCompiler` | `io.casehub.agency.core.yaml.compiler` |
+| `CompiledNegotiation` | `io.casehub.agency.core.yaml.compiler` |
 
 New spec records go in the existing `spec` package (not a sub-package) since they're
 shared across pattern types, like `ConversationSpec` and `NegotiationSpec` already are.

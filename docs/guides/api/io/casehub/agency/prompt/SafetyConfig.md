@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.SafetyConfig
+# io.casehub.agency.optimisation.prompt.SafetyConfig
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
@@ -44,7 +44,7 @@
 
 ### `public int circuitBreakerThreshold()`
 
-### `public static io.casehub.agency.prompt.SafetyConfig defaults()`
+### `public static io.casehub.agency.optimisation.prompt.SafetyConfig defaults()`
 
 ### `public boolean enabled()`
 

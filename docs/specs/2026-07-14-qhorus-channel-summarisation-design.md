@@ -201,7 +201,7 @@ would add an `Accumulator<E>` interface where
 simple runners is more honest than one polymorphic runner that fights
 different return shapes.
 
-#### 3. `ChannelEventAdapter<E>` — `io.casehub.agency.channel`
+#### 3. `ChannelEventAdapter<E>` — `io.casehub.agency.communication.dispatch`
 
 Direction 1. Implements `MessageObserver`, extracts domain events,
 publishes to an `EventStreamBus`.
@@ -250,7 +250,7 @@ public class ChannelEventAdapter<E> implements MessageObserver {
   already supports this — returning channel names means the observer
   only receives events for those channels.
 
-#### 4. `ChannelEventPublisher<E>` — `io.casehub.agency.channel`
+#### 4. `ChannelEventPublisher<E>` — `io.casehub.agency.communication.dispatch`
 
 Direction 2. Subscribes to an `EventStreamBus`, converts events to
 `MessageDispatch`, dispatches via `MessageDispatcher`. Best-effort.

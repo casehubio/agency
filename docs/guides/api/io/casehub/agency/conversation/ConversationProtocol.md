@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConversationProtocol
+# io.casehub.agency.deliberation.conversation.ConversationProtocol
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 

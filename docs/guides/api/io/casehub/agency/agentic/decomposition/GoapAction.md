@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.decomposition.GoalOrientedDecomposition.GoapAction
+# io.casehub.agency.orchestration.decomposition.GoalOrientedDecomposition.GoapAction
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `record`
 
 ## Fields
 
-### `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+### `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 
 ### `capability` (`AgentCapability`)
 
@@ -16,7 +16,7 @@
 
 ## Record Components
 
-### `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+### `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 
 ### `capability` (`AgentCapability`)
 
@@ -26,18 +26,18 @@
 
 ## Constructors
 
-### `private GoapAction(io.casehub.agency.agentic.RoutingCandidate candidate, AgentCapability capability, java.util.Set<java.lang.String> preconditions, java.util.Set<java.lang.String> effects)`
+### `private GoapAction(io.casehub.agency.core.RoutingCandidate candidate, AgentCapability capability, java.util.Set<java.lang.String> preconditions, java.util.Set<java.lang.String> effects)`
 
 #### Parameters
 
-- `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+- `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 - `capability` (`AgentCapability`)
 - `preconditions` (`java.util.Set<java.lang.String>`)
 - `effects` (`java.util.Set<java.lang.String>`)
 
 ## Methods
 
-### `public io.casehub.agency.agentic.RoutingCandidate candidate()`
+### `public io.casehub.agency.core.RoutingCandidate candidate()`
 
 ### `public AgentCapability capability()`
 

@@ -1,7 +1,7 @@
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.aggregation.AggregationStrategy;
-import io.casehub.agency.agentic.aggregation.MajorityVote;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.aggregation.MajorityVote;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

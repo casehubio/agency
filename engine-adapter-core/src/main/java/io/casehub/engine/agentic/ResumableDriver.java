@@ -15,12 +15,12 @@
  */
 package io.casehub.engine.agentic;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.model.ExecutionModel;
-import io.casehub.agency.agentic.model.ExecutionResult;
-import io.casehub.agency.agentic.model.ExecutionState;
-import io.casehub.agency.agentic.model.OrchestratedDriver;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.ExecutionResult;
+import io.casehub.agency.orchestration.execution.ExecutionState;
+import io.casehub.agency.orchestration.execution.OrchestratedDriver;
 import io.casehub.engine.plan.execution.PatternExecutionCheckpoint;
 
 import java.time.Duration;
@@ -34,7 +34,7 @@ public class ResumableDriver<T> extends OrchestratedDriver<T> {
   private final PatternExecutionCheckpoint checkpoint;
 
   public ResumableDriver(
-      io.casehub.agency.agentic.model.AgentInvoker<T> invoker,
+      io.casehub.agency.orchestration.execution.AgentInvoker<T> invoker,
       PatternExecutionCheckpoint checkpoint) {
     super(invoker);
     this.checkpoint = checkpoint;

@@ -18,17 +18,17 @@ class CustomizeAnnotationStep {
     static final DotName CUSTOMIZE = DotName.createSimple("io.casehub.engine.annotations.Customize");
 
     static final DotName ABSTRACT_PATTERN_BUILDER =
-            DotName.createSimple("io.casehub.agency.agentic.pattern.AbstractPatternBuilder");
+            DotName.createSimple("io.casehub.agency.orchestration.pattern.AbstractPatternBuilder");
 
     static final Map<String, DotName> BUILDER_TO_PATTERN = Map.of(
-            "io.casehub.agency.agentic.pattern.SupervisorBuilder", PatternAnnotationStep.SUPERVISOR,
-            "io.casehub.agency.agentic.pattern.SequenceBuilder", PatternAnnotationStep.SEQUENCE,
-            "io.casehub.agency.agentic.pattern.ParallelBuilder", PatternAnnotationStep.PARALLEL,
-            "io.casehub.agency.agentic.pattern.LoopBuilder", PatternAnnotationStep.LOOP,
-            "io.casehub.agency.agentic.pattern.ConditionalBuilder", PatternAnnotationStep.CONDITIONAL,
-            "io.casehub.agency.agentic.pattern.DebateBuilder", PatternAnnotationStep.DEBATE,
-            "io.casehub.agency.agentic.pattern.VotingBuilder", PatternAnnotationStep.VOTING,
-            "io.casehub.agency.agentic.pattern.HtnBuilder", PatternAnnotationStep.HTN
+            "io.casehub.agency.orchestration.pattern.SupervisorBuilder", PatternAnnotationStep.SUPERVISOR,
+            "io.casehub.agency.orchestration.pattern.SequenceBuilder", PatternAnnotationStep.SEQUENCE,
+            "io.casehub.agency.orchestration.pattern.ParallelBuilder", PatternAnnotationStep.PARALLEL,
+            "io.casehub.agency.orchestration.pattern.LoopBuilder", PatternAnnotationStep.LOOP,
+            "io.casehub.agency.orchestration.pattern.ConditionalBuilder", PatternAnnotationStep.CONDITIONAL,
+            "io.casehub.agency.orchestration.pattern.DebateBuilder", PatternAnnotationStep.DEBATE,
+            "io.casehub.agency.orchestration.pattern.VotingBuilder", PatternAnnotationStep.VOTING,
+            "io.casehub.agency.orchestration.pattern.HtnBuilder", PatternAnnotationStep.HTN
     );
 
     static final Set<String> NON_CDI_PACKAGES = Set.of(

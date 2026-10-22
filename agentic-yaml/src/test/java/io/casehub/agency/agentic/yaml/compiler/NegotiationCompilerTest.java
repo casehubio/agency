@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.registry.TerminationConditionRegistry;
-import io.casehub.agency.agentic.yaml.spec.NegotiationSpec;
+import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
+import io.casehub.agency.core.yaml.spec.NegotiationSpec;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

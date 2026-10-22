@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.routing.StageGate
+# io.casehub.agency.orchestration.routing.StageGate
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `interface`
 

@@ -399,7 +399,7 @@ public interface GovernedReviewCase {
 - The `@Customize` method must be `static` and accept exactly one parameter — the parameter type determines what is customized
 - `CaseDefinition.Builder` — customizes the generated case definition (access to all ~40 fields). `value()` is ignored.
 - `Binding.Builder` — customizes a specific binding. `value()` is **required** and must name the `@Bind`-annotated method whose binding is being customized. The build extension emits a compile error if `value()` is empty or names a method without `@Bind`.
-- Pattern builder (e.g., `DebateBuilder<T>`, `SupervisorBuilder<T>`, `HtnBuilder<T>`) — customizes the generated execution model. The build extension determines the expected builder type from the orchestration annotation on the interface. `value()` is **required** and must name the orchestration method being customized. Provides full access to the pattern builder's SPIs: routing, decomposition, activation, aggregation, termination, listeners, backend. There is no `ExecutionModel.Builder` — each pattern has its own concrete builder in `io.casehub.agency.agentic.pattern`.
+- Pattern builder (e.g., `DebateBuilder<T>`, `SupervisorBuilder<T>`, `HtnBuilder<T>`) — customizes the generated execution model. The build extension determines the expected builder type from the orchestration annotation on the interface. `value()` is **required** and must name the orchestration method being customized. Provides full access to the pattern builder's SPIs: routing, decomposition, activation, aggregation, termination, listeners, backend. There is no `ExecutionModel.Builder` — each pattern has its own concrete builder in `io.casehub.agency.orchestration.pattern`.
 - The build extension calls the customizer after processing all annotations, so annotation-set values are already on the builder
 - Multiple `@Customize` methods are allowed — `@Repeatable` supports customizing multiple bindings or combining case + binding customizers
 
@@ -807,7 +807,7 @@ public @interface OnFailure {
 
 Composable failure policy for any orchestration annotation. Maps directly to `FailurePolicy` record fields. Without `@OnFailure`, `FailurePolicy.defaults()` applies (3 retries, fixed 1s backoff, FAIL on exhaustion).
 
-**Type mapping:** `RoutingFailureAction` (`FAIL`, `RETRY_BROADER`, `ESCALATE`), `AggregationFailureAction` (`FAIL`, `ESCALATE`, `RETRY_DIFFERENT`), `BackoffStrategy` (`FIXED`, `EXPONENTIAL`, `EXPONENTIAL_WITH_JITTER`), `AgentFailureAction` (`FAIL`, `ESCALATE`, `SKIP`) — all existing enums nested in `io.casehub.agency.agentic.FailurePolicy`.
+**Type mapping:** `RoutingFailureAction` (`FAIL`, `RETRY_BROADER`, `ESCALATE`), `AggregationFailureAction` (`FAIL`, `ESCALATE`, `RETRY_DIFFERENT`), `BackoffStrategy` (`FIXED`, `EXPONENTIAL`, `EXPONENTIAL_WITH_JITTER`), `AgentFailureAction` (`FAIL`, `ESCALATE`, `SKIP`) — all existing enums nested in `io.casehub.agency.core.FailurePolicy`.
 
 **Build extension mapping to `FailurePolicy`:** The build extension applies conditional logic when constructing `FailurePolicy` from `@OnFailure`:
 - `maxReplans == 0` → `replanPolicy = null` (no replanning — uses `FailurePolicy` 3-arg constructor)
@@ -907,7 +907,7 @@ public interface ComplianceReview {
 
 This is ~25 lines for a governed multi-agent debate with oversight, trust routing, attestation, failure policy, and judge-driven convergence. The `@Judge` parameter creates `JudgeConvergence` termination automatically — no explicit `@Convergence` needed. The builder equivalent is 60+ lines.
 
-**`AgentRef` parameter wiring:** The build extension resolves `@Debater`/`@Judge`-annotated `AgentRef` parameters into agent instances at build time. For each annotated parameter, the extension generates an `AgentRef.WorkerAgent` wrapping an LC4j-generated AI service configured with the annotation's `systemPrompt` and the interface's `@ChatModelSupplier`. The `role` attribute maps to the agent's identity within the debate pattern. CDI injection provides the resolved `AgentRef` instances at runtime. `AgentRef` is a sealed interface (`io.casehub.agency.agentic.AgentRef`) with 5 variants: `WorkerAgent`, `ChannelAgent`, `HumanAgent`, `ExternalAgent`, `ComposedAgent`.
+**`AgentRef` parameter wiring:** The build extension resolves `@Debater`/`@Judge`-annotated `AgentRef` parameters into agent instances at build time. For each annotated parameter, the extension generates an `AgentRef.WorkerAgent` wrapping an LC4j-generated AI service configured with the annotation's `systemPrompt` and the interface's `@ChatModelSupplier`. The `role` attribute maps to the agent's identity within the debate pattern. CDI injection provides the resolved `AgentRef` instances at runtime. `AgentRef` is a sealed interface (`io.casehub.agency.core.AgentRef`) with 5 variants: `WorkerAgent`, `ChannelAgent`, `HumanAgent`, `ExternalAgent`, `ComposedAgent`.
 
 ### Example: composing governance onto LC4j annotations
 
@@ -1104,13 +1104,13 @@ Changes to contribute upstream that benefit both CaseHub and the broader ecosyst
 
 **Upstream migration path:** When LC4j accepts an upstream candidate (e.g., `@DebateAgent`), the migration follows three stages:
 
-1. **Deprecate** — CaseHub's `io.casehub.agency.agentic.DebateAgent` is marked `@Deprecated` with a `forRemoval = true` and `since` pointing to the LC4j version that includes the upstream equivalent. The build extension emits a compile-time warning for all usages.
+1. **Deprecate** — CaseHub's `io.casehub.agency.core.DebateAgent` is marked `@Deprecated` with a `forRemoval = true` and `since` pointing to the LC4j version that includes the upstream equivalent. The build extension emits a compile-time warning for all usages.
 
 2. **Bridge** — CaseHub's build extension recognises BOTH the CaseHub annotation and the LC4j annotation for one release cycle. CaseHub-specific attributes that LC4j does not adopt (e.g., `@Convergence` if LC4j ships a simpler convergence model) become composable annotations that work alongside the LC4j annotation:
    ```java
    // Before: CaseHub-only
-   @io.casehub.agency.agentic.DebateAgent(maxRounds = 5)
-   @io.casehub.agency.conversation.Convergence(strategy = ConvergenceStrategy.STRUCTURAL, threshold = 0.85)
+   @io.casehub.agency.core.DebateAgent(maxRounds = 5)
+   @io.casehub.agency.deliberation.conversation.Convergence(strategy = ConvergenceStrategy.STRUCTURAL, threshold = 0.85)
 
    // After: LC4j base + CaseHub extension
    @dev.langchain4j.agentic.DebateAgent(maxRounds = 5)

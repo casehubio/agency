@@ -1,6 +1,6 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.Audio8ConfigSpec;
+import io.casehub.agency.core.yaml.spec.Audio8ConfigSpec;
 import io.casehub.agency.speech.sherpa.Audio8Config;
 
 import java.nio.file.Path;

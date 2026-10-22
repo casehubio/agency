@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ChoreographedDriver
+# io.casehub.agency.orchestration.execution.ChoreographedDriver
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `class`
 
@@ -27,17 +27,17 @@ runtime dispatch integration is deferred to a later task.
 
 ### `public ChoreographedDriver()`
 
-### `public ChoreographedDriver(io.casehub.agency.agentic.model.AgentInvoker<T> invoker)`
+### `public ChoreographedDriver(io.casehub.agency.orchestration.execution.AgentInvoker<T> invoker)`
 
 #### Parameters
 
-- `invoker` (`io.casehub.agency.agentic.model.AgentInvoker<T>`)
+- `invoker` (`io.casehub.agency.orchestration.execution.AgentInvoker<T>`)
 
 ## Methods
 
-### `protected Uni<io.casehub.agency.agentic.model.ExecutionResult> runLoop(io.casehub.agency.agentic.model.ExecutionModel<T> model, T context)`
+### `protected Uni<io.casehub.agency.orchestration.execution.ExecutionResult> runLoop(io.casehub.agency.orchestration.execution.ExecutionModel<T> model, T context)`
 
 #### Parameters
 
-- `model` (`io.casehub.agency.agentic.model.ExecutionModel<T>`)
+- `model` (`io.casehub.agency.orchestration.execution.ExecutionModel<T>`)
 - `context` (`T`)

@@ -1,16 +1,16 @@
-# io.casehub.agency.conversation.Priority
+# io.casehub.agency.deliberation.conversation.Priority
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `HIGH` (`io.casehub.agency.conversation.Priority`)
+### `HIGH` (`io.casehub.agency.deliberation.conversation.Priority`)
 
-### `LOW` (`io.casehub.agency.conversation.Priority`)
+### `LOW` (`io.casehub.agency.deliberation.conversation.Priority`)
 
-### `MEDIUM` (`io.casehub.agency.conversation.Priority`)
+### `MEDIUM` (`io.casehub.agency.deliberation.conversation.Priority`)
 
 ## Constructors
 
@@ -18,10 +18,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.Priority valueOf(java.lang.String name)`
+### `public static io.casehub.agency.deliberation.conversation.Priority valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.conversation.Priority[] values()`
+### `public static io.casehub.agency.deliberation.conversation.Priority[] values()`

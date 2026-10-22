@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.decomposition.CapabilityDependencyDecomposition;
-import io.casehub.agency.agentic.decomposition.IdentityDecomposition;
-import io.casehub.agency.agentic.yaml.spec.DecompositionSpec;
+import io.casehub.agency.orchestration.decomposition.CapabilityDependencyDecomposition;
+import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
+import io.casehub.agency.core.yaml.spec.DecompositionSpec;
 import io.casehub.engine.plan.DecompositionStrategy;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;

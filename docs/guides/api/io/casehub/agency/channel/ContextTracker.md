@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ContextTracker
+# io.casehub.agency.communication.dispatch.ContextTracker
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 
@@ -39,7 +39,7 @@ Thread-safe via atomic counters.
 
 - `percent` (`double`)
 
-### `public io.casehub.agency.channel.ContextSnapshot snapshot(long windowSizeChars, double thresholdPercent)`
+### `public io.casehub.agency.communication.dispatch.ContextSnapshot snapshot(long windowSizeChars, double thresholdPercent)`
 
 #### Parameters
 

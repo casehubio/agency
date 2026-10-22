@@ -1,15 +1,15 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.compiler.CognitionCompiler;
-import io.casehub.agency.agentic.yaml.compiler.ObservationFilterRegistry;
-import io.casehub.agency.agentic.yaml.compiler.PatternCompiler;
-import io.casehub.agency.agentic.yaml.compiler.WorldCompiler;
-import io.casehub.agency.agentic.yaml.spec.PatternSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
+import io.casehub.agency.core.yaml.compiler.PatternCompiler;
+import io.casehub.agency.core.yaml.compiler.WorldCompiler;
+import io.casehub.agency.core.yaml.spec.PatternSpec;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.agency.summarisation.yaml.PipelineCompiler;
 import io.casehub.agency.summarisation.yaml.PipelineDefinition;
 import io.casehub.agency.summarisation.yaml.SummariserFactory;

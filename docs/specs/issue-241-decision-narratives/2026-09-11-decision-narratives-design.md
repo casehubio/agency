@@ -204,7 +204,7 @@ through to the stateless path. No behaviour change for existing code.
 
 ## DecisionSignal sealed hierarchy
 
-Package: `io.casehub.agency.summarisation.narrative`
+Package: `io.casehub.agency.perception.narrative`
 
 ```java
 public sealed interface DecisionSignal

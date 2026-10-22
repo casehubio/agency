@@ -3,33 +3,33 @@ package io.casehub.agency.spring;
 import io.casehub.api.spi.routing.RoutingPromptAssembler;
 import io.casehub.api.spi.routing.RoutingSignalAssembler;
 import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
-import io.casehub.agency.attestation.NoOpAttestationIntentWriter;
-import io.casehub.agency.channel.summary.ChannelSummariser;
-import io.casehub.agency.channel.summary.HeuristicMessageSummariser;
-import io.casehub.agency.channel.summary.NoOpThreadSummaryStore;
-import io.casehub.agency.channel.summary.ThreadSummaryObserver;
-import io.casehub.agency.memory.MemoryHygieneOrchestrator;
-import io.casehub.agency.memory.NoOpReflectionQueryStore;
-import io.casehub.agency.memory.NoOpReflectionStore;
-import io.casehub.agency.memory.NoOpSemanticIntegrityChecker;
-import io.casehub.agency.memory.ReflectionQueryStore;
-import io.casehub.agency.prompt.SystemPromptCustomiser;
-import io.casehub.agency.routing.agent.CbrAgentRoutingStrategy;
-import io.casehub.agency.routing.agent.CbrCaseOutcomeWeights;
-import io.casehub.agency.routing.agent.CbrOutcomeWeights;
-import io.casehub.agency.routing.agent.CbrRoutingPromptSection;
-import io.casehub.agency.routing.agent.CoordinationOutcomeWeights;
-import io.casehub.agency.routing.agent.CoordinationSignalProvider;
-import io.casehub.agency.routing.agent.DefaultCbrCaseOutcomeWeights;
-import io.casehub.agency.routing.agent.DefaultCbrOutcomeWeights;
-import io.casehub.agency.routing.agent.DefaultCoordinationOutcomeWeights;
-import io.casehub.agency.routing.agent.DispositionAwareRouting;
-import io.casehub.agency.routing.agent.LlmAgentRoutingStrategy;
-import io.casehub.agency.routing.agent.PlanCompositionAnalyser;
-import io.casehub.agency.routing.agent.PredecessorAnalyser;
+import io.casehub.agency.governance.attestation.NoOpAttestationIntentWriter;
+import io.casehub.agency.communication.channel.summary.ChannelSummariser;
+import io.casehub.agency.communication.channel.summary.HeuristicMessageSummariser;
+import io.casehub.agency.communication.channel.summary.NoOpThreadSummaryStore;
+import io.casehub.agency.communication.channel.summary.ThreadSummaryObserver;
+import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
+import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
+import io.casehub.agency.social.memory.NoOpReflectionStore;
+import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
+import io.casehub.agency.social.memory.ReflectionQueryStore;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
+import io.casehub.agency.governance.routing.agent.CbrAgentRoutingStrategy;
+import io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.CbrOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.CbrRoutingPromptSection;
+import io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.CoordinationSignalProvider;
+import io.casehub.agency.governance.routing.agent.DefaultCbrCaseOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.DefaultCbrOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.DefaultCoordinationOutcomeWeights;
+import io.casehub.agency.governance.routing.agent.DispositionAwareRouting;
+import io.casehub.agency.governance.routing.agent.LlmAgentRoutingStrategy;
+import io.casehub.agency.governance.routing.agent.PlanCompositionAnalyser;
+import io.casehub.agency.governance.routing.agent.PredecessorAnalyser;
 import io.casehub.agency.summarisation.ContentSummariser;
-import io.casehub.agency.summarisation.narrative.DecisionNarrativePipeline;
-import io.casehub.agency.summarisation.narrative.DecisionNarrativeSummariser;
+import io.casehub.agency.perception.narrative.DecisionNarrativePipeline;
+import io.casehub.agency.perception.narrative.DecisionNarrativeSummariser;
 import io.casehub.eidos.api.AgentGraphQuery;
 import io.casehub.eidos.api.AgentRegistry;
 import io.casehub.eidos.api.DispositionEvolution;
@@ -254,7 +254,7 @@ public class AgencyAutoConfiguration {
             DriveComposer composer, DriveConfig config,
             Optional<NarrativeOrchestrator> narrativeOrchestrator) {
         var hygieneAdapter = hygieneOrchestrator
-                                     .map(io.casehub.agency.agentic.cognition.MemoryHygieneSpiAdapter::new)
+                                     .map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new)
                                      .orElse(null);
         var curiosity  = new io.casehub.neocortex.cognition.drive.CuriosityDrive(hygieneAdapter);
         var competence = new io.casehub.neocortex.cognition.drive.CompetenceDrive(strategy);
@@ -296,7 +296,7 @@ public class AgencyAutoConfiguration {
     private void socialNormDetectorPlaceholder() {}
 
     @Bean
-    public io.casehub.agency.agentic.cognition.CognitionAvatarAdapter cognitionAvatarAdapter(
+    public io.casehub.agency.social.cognition.CognitionAvatarAdapter cognitionAvatarAdapter(
             MoodOrchestrator mood, DriveOrchestrator drives,
             MentalModelOrchestrator mentalModel,
             UserModelOrchestrator userModel,
@@ -318,7 +318,7 @@ public class AgencyAutoConfiguration {
             Optional<io.casehub.neocortex.cognitive.index.CognitiveProfile> cognitiveProfile,
             Optional<io.casehub.neocortex.cognitive.index.DomainActivation> domainActivation) {
         var hygieneAdapter = hygieneOrchestrator
-                                     .map(io.casehub.agency.agentic.cognition.MemoryHygieneSpiAdapter::new)
+                                     .map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new)
                                      .orElse(null);
         var core = new io.casehub.neocortex.cognition.core.CognitionCore(
                 mood, drives, userModel, mentalModel, strategy,
@@ -359,7 +359,7 @@ public class AgencyAutoConfiguration {
             core.addParticipant(io.casehub.neocortex.cognition.core.CognitionPhase.TERMINAL, domainParticipant);
         }
 
-        return new io.casehub.agency.agentic.cognition.CognitionAvatarAdapter(
+        return new io.casehub.agency.social.cognition.CognitionAvatarAdapter(
                 core, agentRegistry.orElse(null), cognitiveGoals);
     }
 

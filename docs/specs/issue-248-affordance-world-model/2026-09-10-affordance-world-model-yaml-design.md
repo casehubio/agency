@@ -84,7 +84,7 @@ renderer:
 
 ### Package
 
-`io.casehub.agency.agentic.yaml.spec.world` — parallel to `.spec.cognition`.
+`io.casehub.agency.core.yaml.spec.world` — parallel to `.spec.cognition`.
 
 ### Root Definition
 

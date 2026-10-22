@@ -103,6 +103,6 @@ The analogy: Spring defines `@Transactional` over Hibernate's `SessionFactory`. 
 * Blocks D1 decision — `docs/specs/issue-116-blocks-annotations/decisions.md`
 * Epic: casehubio/blocks#115 (annotation-driven agent programming model)
 * Issue: casehubio/blocks#116 (blocks-annotations module)
-* `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
-* `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
+* `io.casehub.agency.orchestration.pattern.Patterns` — 8 pattern builders
+* `io.casehub.agency.orchestration.execution.ExecutionModel` — 5-SPI composition record
 * GE-20260608-4c8108 — `AnnotationsImpliesAiServiceBuildItem` (LC4j runtime integration pattern)

@@ -1,6 +1,6 @@
-# io.casehub.agency.attestation.AttestationContext
+# io.casehub.agency.governance.attestation.AttestationContext
 
-**Package:** `io.casehub.agency.attestation`
+**Package:** `io.casehub.agency.governance.attestation`
 
 **Kind:** `record`
 

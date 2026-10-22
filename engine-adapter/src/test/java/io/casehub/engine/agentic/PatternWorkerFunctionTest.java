@@ -17,7 +17,7 @@ package io.casehub.engine.agentic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 

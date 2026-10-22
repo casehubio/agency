@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.RoundMemo
+# io.casehub.agency.deliberation.conversation.RoundMemo
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

@@ -404,7 +404,7 @@ a tick parameter — no eidos changes needed.
 
 ## Package Structure
 
-All new types live in `io.casehub.agency.agentic.social.drive`:
+All new types live in `io.casehub.agency.core.social.drive`:
 
 ```
 blocks/src/main/java/io/casehub/agency/agentic/social/drive/

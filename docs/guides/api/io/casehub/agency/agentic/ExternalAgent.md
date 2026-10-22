@@ -1,29 +1,29 @@
-# io.casehub.agency.agentic.AgentRef.ExternalAgent
+# io.casehub.agency.core.AgentRef.ExternalAgent
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `record`
 
 ## Fields
 
-### `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.agentic.AgentResult>>`)
+### `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.core.AgentResult>>`)
 
 ### `label` (`java.lang.String`)
 
 ## Record Components
 
-### `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.agentic.AgentResult>>`)
+### `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.core.AgentResult>>`)
 
 ### `label` (`java.lang.String`)
 
 ## Constructors
 
-### `public ExternalAgent(java.lang.String label, java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.agentic.AgentResult>> fn)`
+### `public ExternalAgent(java.lang.String label, java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.core.AgentResult>> fn)`
 
 #### Parameters
 
 - `label` (`java.lang.String`)
-- `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.agentic.AgentResult>>`)
+- `fn` (`java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.core.AgentResult>>`)
 
 ## Methods
 
@@ -35,7 +35,7 @@
 
 - `o` (`java.lang.Object`)
 
-### `public java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.agentic.AgentResult>> fn()`
+### `public java.util.function.Function<java.lang.Object,java.util.concurrent.CompletionStage<io.casehub.agency.core.AgentResult>> fn()`
 
 ### `public final int hashCode()`
 

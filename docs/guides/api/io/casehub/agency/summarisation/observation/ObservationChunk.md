@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.ObservationChunk
+# io.casehub.agency.perception.observation.ObservationChunk
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 
@@ -12,7 +12,7 @@
 
 ### `metadata` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ### `timestamp` (`long`)
 
@@ -24,19 +24,19 @@
 
 ### `metadata` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ### `timestamp` (`long`)
 
 ## Constructors
 
-### `public ObservationChunk(java.lang.String content, long timestamp, io.casehub.agency.summarisation.observation.ObservationTier tier, int eventCount, java.util.Map<java.lang.String,java.lang.String> metadata)`
+### `public ObservationChunk(java.lang.String content, long timestamp, io.casehub.agency.perception.observation.ObservationTier tier, int eventCount, java.util.Map<java.lang.String,java.lang.String> metadata)`
 
 #### Parameters
 
 - `content` (`java.lang.String`)
 - `timestamp` (`long`)
-- `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+- `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 - `eventCount` (`int`)
 - `metadata` (`java.util.Map<java.lang.String,java.lang.String>`)
 
@@ -56,7 +56,7 @@
 
 ### `public java.util.Map<java.lang.String,java.lang.String> metadata()`
 
-### `public io.casehub.agency.summarisation.observation.ObservationTier tier()`
+### `public io.casehub.agency.perception.observation.ObservationTier tier()`
 
 ### `public long timestamp()`
 

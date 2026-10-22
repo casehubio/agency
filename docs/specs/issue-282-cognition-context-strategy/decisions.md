@@ -39,11 +39,11 @@
 
 ## D4: Package locations — split by integration layer
 
-**Choice:** SubjectResolver, InteractionMapper, and CognitiveImpact in `io.casehub.agency.agentic.social` alongside CognitionCore. NormFilter in `io.casehub.agency.agentic.social.emergence` alongside SocialNorm and SocialNormDetector.
+**Choice:** SubjectResolver, InteractionMapper, and CognitiveImpact in `io.casehub.agency.core.social` alongside CognitionCore. NormFilter in `io.casehub.agency.core.social.emergence` alongside SocialNorm and SocialNormDetector.
 **Alternatives:**
-- All four types in `io.casehub.agency.agentic.social` (original D4) — contradicts D1's boundary analysis: NormFilter has no CognitionCore integration point, yet sits next to CognitionCore
+- All four types in `io.casehub.agency.core.social` (original D4) — contradicts D1's boundary analysis: NormFilter has no CognitionCore integration point, yet sits next to CognitionCore
 - NormFilter in `summarisation.observation.affordance` — near its integration point (CognitiveObservationSections) but foreign package for social norm domain types
-- New sub-package `io.casehub.agency.agentic.social.context` — over-organizes 3 types
+- New sub-package `io.casehub.agency.core.social.context` — over-organizes 3 types
 **Rationale:** D1 established that NormFilter's integration point is at prompt assembly, not CognitionCore. Placing NormFilter in `agentic.social.emergence` co-locates it with the `SocialNorm` domain type it filters, while keeping SubjectResolver and InteractionMapper near CognitionCore where they integrate. This respects both domain ownership (NormFilter filters SocialNorm) and the boundary analysis (NormFilter is not a CognitionCore SPI).
 **Trade-offs:** SPIs split across two packages — but this accurately reflects the two distinct integration layers.
 **Exploration:** quick

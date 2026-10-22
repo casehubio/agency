@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.api.spi.QuorumConfig;
 import io.casehub.api.spi.judgment.CallerConfig;
 import io.casehub.api.spi.routing.CandidateSetSpec;
-import io.casehub.agency.agentic.yaml.spec.CallerConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.QuorumConfigSpec;
+import io.casehub.agency.core.yaml.spec.CallerConfigSpec;
+import io.casehub.agency.core.yaml.spec.QuorumConfigSpec;
 import io.casehub.platform.api.expression.MvelExpressionEvaluator;
 import org.jspecify.annotations.Nullable;
 

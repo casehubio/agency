@@ -1,17 +1,17 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.casehub.api.spi.RiskDecision;
 import io.casehub.api.spi.routing.RoutingOutcome;
-import io.casehub.agency.routing.agent.DispositionProfile;
+import io.casehub.agency.governance.routing.agent.DispositionProfile;
 import io.casehub.eidos.api.DispositionAxis;
-import io.casehub.agency.agentic.yaml.registry.CandidateSetStrategyRegistry;
-import io.casehub.agency.agentic.yaml.registry.CbrOutcomeWeightsRegistry;
-import io.casehub.agency.agentic.yaml.registry.CoordinationOutcomeWeightsRegistry;
-import io.casehub.agency.agentic.yaml.registry.RiskDecisionRegistry;
-import io.casehub.agency.agentic.yaml.registry.TrustRoutingPolicyKeysRegistry;
+import io.casehub.agency.core.yaml.registry.CandidateSetStrategyRegistry;
+import io.casehub.agency.core.yaml.registry.CbrOutcomeWeightsRegistry;
+import io.casehub.agency.core.yaml.registry.CoordinationOutcomeWeightsRegistry;
+import io.casehub.agency.core.yaml.registry.RiskDecisionRegistry;
+import io.casehub.agency.core.yaml.registry.TrustRoutingPolicyKeysRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

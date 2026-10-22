@@ -305,9 +305,9 @@ already present.
 - `engine-api: io.casehub.api.spi.CandidateSetStrategy` — reused directly (D3)
 - `engine-api: io.casehub.api.spi.QuorumConfig` — reused directly
 - `engine-api: io.casehub.api.model.RoutingOutcome` — 7-value enum
-- `blocks: io.casehub.agency.routing.agent.CbrOutcomeWeights` — SPI
-- `blocks: io.casehub.agency.routing.agent.CoordinationOutcomeWeights` — SPI
-- `blocks: io.casehub.agency.routing.agent.DispositionProfile` — record (direct reuse)
+- `blocks: io.casehub.agency.governance.routing.agent.CbrOutcomeWeights` — SPI
+- `blocks: io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights` — SPI
+- `blocks: io.casehub.agency.governance.routing.agent.DispositionProfile` — record (direct reuse)
 - `eidos-api: io.casehub.eidos.api.DispositionAxis` — 5-value enum
 - GE-20260811-e941cc — DispositionProfile vs AgentDisposition type split
 - GE-20260530-9cdfb5 — MapPreferences.get() null default (TrustRoutingPolicyKeys context)

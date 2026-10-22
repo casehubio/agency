@@ -1,5 +1,5 @@
-# io.casehub.agency.agentic.aggregation.AggregationResult
+# io.casehub.agency.orchestration.aggregation.AggregationResult
 
-**Package:** `io.casehub.agency.agentic.aggregation`
+**Package:** `io.casehub.agency.orchestration.aggregation`
 
 **Kind:** `interface`

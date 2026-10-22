@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.routing.SequentialRouting
+# io.casehub.agency.orchestration.routing.SequentialRouting
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `class`
 
@@ -14,8 +14,8 @@
 
 ## Methods
 
-### `public Uni<io.casehub.agency.agentic.routing.RoutingDecision> route(io.casehub.agency.agentic.routing.RoutingContext<T> context)`
+### `public Uni<io.casehub.agency.orchestration.routing.RoutingDecision> route(io.casehub.agency.orchestration.routing.RoutingContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.routing.RoutingContext<T>`)
+- `context` (`io.casehub.agency.orchestration.routing.RoutingContext<T>`)

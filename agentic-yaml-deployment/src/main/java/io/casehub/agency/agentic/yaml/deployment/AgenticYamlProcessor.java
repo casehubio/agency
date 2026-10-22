@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.deployment;
+package io.casehub.agency.core.yaml.deployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.spec.PatternSpec;
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.core.yaml.spec.PatternSpec;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 
@@ -87,7 +87,7 @@ public class AgenticYamlProcessor {
         if (resource == null) {return new PromptOptimisationBuildItem(null);}
         try (InputStream in = resource.openStream()) {
             var definition = YAML.readValue(in,
-                                            io.casehub.agency.agentic.yaml.spec.PromptOptimisationDefinition.class);
+                                            io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition.class);
             return new PromptOptimisationBuildItem(definition);
         }
     }
@@ -99,7 +99,7 @@ public class AgenticYamlProcessor {
         URL         resource = cl.getResource("META-INF/cognition.yaml");
         if (resource == null) {return new CognitionConfigBuildItem(null);}
         try (InputStream in = resource.openStream()) {
-            var definition = YAML.readValue(in, io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition.class);
+            var definition = YAML.readValue(in, io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition.class);
             return new CognitionConfigBuildItem(definition);
         }
     }

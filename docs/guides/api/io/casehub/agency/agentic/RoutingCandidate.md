@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.RoutingCandidate
+# io.casehub.agency.core.RoutingCandidate
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `record`
 
@@ -10,7 +10,7 @@ A candidate for agent routing — pairs a dispatch reference with an optional id
 
 ### `descriptor` (`AgentDescriptor`)
 
-### `ref` (`io.casehub.agency.agentic.AgentRef`)
+### `ref` (`io.casehub.agency.core.AgentRef`)
 
 ## Record Components
 
@@ -21,17 +21,17 @@ the agent's identity profile for routing metadata.
                   create candidates without descriptors. Routing strategies
                   must handle null descriptors gracefully.
 
-### `ref` (`io.casehub.agency.agentic.AgentRef`)
+### `ref` (`io.casehub.agency.core.AgentRef`)
 
 the agent dispatch reference — never null
 
 ## Constructors
 
-### `public RoutingCandidate(io.casehub.agency.agentic.AgentRef ref, AgentDescriptor descriptor)`
+### `public RoutingCandidate(io.casehub.agency.core.AgentRef ref, AgentDescriptor descriptor)`
 
 #### Parameters
 
-- `ref` (`io.casehub.agency.agentic.AgentRef`)
+- `ref` (`io.casehub.agency.core.AgentRef`)
 - `descriptor` (`AgentDescriptor`)
 
 ## Methods
@@ -46,6 +46,6 @@ the agent dispatch reference — never null
 
 ### `public final int hashCode()`
 
-### `public io.casehub.agency.agentic.AgentRef ref()`
+### `public io.casehub.agency.core.AgentRef ref()`
 
 ### `public final java.lang.String toString()`

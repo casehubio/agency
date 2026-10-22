@@ -1,16 +1,16 @@
-# io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction
+# io.casehub.agency.core.FailurePolicy.RoutingFailureAction
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `ESCALATE` (`io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction`)
+### `ESCALATE` (`io.casehub.agency.core.FailurePolicy.RoutingFailureAction`)
 
-### `FAIL` (`io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction`)
+### `FAIL` (`io.casehub.agency.core.FailurePolicy.RoutingFailureAction`)
 
-### `RETRY_BROADER` (`io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction`)
+### `RETRY_BROADER` (`io.casehub.agency.core.FailurePolicy.RoutingFailureAction`)
 
 ## Constructors
 
@@ -18,10 +18,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction valueOf(java.lang.String name)`
+### `public static io.casehub.agency.core.FailurePolicy.RoutingFailureAction valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction[] values()`
+### `public static io.casehub.agency.core.FailurePolicy.RoutingFailureAction[] values()`

@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
-import io.casehub.agency.summarisation.observation.affordance.AnnotatedSection;
-import io.casehub.agency.summarisation.observation.affordance.ObservationSection;
-import io.casehub.agency.summarisation.observation.affordance.ResolutionTier;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.perception.observation.affordance.AnnotatedSection;
+import io.casehub.agency.perception.observation.affordance.ObservationSection;
+import io.casehub.agency.perception.observation.affordance.ResolutionTier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

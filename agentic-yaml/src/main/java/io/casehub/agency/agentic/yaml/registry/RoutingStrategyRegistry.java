@@ -1,15 +1,15 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import io.casehub.agency.agentic.routing.RoundRobinRouting;
-import io.casehub.agency.agentic.routing.RoutingStrategy;
-import io.casehub.agency.agentic.routing.SelectAllRouting;
-import io.casehub.agency.agentic.routing.SequentialRouting;
-import io.casehub.agency.agentic.yaml.spec.RoutingSpec;
+import io.casehub.agency.orchestration.routing.RoundRobinRouting;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
+import io.casehub.agency.orchestration.routing.SelectAllRouting;
+import io.casehub.agency.orchestration.routing.SequentialRouting;
+import io.casehub.agency.core.yaml.spec.RoutingSpec;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.BatchResult.InsufficientData
+# io.casehub.agency.optimisation.prompt.BatchResult.InsufficientData
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

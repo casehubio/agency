@@ -7,11 +7,11 @@
 
 ## Summary
 
-A reusable `NegotiationProjection` and supporting types in `io.casehub.agency.negotiation` for managing proposal/counter-proposal exchange over qhorus channels. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum) negotiation.
+A reusable `NegotiationProjection` and supporting types in `io.casehub.agency.deliberation.negotiation` for managing proposal/counter-proposal exchange over qhorus channels. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum) negotiation.
 
 ## Architecture
 
-### Package: `io.casehub.agency.negotiation`
+### Package: `io.casehub.agency.deliberation.negotiation`
 
 New top-level package in blocks, peer to `conversation`, `channel`, `agentic`. No inheritance from or coupling to conversation infrastructure — negotiation has a distinct state model and fixed protocol semantics.
 
@@ -519,7 +519,7 @@ public class NegotiationRenderer {
 
 ### Termination conditions
 
-Reuse `TerminationCondition<NegotiationState>` from `io.casehub.agency.agentic.termination`.
+Reuse `TerminationCondition<NegotiationState>` from `io.casehub.agency.orchestration.termination`.
 
 **Known compromise:** `TerminationContext<T>` carries `List<AgentResult> results` — an agentic-specific field meaningless for negotiation. Negotiation termination conditions only use `context.state()` and `context.iterationCount()`, constructing the context with `List.of()` for results. This is the same pattern the conversation orchestration already uses (`AllAgreedTermination`, `SupervisorTermination` etc. all ignore `results`). A cleaner SPI extraction (separating protocol-level context from agentic context) is tracked separately but out of scope for #104.
 

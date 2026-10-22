@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.aggregation.AggregationResult.Deadlocked
+# io.casehub.agency.orchestration.aggregation.AggregationResult.Deadlocked
 
-**Package:** `io.casehub.agency.agentic.aggregation`
+**Package:** `io.casehub.agency.orchestration.aggregation`
 
 **Kind:** `record`
 

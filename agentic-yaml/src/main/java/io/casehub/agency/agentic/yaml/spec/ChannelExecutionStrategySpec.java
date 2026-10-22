@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;

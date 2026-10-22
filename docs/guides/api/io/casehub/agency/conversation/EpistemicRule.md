@@ -1,26 +1,26 @@
-# io.casehub.agency.conversation.EpistemicRule
+# io.casehub.agency.deliberation.conversation.EpistemicRule
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `interface`
 
 ## Methods
 
-### `public default io.casehub.agency.conversation.EpistemicRule and(io.casehub.agency.conversation.EpistemicRule other)`
+### `public default io.casehub.agency.deliberation.conversation.EpistemicRule and(io.casehub.agency.deliberation.conversation.EpistemicRule other)`
 
 #### Parameters
 
-- `other` (`io.casehub.agency.conversation.EpistemicRule`)
+- `other` (`io.casehub.agency.deliberation.conversation.EpistemicRule`)
 
-### `public abstract io.casehub.agency.conversation.EpistemicStatus classify(io.casehub.agency.conversation.ConversationPoint point, io.casehub.agency.conversation.ParticipantContext context)`
-
-#### Parameters
-
-- `point` (`io.casehub.agency.conversation.ConversationPoint`)
-- `context` (`io.casehub.agency.conversation.ParticipantContext`)
-
-### `public default io.casehub.agency.conversation.EpistemicRule or(io.casehub.agency.conversation.EpistemicRule other)`
+### `public abstract io.casehub.agency.deliberation.conversation.EpistemicStatus classify(io.casehub.agency.deliberation.conversation.ConversationPoint point, io.casehub.agency.deliberation.conversation.ParticipantContext context)`
 
 #### Parameters
 
-- `other` (`io.casehub.agency.conversation.EpistemicRule`)
+- `point` (`io.casehub.agency.deliberation.conversation.ConversationPoint`)
+- `context` (`io.casehub.agency.deliberation.conversation.ParticipantContext`)
+
+### `public default io.casehub.agency.deliberation.conversation.EpistemicRule or(io.casehub.agency.deliberation.conversation.EpistemicRule other)`
+
+#### Parameters
+
+- `other` (`io.casehub.agency.deliberation.conversation.EpistemicRule`)

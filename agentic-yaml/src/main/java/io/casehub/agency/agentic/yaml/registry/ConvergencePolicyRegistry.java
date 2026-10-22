@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.ConvergencePolicySpec;
-import io.casehub.agency.conversation.ConvergencePolicy;
-import io.casehub.agency.conversation.ConvergencePolicies;
+import io.casehub.agency.core.yaml.spec.ConvergencePolicySpec;
+import io.casehub.agency.deliberation.conversation.ConvergencePolicy;
+import io.casehub.agency.deliberation.conversation.ConvergencePolicies;
 
 public class ConvergencePolicyRegistry {
     public ConvergencePolicy resolve(ConvergencePolicySpec spec) {

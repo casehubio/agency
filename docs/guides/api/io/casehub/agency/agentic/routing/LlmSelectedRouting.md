@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.routing.LlmSelectedRouting
+# io.casehub.agency.orchestration.routing.LlmSelectedRouting
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `class`
 
@@ -44,24 +44,24 @@ Creates an LLM-selected routing strategy.
 
 ## Methods
 
-### `private java.lang.String buildAgentCard(io.casehub.agency.agentic.RoutingCandidate candidate, int index)`
+### `private java.lang.String buildAgentCard(io.casehub.agency.core.RoutingCandidate candidate, int index)`
 
 #### Parameters
 
-- `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+- `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 - `index` (`int`)
 
-### `private java.lang.String buildUserPrompt(io.casehub.agency.agentic.routing.RoutingContext<T> context)`
+### `private java.lang.String buildUserPrompt(io.casehub.agency.orchestration.routing.RoutingContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.routing.RoutingContext<T>`)
+- `context` (`io.casehub.agency.orchestration.routing.RoutingContext<T>`)
 
-### `static java.lang.String candidateName(io.casehub.agency.agentic.RoutingCandidate candidate, int index)`
+### `static java.lang.String candidateName(io.casehub.agency.core.RoutingCandidate candidate, int index)`
 
 #### Parameters
 
-- `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+- `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 - `index` (`int`)
 
 ### `private static java.lang.String extractAgentName(java.lang.String text)`
@@ -76,15 +76,15 @@ Creates an LLM-selected routing strategy.
 
 - `text` (`java.lang.String`)
 
-### `private io.casehub.agency.agentic.routing.RoutingDecision parseSelection(java.lang.String text, java.util.List<io.casehub.agency.agentic.RoutingCandidate> candidates)`
+### `private io.casehub.agency.orchestration.routing.RoutingDecision parseSelection(java.lang.String text, java.util.List<io.casehub.agency.core.RoutingCandidate> candidates)`
 
 #### Parameters
 
 - `text` (`java.lang.String`)
-- `candidates` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `candidates` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
-### `public Uni<io.casehub.agency.agentic.routing.RoutingDecision> route(io.casehub.agency.agentic.routing.RoutingContext<T> context)`
+### `public Uni<io.casehub.agency.orchestration.routing.RoutingDecision> route(io.casehub.agency.orchestration.routing.RoutingContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.routing.RoutingContext<T>`)
+- `context` (`io.casehub.agency.orchestration.routing.RoutingContext<T>`)

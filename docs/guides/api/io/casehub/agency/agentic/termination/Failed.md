@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.termination.TerminationDecision.Failed
+# io.casehub.agency.orchestration.termination.TerminationDecision.Failed
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `record`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.termination.TerminationDecision.Escalate
+# io.casehub.agency.orchestration.termination.TerminationDecision.Escalate
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `record`
 

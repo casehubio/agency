@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
-import io.casehub.agency.prompt.FewShotExample;
-import io.casehub.agency.prompt.OptimiserConfig;
-import io.casehub.agency.prompt.SafetyConfig;
+import io.casehub.agency.optimisation.prompt.FewShotExample;
+import io.casehub.agency.optimisation.prompt.OptimiserConfig;
+import io.casehub.agency.optimisation.prompt.SafetyConfig;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;

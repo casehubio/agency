@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.PromptSignature
+# io.casehub.agency.optimisation.prompt.PromptSignature
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

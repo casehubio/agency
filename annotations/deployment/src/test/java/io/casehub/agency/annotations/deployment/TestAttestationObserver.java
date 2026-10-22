@@ -1,8 +1,8 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.attestation.AttestationContext;
-import io.casehub.agency.attestation.AttestationIntent;
-import io.casehub.agency.attestation.LifecycleAttestationObserver;
+import io.casehub.agency.governance.attestation.AttestationContext;
+import io.casehub.agency.governance.attestation.AttestationIntent;
+import io.casehub.agency.governance.attestation.LifecycleAttestationObserver;
 
 import java.util.List;
 

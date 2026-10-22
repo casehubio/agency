@@ -85,7 +85,7 @@ All types move to package `io.casehub.agency.speech` (from `io.casehub.agency.sp
 
 ### Layer 2: blocks (integration)
 
-blocks gains `speech-api` as a compile dependency. New package: `io.casehub.agency.agentic.social.prompt`.
+blocks gains `speech-api` as a compile dependency. New package: `io.casehub.agency.core.social.prompt`.
 
 #### SocialPromptAssembler
 
@@ -447,7 +447,7 @@ Consumer activation: add blocks as a compile dep + `quarkus.index-dependency.cas
 ## Backward compatibility
 
 - speech-ws continues to work without blocks or eidos on the classpath. `DefaultPromptAssembler` is the fallback. No social cognition, no proactive speech.
-- Existing consumers of `PromptAssembler` from speech-ws update imports from `io.casehub.agency.speech.ws.PromptAssembler` to `io.casehub.agency.speech.SpeechPromptAssembler`. The rename disambiguates from the unrelated `io.casehub.agency.conversation.orchestration.PromptAssembler` (which stays as-is).
+- Existing consumers of `PromptAssembler` from speech-ws update imports from `io.casehub.agency.speech.ws.PromptAssembler` to `io.casehub.agency.speech.SpeechPromptAssembler`. The rename disambiguates from the unrelated `io.casehub.agency.deliberation.conversation.orchestration.PromptAssembler` (which stays as-is).
 - `AssembledPrompt` and `ConversationTurn` move packages similarly.
 
 ## Testing

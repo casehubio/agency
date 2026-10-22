@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.PredecessorAnalyser
+# io.casehub.agency.governance.routing.agent.PredecessorAnalyser
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -14,15 +14,15 @@ based on the case outcome weighted by similarity — recording the immediate pre
 
 ## Fields
 
-### `caseOutcomeWeights` (`io.casehub.agency.routing.agent.CbrCaseOutcomeWeights`)
+### `caseOutcomeWeights` (`io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights`)
 
 ## Constructors
 
-### `public PredecessorAnalyser(Instance<io.casehub.agency.routing.agent.CbrCaseOutcomeWeights> caseOutcomeWeights)`
+### `public PredecessorAnalyser(Instance<io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights> caseOutcomeWeights)`
 
 #### Parameters
 
-- `caseOutcomeWeights` (`Instance<io.casehub.agency.routing.agent.CbrCaseOutcomeWeights>`)
+- `caseOutcomeWeights` (`Instance<io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights>`)
 
 ## Methods
 

@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.agentic.termination.TerminationCondition;
-import io.casehub.agency.agentic.yaml.registry.TerminationConditionRegistry;
-import io.casehub.agency.agentic.yaml.spec.AcceptancePolicySpec;
-import io.casehub.agency.agentic.yaml.spec.NegotiationSpec;
-import io.casehub.agency.agentic.yaml.spec.TerminationSpec;
-import io.casehub.agency.negotiation.*;
+import io.casehub.agency.orchestration.termination.TerminationCondition;
+import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
+import io.casehub.agency.core.yaml.spec.AcceptancePolicySpec;
+import io.casehub.agency.core.yaml.spec.NegotiationSpec;
+import io.casehub.agency.core.yaml.spec.TerminationSpec;
+import io.casehub.agency.deliberation.negotiation.*;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionState.WaitingForEvent
+# io.casehub.agency.orchestration.execution.ExecutionState.WaitingForEvent
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

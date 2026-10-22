@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.spec.cognition;
+package io.casehub.agency.core.yaml.spec.cognition;
 
 import io.casehub.neocortex.memory.MemoryDomain;
 import org.jspecify.annotations.Nullable;

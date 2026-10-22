@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ChannelEventPublisher
+# io.casehub.agency.communication.dispatch.ChannelEventPublisher
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 

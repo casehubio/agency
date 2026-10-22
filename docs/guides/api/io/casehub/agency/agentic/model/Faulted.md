@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionState.Faulted
+# io.casehub.agency.orchestration.execution.ExecutionState.Faulted
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

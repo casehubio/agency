@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.AgentRef.ChannelAgent
+# io.casehub.agency.core.AgentRef.ChannelAgent
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `record`
 
@@ -8,22 +8,22 @@
 
 ### `channelId` (`java.util.UUID`)
 
-### `handler` (`io.casehub.agency.channel.ChannelAgentHandler`)
+### `handler` (`io.casehub.agency.communication.dispatch.ChannelAgentHandler`)
 
 ## Record Components
 
 ### `channelId` (`java.util.UUID`)
 
-### `handler` (`io.casehub.agency.channel.ChannelAgentHandler`)
+### `handler` (`io.casehub.agency.communication.dispatch.ChannelAgentHandler`)
 
 ## Constructors
 
-### `public ChannelAgent(java.util.UUID channelId, io.casehub.agency.channel.ChannelAgentHandler handler)`
+### `public ChannelAgent(java.util.UUID channelId, io.casehub.agency.communication.dispatch.ChannelAgentHandler handler)`
 
 #### Parameters
 
 - `channelId` (`java.util.UUID`)
-- `handler` (`io.casehub.agency.channel.ChannelAgentHandler`)
+- `handler` (`io.casehub.agency.communication.dispatch.ChannelAgentHandler`)
 
 ## Methods
 
@@ -37,7 +37,7 @@
 
 - `o` (`java.lang.Object`)
 
-### `public io.casehub.agency.channel.ChannelAgentHandler handler()`
+### `public io.casehub.agency.communication.dispatch.ChannelAgentHandler handler()`
 
 ### `public final int hashCode()`
 

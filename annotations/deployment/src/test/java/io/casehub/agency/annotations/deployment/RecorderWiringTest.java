@@ -1,12 +1,12 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
-import io.casehub.agency.agentic.routing.RoundRobinRouting;
-import io.casehub.agency.agentic.routing.SequentialRouting;
-import io.casehub.agency.agentic.termination.JudgeConvergence;
-import io.casehub.agency.agentic.termination.MaxIterationsTermination;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.routing.RoundRobinRouting;
+import io.casehub.agency.orchestration.routing.SequentialRouting;
+import io.casehub.agency.orchestration.termination.JudgeConvergence;
+import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
 import io.casehub.agency.annotations.runtime.AgencyAnnotationsRecorder;
 import io.casehub.agency.annotations.runtime.PatternDescriptor;
 import org.junit.jupiter.api.Test;

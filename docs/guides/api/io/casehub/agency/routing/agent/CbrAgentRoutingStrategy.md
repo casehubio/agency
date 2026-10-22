@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.CbrAgentRoutingStrategy
+# io.casehub.agency.governance.routing.agent.CbrAgentRoutingStrategy
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -22,7 +22,7 @@ highest historical success rate for the target capability.
 
 ### `graphQuery` (`AgentGraphQuery`)
 
-### `outcomeWeights` (`io.casehub.agency.routing.agent.CbrOutcomeWeights`)
+### `outcomeWeights` (`io.casehub.agency.governance.routing.agent.CbrOutcomeWeights`)
 
 ### `policyProvider` (`TrustRoutingPolicyProvider`)
 
@@ -32,7 +32,7 @@ highest historical success rate for the target capability.
 
 ## Constructors
 
-### `CbrAgentRoutingStrategy(AgentGraphQuery graphQuery, TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, io.casehub.agency.routing.agent.CbrOutcomeWeights outcomeWeights, RoutingSignalAssembler signalAssembler)`
+### `CbrAgentRoutingStrategy(AgentGraphQuery graphQuery, TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, io.casehub.agency.governance.routing.agent.CbrOutcomeWeights outcomeWeights, RoutingSignalAssembler signalAssembler)`
 
 #### Parameters
 
@@ -40,10 +40,10 @@ highest historical success rate for the target capability.
 - `classifier` (`TrustCandidateClassifier`)
 - `scoreSource` (`TrustScoreSource`)
 - `policyProvider` (`TrustRoutingPolicyProvider`)
-- `outcomeWeights` (`io.casehub.agency.routing.agent.CbrOutcomeWeights`)
+- `outcomeWeights` (`io.casehub.agency.governance.routing.agent.CbrOutcomeWeights`)
 - `signalAssembler` (`RoutingSignalAssembler`)
 
-### `public CbrAgentRoutingStrategy(Instance<AgentGraphQuery> graphQuery, Instance<TrustCandidateClassifier> classifier, Instance<TrustScoreSource> scoreSource, Instance<TrustRoutingPolicyProvider> policyProvider, io.casehub.agency.routing.agent.CbrOutcomeWeights outcomeWeights, Instance<RoutingSignalAssembler> signalAssembler)`
+### `public CbrAgentRoutingStrategy(Instance<AgentGraphQuery> graphQuery, Instance<TrustCandidateClassifier> classifier, Instance<TrustScoreSource> scoreSource, Instance<TrustRoutingPolicyProvider> policyProvider, io.casehub.agency.governance.routing.agent.CbrOutcomeWeights outcomeWeights, Instance<RoutingSignalAssembler> signalAssembler)`
 
 #### Parameters
 
@@ -51,7 +51,7 @@ highest historical success rate for the target capability.
 - `classifier` (`Instance<TrustCandidateClassifier>`)
 - `scoreSource` (`Instance<TrustScoreSource>`)
 - `policyProvider` (`Instance<TrustRoutingPolicyProvider>`)
-- `outcomeWeights` (`io.casehub.agency.routing.agent.CbrOutcomeWeights`)
+- `outcomeWeights` (`io.casehub.agency.governance.routing.agent.CbrOutcomeWeights`)
 - `signalAssembler` (`Instance<RoutingSignalAssembler>`)
 
 ## Methods

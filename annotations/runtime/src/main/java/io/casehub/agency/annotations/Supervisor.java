@@ -1,10 +1,10 @@
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.aggregation.AggregationStrategy;
-import io.casehub.agency.agentic.aggregation.PassThrough;
-import io.casehub.agency.agentic.decomposition.IdentityDecomposition;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
-import io.casehub.agency.agentic.routing.RoutingStrategy;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.aggregation.PassThrough;
+import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
 import io.casehub.engine.plan.DecompositionStrategy;
 
 import java.lang.annotation.ElementType;

@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.TrustRoutingRequirement
+# io.casehub.agency.governance.routing.TrustRoutingRequirement
 
-**Package:** `io.casehub.agency.routing`
+**Package:** `io.casehub.agency.governance.routing`
 
 **Kind:** `record`
 
@@ -8,43 +8,43 @@
 
 ### `citation` (`java.lang.String`)
 
-### `decisions` (`java.util.List<io.casehub.agency.routing.RoutingDecisionRecord>`)
+### `decisions` (`java.util.List<io.casehub.agency.governance.routing.RoutingDecisionRecord>`)
 
 ### `mechanism` (`java.lang.String`)
 
 ### `requirementId` (`java.lang.String`)
 
-### `status` (`io.casehub.agency.routing.RequirementStatus`)
+### `status` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
 ## Record Components
 
 ### `citation` (`java.lang.String`)
 
-### `decisions` (`java.util.List<io.casehub.agency.routing.RoutingDecisionRecord>`)
+### `decisions` (`java.util.List<io.casehub.agency.governance.routing.RoutingDecisionRecord>`)
 
 ### `mechanism` (`java.lang.String`)
 
 ### `requirementId` (`java.lang.String`)
 
-### `status` (`io.casehub.agency.routing.RequirementStatus`)
+### `status` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
 ## Constructors
 
-### `public TrustRoutingRequirement(java.lang.String requirementId, java.lang.String citation, java.lang.String mechanism, io.casehub.agency.routing.RequirementStatus status, java.util.List<io.casehub.agency.routing.RoutingDecisionRecord> decisions)`
+### `public TrustRoutingRequirement(java.lang.String requirementId, java.lang.String citation, java.lang.String mechanism, io.casehub.agency.governance.routing.RequirementStatus status, java.util.List<io.casehub.agency.governance.routing.RoutingDecisionRecord> decisions)`
 
 #### Parameters
 
 - `requirementId` (`java.lang.String`)
 - `citation` (`java.lang.String`)
 - `mechanism` (`java.lang.String`)
-- `status` (`io.casehub.agency.routing.RequirementStatus`)
-- `decisions` (`java.util.List<io.casehub.agency.routing.RoutingDecisionRecord>`)
+- `status` (`io.casehub.agency.governance.routing.RequirementStatus`)
+- `decisions` (`java.util.List<io.casehub.agency.governance.routing.RoutingDecisionRecord>`)
 
 ## Methods
 
 ### `public java.lang.String citation()`
 
-### `public java.util.List<io.casehub.agency.routing.RoutingDecisionRecord> decisions()`
+### `public java.util.List<io.casehub.agency.governance.routing.RoutingDecisionRecord> decisions()`
 
 ### `public final boolean equals(java.lang.Object o)`
 
@@ -58,6 +58,6 @@
 
 ### `public java.lang.String requirementId()`
 
-### `public io.casehub.agency.routing.RequirementStatus status()`
+### `public io.casehub.agency.governance.routing.RequirementStatus status()`
 
 ### `public final java.lang.String toString()`

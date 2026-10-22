@@ -189,7 +189,7 @@ Note: `ConvergencePolicy` is a `@FunctionalInterface` with zero concrete impleme
 
 Note: `EpistemicRule` is a `@FunctionalInterface` with factory methods in `EpistemicRules` (not named classes). The registry maps string names to these factory method invocations with config parameters (e.g., `explicit-acknowledgement` → `EpistemicRules.explicitAcknowledgement(minParticipants)`).
 
-Note: Two `LlmDecomposition` classes exist — `io.casehub.agency.agentic.decomposition.LlmDecomposition` (blocks) and `io.casehub.engine.planning.decomposition.LlmDecompositionStrategy` (engine). The `llm` registry name resolves the blocks variant. Engine strategies (`portfolio`, `explicit-htn`) are available as optional registrations when the engine planning module is on the classpath.
+Note: Two `LlmDecomposition` classes exist — `io.casehub.agency.orchestration.decomposition.LlmDecomposition` (blocks) and `io.casehub.engine.planning.decomposition.LlmDecompositionStrategy` (engine). The `llm` registry name resolves the blocks variant. Engine strategies (`portfolio`, `explicit-htn`) are available as optional registrations when the engine planning module is on the classpath.
 
 ### Layer 3: Compilers
 

@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.schema;
+package io.casehub.agency.core.yaml.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.casehub.agency.agentic.yaml.spec.PatternSpec;
+import io.casehub.agency.core.yaml.spec.PatternSpec;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.spec.world;
+package io.casehub.agency.core.yaml.spec.world;
 
 import org.jspecify.annotations.Nullable;
 

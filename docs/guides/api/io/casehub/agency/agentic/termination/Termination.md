@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.termination.Termination
+# io.casehub.agency.orchestration.termination.Termination
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `class`
 
@@ -10,13 +10,13 @@
 
 ## Methods
 
-### `public static io.casehub.agency.agentic.termination.GoalReached<T> goalReached(java.util.function.Predicate<T> predicate)`
+### `public static io.casehub.agency.orchestration.termination.GoalReached<T> goalReached(java.util.function.Predicate<T> predicate)`
 
 #### Parameters
 
 - `predicate` (`java.util.function.Predicate<T>`)
 
-### `public static io.casehub.agency.agentic.termination.MaxIterationsTermination<T> maxIterations(int max)`
+### `public static io.casehub.agency.orchestration.termination.MaxIterationsTermination<T> maxIterations(int max)`
 
 #### Parameters
 

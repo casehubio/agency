@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.HybridDecomposition
+# io.casehub.agency.orchestration.decomposition.HybridDecomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -58,12 +58,12 @@
 - `compound` (`TaskNode<T>`)
 - `context` (`DecompositionContext<T>`)
 
-### `private DecompositionContext<T> enrichContext(DecompositionContext<T> context, io.casehub.agency.agentic.decomposition.NoMethodMatchedException failure)`
+### `private DecompositionContext<T> enrichContext(DecompositionContext<T> context, io.casehub.agency.orchestration.decomposition.NoMethodMatchedException failure)`
 
 #### Parameters
 
 - `context` (`DecompositionContext<T>`)
-- `failure` (`io.casehub.agency.agentic.decomposition.NoMethodMatchedException`)
+- `failure` (`io.casehub.agency.orchestration.decomposition.NoMethodMatchedException`)
 
 ### `private static java.lang.String taskName(TaskNode<T> node)`
 

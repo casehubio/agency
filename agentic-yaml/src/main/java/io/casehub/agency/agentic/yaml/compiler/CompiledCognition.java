@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import io.casehub.neocortex.cognition.mentalmodel.MentalModelConfig;
 import io.casehub.neocortex.cognition.mood.MoodConfig;
@@ -12,7 +12,7 @@ import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
 import io.casehub.neocortex.cognition.goal.GoalEscalationConfig;
 import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
-import io.casehub.agency.memory.RetentionConfig;
+import io.casehub.agency.social.memory.RetentionConfig;
 
 public record CompiledCognition(
         DriveConfig drive,

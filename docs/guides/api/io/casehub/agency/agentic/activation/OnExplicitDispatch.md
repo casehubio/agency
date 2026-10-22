@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.activation.OnExplicitDispatch
+# io.casehub.agency.orchestration.activation.OnExplicitDispatch
 
-**Package:** `io.casehub.agency.agentic.activation`
+**Package:** `io.casehub.agency.orchestration.activation`
 
 **Kind:** `class`
 
@@ -10,8 +10,8 @@
 
 ## Methods
 
-### `public Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.agentic.activation.ActivationContext<T> context)`
+### `public Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.orchestration.activation.ActivationContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.activation.ActivationContext<T>`)
+- `context` (`io.casehub.agency.orchestration.activation.ActivationContext<T>`)

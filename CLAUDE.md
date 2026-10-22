@@ -130,7 +130,7 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `speech-ws/src/main/java/io/casehub/agency/speech/ws/protocol/` | WebSocket protocol DTOs — `AvatarMessage` sealed hierarchy (Start, Stop, Partial, Transcript, Response, Phonemes, Error), `VisemeFrame` (viseme + timing + weight), `ConversationTurn`, `MessageCodec` (gson JSON encode/decode) |
 | `speech-ws/src/test/java/io/casehub/agency/speech/ws/` | Tests for avatar WebSocket (88 tests) |
 
-## Package: `io.casehub.agency.agent`
+## Package: `io.casehub.agency.core.invoke`
 
 Shared LLM invocation utility — eliminates the 17-site `AgentProvider.invoke()` → collect TextDelta → parse JSON boilerplate. Not CDI-managed — stateless static methods, caller passes `AgentProvider`.
 
@@ -141,7 +141,7 @@ Shared LLM invocation utility — eliminates the 17-site `AgentProvider.invoke()
 | `InvocationMetadata` | Record: `inputTokens`, `outputTokens`, `thinkingTokens`, `cacheReadTokens`, `cacheWriteTokens`, `totalCostUsd`, `durationMs`, `apiDurationMs`. Captured from `AgentEvent.InvocationComplete`. `EMPTY` sentinel for missing completion events. |
 | `KeyedLock` | Per-key tick locking utility. `withLock(String key, Supplier<T>)` and `withLock(String key, Runnable)` — acquires a per-key `ReentrantLock`, executes, releases. `stateKey(agentId, tenantId)` composite key helper. Replaces 16 identical lock/try/finally sites across 13 orchestrator classes. |
 
-## Package: `io.casehub.agency.attestation`
+## Package: `io.casehub.agency.governance.attestation`
 
 Attestation write-path types and lifecycle observer SPI. `AttestationIntent` captures the full attestation payload; `AttestationIntentWriter` is the persistence SPI; `LifecycleAttestationObserver<E>` maps domain lifecycle events to attestation intents.
 
@@ -153,7 +153,7 @@ Attestation write-path types and lifecycle observer SPI. `AttestationIntent` cap
 | `LifecycleAttestationObserver<E>` | `@FunctionalInterface` SPI: `List<AttestationIntent> observe(E event, AttestationContext)`. Domain repos implement per event type. Returns non-null (empty list for irrelevant events). |
 | `AttestationContext` | Record: tenancyId, caseId, capabilityTag — ambient context for observers |
 
-## Package: `io.casehub.agency.trust`
+## Package: `io.casehub.agency.governance.trust`
 
 Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classification and vouch orchestration.
 
@@ -168,7 +168,7 @@ Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classif
 | `VouchResult` | Sealed: `Accepted(UUID attestationEntryId)`, `Rejected(List<String> reasons)` |
 | `VouchService` | Orchestrator: runs all constraints (all-must-pass), writes ENDORSED attestation via `AttestationIntentWriter`. Not CDI-managed — consumer constructs with domain-specific constraints. |
 
-## Package: `io.casehub.agency.channel`
+## Package: `io.casehub.agency.communication.dispatch`
 
 | Class | What it does |
 |-------|-------------|
@@ -184,7 +184,7 @@ Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classif
 | `ChannelEventAdapter<E>` | Direction 1 bridge: implements `MessageObserver`, extracts domain events via a `Function<MessageReceivedEvent, E>`, publishes `LevelEvent<E>` to an `EventStreamBus`. Null return from extractor filters. Extractor exceptions caught and logged. |
 | `ChannelEventPublisher<E>` | Direction 2 bridge: subscribes to `EventStreamBus<E>`, converts events to `MessageDispatch` via a builder function, dispatches via `MessageDispatcher`. Best-effort — catches + logs, never propagates. |
 
-## Package: `io.casehub.agency.channel.summary`
+## Package: `io.casehub.agency.communication.channel.summary`
 
 Channel and thread summary integration — Message-specific `ContentSummariser<Message, SummaryResult>` implementations, the `SummaryUpdateHook` adapter for channel summaries, and the push-based `ThreadSummaryObserver` for per-thread summaries. `ContentSummariser` is now in `casehub-agency-summarisation-api` with generified `<T, R>` — consumers bind `SummaryResult` as `R`.
 
@@ -195,7 +195,7 @@ Channel and thread summary integration — Message-specific `ContentSummariser<M
 | `NoOpThreadSummaryStore` | `@DefaultBean` `@ApplicationScoped` no-op `ThreadSummaryStore` — `save()` returns input, queries return empty. Consumers override with qhorus persistence. |
 | `ThreadSummaryObserver` | `@ApplicationScoped` push-based observer — detects DONE/FAILURE messages with correlationId, fetches thread messages via `CrossTenantMessageStore`, delegates to `ContentSummariser<Message, SummaryResult>`, writes to `ThreadSummaryStore`. Per-correlationId concurrency guard. Async via `ManagedExecutor`. |
 
-## Package: `io.casehub.agency.conversation`
+## Package: `io.casehub.agency.deliberation.conversation`
 
 Structured conversation protocol — reusable infrastructure for multi-agent deliberation channels. Extracted from drafthouse via casehubio/drafthouse#79, #80, #81, #83.
 
@@ -231,7 +231,7 @@ Structured conversation protocol — reusable infrastructure for multi-agent del
 | `ProgressRenderer` | `@FunctionalInterface` SPI: `String render(ProgressInstance)`. Pluggable progress-to-text rendering for LLM agent prompts. |
 | `DefaultProgressRenderer` | Built-in `ProgressRenderer`: percentage (`"Label: N%"`), count (`"Label: N of M"`), step (`"a ✓ → b ⏳ → c ○"`), fallback to status name. Null-safe. |
 
-## Package: `io.casehub.agency.conversation.orchestration`
+## Package: `io.casehub.agency.deliberation.conversation.orchestration`
 
 Autonomous multi-agent conversation orchestrator — composes `ConversationProjection`, `PartitionedObservationService`, pluggable turn policies, and `TerminationCondition` into a self-driving conversation loop.
 
@@ -254,7 +254,7 @@ Autonomous multi-agent conversation orchestrator — composes `ConversationProje
 | `ContestedEscalation` | `TerminationCondition<ConversationState>` — Escalate when DISPUTED points exceed threshold. |
 | `CompositeTermination` | `TerminationCondition<ConversationState>` — evaluates conditions in order; first non-Continue wins. |
 
-## Package: `io.casehub.agency.normative`
+## Package: `io.casehub.agency.deliberation.normative`
 
 Generic normative conflict resolution — resolves conflicts between competing norm decisions from multiple sources. Speculative build (no consumer yet). Primary expected consumer: oversight pipeline composing `NormDecision<RiskDecision>`.
 
@@ -271,7 +271,7 @@ Generic normative conflict resolution — resolves conflicts between competing n
 | `MostRestrictiveResolution` | Typed to `RiskDecision` — GateRequired beats Autonomous. Backward-compatible with ChainedActionRiskClassifier behavior. |
 | `EscalationResolution<T>` | Always escalates to a designated decision when any conflict exists. |
 
-## Package: `io.casehub.agency.negotiation`
+## Package: `io.casehub.agency.deliberation.negotiation`
 
 Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` for proposal/counter-proposal exchange. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum). Uses PROPOSE MessageType (qhorus#395) for commissive speech acts. Party set required upfront for AcceptancePolicy correctness.
 
@@ -313,7 +313,7 @@ Oversight gate lifecycle and risk classification — SPIs for gating worker acti
 | `ReactiveOversightGateService` | Reactive SPI: `openGate()` → `Uni<GateOutcome>`, `fulfill()` → `Uni<Void>`. |
 | `GateOutcome` | Sealed interface (Autonomous, GatePending). GatePending carries gateId + reason. |
 
-## Package: `io.casehub.agency.agentic`
+## Package: `io.casehub.agency.core`
 
 Compositional agentic orchestration framework — eight sub-packages implementing five SPIs for routing, decomposition, activation, aggregation, and termination, plus execution drivers and pre-composed pattern builders.
 
@@ -333,7 +333,7 @@ Compositional agentic orchestration framework — eight sub-packages implementin
 | `agentic.listener` | Accountability listeners: `OrchestrationEventType`, `EventLogListener` (operational audit via EventSink), `LedgerExecutionListener` (compliance audit via LedgerSink), `MetricsListener` (OTel metrics via Meter) |
 | `agentic.pattern` | Pattern DSL: `Patterns` entry point, `AbstractPatternBuilder`, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
 
-## Package: `io.casehub.agency.agentic.social.drive`
+## Package: `io.casehub.agency.core.social.drive`
 
 Drive Architecture — intrinsic motivation system that reads existing social cognition orchestrator outputs and synthesises motivational signals along four axes. Follows a *compositor pattern*: `tick()` without `record()`, since drives consume derived state rather than accumulating raw signals. Personality modulation via `AgentDescriptor.disposition()` (eidos); mood modulation via `MoodOrchestrator.currentMood()`.
 
@@ -352,7 +352,7 @@ Drive Architecture — intrinsic motivation system that reads existing social co
 | `AffiliationDrive` | `DriveSource` — reads `UserModelOrchestrator.activeProfiles()`, caches as `lastProfiles()`. Intensity from neglected relationships (low familiarity or stale interaction). |
 | `AutonomyDrive` | `DriveSource` — reads `MentalModelOrchestrator.activeSnapshots()`, caches as `lastSnapshots()`. Intensity from high-confidence intention count across subjects. |
 
-## Package: `io.casehub.agency.agentic.social.goal`
+## Package: `io.casehub.agency.core.social.goal`
 
 Autonomous goal proposal — Layer 2 of the autonomous intelligence stack. Translates intrinsic drive signals (from Drive Architecture, #129) into concrete `AgentGoal` proposals via per-axis heuristic mappers. Follows the *compositor pattern* (ADR-0001): `tick()` evaluates and caches, `currentProposals()` returns cached state, no side effects. The scheduler calls `GoalFormationService` (engine-api) separately to register proposals.
 
@@ -371,7 +371,7 @@ Autonomous goal proposal — Layer 2 of the autonomous intelligence stack. Trans
 | `DriveGoalFormationContext` | Record: agentId, tenantId, axis, intensity, trigger, existingGoals, remainingCapacity. |
 | `LlmDriveGoalFormationStrategy` | `DriveGoalFormationStrategy` implementation via `AgentProvider`. Drive-specific prompt framing (motivational drive analyst). Graceful degradation on LLM failure. |
 
-## Package: `io.casehub.agency.routing`
+## Package: `io.casehub.agency.governance.routing`
 
 Shared trust routing utilities — eliminates duplicated preference-to-policy boilerplate across domain repos.
 
@@ -385,7 +385,7 @@ Shared trust routing utilities — eliminates duplicated preference-to-policy bo
 | `TrustRoutingRequirement` | Compliance evidence wrapper: requirementId, citation, mechanism, status, decisions. |
 | `RequirementStatus` | Enum: CLOSED, PARTIAL, BREACHED, GAP. |
 
-## Package: `io.casehub.agency.rag`
+## Package: `io.casehub.agency.perception.rag`
 
 Reusable RAG retrieval worker factory — eliminates per-domain boilerplate for producing engine `Worker` instances that extract queries, retrieve chunks from neocortex corpora, and return mapped results. Provided dependency on `casehub-neocortex-rag-api`.
 
@@ -393,7 +393,7 @@ Reusable RAG retrieval worker factory — eliminates per-domain boilerplate for 
 |-------|-------------|
 | `RagRetrievalWorkerFactory` | Static factory: `create(name, capabilityName, CaseContextRetriever, QueryExtractionStrategy, List<CorpusRef>, maxResults) → Worker`. Default overload with maxResults=10. Worker function calls `CaseContextRetriever.retrieve()`, maps chunks via `toMap()`, returns `WorkerResult` with `retrievedChunks` + `summary`. |
 
-## Package: `io.casehub.agency.routing.agent`
+## Package: `io.casehub.agency.governance.routing.agent`
 
 AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipeline, plus composable prompt enrichment and outcome recording infrastructure. Strategies are selected by name via `StrategyResolver` (engine#634). Optional trust classification via `Instance<T>` — activates when engine-ledger is on the consumer's classpath.
 
@@ -416,7 +416,7 @@ AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipel
 | `ModelPreferenceSignalProvider` | `RoutingSignalProvider` (id: `"model-preference"`). Scores candidates by `(workerId, modelId)` compound key from historical experiences. Reads `modelId` from `ExperiencePlanStep.parameters()`. Similarity-weighted success rates using `CbrOutcomeWeights`. Activates when engine records model data (engine#1096). |
 | `DispositionProfile` | Record: `Map<DispositionAxis, String> desired` + `Map<DispositionAxis, Double> weights`. Compact value type for desired agent personality traits. |
 
-## Package: `io.casehub.agency.prompt`
+## Package: `io.casehub.agency.optimisation.prompt`
 
 DSPy-inspired prompt optimisation framework — offline batch cycle that auto-improves LLM routing and decomposition prompts based on CBR outcome feedback. Few-shot example curation, instruction refinement, deterministic A/B testing with circuit breaker safety rails. Pure Java core; CDI runtime beans in sub-packages.
 
@@ -440,7 +440,7 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `VariantSelector` | Deterministic A/B split via `(hash & 0x7FFFFFFF) % 100`. Per-capability circuit breaker trips after consecutive experiment failures. |
 | `PromptOptimisationBatch` | Batch orchestrator — gate check, score variants, run optimisers, build candidate, promotion decision (consecutive wins required), concurrency guard (per-signature lock). |
 
-### Sub-package: `io.casehub.agency.prompt.optimiser`
+### Sub-package: `io.casehub.agency.optimisation.prompt.optimiser`
 
 | Class | What it does |
 |-------|-------------|
@@ -449,7 +449,7 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `TopNDiversityStrategy` | `DiversityStrategy` identity implementation — returns first N candidates from pre-sorted shortlist. Used as default. |
 | `OutcomeAwareDiversityStrategy` | `DiversityStrategy` with outcome-category seeding + token-level Jaccard MMR. Constructor takes `diversityWeight` [0,1]. Skips seeding at 0.0 (pure relevance). Case-insensitive outcome grouping. |
 
-### Sub-package: `io.casehub.agency.prompt.runtime`
+### Sub-package: `io.casehub.agency.optimisation.prompt.runtime`
 
 | Class | What it does |
 |-------|-------------|
@@ -492,7 +492,7 @@ Unified summarisation framework. Core types live in `casehub-agency-summarisatio
 
 Two integration patterns: **Pattern A** (SummarisationRunner pipeline — sync heuristics, microsecond latency) and **Pattern B** (direct EventAccumulator — async LLM dispatch, caller manages). `KeyedSummarisationRunner` is the grouped counterpart to `SummarisationRunner` — same compositional role, groups by key instead of flat windowing. See spec for details.
 
-## Sub-package: `io.casehub.agency.summarisation.observation`
+## Sub-package: `io.casehub.agency.perception.observation`
 
 Terminal consumer of the summarisation pipeline — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunk production.
 
@@ -506,7 +506,7 @@ Terminal consumer of the summarisation pipeline — tiered, demand-driven render
 | `TieredObservationRenderer<E>` | Standard implementation: routes to verbatim (≤ threshold), grouped (≤ threshold), or summarised (via `Summariser<E, String>`) based on batch size. Configurable header via `withHeaderFormatter`. Two-tier and three-tier constructors. |
 | `ObservationAccumulator<E>` | Thread-safe buffer with demand-driven drain. Own buffer (not `EventAccumulator`). Tracks `lastDrainTimestamp`. Empty drain → `ObservationResult.empty()`. At-most-once delivery on renderer failure. |
 
-## Sub-package: `io.casehub.agency.summarisation.observation.affordance`
+## Sub-package: `io.casehub.agency.perception.observation.affordance`
 
 Grounded observation rendering for LLM agents. Per-entity affordance chains (identity + action + consequence) and typed section assembly. Parallel producer to the temporal observation pipeline — consumer concatenates both.
 
@@ -525,7 +525,7 @@ Grounded observation rendering for LLM agents. Per-entity affordance chains (ide
 | `ObservationPipeline` | Ordered filter stage composition — applies `ObservationFilter` chain, unwraps `AnnotatedSection` to base `ObservationSection` |
 | `PerceptionFilter` | Built-in `ObservationFilter` combining visibility gating (tag matching) + resolution fallback (tier degradation when tags partially match) |
 
-## Sub-package: `io.casehub.agency.summarisation.llm`
+## Sub-package: `io.casehub.agency.perception.llm`
 
 LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisation` package because it depends on `AgentProvider` (platform-agent-api) and Mutiny.
 
@@ -533,7 +533,7 @@ LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisa
 |-------|-------------|
 | `LlmContentSummariser<T>` | Generic `ContentSummariser<T, R>` backed by `AgentProvider`. EDIT/APPEND modes via `SummaryMode`. Optional `preamble` for static context (e.g., channel name). Propagates previous annotations. |
 
-## Sub-package: `io.casehub.agency.summarisation.narrative`
+## Sub-package: `io.casehub.agency.perception.narrative`
 
 Decision narrative pipeline — transforms platform decision signals into human-readable explanations via a two-level summarisation pipeline. Architecturally separate from identity narratives (`NarrativeFragment`/`NarrativeOrchestrator` in social cognition). Shares only the underlying summarisation primitives (`KeyedSummarisationRunner`, `EventStreamBus`, `ContentSummariser`).
 

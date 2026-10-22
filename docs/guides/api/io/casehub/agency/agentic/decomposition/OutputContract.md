@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.OutputContract
+# io.casehub.agency.orchestration.decomposition.OutputContract
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `interface`
 
@@ -11,21 +11,21 @@ Failed validation triggers retry at task granularity rather than pipeline restar
 
 ## Methods
 
-### `public default io.casehub.agency.agentic.decomposition.OutputContract and(io.casehub.agency.agentic.decomposition.OutputContract other)`
+### `public default io.casehub.agency.orchestration.decomposition.OutputContract and(io.casehub.agency.orchestration.decomposition.OutputContract other)`
 
 #### Parameters
 
-- `other` (`io.casehub.agency.agentic.decomposition.OutputContract`)
+- `other` (`io.casehub.agency.orchestration.decomposition.OutputContract`)
 
-### `public static io.casehub.agency.agentic.decomposition.OutputContract nonNull()`
+### `public static io.casehub.agency.orchestration.decomposition.OutputContract nonNull()`
 
-### `public static io.casehub.agency.agentic.decomposition.OutputContract of(java.util.function.Predicate<java.lang.Object> test)`
+### `public static io.casehub.agency.orchestration.decomposition.OutputContract of(java.util.function.Predicate<java.lang.Object> test)`
 
 #### Parameters
 
 - `test` (`java.util.function.Predicate<java.lang.Object>`)
 
-### `public static io.casehub.agency.agentic.decomposition.OutputContract type(java.lang.Class<?> expected)`
+### `public static io.casehub.agency.orchestration.decomposition.OutputContract type(java.lang.Class<?> expected)`
 
 #### Parameters
 

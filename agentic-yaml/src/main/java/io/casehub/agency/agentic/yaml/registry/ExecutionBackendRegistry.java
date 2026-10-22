@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.model.ExecutionBackend;
-import io.casehub.agency.agentic.yaml.spec.ExecutionBackendSpec;
+import io.casehub.agency.orchestration.execution.ExecutionBackend;
+import io.casehub.agency.core.yaml.spec.ExecutionBackendSpec;
 
 public class ExecutionBackendRegistry {
 

@@ -1,6 +1,6 @@
-package io.casehub.agency.agentic.yaml.deployment;
+package io.casehub.agency.core.yaml.deployment;
 
-import io.casehub.agency.agentic.yaml.spec.PatternSpec;
+import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.quarkus.builder.item.SimpleBuildItem;
 
 import java.util.List;

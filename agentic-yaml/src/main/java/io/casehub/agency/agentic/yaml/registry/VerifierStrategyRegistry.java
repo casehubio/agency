@@ -1,6 +1,6 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.VerifierStrategySpec;
+import io.casehub.agency.core.yaml.spec.VerifierStrategySpec;
 
 public class VerifierStrategyRegistry {
 

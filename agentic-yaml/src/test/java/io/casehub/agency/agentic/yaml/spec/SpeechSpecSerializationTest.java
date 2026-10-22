@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.registry.Audio8ConfigRegistry;
-import io.casehub.agency.agentic.yaml.registry.KokoroConfigRegistry;
-import io.casehub.agency.agentic.yaml.registry.SherpaConfigRegistry;
+import io.casehub.agency.core.yaml.registry.Audio8ConfigRegistry;
+import io.casehub.agency.core.yaml.registry.KokoroConfigRegistry;
+import io.casehub.agency.core.yaml.registry.SherpaConfigRegistry;
 import io.casehub.agency.speech.SynthesisOptions;
 import io.casehub.agency.speech.TranscriptionOptions;
 import org.junit.jupiter.api.BeforeEach;

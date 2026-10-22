@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.Decomposition
+# io.casehub.agency.orchestration.decomposition.Decomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -17,35 +17,35 @@
 - `name` (`java.lang.String`)
 - `methods` (`java.util.List<DecompositionMethod<T>>`)
 
-### `public static io.casehub.agency.agentic.decomposition.GoalOrientedDecomposition<T> goap()`
+### `public static io.casehub.agency.orchestration.decomposition.GoalOrientedDecomposition<T> goap()`
 
-### `public static io.casehub.agency.agentic.decomposition.HeuristicDecomposition<T> heuristic(io.casehub.agency.agentic.decomposition.DecompositionHeuristic<T> heuristic)`
+### `public static io.casehub.agency.orchestration.decomposition.HeuristicDecomposition<T> heuristic(io.casehub.agency.orchestration.decomposition.DecompositionHeuristic<T> heuristic)`
 
 #### Parameters
 
-- `heuristic` (`io.casehub.agency.agentic.decomposition.DecompositionHeuristic<T>`)
+- `heuristic` (`io.casehub.agency.orchestration.decomposition.DecompositionHeuristic<T>`)
 
-### `public static io.casehub.agency.agentic.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider)`
+### `public static io.casehub.agency.orchestration.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider)`
 
 #### Parameters
 
 - `agentProvider` (`io.casehub.platform.agent.AgentProvider`)
 
-### `public static io.casehub.agency.agentic.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, int maxDepth)`
+### `public static io.casehub.agency.orchestration.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, int maxDepth)`
 
 #### Parameters
 
 - `agentProvider` (`io.casehub.platform.agent.AgentProvider`)
 - `maxDepth` (`int`)
 
-### `public static io.casehub.agency.agentic.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer)`
+### `public static io.casehub.agency.orchestration.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer)`
 
 #### Parameters
 
 - `agentProvider` (`io.casehub.platform.agent.AgentProvider`)
 - `stateRenderer` (`java.util.function.Function<T,java.lang.String>`)
 
-### `public static io.casehub.agency.agentic.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer, int maxDepth)`
+### `public static io.casehub.agency.orchestration.decomposition.HybridDecomposition<T> hybrid(io.casehub.platform.agent.AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer, int maxDepth)`
 
 #### Parameters
 
@@ -60,35 +60,35 @@
 - `guard` (`java.util.function.Predicate<T>`)
 - `strategy` (`DecompositionStrategy<T>`)
 
-### `public static io.casehub.agency.agentic.decomposition.IdentityDecomposition<T> none()`
+### `public static io.casehub.agency.orchestration.decomposition.IdentityDecomposition<T> none()`
 
-### `public static io.casehub.agency.agentic.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.agentic.AgentRef agent)`
-
-#### Parameters
-
-- `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
-
-### `public static io.casehub.agency.agentic.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.agentic.AgentRef agent, java.lang.String rationale)`
+### `public static io.casehub.agency.orchestration.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
+
+### `public static io.casehub.agency.orchestration.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.core.AgentRef agent, java.lang.String rationale)`
+
+#### Parameters
+
+- `description` (`java.lang.String`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `rationale` (`java.lang.String`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.agentic.AgentRef agent)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.agentic.AgentRef agent)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
 ### `public static DecompositionStrategy<T> sequence(TaskNode<T>[] tasks)`
 
@@ -96,4 +96,4 @@
 
 - `tasks` (`TaskNode<T>[]`)
 
-### `public static io.casehub.agency.agentic.decomposition.StaticDecomposition<T> staticTree()`
+### `public static io.casehub.agency.orchestration.decomposition.StaticDecomposition<T> staticTree()`

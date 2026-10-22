@@ -1,23 +1,21 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.aggregation.AuctionAggregation;
-import io.casehub.agency.agentic.aggregation.Bid;
-import io.casehub.agency.agentic.judgment.JudgmentPolicy;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.aggregation.AuctionAggregation;
+import io.casehub.agency.orchestration.aggregation.Bid;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
-import io.casehub.agency.agentic.yaml.compiler.ObservationFilterRegistry;
-import io.casehub.agency.agentic.yaml.compiler.WorldCompiler;
-import io.casehub.agency.agentic.yaml.registry.AggregationStrategyRegistry;
-import io.casehub.agency.agentic.yaml.spec.AggregationSpec;
+import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
+import io.casehub.agency.core.yaml.compiler.WorldCompiler;
+import io.casehub.agency.core.yaml.registry.AggregationStrategyRegistry;
+import io.casehub.agency.core.yaml.spec.AggregationSpec;
 import io.casehub.agency.summarisation.Summariser;
-import io.casehub.agency.summarisation.observation.affordance.AnnotatedSection;
-import io.casehub.agency.summarisation.observation.affordance.ObservationFilter;
+import io.casehub.agency.perception.observation.affordance.AnnotatedSection;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;

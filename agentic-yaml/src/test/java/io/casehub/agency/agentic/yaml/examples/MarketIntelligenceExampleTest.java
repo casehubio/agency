@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.FailurePolicy;
-import io.casehub.agency.agentic.aggregation.CollectAll;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.FailurePolicy;
+import io.casehub.agency.orchestration.aggregation.CollectAll;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,13 +1,13 @@
-package io.casehub.agency.agentic.decomposition.examples.incident;
+package io.casehub.agency.orchestration.decomposition.examples.incident;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.RoutingCandidate;
-import io.casehub.agency.agentic.decomposition.AgenticDecompositionContext;
-import io.casehub.agency.agentic.decomposition.HybridDecomposition;
-import io.casehub.agency.agentic.decomposition.PlannedTask;
-import io.casehub.agency.agentic.decomposition.PrimitiveTask;
-import io.casehub.agency.agentic.decomposition.StaticDecomposition;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.core.RoutingCandidate;
+import io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext;
+import io.casehub.agency.orchestration.decomposition.HybridDecomposition;
+import io.casehub.agency.orchestration.decomposition.PlannedTask;
+import io.casehub.agency.orchestration.decomposition.PrimitiveTask;
+import io.casehub.agency.orchestration.decomposition.StaticDecomposition;
 import io.casehub.engine.plan.DecompositionMethod;
 import io.casehub.engine.plan.TaskNode;
 import io.casehub.engine.plan.DagPlan;

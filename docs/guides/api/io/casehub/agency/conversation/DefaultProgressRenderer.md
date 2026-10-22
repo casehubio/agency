@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.DefaultProgressRenderer
+# io.casehub.agency.deliberation.conversation.DefaultProgressRenderer
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 

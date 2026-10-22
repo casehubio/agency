@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.RoutingSupport.TrustFilterOutcome.Decided
+# io.casehub.agency.governance.routing.agent.RoutingSupport.TrustFilterOutcome.Decided
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `record`
 

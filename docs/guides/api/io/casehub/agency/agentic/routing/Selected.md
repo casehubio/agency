@@ -1,39 +1,39 @@
-# io.casehub.agency.agentic.routing.RoutingDecision.Selected
+# io.casehub.agency.orchestration.routing.RoutingDecision.Selected
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `record`
 
 ## Fields
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.AgentRef>`)
+### `agents` (`java.util.List<io.casehub.agency.core.AgentRef>`)
 
 ### `reason` (`java.lang.String`)
 
 ## Record Components
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.AgentRef>`)
+### `agents` (`java.util.List<io.casehub.agency.core.AgentRef>`)
 
 ### `reason` (`java.lang.String`)
 
 ## Constructors
 
-### `public Selected(java.util.List<io.casehub.agency.agentic.AgentRef> agents)`
+### `public Selected(java.util.List<io.casehub.agency.core.AgentRef> agents)`
 
 #### Parameters
 
-- `agents` (`java.util.List<io.casehub.agency.agentic.AgentRef>`)
+- `agents` (`java.util.List<io.casehub.agency.core.AgentRef>`)
 
-### `public Selected(java.util.List<io.casehub.agency.agentic.AgentRef> agents, java.lang.String reason)`
+### `public Selected(java.util.List<io.casehub.agency.core.AgentRef> agents, java.lang.String reason)`
 
 #### Parameters
 
-- `agents` (`java.util.List<io.casehub.agency.agentic.AgentRef>`)
+- `agents` (`java.util.List<io.casehub.agency.core.AgentRef>`)
 - `reason` (`java.lang.String`)
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.agentic.AgentRef> agents()`
+### `public java.util.List<io.casehub.agency.core.AgentRef> agents()`
 
 ### `public final boolean equals(java.lang.Object o)`
 

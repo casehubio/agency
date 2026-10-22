@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.decomposition.PlannedTask
+# io.casehub.agency.orchestration.decomposition.PlannedTask
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `record`
 
 ## Fields
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ### `createdAt` (`java.time.Instant`)
 
@@ -14,13 +14,13 @@
 
 ### `id` (`java.lang.String`)
 
-### `outputContract` (`io.casehub.agency.agentic.decomposition.OutputContract`)
+### `outputContract` (`io.casehub.agency.orchestration.decomposition.OutputContract`)
 
 ### `rationale` (`java.lang.String`)
 
 ## Record Components
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ### `createdAt` (`java.time.Instant`)
 
@@ -28,36 +28,36 @@
 
 ### `id` (`java.lang.String`)
 
-### `outputContract` (`io.casehub.agency.agentic.decomposition.OutputContract`)
+### `outputContract` (`io.casehub.agency.orchestration.decomposition.OutputContract`)
 
 ### `rationale` (`java.lang.String`)
 
 ## Constructors
 
-### `public PlannedTask(java.lang.String id, java.time.Instant createdAt, java.lang.String description, io.casehub.agency.agentic.AgentRef agent, java.lang.String rationale)`
+### `public PlannedTask(java.lang.String id, java.time.Instant createdAt, java.lang.String description, io.casehub.agency.core.AgentRef agent, java.lang.String rationale)`
 
 #### Parameters
 
 - `id` (`java.lang.String`)
 - `createdAt` (`java.time.Instant`)
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `rationale` (`java.lang.String`)
 
-### `public PlannedTask(java.lang.String id, java.time.Instant createdAt, java.lang.String description, io.casehub.agency.agentic.AgentRef agent, java.lang.String rationale, io.casehub.agency.agentic.decomposition.OutputContract outputContract)`
+### `public PlannedTask(java.lang.String id, java.time.Instant createdAt, java.lang.String description, io.casehub.agency.core.AgentRef agent, java.lang.String rationale, io.casehub.agency.orchestration.decomposition.OutputContract outputContract)`
 
 #### Parameters
 
 - `id` (`java.lang.String`)
 - `createdAt` (`java.time.Instant`)
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `rationale` (`java.lang.String`)
-- `outputContract` (`io.casehub.agency.agentic.decomposition.OutputContract`)
+- `outputContract` (`io.casehub.agency.orchestration.decomposition.OutputContract`)
 
 ## Methods
 
-### `public io.casehub.agency.agentic.AgentRef agent()`
+### `public io.casehub.agency.core.AgentRef agent()`
 
 ### `public java.time.Instant createdAt()`
 
@@ -75,7 +75,7 @@
 
 ### `public java.lang.String id()`
 
-### `public io.casehub.agency.agentic.decomposition.OutputContract outputContract()`
+### `public io.casehub.agency.orchestration.decomposition.OutputContract outputContract()`
 
 ### `public java.lang.String rationale()`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.ForwardReasoningDecomposition
+# io.casehub.agency.orchestration.decomposition.ForwardReasoningDecomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 

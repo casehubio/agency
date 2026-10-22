@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.SubTaskFinding
+# io.casehub.agency.deliberation.conversation.SubTaskFinding
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

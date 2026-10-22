@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.annotations.runtime.PatternDescriptor;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
@@ -34,7 +34,7 @@ class PatternAnnotationStep {
     static final DotName JUDGE = DotName.createSimple("io.casehub.agency.annotations.Judge");
 
     static final DotName WORKER = DotName.createSimple("io.casehub.engine.annotations.Worker");
-    static final DotName AGENT_REF = DotName.createSimple("io.casehub.agency.agentic.AgentRef");
+    static final DotName AGENT_REF = DotName.createSimple("io.casehub.agency.core.AgentRef");
 
     static final Map<DotName, PatternType> PATTERN_ANNOTATIONS = Map.of(
             SUPERVISOR, PatternType.SUPERVISOR,

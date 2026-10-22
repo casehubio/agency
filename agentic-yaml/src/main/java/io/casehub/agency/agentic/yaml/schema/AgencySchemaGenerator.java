@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.schema;
+package io.casehub.agency.core.yaml.schema;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,30 +31,30 @@ public class AgencySchemaGenerator {
     private static Map<Class<?>, Map<Class<?>, String>> buildDiscriminatorOverrides() {
         var overrides = new HashMap<Class<?>, Map<Class<?>, String>>();
         for (var sealedType : List.of(
-                io.casehub.agency.agentic.yaml.spec.RoutingSpec.class,
-                io.casehub.agency.agentic.yaml.spec.TerminationSpec.class,
-                io.casehub.agency.agentic.yaml.spec.AggregationSpec.class,
-                io.casehub.agency.agentic.yaml.spec.ActivationSpec.class,
-                io.casehub.agency.agentic.yaml.spec.DecompositionSpec.class,
-                io.casehub.agency.agentic.yaml.spec.AgentRefSpec.class,
-                io.casehub.agency.agentic.yaml.spec.PatternSpec.class,
-                io.casehub.agency.agentic.yaml.spec.AcceptancePolicySpec.class,
-                io.casehub.agency.agentic.yaml.spec.TurnPolicySpec.class,
-                io.casehub.agency.agentic.yaml.spec.EpistemicRuleSpec.class,
-                io.casehub.agency.agentic.yaml.spec.ConvergencePolicySpec.class,
-                io.casehub.agency.agentic.yaml.spec.ConflictResolutionSpec.class,
-                io.casehub.agency.agentic.yaml.spec.TaskNodeSpec.class,
-                io.casehub.agency.agentic.yaml.spec.PromptOptimiserSpec.class,
-                io.casehub.agency.agentic.yaml.spec.DiversityStrategySpec.class,
-                io.casehub.agency.agentic.yaml.spec.ConfidenceScorerSpec.class,
-                io.casehub.agency.agentic.yaml.spec.ExecutionBackendSpec.class,
-                io.casehub.agency.agentic.yaml.spec.EventConcurrencyPolicySpec.class,
-                io.casehub.agency.agentic.yaml.spec.ExecutionListenerSpec.class,
-                io.casehub.agency.agentic.yaml.spec.CoalitionEvaluatorSpec.class,
-                io.casehub.agency.agentic.yaml.spec.RiskDecisionSpec.class,
-                io.casehub.agency.agentic.yaml.spec.CandidateSetStrategySpec.class,
-                io.casehub.agency.agentic.yaml.spec.VerifierStrategySpec.class,
-                io.casehub.agency.agentic.yaml.spec.CallerConfigSpec.class)) {
+                io.casehub.agency.core.yaml.spec.RoutingSpec.class,
+                io.casehub.agency.core.yaml.spec.TerminationSpec.class,
+                io.casehub.agency.core.yaml.spec.AggregationSpec.class,
+                io.casehub.agency.core.yaml.spec.ActivationSpec.class,
+                io.casehub.agency.core.yaml.spec.DecompositionSpec.class,
+                io.casehub.agency.core.yaml.spec.AgentRefSpec.class,
+                io.casehub.agency.core.yaml.spec.PatternSpec.class,
+                io.casehub.agency.core.yaml.spec.AcceptancePolicySpec.class,
+                io.casehub.agency.core.yaml.spec.TurnPolicySpec.class,
+                io.casehub.agency.core.yaml.spec.EpistemicRuleSpec.class,
+                io.casehub.agency.core.yaml.spec.ConvergencePolicySpec.class,
+                io.casehub.agency.core.yaml.spec.ConflictResolutionSpec.class,
+                io.casehub.agency.core.yaml.spec.TaskNodeSpec.class,
+                io.casehub.agency.core.yaml.spec.PromptOptimiserSpec.class,
+                io.casehub.agency.core.yaml.spec.DiversityStrategySpec.class,
+                io.casehub.agency.core.yaml.spec.ConfidenceScorerSpec.class,
+                io.casehub.agency.core.yaml.spec.ExecutionBackendSpec.class,
+                io.casehub.agency.core.yaml.spec.EventConcurrencyPolicySpec.class,
+                io.casehub.agency.core.yaml.spec.ExecutionListenerSpec.class,
+                io.casehub.agency.core.yaml.spec.CoalitionEvaluatorSpec.class,
+                io.casehub.agency.core.yaml.spec.RiskDecisionSpec.class,
+                io.casehub.agency.core.yaml.spec.CandidateSetStrategySpec.class,
+                io.casehub.agency.core.yaml.spec.VerifierStrategySpec.class,
+                io.casehub.agency.core.yaml.spec.CallerConfigSpec.class)) {
             extractJacksonDiscriminators(sealedType, overrides);
         }
         return overrides;

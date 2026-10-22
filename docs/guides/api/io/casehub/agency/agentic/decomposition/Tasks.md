@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.Tasks
+# io.casehub.agency.orchestration.decomposition.Tasks
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -39,45 +39,45 @@
 
 ### `private static java.lang.String generateId()`
 
-### `public static io.casehub.agency.agentic.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.agentic.AgentRef agent)`
+### `public static io.casehub.agency.orchestration.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
-### `public static io.casehub.agency.agentic.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.agentic.AgentRef agent, java.lang.String rationale)`
+### `public static io.casehub.agency.orchestration.decomposition.PlannedTask<T> planned(java.lang.String description, io.casehub.agency.core.AgentRef agent, java.lang.String rationale)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `rationale` (`java.lang.String`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.agentic.AgentRef agent)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.agentic.AgentRef agent, java.util.function.Consumer<T> effect)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(io.casehub.agency.core.AgentRef agent, java.util.function.Consumer<T> effect)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `effect` (`java.util.function.Consumer<T>`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.agentic.AgentRef agent)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
-### `public static io.casehub.agency.agentic.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.agentic.AgentRef agent, java.util.function.Consumer<T> effect)`
+### `public static io.casehub.agency.orchestration.decomposition.PrimitiveTask<T> primitive(java.lang.String description, io.casehub.agency.core.AgentRef agent, java.util.function.Consumer<T> effect)`
 
 #### Parameters
 
 - `description` (`java.lang.String`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `effect` (`java.util.function.Consumer<T>`)

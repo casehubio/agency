@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.routing.RoutingDecision.Unresolvable
+# io.casehub.agency.orchestration.routing.RoutingDecision.Unresolvable
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `record`
 

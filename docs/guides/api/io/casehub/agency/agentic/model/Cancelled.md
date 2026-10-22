@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionState.Cancelled
+# io.casehub.agency.orchestration.execution.ExecutionState.Cancelled
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

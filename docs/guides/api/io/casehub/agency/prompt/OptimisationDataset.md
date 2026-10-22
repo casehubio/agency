@@ -1,33 +1,33 @@
-# io.casehub.agency.prompt.OptimisationDataset
+# io.casehub.agency.optimisation.prompt.OptimisationDataset
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
 ## Fields
 
-### `candidates` (`java.util.List<io.casehub.agency.prompt.ExampleCandidate>`)
+### `candidates` (`java.util.List<io.casehub.agency.optimisation.prompt.ExampleCandidate>`)
 
-### `outcomes` (`java.util.List<io.casehub.agency.prompt.VariantOutcome>`)
+### `outcomes` (`java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>`)
 
 ## Record Components
 
-### `candidates` (`java.util.List<io.casehub.agency.prompt.ExampleCandidate>`)
+### `candidates` (`java.util.List<io.casehub.agency.optimisation.prompt.ExampleCandidate>`)
 
-### `outcomes` (`java.util.List<io.casehub.agency.prompt.VariantOutcome>`)
+### `outcomes` (`java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>`)
 
 ## Constructors
 
-### `public OptimisationDataset(java.util.List<io.casehub.agency.prompt.VariantOutcome> outcomes, java.util.List<io.casehub.agency.prompt.ExampleCandidate> candidates)`
+### `public OptimisationDataset(java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome> outcomes, java.util.List<io.casehub.agency.optimisation.prompt.ExampleCandidate> candidates)`
 
 #### Parameters
 
-- `outcomes` (`java.util.List<io.casehub.agency.prompt.VariantOutcome>`)
-- `candidates` (`java.util.List<io.casehub.agency.prompt.ExampleCandidate>`)
+- `outcomes` (`java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>`)
+- `candidates` (`java.util.List<io.casehub.agency.optimisation.prompt.ExampleCandidate>`)
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.prompt.ExampleCandidate> candidates()`
+### `public java.util.List<io.casehub.agency.optimisation.prompt.ExampleCandidate> candidates()`
 
 ### `public final boolean equals(java.lang.Object o)`
 
@@ -37,6 +37,6 @@
 
 ### `public final int hashCode()`
 
-### `public java.util.List<io.casehub.agency.prompt.VariantOutcome> outcomes()`
+### `public java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome> outcomes()`
 
 ### `public final java.lang.String toString()`

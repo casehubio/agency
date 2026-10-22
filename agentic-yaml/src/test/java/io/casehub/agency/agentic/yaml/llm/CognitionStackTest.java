@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.llm;
+package io.casehub.agency.core.yaml.llm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.compiler.CognitionCompiler;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ class CognitionStackTest {
         assertThat(sections).isNotEmpty();
     }
 
-    private static io.casehub.agency.agentic.yaml.compiler.CompiledCognition loadCompiledCognition() throws IOException {
+    private static io.casehub.agency.core.yaml.compiler.CompiledCognition loadCompiledCognition() throws IOException {
         try (var is = CognitionStackTest.class.getResourceAsStream(
                 "/examples/historical-encounter/cognition.yaml")) {
             var def = YAML.readValue(is, CognitionDefinition.class);

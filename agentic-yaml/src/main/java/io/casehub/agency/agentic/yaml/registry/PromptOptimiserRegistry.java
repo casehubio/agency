@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.PromptOptimiserSpec;
-import io.casehub.agency.prompt.PromptOptimiser;
-import io.casehub.agency.prompt.optimiser.FewShotOptimiser;
-import io.casehub.agency.prompt.optimiser.InstructionOptimiser;
-import io.casehub.agency.prompt.optimiser.TopNDiversityStrategy;
+import io.casehub.agency.core.yaml.spec.PromptOptimiserSpec;
+import io.casehub.agency.optimisation.prompt.PromptOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.FewShotOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.InstructionOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.TopNDiversityStrategy;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
 

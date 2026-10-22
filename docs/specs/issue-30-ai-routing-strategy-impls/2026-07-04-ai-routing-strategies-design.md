@@ -18,7 +18,7 @@ Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engi
 
 ### `LlmAgentRoutingStrategy` (id: `"llm"`)
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Pipeline:**
 1. If `TrustCandidateClassifier` available → classify candidates via `classifier.classify()`:
@@ -47,7 +47,7 @@ Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engi
 
 ### `CbrAgentRoutingStrategy` (id: `"cbr"`)
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Prerequisite:** `AgentRoutingContext` must carry `tenantId` — required by `CbrQuery` constructor (throws NPE on null). No existing strategy needs tenantId; this is the first consumer. Tracked as engine-api follow-up. CBR strategy is blocked until this lands.
 
@@ -135,7 +135,7 @@ src/test/java/io/casehub/agency/routing/agent/
 ```
 
 Existing packages:
-- `io.casehub.agency.agentic.routing` — blocks-internal orchestration model (RoutingStrategy<T>, LlmSelectedRouting, etc.)
+- `io.casehub.agency.orchestration.routing` — blocks-internal orchestration model (RoutingStrategy<T>, LlmSelectedRouting, etc.)
   - `LlmSelectedRouting` will be refactored to delegate to `LlmRoutingSupport` (shared utility extraction, not parallel code)
 
 ---

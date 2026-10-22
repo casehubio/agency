@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ThreadEntry
+# io.casehub.agency.deliberation.conversation.ThreadEntry
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

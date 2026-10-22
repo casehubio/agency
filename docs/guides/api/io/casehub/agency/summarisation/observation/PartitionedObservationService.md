@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.PartitionedObservationService
+# io.casehub.agency.perception.observation.PartitionedObservationService
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `class`
 
@@ -8,22 +8,22 @@
 
 ### `eventLevel` (`io.casehub.agency.summarisation.EventLevel`)
 
-### `observers` (`java.util.concurrent.ConcurrentHashMap<java.lang.String,io.casehub.agency.summarisation.observation.ObserverState<E,K>>`)
+### `observers` (`java.util.concurrent.ConcurrentHashMap<java.lang.String,io.casehub.agency.perception.observation.ObserverState<E,K>>`)
 
-### `renderer` (`io.casehub.agency.summarisation.observation.ObservationRenderer<E>`)
+### `renderer` (`io.casehub.agency.perception.observation.ObservationRenderer<E>`)
 
 ### `timestampExtractor` (`java.util.function.Function<E,java.lang.Long>`)
 
-### `visibilityPolicy` (`io.casehub.agency.summarisation.observation.VisibilityPolicy<E,K>`)
+### `visibilityPolicy` (`io.casehub.agency.perception.observation.VisibilityPolicy<E,K>`)
 
 ## Constructors
 
-### `public PartitionedObservationService(io.casehub.agency.summarisation.observation.ObservationRenderer<E> renderer, io.casehub.agency.summarisation.observation.VisibilityPolicy<E,K> visibilityPolicy, java.util.function.Function<E,java.lang.Long> timestampExtractor, io.casehub.agency.summarisation.EventLevel eventLevel)`
+### `public PartitionedObservationService(io.casehub.agency.perception.observation.ObservationRenderer<E> renderer, io.casehub.agency.perception.observation.VisibilityPolicy<E,K> visibilityPolicy, java.util.function.Function<E,java.lang.Long> timestampExtractor, io.casehub.agency.summarisation.EventLevel eventLevel)`
 
 #### Parameters
 
-- `renderer` (`io.casehub.agency.summarisation.observation.ObservationRenderer<E>`)
-- `visibilityPolicy` (`io.casehub.agency.summarisation.observation.VisibilityPolicy<E,K>`)
+- `renderer` (`io.casehub.agency.perception.observation.ObservationRenderer<E>`)
+- `visibilityPolicy` (`io.casehub.agency.perception.observation.VisibilityPolicy<E,K>`)
 - `timestampExtractor` (`java.util.function.Function<E,java.lang.Long>`)
 - `eventLevel` (`io.casehub.agency.summarisation.EventLevel`)
 
@@ -38,7 +38,7 @@
 
 ### `public void clear()`
 
-### `public io.casehub.agency.summarisation.observation.PartitionedDrain<K> drain(java.lang.String observerId, K currentPartition, long now)`
+### `public io.casehub.agency.perception.observation.PartitionedDrain<K> drain(java.lang.String observerId, K currentPartition, long now)`
 
 #### Parameters
 
@@ -46,7 +46,7 @@
 - `currentPartition` (`K`)
 - `now` (`long`)
 
-### `public io.casehub.agency.summarisation.observation.ObserverState<E,K> observerState(java.lang.String observerId)`
+### `public io.casehub.agency.perception.observation.ObserverState<E,K> observerState(java.lang.String observerId)`
 
 #### Parameters
 

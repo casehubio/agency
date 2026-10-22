@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConversationRendererConfig.Builder
+# io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
@@ -14,7 +14,7 @@
 
 ### `messageTypeLabel` (`java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String>`)
 
-### `priorityLabel` (`java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String>`)
+### `priorityLabel` (`java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String>`)
 
 ### `resolvedStatuses` (`java.util.Set<java.lang.String>`)
 
@@ -36,75 +36,75 @@
 
 ## Methods
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig build()`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig build()`
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder entryTypeLabel(java.util.Map<java.lang.String,java.lang.String> entryTypeLabel)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder entryTypeLabel(java.util.Map<java.lang.String,java.lang.String> entryTypeLabel)`
 
 #### Parameters
 
 - `entryTypeLabel` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder escalatedStatuses(java.util.Set<java.lang.String> escalatedStatuses)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder escalatedStatuses(java.util.Set<java.lang.String> escalatedStatuses)`
 
 #### Parameters
 
 - `escalatedStatuses` (`java.util.Set<java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder groupByTopic(boolean groupByTopic)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder groupByTopic(boolean groupByTopic)`
 
 #### Parameters
 
 - `groupByTopic` (`boolean`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder messageTypeLabel(java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String> messageTypeLabel)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder messageTypeLabel(java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String> messageTypeLabel)`
 
 #### Parameters
 
 - `messageTypeLabel` (`java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder priorityLabel(java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String> priorityLabel)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder priorityLabel(java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String> priorityLabel)`
 
 #### Parameters
 
-- `priorityLabel` (`java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String>`)
+- `priorityLabel` (`java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder resolvedStatuses(java.util.Set<java.lang.String> resolvedStatuses)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder resolvedStatuses(java.util.Set<java.lang.String> resolvedStatuses)`
 
 #### Parameters
 
 - `resolvedStatuses` (`java.util.Set<java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder roleLabel(java.util.Map<java.lang.String,java.lang.String> roleLabel)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder roleLabel(java.util.Map<java.lang.String,java.lang.String> roleLabel)`
 
 #### Parameters
 
 - `roleLabel` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder showConvergenceSignal(boolean showConvergenceSignal)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder showConvergenceSignal(boolean showConvergenceSignal)`
 
 #### Parameters
 
 - `showConvergenceSignal` (`boolean`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder showEpistemicStatus(boolean showEpistemicStatus)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder showEpistemicStatus(boolean showEpistemicStatus)`
 
 #### Parameters
 
 - `showEpistemicStatus` (`boolean`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder showObligationChain(boolean showObligationChain)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder showObligationChain(boolean showObligationChain)`
 
 #### Parameters
 
 - `showObligationChain` (`boolean`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder showProgress(boolean showProgress)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder showProgress(boolean showProgress)`
 
 #### Parameters
 
 - `showProgress` (`boolean`)
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder statusEmoji(java.util.Map<java.lang.String,java.lang.String> statusEmoji)`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder statusEmoji(java.util.Map<java.lang.String,java.lang.String> statusEmoji)`
 
 #### Parameters
 

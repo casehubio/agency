@@ -1,8 +1,8 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.pattern.DebateBuilder;
-import io.casehub.agency.agentic.pattern.SupervisorBuilder;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.orchestration.pattern.DebateBuilder;
+import io.casehub.agency.orchestration.pattern.SupervisorBuilder;
 import io.casehub.agency.annotations.Agent;
 import io.casehub.agency.annotations.Debate;
 import io.casehub.agency.annotations.Debater;

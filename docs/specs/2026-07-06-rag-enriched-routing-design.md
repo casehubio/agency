@@ -26,7 +26,7 @@ M×N proliferation. The right architecture separates signal enrichment from deci
 
 ### 1. RoutingPromptSection — composable LLM enrichment
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 ```java
 public interface RoutingPromptSection {
@@ -86,7 +86,7 @@ public class RoutingPromptAssembler {
 
 ### 2. CbrRoutingPromptSection — first enrichment provider
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 Queries `CbrCaseMemoryStore` and formats historical context for the LLM prompt.
 
@@ -170,7 +170,7 @@ if (enrichment != null) {
 
 ### 4. RoutingFeatureExtractor — domain-pluggable feature extraction
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 ```java
 public interface RoutingFeatureExtractor {
@@ -317,7 +317,7 @@ only types already present (`AgentRoutingContext`, `Uni`, `Duration`).
 
 ### 7. CbrRoutingOutcomeRecorder — blocks implementation
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 Records a `PlanCbrCase` with a single `PlanTrace` entry per routing decision.
 

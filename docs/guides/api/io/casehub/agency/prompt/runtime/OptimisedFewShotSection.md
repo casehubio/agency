@@ -1,34 +1,34 @@
-# io.casehub.agency.prompt.runtime.OptimisedFewShotSection
+# io.casehub.agency.optimisation.prompt.runtime.OptimisedFewShotSection
 
-**Package:** `io.casehub.agency.prompt.runtime`
+**Package:** `io.casehub.agency.optimisation.prompt.runtime`
 
 **Kind:** `class`
 
 ## Fields
 
-### `selector` (`io.casehub.agency.prompt.VariantSelector`)
+### `selector` (`io.casehub.agency.optimisation.prompt.VariantSelector`)
 
 ### `signatureId` (`java.lang.String`)
 
-### `store` (`io.casehub.agency.prompt.PromptVariantStore`)
+### `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Constructors
 
-### `public OptimisedFewShotSection(io.casehub.agency.prompt.PromptVariantStore store, io.casehub.agency.prompt.VariantSelector selector, java.lang.String signatureId)`
+### `public OptimisedFewShotSection(io.casehub.agency.optimisation.prompt.PromptVariantStore store, io.casehub.agency.optimisation.prompt.VariantSelector selector, java.lang.String signatureId)`
 
 #### Parameters
 
-- `store` (`io.casehub.agency.prompt.PromptVariantStore`)
-- `selector` (`io.casehub.agency.prompt.VariantSelector`)
+- `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
+- `selector` (`io.casehub.agency.optimisation.prompt.VariantSelector`)
 - `signatureId` (`java.lang.String`)
 
 ## Methods
 
-### `private java.lang.String formatExamples(java.util.List<io.casehub.agency.prompt.FewShotExample> examples)`
+### `private java.lang.String formatExamples(java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample> examples)`
 
 #### Parameters
 
-- `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+- `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 
 ### `public java.lang.String render(AgentRoutingContext context, java.util.List<AgentCandidate> eligible)`
 

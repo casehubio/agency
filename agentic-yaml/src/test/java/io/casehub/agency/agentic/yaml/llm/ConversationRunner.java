@@ -1,13 +1,13 @@
-package io.casehub.agency.agentic.yaml.llm;
+package io.casehub.agency.core.yaml.llm;
 
 import io.casehub.neocortex.cognition.core.CognitiveImpact;
 import io.casehub.neocortex.cognition.core.CognitionMetrics;
 import io.casehub.neocortex.cognition.core.CognitionSnapshot;
 import io.casehub.neocortex.cognition.core.EngagementSignal;
-import io.casehub.agency.agentic.yaml.compiler.CompiledWorld;
+import io.casehub.agency.core.yaml.compiler.CompiledWorld;
 import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.PromptSection;
-import io.casehub.agency.summarisation.observation.affordance.AffordanceRenderer;
+import io.casehub.agency.perception.observation.affordance.AffordanceRenderer;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;

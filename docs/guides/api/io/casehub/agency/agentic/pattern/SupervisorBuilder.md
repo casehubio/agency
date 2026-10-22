@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.SupervisorBuilder
+# io.casehub.agency.orchestration.pattern.SupervisorBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -22,19 +22,19 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.pattern.SupervisorBuilder<T> agents(io.casehub.agency.agentic.AgentRef[] agents)`
+### `public io.casehub.agency.orchestration.pattern.SupervisorBuilder<T> agents(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public io.casehub.agency.agentic.pattern.SupervisorBuilder<T> agents(io.casehub.agency.agentic.RoutingCandidate[] candidates)`
+### `public io.casehub.agency.orchestration.pattern.SupervisorBuilder<T> agents(io.casehub.agency.core.RoutingCandidate[] candidates)`
 
 #### Parameters
 
-- `candidates` (`io.casehub.agency.agentic.RoutingCandidate[]`)
+- `candidates` (`io.casehub.agency.core.RoutingCandidate[]`)
 
-### `public io.casehub.agency.agentic.pattern.SupervisorBuilder<T> stateRenderer(java.util.function.Function<T,java.lang.String> stateRenderer)`
+### `public io.casehub.agency.orchestration.pattern.SupervisorBuilder<T> stateRenderer(java.util.function.Function<T,java.lang.String> stateRenderer)`
 
 Sets a state renderer that converts typed state `T` to a String
 representation for the LLM routing prompt. Eagerly applies — if an

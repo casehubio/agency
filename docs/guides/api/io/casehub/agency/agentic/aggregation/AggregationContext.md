@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.aggregation.AggregationContext
+# io.casehub.agency.orchestration.aggregation.AggregationContext
 
-**Package:** `io.casehub.agency.agentic.aggregation`
+**Package:** `io.casehub.agency.orchestration.aggregation`
 
 **Kind:** `record`
 

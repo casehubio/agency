@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.OrchestratedDriver
+# io.casehub.agency.orchestration.execution.OrchestratedDriver
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `class`
 
@@ -8,17 +8,17 @@
 
 ### `public OrchestratedDriver()`
 
-### `public OrchestratedDriver(io.casehub.agency.agentic.model.AgentInvoker<T> invoker)`
+### `public OrchestratedDriver(io.casehub.agency.orchestration.execution.AgentInvoker<T> invoker)`
 
 #### Parameters
 
-- `invoker` (`io.casehub.agency.agentic.model.AgentInvoker<T>`)
+- `invoker` (`io.casehub.agency.orchestration.execution.AgentInvoker<T>`)
 
 ## Methods
 
-### `protected Uni<io.casehub.agency.agentic.model.ExecutionResult> runLoop(io.casehub.agency.agentic.model.ExecutionModel<T> model, T context)`
+### `protected Uni<io.casehub.agency.orchestration.execution.ExecutionResult> runLoop(io.casehub.agency.orchestration.execution.ExecutionModel<T> model, T context)`
 
 #### Parameters
 
-- `model` (`io.casehub.agency.agentic.model.ExecutionModel<T>`)
+- `model` (`io.casehub.agency.orchestration.execution.ExecutionModel<T>`)
 - `context` (`T`)

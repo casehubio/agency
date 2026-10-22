@@ -13,7 +13,7 @@ subtype: diary
 
 An agent with a great personality model and a detailed understanding of its users can still be terrible at conversation. It knows Alice prefers directness. It knows Bob cares about security topics. It knows its own personality leans toward thoroughness. None of that tells it whether its last three responses were too long, whether its formality is landing well, or whether asking more questions would increase engagement. The gap between knowing about people and knowing what works with them is metacognition — the agent reflecting on its own interaction strategies and adjusting based on outcomes.
 
-StrategyLearning is the fifth social cognition orchestrator in `io.casehub.agency.agentic.social`, and it fills a specific cognitive slot the other four don't cover. PersonalityEvolution handles how the agent changes over time. InnerLife handles when it speaks. UserModel handles what it knows about others. MentalModel handles what others think and want. StrategyLearning handles the feedback loop: did this approach work, and what should I do differently?
+StrategyLearning is the fifth social cognition orchestrator in `io.casehub.agency.core.social`, and it fills a specific cognitive slot the other four don't cover. PersonalityEvolution handles how the agent changes over time. InnerLife handles when it speaks. UserModel handles what it knows about others. MentalModel handles what others think and want. StrategyLearning handles the feedback loop: did this approach work, and what should I do differently?
 
 ## The perceive/learn boundary
 

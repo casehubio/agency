@@ -6,13 +6,13 @@
 
 ## Summary
 
-`AuctionAggregation` — an `AggregationStrategy<AuctionState>` implementation in `io.casehub.agency.agentic.aggregation` for multi-round iterative bidding. Supports English (ascending) and Dutch (descending) auction types. Composes with the existing LOOP execution pattern for multi-round iteration.
+`AuctionAggregation` — an `AggregationStrategy<AuctionState>` implementation in `io.casehub.agency.orchestration.aggregation` for multi-round iterative bidding. Supports English (ascending) and Dutch (descending) auction types. Composes with the existing LOOP execution pattern for multi-round iteration.
 
 ## Architecture
 
 ### Package placement
 
-Extends `io.casehub.agency.agentic.aggregation` — the existing home for `AggregationStrategy` implementations (alongside `MajorityVote`, `CollectAll`, `PassThrough`).
+Extends `io.casehub.agency.orchestration.aggregation` — the existing home for `AggregationStrategy` implementations (alongside `MajorityVote`, `CollectAll`, `PassThrough`).
 
 ### How it works
 
@@ -93,7 +93,7 @@ public class AuctionAggregation implements AggregationStrategy<AuctionState> {
 
 ## File Inventory
 
-6 production files, 1 test file. All in `io.casehub.agency.agentic.aggregation`.
+6 production files, 1 test file. All in `io.casehub.agency.orchestration.aggregation`.
 
 ## Scope Exclusions
 

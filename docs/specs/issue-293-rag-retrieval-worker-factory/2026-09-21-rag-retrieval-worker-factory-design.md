@@ -21,7 +21,7 @@ that duplication.
 
 ## Solution
 
-A static factory class `RagRetrievalWorkerFactory` in `io.casehub.agency.rag`
+A static factory class `RagRetrievalWorkerFactory` in `io.casehub.agency.perception.rag`
 that produces a configured `Worker` from:
 
 - A `QueryExtractionStrategy` (neocortex `rag-api`) — domain-specific query extraction
@@ -33,7 +33,7 @@ that produces a configured `Worker` from:
 ### API
 
 ```java
-package io.casehub.agency.rag;
+package io.casehub.agency.perception.rag;
 
 public final class RagRetrievalWorkerFactory {
 
@@ -95,7 +95,7 @@ This matches the SOC reference implementation output.
 ## Module and dependency
 
 **Module:** `blocks` (main module)
-**Package:** `io.casehub.agency.rag`
+**Package:** `io.casehub.agency.perception.rag`
 **New dependency:** `casehub-neocortex-rag-api` with `<scope>provided</scope>`
 
 The `provided` scope follows the established pattern for optional capabilities

@@ -1,16 +1,16 @@
 package io.casehub.agency.annotations.runtime;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.FailurePolicy;
-import io.casehub.agency.agentic.RoutingCandidate;
-import io.casehub.agency.agentic.activation.OnExplicitDispatch;
-import io.casehub.agency.agentic.aggregation.PassThrough;
-import io.casehub.agency.agentic.decomposition.IdentityDecomposition;
-import io.casehub.agency.agentic.model.ExecutionModel;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.pattern.Patterns;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
-import io.casehub.agency.agentic.termination.TerminationDecision;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.FailurePolicy;
+import io.casehub.agency.core.RoutingCandidate;
+import io.casehub.agency.orchestration.activation.OnExplicitDispatch;
+import io.casehub.agency.orchestration.aggregation.PassThrough;
+import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.pattern.Patterns;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.termination.TerminationDecision;
 import io.quarkus.runtime.annotations.Recorder;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class AgencyAnnotationsRecorder {
         builder.task(desc.beanName());
 
         int maxIterations = (int) desc.attributes().getOrDefault("maxIterations", 10);
-        builder.terminate(new io.casehub.agency.agentic.termination.MaxIterationsTermination<>(maxIterations));
+        builder.terminate(new io.casehub.agency.orchestration.termination.MaxIterationsTermination<>(maxIterations));
 
         return builder.build();
     }

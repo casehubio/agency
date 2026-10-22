@@ -25,7 +25,7 @@ A pattern belongs in blocks if it meets at least one of these criteria:
 
 ## Packages
 
-### `io.casehub.agency.channel`
+### `io.casehub.agency.communication.dispatch`
 
 Channel utility blocks -- message metadata encoding, context tracking, bounded projection, and agent dispatch coordination.
 
@@ -43,7 +43,7 @@ Channel utility blocks -- message metadata encoding, context tracking, bounded p
 | `ChannelEventAdapter<E>` | class | Bridge: implements `MessageObserver`, extracts domain events via extractor function, publishes `LevelEvent<E>` to an `EventStreamBus`. Optional channel name filtering. |
 | `ChannelEventPublisher<E>` | class | Reverse bridge: subscribes to `EventStreamBus<E>`, dispatches events back to qhorus channels via `MessageDispatcher`. |
 
-### `io.casehub.agency.channel.summary`
+### `io.casehub.agency.communication.channel.summary`
 
 Channel summary integration -- bridges `ContentSummariser` into qhorus `SummaryUpdateHook`.
 
@@ -54,7 +54,7 @@ Channel summary integration -- bridges `ContentSummariser` into qhorus `SummaryU
 | `NoOpThreadSummaryStore` | class | No-op `@DefaultBean @ApplicationScoped` `ThreadSummaryStore`. `save()` returns the input unchanged, queries return empty. Prevents CDI deployment failures when no real store is on the classpath. Override with a qhorus persistence implementation. |
 | `ThreadSummaryObserver` | class | `@ApplicationScoped` push-based observer -- detects DONE/FAILURE messages with correlationId, fetches thread messages via `CrossTenantMessageStore`, delegates to `ContentSummariser<Message>`, writes to `ThreadSummaryStore`. Per-correlationId concurrency guard. Async via `ManagedExecutor`. |
 
-### `io.casehub.agency.attestation`
+### `io.casehub.agency.governance.attestation`
 
 Attestation write-path types and lifecycle observer SPI.
 
@@ -66,7 +66,7 @@ Attestation write-path types and lifecycle observer SPI.
 | `LifecycleAttestationObserver<E>` | interface | `@FunctionalInterface` SPI: `List<AttestationIntent> observe(E event, AttestationContext)`. Domain repos implement per event type. |
 | `AttestationContext` | record | Ambient context for observers: tenancyId, caseId, capabilityTag. |
 
-### `io.casehub.agency.conversation`
+### `io.casehub.agency.deliberation.conversation`
 
 Structured conversation protocol -- reusable infrastructure for multi-agent deliberation channels. Extracted from drafthouse. 27 types covering projection, fold state, rendering, epistemic common ground, and convergence detection.
 
@@ -117,7 +117,7 @@ Structured conversation protocol -- reusable infrastructure for multi-agent deli
 | `ConvergencePolicy` | @FunctionalInterface | Strategy for evaluating convergence: `evaluate(state, commonGround, context) -> ConvergenceSignal`. |
 | `ConvergencePolicies` | final class | Built-in policies: `structural(similarityThreshold, staleRounds)`, `commonGroundRatio(consensusThreshold, deadlockDisputeRatio)`, `composite(policies...)`. |
 
-### `io.casehub.agency.conversation.orchestration`
+### `io.casehub.agency.deliberation.conversation.orchestration`
 
 Autonomous multi-agent conversation orchestrator -- composes `ConversationProjection`, `PartitionedObservationService`, pluggable turn policies, and `TerminationCondition` into a self-driving conversation loop. Applications wire it into their `ChannelBackend` with domain-specific context injection only.
 
@@ -185,7 +185,7 @@ ConversationOutcome outcome = orchestrator.converse(triggeringMessage)
     .await().indefinitely();
 ```
 
-### `io.casehub.agency.normative`
+### `io.casehub.agency.deliberation.normative`
 
 Generic normative conflict resolution — resolves conflicts between competing norm decisions. When multiple norms (e.g., risk classifiers, policy rules) produce contradictory decisions, a `ConflictResolutionStrategy<T>` determines which one wins.
 
@@ -216,7 +216,7 @@ var resolution = new PriorityResolution<RiskDecision>().resolve(decisions);
 // resolution.winner() = clinical-classifier (priority 1 beats 10)
 ```
 
-### `io.casehub.agency.negotiation`
+### `io.casehub.agency.deliberation.negotiation`
 
 Negotiation channel protocol -- reusable `ChannelProjection<NegotiationState>` for proposal/counter-proposal exchange. Uses the PROPOSE MessageType (commissive speech act, qhorus#395). Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum).
 
@@ -260,7 +260,7 @@ var consensus = new NegotiationProjection(
 // For unanimous: use UnanimousAcceptance. For majority: MajorityAcceptance.
 ```
 
-### `io.casehub.agency.agentic`
+### `io.casehub.agency.core`
 
 Compositional agentic orchestration framework -- ten sub-packages implementing five SPIs for routing, decomposition, activation, aggregation, and termination, plus execution drivers, accountability listeners, and pre-composed pattern builders.
 
@@ -399,7 +399,7 @@ Compositional agentic orchestration framework -- ten sub-packages implementing f
 
 All builders extend `AbstractPatternBuilder` and provide: `route()`, `decompose()`, `activate()`, `aggregate()`, `terminate()`, `listener()`, `task()`, `backend()`, `build()` (returns ExecutionModel), `execute(T)` (builds and runs).
 
-### `io.casehub.agency.routing`
+### `io.casehub.agency.governance.routing`
 
 Trust routing audit types -- compliance records for trust-weighted routing decisions.
 
@@ -409,7 +409,7 @@ Trust routing audit types -- compliance records for trust-weighted routing decis
 | `TrustRoutingRequirement` | record | Compliance evidence wrapper: `requirementId`, `citation`, `mechanism`, `status` (RequirementStatus), `decisions` (List<RoutingDecisionRecord>) |
 | `RequirementStatus` | enum | `CLOSED`, `PARTIAL`, `BREACHED`, `GAP` |
 
-### `io.casehub.agency.routing.agent`
+### `io.casehub.agency.governance.routing.agent`
 
 AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipeline. Strategies are selected by name via `StrategyResolver` (engine#634). Optional trust classification via `Instance<T>` -- activates when engine-ledger is on the consumer's classpath.
 
@@ -430,7 +430,7 @@ AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipel
 | `DefaultCoordinationOutcomeWeights` | class (@DefaultBean) | Default coordination weights: COMPLETED=1.0, FAULTED=0.2, CANCELLED=0.0 |
 | `DispositionProfile` | record | Desired disposition for routing: `desired` (Map<DispositionAxis, String>), `weights` (Map<DispositionAxis, Double>). Method: `weight(axis)` defaults to 1.0. |
 
-### `io.casehub.agency.rag`
+### `io.casehub.agency.perception.rag`
 
 Reusable RAG retrieval worker factory -- produces engine `Worker` instances that extract queries via `QueryExtractionStrategy`, retrieve chunks from neocortex corpora via `CaseContextRetriever`, and return mapped results. Requires `casehub-neocortex-rag-api` on the consumer's classpath (provided scope in blocks).
 
@@ -463,13 +463,13 @@ Layered event summarisation framework -- temporal event accumulation with config
 | `TieredContentSummariser<T>` | class | Routes to one of three `ContentSummariser<T>` delegates (small/medium/large) based on item count thresholds. |
 | `VerbatimContentSummariser<T>` | class | Renders each item as a bullet point using a `Function<T, String>` renderer. Prepends previous summary. Annotates with `tier=verbatim`. No LLM. |
 
-### `io.casehub.agency.summarisation.llm`
+### `io.casehub.agency.perception.llm`
 
 | Class | Type | What it does |
 |-------|------|-------------|
 | `LlmContentSummariser<T>` | class | LLM-backed `ContentSummariser`. Uses `AgentProvider` with EDIT or APPEND prompt mode. Renders items via `Function<T, String>`, optional preamble. Annotates with `tier=synthesised`. |
 
-### `io.casehub.agency.summarisation.observation`
+### `io.casehub.agency.perception.observation`
 
 Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts.
 
@@ -480,7 +480,7 @@ Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts
 | `TieredObservationRenderer<E>` | class | Three-tier renderer. Below verbatimThreshold: individual events. Between thresholds: grouped by key. Above: summarised via `Summariser`. `withHeaderFormatter()` for custom headers. |
 | `PartitionedObservationService<E, K>` | class | Per-observer, per-partition accumulators. Events routed via `VisibilityPolicy`. `addObserver()`, `publishEvent()`, `drain(observerId, currentPartition, now) -> PartitionedDrain<K>`. Uses `ConcurrentHashMap`. |
 
-### `io.casehub.agency.summarisation.observation.affordance`
+### `io.casehub.agency.perception.observation.affordance`
 
 Affordance grounding -- per-entity observation rendering for LLM agents.
 
@@ -497,7 +497,7 @@ Affordance grounding -- per-entity observation rendering for LLM agents.
 | `ObservationPipeline` | class | Ordered `ObservationFilter` composition. `apply(sections, agentTags)` runs all stages, then unwraps `AnnotatedSection` to base `ObservationSection`. |
 | `PerceptionFilter` | class | Built-in `ObservationFilter`: visibility gating (drop sections whose `requiredTags` don't intersect `agentTags`) + resolution fallback (degrade to lower `ResolutionTier` on partial match). |
 
-### `io.casehub.agency.agentic.yaml` (module: `blocks-agentic-yaml`)
+### `io.casehub.agency.core.yaml` (module: `blocks-agentic-yaml`)
 
 YAML surface for agentic orchestration patterns — makes all 8 pattern topologies YAML-expressible via typed spec records, strategy registries, and a pattern compiler.
 
@@ -534,7 +534,7 @@ var compiler = new PatternCompiler(expressionEngine);
 ExecutionModel<?> model = compiler.compile(spec);
 ```
 
-### `io.casehub.agency.summarisation.narrative`
+### `io.casehub.agency.perception.narrative`
 
 Decision narrative pipeline -- transforms platform decision signals into human-readable explanations of agent decisions. Two-level architecture: L1 heuristic accumulation (no LLM), L2 LLM synthesis with incremental state.
 
@@ -573,7 +573,7 @@ Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly
 | `PromptSection` | @FunctionalInterface | `@Nullable contribute(PromptContext)`. Reads orchestrator cached state, returns formatted text section or null. |
 | `AvatarCognition` | interface | Composition root — `wrapAssembler()`, `initialize()`, `tick()`, `evaluateProactive()`, `recordInteraction()`. speech-ws injects via `Instance<AvatarCognition>`. |
 
-### `io.casehub.agency.agentic.social.prompt` (module: `blocks`)
+### `io.casehub.agency.core.social.prompt` (module: `blocks`)
 
 Social cognition speech integration — wires all social cognition orchestrators + attention mediator into the speech pipeline via the `AvatarCognition` SPI.
 

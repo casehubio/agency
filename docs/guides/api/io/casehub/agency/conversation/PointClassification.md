@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.PointClassification
+# io.casehub.agency.deliberation.conversation.PointClassification
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
@@ -8,7 +8,7 @@
 
 ### `location` (`java.lang.String`)
 
-### `priority` (`io.casehub.agency.conversation.Priority`)
+### `priority` (`io.casehub.agency.deliberation.conversation.Priority`)
 
 ### `scope` (`java.lang.String`)
 
@@ -16,17 +16,17 @@
 
 ### `location` (`java.lang.String`)
 
-### `priority` (`io.casehub.agency.conversation.Priority`)
+### `priority` (`io.casehub.agency.deliberation.conversation.Priority`)
 
 ### `scope` (`java.lang.String`)
 
 ## Constructors
 
-### `public PointClassification(io.casehub.agency.conversation.Priority priority, java.lang.String scope, java.lang.String location)`
+### `public PointClassification(io.casehub.agency.deliberation.conversation.Priority priority, java.lang.String scope, java.lang.String location)`
 
 #### Parameters
 
-- `priority` (`io.casehub.agency.conversation.Priority`)
+- `priority` (`io.casehub.agency.deliberation.conversation.Priority`)
 - `scope` (`java.lang.String`)
 - `location` (`java.lang.String`)
 
@@ -42,7 +42,7 @@
 
 ### `public java.lang.String location()`
 
-### `public io.casehub.agency.conversation.Priority priority()`
+### `public io.casehub.agency.deliberation.conversation.Priority priority()`
 
 ### `public java.lang.String scope()`
 

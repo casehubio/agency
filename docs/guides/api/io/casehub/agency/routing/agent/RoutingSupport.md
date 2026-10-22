@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.RoutingSupport
+# io.casehub.agency.governance.routing.agent.RoutingSupport
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -16,7 +16,7 @@
 
 ## Methods
 
-### `static io.casehub.agency.routing.agent.RoutingSupport.TrustFilterOutcome applyTrustFilter(TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, AgentRoutingContext context, java.util.List<AgentCandidate> candidates)`
+### `static io.casehub.agency.governance.routing.agent.RoutingSupport.TrustFilterOutcome applyTrustFilter(TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, AgentRoutingContext context, java.util.List<AgentCandidate> candidates)`
 
 #### Parameters
 

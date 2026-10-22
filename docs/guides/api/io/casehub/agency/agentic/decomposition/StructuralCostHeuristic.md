@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.StructuralCostHeuristic
+# io.casehub.agency.orchestration.decomposition.StructuralCostHeuristic
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -32,7 +32,7 @@
 
 - `node` (`TaskNode<T>`)
 
-### `public Uni<java.util.List<io.casehub.agency.agentic.decomposition.ScoredMethod<T>>> evaluate(TaskNode.CompoundTask<T> task, java.util.List<DecompositionMethod<T>> methods, DecompositionContext<T> context)`
+### `public Uni<java.util.List<io.casehub.agency.orchestration.decomposition.ScoredMethod<T>>> evaluate(TaskNode.CompoundTask<T> task, java.util.List<DecompositionMethod<T>> methods, DecompositionContext<T> context)`
 
 #### Parameters
 

@@ -1,48 +1,48 @@
-# io.casehub.agency.conversation.ConversationPoint
+# io.casehub.agency.deliberation.conversation.ConversationPoint
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
 ## Fields
 
-### `classification` (`io.casehub.agency.conversation.PointClassification`)
+### `classification` (`io.casehub.agency.deliberation.conversation.PointClassification`)
 
 ### `id` (`java.lang.String`)
 
 ### `status` (`java.lang.String`)
 
-### `thread` (`java.util.List<io.casehub.agency.conversation.ThreadEntry>`)
+### `thread` (`java.util.List<io.casehub.agency.deliberation.conversation.ThreadEntry>`)
 
 ### `topic` (`java.lang.String`)
 
 ## Record Components
 
-### `classification` (`io.casehub.agency.conversation.PointClassification`)
+### `classification` (`io.casehub.agency.deliberation.conversation.PointClassification`)
 
 ### `id` (`java.lang.String`)
 
 ### `status` (`java.lang.String`)
 
-### `thread` (`java.util.List<io.casehub.agency.conversation.ThreadEntry>`)
+### `thread` (`java.util.List<io.casehub.agency.deliberation.conversation.ThreadEntry>`)
 
 ### `topic` (`java.lang.String`)
 
 ## Constructors
 
-### `public ConversationPoint(java.lang.String id, java.lang.String topic, io.casehub.agency.conversation.PointClassification classification, java.util.List<io.casehub.agency.conversation.ThreadEntry> thread, java.lang.String status)`
+### `public ConversationPoint(java.lang.String id, java.lang.String topic, io.casehub.agency.deliberation.conversation.PointClassification classification, java.util.List<io.casehub.agency.deliberation.conversation.ThreadEntry> thread, java.lang.String status)`
 
 #### Parameters
 
 - `id` (`java.lang.String`)
 - `topic` (`java.lang.String`)
-- `classification` (`io.casehub.agency.conversation.PointClassification`)
-- `thread` (`java.util.List<io.casehub.agency.conversation.ThreadEntry>`)
+- `classification` (`io.casehub.agency.deliberation.conversation.PointClassification`)
+- `thread` (`java.util.List<io.casehub.agency.deliberation.conversation.ThreadEntry>`)
 - `status` (`java.lang.String`)
 
 ## Methods
 
-### `public io.casehub.agency.conversation.PointClassification classification()`
+### `public io.casehub.agency.deliberation.conversation.PointClassification classification()`
 
 ### `public final boolean equals(java.lang.Object o)`
 
@@ -56,7 +56,7 @@
 
 ### `public java.lang.String status()`
 
-### `public java.util.List<io.casehub.agency.conversation.ThreadEntry> thread()`
+### `public java.util.List<io.casehub.agency.deliberation.conversation.ThreadEntry> thread()`
 
 ### `public final java.lang.String toString()`
 

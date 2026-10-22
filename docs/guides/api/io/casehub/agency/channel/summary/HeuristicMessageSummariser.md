@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.summary.HeuristicMessageSummariser
+# io.casehub.agency.communication.channel.summary.HeuristicMessageSummariser
 
-**Package:** `io.casehub.agency.channel.summary`
+**Package:** `io.casehub.agency.communication.channel.summary`
 
 **Kind:** `class`
 

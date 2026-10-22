@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.routing.RoutingContext
+# io.casehub.agency.orchestration.routing.RoutingContext
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `record`
 
 ## Fields
 
-### `candidates` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `candidates` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `state` (`T`)
 
@@ -14,7 +14,7 @@
 
 ## Record Components
 
-### `candidates` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `candidates` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `state` (`T`)
 
@@ -22,17 +22,17 @@
 
 ## Constructors
 
-### `public RoutingContext(java.lang.String task, java.util.List<io.casehub.agency.agentic.RoutingCandidate> candidates, T state)`
+### `public RoutingContext(java.lang.String task, java.util.List<io.casehub.agency.core.RoutingCandidate> candidates, T state)`
 
 #### Parameters
 
 - `task` (`java.lang.String`)
-- `candidates` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `candidates` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 - `state` (`T`)
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.agentic.RoutingCandidate> candidates()`
+### `public java.util.List<io.casehub.agency.core.RoutingCandidate> candidates()`
 
 ### `public final boolean equals(java.lang.Object o)`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionState.Idle
+# io.casehub.agency.orchestration.execution.ExecutionState.Idle
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

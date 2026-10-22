@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.AgentTask
+# io.casehub.agency.communication.dispatch.AgentTask
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `record`
 

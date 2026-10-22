@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.BoundedProjectionDecorator
+# io.casehub.agency.communication.dispatch.BoundedProjectionDecorator
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 

@@ -20,7 +20,7 @@ import io.casehub.api.spi.WorkerFunctionProvider;
 import io.casehub.api.spi.judgment.CallerConfig;
 import io.casehub.api.spi.judgment.EvidenceRequirement;
 import io.casehub.api.spi.judgment.EvidenceType;
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.engine.agentic.judgment.PatternJudgmentConfig;
 import io.casehub.worker.api.WorkerFunction;
 import java.util.ArrayList;

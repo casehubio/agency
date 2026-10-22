@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.RoutingCandidate;
-import io.casehub.agency.agentic.routing.RoutingContext;
-import io.casehub.agency.agentic.routing.RoutingDecision;
-import io.casehub.agency.agentic.yaml.spec.RoutingSpec;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.core.RoutingCandidate;
+import io.casehub.agency.orchestration.routing.RoutingContext;
+import io.casehub.agency.orchestration.routing.RoutingDecision;
+import io.casehub.agency.core.yaml.spec.RoutingSpec;
 import io.casehub.platform.expression.MvelExpressionEngine;
 import org.junit.jupiter.api.Test;
 

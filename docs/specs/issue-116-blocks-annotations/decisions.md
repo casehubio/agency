@@ -48,8 +48,8 @@ No LC4j annotation migration is needed. Write in LC4j, deploy in CaseHub, get go
 **Sources:**
 - Engine-annotations D1 decision (same conclusion for engine layer, with less LC4j overlap)
 - `docs/specs/issue-909-engine-annotations/2026-08-16-annotation-driven-programming-model-design.md` §Layer 2
-- `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
-- `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
+- `io.casehub.agency.orchestration.pattern.Patterns` — 8 pattern builders
+- `io.casehub.agency.orchestration.execution.ExecutionModel` — 5-SPI composition record
 - Garden: GE-20260608-4c8108 — `AnnotationsImpliesAiServiceBuildItem` bridges LC4j annotations to AiService pipeline (demonstrates runtime integration without annotation adoption)
 - Capability ownership: `casehub-platform-agent-api` bridges (`ChatModelAgentProvider`, `AgentProviderChatModel`)
 

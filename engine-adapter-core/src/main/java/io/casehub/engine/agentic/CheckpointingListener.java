@@ -15,10 +15,10 @@
  */
 package io.casehub.engine.agentic;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.model.ExecutionEventListener;
-import io.casehub.agency.agentic.termination.TerminationDecision;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.orchestration.execution.ExecutionEventListener;
+import io.casehub.agency.orchestration.termination.TerminationDecision;
 import io.casehub.engine.plan.execution.AgentResultRecord;
 import io.casehub.engine.plan.execution.PatternExecutionCheckpoint;
 import java.util.ArrayList;

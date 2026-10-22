@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.termination.TerminationDecision.Continue
+# io.casehub.agency.orchestration.termination.TerminationDecision.Continue
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `record`
 
 ## Fields
 
-### `INSTANCE` (`io.casehub.agency.agentic.termination.TerminationDecision.Continue`)
+### `INSTANCE` (`io.casehub.agency.orchestration.termination.TerminationDecision.Continue`)
 
 ## Constructors
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.optimiser.InstructionOptimiser
+# io.casehub.agency.optimisation.prompt.optimiser.InstructionOptimiser
 
-**Package:** `io.casehub.agency.prompt.optimiser`
+**Package:** `io.casehub.agency.optimisation.prompt.optimiser`
 
 **Kind:** `class`
 
@@ -22,20 +22,20 @@
 
 ## Methods
 
-### `private java.lang.String buildMetaPrompt(io.casehub.agency.prompt.PromptSignature signature, java.util.List<io.casehub.agency.prompt.VariantOutcome> outcomes)`
+### `private java.lang.String buildMetaPrompt(io.casehub.agency.optimisation.prompt.PromptSignature signature, java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome> outcomes)`
 
 #### Parameters
 
-- `signature` (`io.casehub.agency.prompt.PromptSignature`)
-- `outcomes` (`java.util.List<io.casehub.agency.prompt.VariantOutcome>`)
+- `signature` (`io.casehub.agency.optimisation.prompt.PromptSignature`)
+- `outcomes` (`java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>`)
 
 ### `public java.lang.String id()`
 
-### `public java.util.concurrent.CompletionStage<io.casehub.agency.prompt.OptimiserResult> optimise(io.casehub.agency.prompt.PromptSignature signature, io.casehub.agency.prompt.PromptVariant currentVariant, io.casehub.agency.prompt.OptimisationDataset dataset, io.casehub.agency.prompt.OptimiserConfig config)`
+### `public java.util.concurrent.CompletionStage<io.casehub.agency.optimisation.prompt.OptimiserResult> optimise(io.casehub.agency.optimisation.prompt.PromptSignature signature, io.casehub.agency.optimisation.prompt.PromptVariant currentVariant, io.casehub.agency.optimisation.prompt.OptimisationDataset dataset, io.casehub.agency.optimisation.prompt.OptimiserConfig config)`
 
 #### Parameters
 
-- `signature` (`io.casehub.agency.prompt.PromptSignature`)
-- `currentVariant` (`io.casehub.agency.prompt.PromptVariant`)
-- `dataset` (`io.casehub.agency.prompt.OptimisationDataset`)
-- `config` (`io.casehub.agency.prompt.OptimiserConfig`)
+- `signature` (`io.casehub.agency.optimisation.prompt.PromptSignature`)
+- `currentVariant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
+- `dataset` (`io.casehub.agency.optimisation.prompt.OptimisationDataset`)
+- `config` (`io.casehub.agency.optimisation.prompt.OptimiserConfig`)

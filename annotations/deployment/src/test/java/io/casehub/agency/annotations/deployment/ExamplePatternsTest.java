@@ -1,7 +1,7 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.annotations.Agent;
 import io.casehub.agency.annotations.CbrRouted;
 import io.casehub.agency.annotations.Debate;
@@ -14,6 +14,7 @@ import io.casehub.agency.annotations.TrustRouted;
 import io.casehub.agency.annotations.Voter;
 import io.casehub.agency.annotations.Voting;
 import io.casehub.agency.annotations.runtime.PatternDescriptor;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;
 import org.junit.jupiter.api.Test;
@@ -192,7 +193,7 @@ class ExamplePatternsTest {
 
         assertThat(model.patternType()).isEqualTo(PatternType.SUPERVISOR);
         assertThat(model.candidateSupplier().get()).hasSize(3);
-        assertThat(model.routing()).isInstanceOf(io.casehub.agency.agentic.routing.FirstMatchRouting.class);
+        assertThat(model.routing()).isInstanceOf(FirstMatchRouting.class);
     }
 
     @Test
@@ -216,7 +217,7 @@ class ExamplePatternsTest {
                 .createExecutionModel(desc).get();
 
         assertThat(model.patternType()).isEqualTo(PatternType.DEBATE);
-        assertThat(model.termination()).isInstanceOf(io.casehub.agency.agentic.termination.JudgeConvergence.class);
+        assertThat(model.termination()).isInstanceOf(io.casehub.agency.orchestration.termination.JudgeConvergence.class);
     }
 
     @Test
@@ -316,7 +317,7 @@ class ExamplePatternsTest {
                             .createExecutionModel(desc).get();
 
         assertThat(model.patternType()).isEqualTo(PatternType.SEQUENCE);
-        assertThat(model.routing()).isInstanceOf(io.casehub.agency.agentic.routing.SequentialRouting.class);
+        assertThat(model.routing()).isInstanceOf(io.casehub.agency.orchestration.routing.SequentialRouting.class);
         assertThat(model.candidateSupplier().get()).hasSize(3);
     }
 
@@ -364,7 +365,7 @@ class ExamplePatternsTest {
                             .createExecutionModel(desc).get();
 
         assertThat(model.patternType()).isEqualTo(PatternType.LOOP);
-        assertThat(model.termination()).isInstanceOf(io.casehub.agency.agentic.termination.MaxIterationsTermination.class);
+        assertThat(model.termination()).isInstanceOf(io.casehub.agency.orchestration.termination.MaxIterationsTermination.class);
     }
 
     @Test
@@ -387,7 +388,7 @@ class ExamplePatternsTest {
                             .createExecutionModel(desc).get();
 
         assertThat(model.patternType()).isEqualTo(PatternType.CONDITIONAL);
-        assertThat(model.routing()).isInstanceOf(io.casehub.agency.agentic.routing.FirstMatchRouting.class);
+        assertThat(model.routing()).isInstanceOf(FirstMatchRouting.class);
         assertThat(model.candidateSupplier().get()).hasSize(2);
     }
 

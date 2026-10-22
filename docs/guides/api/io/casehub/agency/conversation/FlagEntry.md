@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.FlagEntry
+# io.casehub.agency.deliberation.conversation.FlagEntry
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

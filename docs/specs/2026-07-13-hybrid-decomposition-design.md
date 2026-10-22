@@ -40,7 +40,7 @@ The hybrid sits at the same level as the existing strategies. It delegates to
 
 ### `NoMethodMatchedException`
 
-Package: `io.casehub.agency.agentic.decomposition`
+Package: `io.casehub.agency.orchestration.decomposition`
 
 ```java
 public class NoMethodMatchedException extends IllegalStateException {
@@ -66,7 +66,7 @@ compatibility concern.
 
 ### `HybridDecomposition<T>`
 
-Package: `io.casehub.agency.agentic.decomposition`
+Package: `io.casehub.agency.orchestration.decomposition`
 
 ```java
 public class HybridDecomposition<T> implements DecompositionStrategy<T> {

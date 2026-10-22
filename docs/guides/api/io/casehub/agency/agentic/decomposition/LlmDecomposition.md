@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.LlmDecomposition
+# io.casehub.agency.orchestration.decomposition.LlmDecomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -20,11 +20,11 @@
 
 ### `stateRenderer` (`java.util.function.Function<T,java.lang.String>`)
 
-### `systemPromptCustomiser` (`io.casehub.agency.prompt.SystemPromptCustomiser`)
+### `systemPromptCustomiser` (`io.casehub.agency.optimisation.prompt.SystemPromptCustomiser`)
 
-### `variantSelector` (`io.casehub.agency.prompt.VariantSelector`)
+### `variantSelector` (`io.casehub.agency.optimisation.prompt.VariantSelector`)
 
-### `variantStore` (`io.casehub.agency.prompt.PromptVariantStore`)
+### `variantStore` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Constructors
 
@@ -56,16 +56,16 @@
 - `stateRenderer` (`java.util.function.Function<T,java.lang.String>`)
 - `maxDepth` (`int`)
 
-### `public LlmDecomposition(AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer, int maxDepth, io.casehub.agency.prompt.SystemPromptCustomiser systemPromptCustomiser, io.casehub.agency.prompt.VariantSelector variantSelector, io.casehub.agency.prompt.PromptVariantStore variantStore)`
+### `public LlmDecomposition(AgentProvider agentProvider, java.util.function.Function<T,java.lang.String> stateRenderer, int maxDepth, io.casehub.agency.optimisation.prompt.SystemPromptCustomiser systemPromptCustomiser, io.casehub.agency.optimisation.prompt.VariantSelector variantSelector, io.casehub.agency.optimisation.prompt.PromptVariantStore variantStore)`
 
 #### Parameters
 
 - `agentProvider` (`AgentProvider`)
 - `stateRenderer` (`java.util.function.Function<T,java.lang.String>`)
 - `maxDepth` (`int`)
-- `systemPromptCustomiser` (`io.casehub.agency.prompt.SystemPromptCustomiser`)
-- `variantSelector` (`io.casehub.agency.prompt.VariantSelector`)
-- `variantStore` (`io.casehub.agency.prompt.PromptVariantStore`)
+- `systemPromptCustomiser` (`io.casehub.agency.optimisation.prompt.SystemPromptCustomiser`)
+- `variantSelector` (`io.casehub.agency.optimisation.prompt.VariantSelector`)
+- `variantStore` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Methods
 
@@ -75,12 +75,12 @@
 
 - `sb` (`java.lang.StringBuilder`)
 
-### `private java.lang.String buildUserPrompt(TaskNode.CompoundTask<T> goal, io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T> context)`
+### `private java.lang.String buildUserPrompt(TaskNode.CompoundTask<T> goal, io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T> context)`
 
 #### Parameters
 
 - `goal` (`TaskNode.CompoundTask<T>`)
-- `context` (`io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T>`)
+- `context` (`io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T>`)
 
 ### `private static java.util.List<java.lang.String> collectEntryNames(JsonNode root)`
 
@@ -95,36 +95,36 @@
 - `compound` (`TaskNode<T>`)
 - `context` (`DecompositionContext<T>`)
 
-### `private static io.casehub.agency.agentic.AgentRef resolveAgent(java.lang.String name, java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents)`
+### `private static io.casehub.agency.core.AgentRef resolveAgent(java.lang.String name, java.util.List<io.casehub.agency.core.RoutingCandidate> agents)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
-- `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
-### `private TaskNode.@Nullable LeafTask<T> resolveAgentEntry(JsonNode node, java.lang.String taskName, io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T> ctx)`
+### `private TaskNode.@Nullable LeafTask<T> resolveAgentEntry(JsonNode node, java.lang.String taskName, io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T> ctx)`
 
 #### Parameters
 
 - `node` (`JsonNode`)
 - `taskName` (`java.lang.String`)
-- `ctx` (`io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T>`)
+- `ctx` (`io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T>`)
 
-### `private DagPlan<TaskNode.LeafTask<T>> resolveEntries(java.lang.String text, java.lang.String taskName, io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T> ctx)`
+### `private DagPlan<TaskNode.LeafTask<T>> resolveEntries(java.lang.String text, java.lang.String taskName, io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T> ctx)`
 
 #### Parameters
 
 - `text` (`java.lang.String`)
 - `taskName` (`java.lang.String`)
-- `ctx` (`io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T>`)
+- `ctx` (`io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T>`)
 
-### `private DagPlan<TaskNode.LeafTask<T>> resolveSubtaskEntry(JsonNode node, java.lang.String taskName, io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T> ctx, java.util.List<java.lang.String> siblingNames)`
+### `private DagPlan<TaskNode.LeafTask<T>> resolveSubtaskEntry(JsonNode node, java.lang.String taskName, io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T> ctx, java.util.List<java.lang.String> siblingNames)`
 
 #### Parameters
 
 - `node` (`JsonNode`)
 - `taskName` (`java.lang.String`)
-- `ctx` (`io.casehub.agency.agentic.decomposition.AgenticDecompositionContext<T>`)
+- `ctx` (`io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext<T>`)
 - `siblingNames` (`java.util.List<java.lang.String>`)
 
 ### `private java.lang.String selectSystemPrompt(int currentDepth)`

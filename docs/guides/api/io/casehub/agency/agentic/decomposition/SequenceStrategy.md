@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.SequenceStrategy
+# io.casehub.agency.orchestration.decomposition.SequenceStrategy
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 

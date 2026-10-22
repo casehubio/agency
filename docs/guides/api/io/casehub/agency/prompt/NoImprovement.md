@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.BatchResult.NoImprovement
+# io.casehub.agency.optimisation.prompt.BatchResult.NoImprovement
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

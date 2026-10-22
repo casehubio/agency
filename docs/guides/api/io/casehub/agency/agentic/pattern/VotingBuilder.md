@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.VotingBuilder
+# io.casehub.agency.orchestration.pattern.VotingBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -10,14 +10,14 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.pattern.VotingBuilder<T> evaluators(io.casehub.agency.agentic.AgentRef[] agents)`
+### `public io.casehub.agency.orchestration.pattern.VotingBuilder<T> evaluators(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public io.casehub.agency.agentic.pattern.VotingBuilder<T> strategy(io.casehub.agency.agentic.aggregation.AggregationStrategy<T> strategy)`
+### `public io.casehub.agency.orchestration.pattern.VotingBuilder<T> strategy(io.casehub.agency.orchestration.aggregation.AggregationStrategy<T> strategy)`
 
 #### Parameters
 
-- `strategy` (`io.casehub.agency.agentic.aggregation.AggregationStrategy<T>`)
+- `strategy` (`io.casehub.agency.orchestration.aggregation.AggregationStrategy<T>`)

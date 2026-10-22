@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 public record AgentParticipantSpec(
         AgentRefSpec agent,

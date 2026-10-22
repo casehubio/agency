@@ -1,15 +1,15 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.termination.GoalReached;
-import io.casehub.agency.agentic.termination.MaxIterationsTermination;
-import io.casehub.agency.agentic.termination.TerminationCondition;
-import io.casehub.agency.agentic.yaml.spec.TerminationSpec;
-import io.casehub.agency.conversation.orchestration.AllAgreedTermination;
-import io.casehub.agency.conversation.orchestration.ContestedEscalation;
-import io.casehub.agency.conversation.orchestration.SupervisorTermination;
-import io.casehub.agency.negotiation.AcceptedTermination;
-import io.casehub.agency.negotiation.DeadlineTermination;
-import io.casehub.agency.negotiation.TerminalOutcomeTermination;
+import io.casehub.agency.orchestration.termination.GoalReached;
+import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
+import io.casehub.agency.orchestration.termination.TerminationCondition;
+import io.casehub.agency.core.yaml.spec.TerminationSpec;
+import io.casehub.agency.deliberation.conversation.orchestration.AllAgreedTermination;
+import io.casehub.agency.deliberation.conversation.orchestration.ContestedEscalation;
+import io.casehub.agency.deliberation.conversation.orchestration.SupervisorTermination;
+import io.casehub.agency.deliberation.negotiation.AcceptedTermination;
+import io.casehub.agency.deliberation.negotiation.DeadlineTermination;
+import io.casehub.agency.deliberation.negotiation.TerminalOutcomeTermination;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;
 

@@ -16,12 +16,12 @@
 package io.casehub.engine.agentic;
 
 import io.casehub.api.engine.WorkerRuntime;
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.model.AgentInvoker;
-import io.casehub.agency.agentic.model.ExecutionModel;
-import io.casehub.agency.agentic.model.ExecutionResult;
-import io.casehub.agency.agentic.model.OrchestratedDriver;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.orchestration.execution.AgentInvoker;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.ExecutionResult;
+import io.casehub.agency.orchestration.execution.OrchestratedDriver;
 import io.casehub.worker.api.WorkerResult;
 import io.smallrye.mutiny.Uni;
 import java.time.Duration;

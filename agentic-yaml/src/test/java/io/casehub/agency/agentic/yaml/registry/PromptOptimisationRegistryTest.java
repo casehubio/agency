@@ -1,15 +1,15 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.ConfidenceScorerSpec;
-import io.casehub.agency.agentic.yaml.spec.DiversityStrategySpec;
-import io.casehub.agency.agentic.yaml.spec.PromptOptimiserSpec;
-import io.casehub.agency.memory.ArousalScorer;
-import io.casehub.agency.memory.CompositeConfidenceScorer;
-import io.casehub.agency.memory.SurpriseScorer;
-import io.casehub.agency.prompt.optimiser.FewShotOptimiser;
-import io.casehub.agency.prompt.optimiser.InstructionOptimiser;
-import io.casehub.agency.prompt.optimiser.OutcomeAwareDiversityStrategy;
-import io.casehub.agency.prompt.optimiser.TopNDiversityStrategy;
+import io.casehub.agency.core.yaml.spec.ConfidenceScorerSpec;
+import io.casehub.agency.core.yaml.spec.DiversityStrategySpec;
+import io.casehub.agency.core.yaml.spec.PromptOptimiserSpec;
+import io.casehub.agency.social.memory.ArousalScorer;
+import io.casehub.agency.social.memory.CompositeConfidenceScorer;
+import io.casehub.agency.social.memory.SurpriseScorer;
+import io.casehub.agency.optimisation.prompt.optimiser.FewShotOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.InstructionOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.OutcomeAwareDiversityStrategy;
+import io.casehub.agency.optimisation.prompt.optimiser.TopNDiversityStrategy;
 import io.casehub.platform.agent.AgentProvider;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

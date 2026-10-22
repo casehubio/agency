@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.EpistemicRules
+# io.casehub.agency.deliberation.conversation.EpistemicRules
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
@@ -10,15 +10,15 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.EpistemicRule commitmentResolution()`
+### `public static io.casehub.agency.deliberation.conversation.EpistemicRule commitmentResolution()`
 
-### `public static io.casehub.agency.conversation.EpistemicRule explicitAcknowledgement(int minParticipants)`
+### `public static io.casehub.agency.deliberation.conversation.EpistemicRule explicitAcknowledgement(int minParticipants)`
 
 #### Parameters
 
 - `minParticipants` (`int`)
 
-### `public static io.casehub.agency.conversation.EpistemicRule tacitAcceptance(int windowRounds)`
+### `public static io.casehub.agency.deliberation.conversation.EpistemicRule tacitAcceptance(int windowRounds)`
 
 #### Parameters
 

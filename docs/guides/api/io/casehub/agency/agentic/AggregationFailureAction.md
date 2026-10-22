@@ -1,16 +1,16 @@
-# io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction
+# io.casehub.agency.core.FailurePolicy.AggregationFailureAction
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `ESCALATE` (`io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction`)
+### `ESCALATE` (`io.casehub.agency.core.FailurePolicy.AggregationFailureAction`)
 
-### `FAIL` (`io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction`)
+### `FAIL` (`io.casehub.agency.core.FailurePolicy.AggregationFailureAction`)
 
-### `RETRY_DIFFERENT` (`io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction`)
+### `RETRY_DIFFERENT` (`io.casehub.agency.core.FailurePolicy.AggregationFailureAction`)
 
 ## Constructors
 
@@ -18,10 +18,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction valueOf(java.lang.String name)`
+### `public static io.casehub.agency.core.FailurePolicy.AggregationFailureAction valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction[] values()`
+### `public static io.casehub.agency.core.FailurePolicy.AggregationFailureAction[] values()`

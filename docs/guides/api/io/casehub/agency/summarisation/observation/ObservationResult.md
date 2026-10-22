@@ -1,50 +1,50 @@
-# io.casehub.agency.summarisation.observation.ObservationResult
+# io.casehub.agency.perception.observation.ObservationResult
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 
 ## Fields
 
-### `chunks` (`java.util.List<io.casehub.agency.summarisation.observation.ObservationChunk>`)
+### `chunks` (`java.util.List<io.casehub.agency.perception.observation.ObservationChunk>`)
 
 ### `eventCount` (`int`)
 
 ### `renderedText` (`java.lang.String`)
 
-### `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ### `timeSinceLastDrain` (`long`)
 
 ## Record Components
 
-### `chunks` (`java.util.List<io.casehub.agency.summarisation.observation.ObservationChunk>`)
+### `chunks` (`java.util.List<io.casehub.agency.perception.observation.ObservationChunk>`)
 
 ### `eventCount` (`int`)
 
 ### `renderedText` (`java.lang.String`)
 
-### `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ### `timeSinceLastDrain` (`long`)
 
 ## Constructors
 
-### `public ObservationResult(java.lang.String renderedText, java.util.List<io.casehub.agency.summarisation.observation.ObservationChunk> chunks, int eventCount, long timeSinceLastDrain, io.casehub.agency.summarisation.observation.ObservationTier tier)`
+### `public ObservationResult(java.lang.String renderedText, java.util.List<io.casehub.agency.perception.observation.ObservationChunk> chunks, int eventCount, long timeSinceLastDrain, io.casehub.agency.perception.observation.ObservationTier tier)`
 
 #### Parameters
 
 - `renderedText` (`java.lang.String`)
-- `chunks` (`java.util.List<io.casehub.agency.summarisation.observation.ObservationChunk>`)
+- `chunks` (`java.util.List<io.casehub.agency.perception.observation.ObservationChunk>`)
 - `eventCount` (`int`)
 - `timeSinceLastDrain` (`long`)
-- `tier` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+- `tier` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.summarisation.observation.ObservationChunk> chunks()`
+### `public java.util.List<io.casehub.agency.perception.observation.ObservationChunk> chunks()`
 
-### `public static io.casehub.agency.summarisation.observation.ObservationResult empty(long timeSinceLastDrain)`
+### `public static io.casehub.agency.perception.observation.ObservationResult empty(long timeSinceLastDrain)`
 
 #### Parameters
 
@@ -62,7 +62,7 @@
 
 ### `public java.lang.String renderedText()`
 
-### `public io.casehub.agency.summarisation.observation.ObservationTier tier()`
+### `public io.casehub.agency.perception.observation.ObservationTier tier()`
 
 ### `public long timeSinceLastDrain()`
 

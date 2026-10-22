@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.CbrOutcomeWeightsSpec;
-import io.casehub.agency.routing.agent.CbrOutcomeWeights;
+import io.casehub.agency.core.yaml.spec.CbrOutcomeWeightsSpec;
+import io.casehub.agency.governance.routing.agent.CbrOutcomeWeights;
 
 import java.util.Map;
 

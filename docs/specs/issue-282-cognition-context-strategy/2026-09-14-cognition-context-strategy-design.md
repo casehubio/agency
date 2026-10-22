@@ -26,7 +26,7 @@ public interface SubjectResolver {
 }
 ```
 
-**Package:** `io.casehub.agency.agentic.social`
+**Package:** `io.casehub.agency.core.social`
 **Integration:** Per-call parameter to `CognitionCore.tick()`. Replaces `Set<String> activeSubjects`.
 
 ### SPI 2: InteractionMapper
@@ -39,7 +39,7 @@ public interface InteractionMapper {
 }
 ```
 
-**Package:** `io.casehub.agency.agentic.social`
+**Package:** `io.casehub.agency.core.social`
 **Integration:** Adapter-layer SPI consumed by `SocialAvatarCognition`. Transforms domain interactions into `CognitiveImpact`, passed as a per-call parameter to `CognitionCore.recordInteraction()`. CognitionCore never sees `InteractionMapper` directly.
 
 ### SPI 3: NormFilter
@@ -51,7 +51,7 @@ public interface NormFilter {
 }
 ```
 
-**Package:** `io.casehub.agency.agentic.social.emergence` (alongside `SocialNorm`, `SocialNormDetector`)
+**Package:** `io.casehub.agency.core.social.emergence` (alongside `SocialNorm`, `SocialNormDetector`)
 **Integration:** Applied at the prompt assembly layer before `CognitiveObservationSections.normsSection()`. Independent of CognitionCore — norms are consumed at prompt rendering, not cognitive processing.
 
 ### CognitiveImpact record

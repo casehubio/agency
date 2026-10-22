@@ -15,14 +15,16 @@
  */
 package io.casehub.engine.agentic;
 
+import io.casehub.agency.orchestration.routing.RoutingDecision;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
 import io.casehub.api.engine.WorkerRuntime;
 import io.casehub.api.model.WorkerContext;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.api.spi.judgment.CallerConfig;
-import io.casehub.agency.agentic.judgment.JudgmentPhase;
-import io.casehub.agency.agentic.model.ExecutionModel;
-import io.casehub.agency.agentic.model.ExecutionResult;
-import io.casehub.agency.agentic.model.OrchestratedDriver;
+import io.casehub.agency.deliberation.judgment.JudgmentPhase;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.ExecutionResult;
+import io.casehub.agency.orchestration.execution.OrchestratedDriver;
 import io.casehub.engine.agentic.judgment.LlmJudgmentPhase;
 import io.casehub.engine.agentic.judgment.PatternJudgmentConfig;
 import io.casehub.engine.common.internal.executor.ExecutionMetadata;
@@ -142,8 +144,8 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
       EngineAgentInvoker<?> invoker,
       Object inputData) {
     var htnExecutor =
-        new io.casehub.agency.agentic.pattern.HtnExecutor<>(
-            (io.casehub.agency.agentic.model.AgentInvoker<Object>) invoker);
+        new io.casehub.agency.orchestration.pattern.HtnExecutor<>(
+            (io.casehub.agency.orchestration.execution.AgentInvoker<Object>) invoker);
     var constrainedModel =
         applyResourceLimit(
             (ExecutionModel<Object>) (ExecutionModel<?>) model, patternFn.planningConstraints());
@@ -194,14 +196,14 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
     }
     int limit = constraints.resourceLimit();
     var original = model.routing();
-    io.casehub.agency.agentic.routing.RoutingStrategy<T> capped =
+    RoutingStrategy<T> capped =
         ctx -> {
           var decision = original.route(ctx);
           if (decision
                   instanceof
-                  io.casehub.agency.agentic.routing.RoutingDecision.Selected selected
+                  RoutingDecision.Selected selected
               && selected.agents().size() > limit) {
-            return new io.casehub.agency.agentic.routing.RoutingDecision.Selected(
+            return new RoutingDecision.Selected(
                 selected.agents().subList(0, limit));
           }
           return decision;
@@ -277,9 +279,9 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
 
   @SuppressWarnings("unchecked")
   private static <T> ExecutionModel<T> addListener(
-      ExecutionModel<T> model, io.casehub.agency.agentic.model.ExecutionEventListener listener) {
+      ExecutionModel<T> model, io.casehub.agency.orchestration.execution.ExecutionEventListener listener) {
     var listeners =
-        new java.util.ArrayList<io.casehub.agency.agentic.model.ExecutionEventListener>(
+        new java.util.ArrayList<io.casehub.agency.orchestration.execution.ExecutionEventListener>(
             model.listeners());
     listeners.add(listener);
     return new ExecutionModel<>(

@@ -1,20 +1,20 @@
-# io.casehub.agency.conversation.ConvergenceState
+# io.casehub.agency.deliberation.conversation.ConvergenceState
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `CONSENSUS` (`io.casehub.agency.conversation.ConvergenceState`)
+### `CONSENSUS` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
-### `CONVERGING` (`io.casehub.agency.conversation.ConvergenceState`)
+### `CONVERGING` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
-### `DEADLOCK` (`io.casehub.agency.conversation.ConvergenceState`)
+### `DEADLOCK` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
-### `DIMINISHING_RETURNS` (`io.casehub.agency.conversation.ConvergenceState`)
+### `DIMINISHING_RETURNS` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
-### `PROGRESSING` (`io.casehub.agency.conversation.ConvergenceState`)
+### `PROGRESSING` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
 ## Constructors
 
@@ -22,10 +22,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.ConvergenceState valueOf(java.lang.String name)`
+### `public static io.casehub.agency.deliberation.conversation.ConvergenceState valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.conversation.ConvergenceState[] values()`
+### `public static io.casehub.agency.deliberation.conversation.ConvergenceState[] values()`

@@ -17,11 +17,11 @@ package io.casehub.engine.agentic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
-import io.casehub.agency.agentic.model.ExecutionModel;
-import io.casehub.agency.agentic.model.ExecutionResult;
-import io.casehub.agency.agentic.pattern.Patterns;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.ExecutionResult;
+import io.casehub.agency.orchestration.pattern.Patterns;
 import io.casehub.engine.plan.execution.AgentResultRecord;
 import io.casehub.engine.plan.execution.PatternExecutionCheckpoint;
 import java.util.List;
@@ -76,7 +76,7 @@ class ResumableDriverTest {
 
     var driver =
         new ResumableDriver<Map<String, Object>>(
-            io.casehub.agency.agentic.model.AgentInvoker.defaultInvoker(), checkpoint);
+            io.casehub.agency.orchestration.execution.AgentInvoker.defaultInvoker(), checkpoint);
     var result = driver.execute(model, Map.of()).await().indefinitely();
 
     assertThat(result).isInstanceOf(ExecutionResult.Completed.class);
@@ -108,7 +108,7 @@ class ResumableDriverTest {
 
     var driver =
         new ResumableDriver<Map<String, Object>>(
-            io.casehub.agency.agentic.model.AgentInvoker.defaultInvoker(), checkpoint);
+            io.casehub.agency.orchestration.execution.AgentInvoker.defaultInvoker(), checkpoint);
     var result = driver.execute(model, Map.of()).await().indefinitely();
 
     assertThat(result).isInstanceOf(ExecutionResult.Completed.class);

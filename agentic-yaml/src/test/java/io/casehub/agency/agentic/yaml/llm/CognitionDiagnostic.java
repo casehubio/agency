@@ -1,13 +1,13 @@
-package io.casehub.agency.agentic.yaml.llm;
+package io.casehub.agency.core.yaml.llm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.compiler.CognitionCompiler;
-import io.casehub.agency.agentic.yaml.compiler.ObservationFilterRegistry;
-import io.casehub.agency.agentic.yaml.compiler.WorldCompiler;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
+import io.casehub.agency.core.yaml.compiler.WorldCompiler;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.agency.speech.PromptContext;
 import org.junit.jupiter.api.Test;
 
@@ -124,7 +124,7 @@ class CognitionDiagnostic {
         }
     }
 
-    private static io.casehub.agency.agentic.yaml.compiler.CompiledCognition loadCognition() throws IOException {
+    private static io.casehub.agency.core.yaml.compiler.CompiledCognition loadCognition() throws IOException {
         try (var is = CognitionDiagnostic.class.getResourceAsStream(
                 "/examples/historical-encounter/cognition.yaml")) {
             return new CognitionCompiler().compile(
@@ -132,7 +132,7 @@ class CognitionDiagnostic {
         }
     }
 
-    private static io.casehub.agency.agentic.yaml.compiler.CompiledWorld loadWorld() throws IOException {
+    private static io.casehub.agency.core.yaml.compiler.CompiledWorld loadWorld() throws IOException {
         try (var is = CognitionDiagnostic.class.getResourceAsStream(
                 "/examples/historical-encounter/world.yaml")) {
             return new WorldCompiler(new ObservationFilterRegistry())

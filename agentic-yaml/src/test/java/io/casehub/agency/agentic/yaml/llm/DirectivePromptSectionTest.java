@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.llm;
+package io.casehub.agency.core.yaml.llm;
 
 import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.PromptSection;

@@ -1,5 +1,5 @@
-# io.casehub.agency.agentic.model.ExecutionResult
+# io.casehub.agency.orchestration.execution.ExecutionResult
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `interface`

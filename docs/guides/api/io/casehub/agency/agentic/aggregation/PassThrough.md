@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.aggregation.PassThrough
+# io.casehub.agency.orchestration.aggregation.PassThrough
 
-**Package:** `io.casehub.agency.agentic.aggregation`
+**Package:** `io.casehub.agency.orchestration.aggregation`
 
 **Kind:** `class`
 
@@ -10,9 +10,9 @@
 
 ## Methods
 
-### `public Uni<io.casehub.agency.agentic.aggregation.AggregationResult> aggregate(java.util.List<io.casehub.agency.agentic.AgentResult> results, io.casehub.agency.agentic.aggregation.AggregationContext<T> context)`
+### `public Uni<io.casehub.agency.orchestration.aggregation.AggregationResult> aggregate(java.util.List<io.casehub.agency.core.AgentResult> results, io.casehub.agency.orchestration.aggregation.AggregationContext<T> context)`
 
 #### Parameters
 
-- `results` (`java.util.List<io.casehub.agency.agentic.AgentResult>`)
-- `context` (`io.casehub.agency.agentic.aggregation.AggregationContext<T>`)
+- `results` (`java.util.List<io.casehub.agency.core.AgentResult>`)
+- `context` (`io.casehub.agency.orchestration.aggregation.AggregationContext<T>`)

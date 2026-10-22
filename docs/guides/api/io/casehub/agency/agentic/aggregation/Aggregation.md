@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.aggregation.Aggregation
+# io.casehub.agency.orchestration.aggregation.Aggregation
 
-**Package:** `io.casehub.agency.agentic.aggregation`
+**Package:** `io.casehub.agency.orchestration.aggregation`
 
 **Kind:** `class`
 
@@ -10,8 +10,8 @@
 
 ## Methods
 
-### `public static io.casehub.agency.agentic.aggregation.CollectAll<T> collectAll()`
+### `public static io.casehub.agency.orchestration.aggregation.CollectAll<T> collectAll()`
 
-### `public static io.casehub.agency.agentic.aggregation.MajorityVote<T> majorityVote()`
+### `public static io.casehub.agency.orchestration.aggregation.MajorityVote<T> majorityVote()`
 
-### `public static io.casehub.agency.agentic.aggregation.PassThrough<T> passThrough()`
+### `public static io.casehub.agency.orchestration.aggregation.PassThrough<T> passThrough()`

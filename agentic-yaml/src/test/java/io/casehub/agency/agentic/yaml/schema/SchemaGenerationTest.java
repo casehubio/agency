@@ -1,17 +1,17 @@
-package io.casehub.agency.agentic.yaml.schema;
+package io.casehub.agency.core.yaml.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.casehub.agency.agentic.yaml.spec.CbrOutcomeWeightsSpec;
-import io.casehub.agency.agentic.yaml.spec.CoordinationOutcomeWeightsSpec;
-import io.casehub.agency.agentic.yaml.spec.PatternSpec;
-import io.casehub.agency.agentic.yaml.spec.RiskDecisionSpec;
-import io.casehub.agency.agentic.yaml.spec.RoutingSpec;
-import io.casehub.agency.agentic.yaml.spec.TerminationSpec;
-import io.casehub.agency.agentic.yaml.spec.Audio8ConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.KokoroConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.SherpaConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.TrustRoutingPolicyKeysSpec;
-import io.casehub.agency.routing.agent.DispositionProfile;
+import io.casehub.agency.core.yaml.spec.CbrOutcomeWeightsSpec;
+import io.casehub.agency.core.yaml.spec.CoordinationOutcomeWeightsSpec;
+import io.casehub.agency.core.yaml.spec.PatternSpec;
+import io.casehub.agency.core.yaml.spec.RiskDecisionSpec;
+import io.casehub.agency.core.yaml.spec.RoutingSpec;
+import io.casehub.agency.core.yaml.spec.TerminationSpec;
+import io.casehub.agency.core.yaml.spec.Audio8ConfigSpec;
+import io.casehub.agency.core.yaml.spec.KokoroConfigSpec;
+import io.casehub.agency.core.yaml.spec.SherpaConfigSpec;
+import io.casehub.agency.core.yaml.spec.TrustRoutingPolicyKeysSpec;
+import io.casehub.agency.governance.routing.agent.DispositionProfile;
 import io.casehub.agency.speech.SynthesisOptions;
 import io.casehub.agency.speech.TranscriptionOptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +71,7 @@ class SchemaGenerationTest {
 
     @Test
     void promptOptimiserSpecSchemaHasTypes() {
-        JsonNode schema = generator.generate(io.casehub.agency.agentic.yaml.spec.PromptOptimiserSpec.class);
+        JsonNode schema = generator.generate(io.casehub.agency.core.yaml.spec.PromptOptimiserSpec.class);
         assertThat(schema).isNotNull();
         var schemaText = schema.toString();
         assertThat(schemaText).contains("few-shot");
@@ -80,7 +80,7 @@ class SchemaGenerationTest {
 
     @Test
     void confidenceScorerSpecSchemaHasTypes() {
-        JsonNode schema = generator.generate(io.casehub.agency.agentic.yaml.spec.ConfidenceScorerSpec.class);
+        JsonNode schema = generator.generate(io.casehub.agency.core.yaml.spec.ConfidenceScorerSpec.class);
         assertThat(schema).isNotNull();
         var schemaText = schema.toString();
         assertThat(schemaText).contains("arousal");
@@ -90,7 +90,7 @@ class SchemaGenerationTest {
 
     @Test
     void promptOptimisationDefinitionSchemaHasPipelines() {
-        JsonNode schema = generator.generate(io.casehub.agency.agentic.yaml.spec.PromptOptimisationDefinition.class);
+        JsonNode schema = generator.generate(io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition.class);
         assertThat(schema).isNotNull();
         var schemaText = schema.toString();
         assertThat(schemaText).contains("pipelines");

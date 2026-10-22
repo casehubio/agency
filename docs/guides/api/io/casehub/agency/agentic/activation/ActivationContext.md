@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.activation.ActivationContext
+# io.casehub.agency.orchestration.activation.ActivationContext
 
-**Package:** `io.casehub.agency.agentic.activation`
+**Package:** `io.casehub.agency.orchestration.activation`
 
 **Kind:** `record`
 
@@ -8,13 +8,13 @@
 
 ### `activationCount` (`int`)
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ### `consecutiveIdleActivations` (`int`)
 
 ### `event` (`java.lang.Object`)
 
-### `lastAggregationResult` (`java.util.Optional<io.casehub.agency.agentic.aggregation.AggregationResult>`)
+### `lastAggregationResult` (`java.util.Optional<io.casehub.agency.orchestration.aggregation.AggregationResult>`)
 
 ### `state` (`T`)
 
@@ -22,34 +22,34 @@
 
 ### `activationCount` (`int`)
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ### `consecutiveIdleActivations` (`int`)
 
 ### `event` (`java.lang.Object`)
 
-### `lastAggregationResult` (`java.util.Optional<io.casehub.agency.agentic.aggregation.AggregationResult>`)
+### `lastAggregationResult` (`java.util.Optional<io.casehub.agency.orchestration.aggregation.AggregationResult>`)
 
 ### `state` (`T`)
 
 ## Constructors
 
-### `public ActivationContext(java.lang.Object event, T state, io.casehub.agency.agentic.AgentRef agent, int activationCount, java.util.Optional<io.casehub.agency.agentic.aggregation.AggregationResult> lastAggregationResult, int consecutiveIdleActivations)`
+### `public ActivationContext(java.lang.Object event, T state, io.casehub.agency.core.AgentRef agent, int activationCount, java.util.Optional<io.casehub.agency.orchestration.aggregation.AggregationResult> lastAggregationResult, int consecutiveIdleActivations)`
 
 #### Parameters
 
 - `event` (`java.lang.Object`)
 - `state` (`T`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `activationCount` (`int`)
-- `lastAggregationResult` (`java.util.Optional<io.casehub.agency.agentic.aggregation.AggregationResult>`)
+- `lastAggregationResult` (`java.util.Optional<io.casehub.agency.orchestration.aggregation.AggregationResult>`)
 - `consecutiveIdleActivations` (`int`)
 
 ## Methods
 
 ### `public int activationCount()`
 
-### `public io.casehub.agency.agentic.AgentRef agent()`
+### `public io.casehub.agency.core.AgentRef agent()`
 
 ### `public int consecutiveIdleActivations()`
 
@@ -63,7 +63,7 @@
 
 ### `public final int hashCode()`
 
-### `public java.util.Optional<io.casehub.agency.agentic.aggregation.AggregationResult> lastAggregationResult()`
+### `public java.util.Optional<io.casehub.agency.orchestration.aggregation.AggregationResult> lastAggregationResult()`
 
 ### `public T state()`
 

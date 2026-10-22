@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.affordance.ActionDescriptor
+# io.casehub.agency.perception.observation.affordance.ActionDescriptor
 
-**Package:** `io.casehub.agency.summarisation.observation.affordance`
+**Package:** `io.casehub.agency.perception.observation.affordance`
 
 **Kind:** `record`
 

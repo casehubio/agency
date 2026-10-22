@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.affordance.ObservationSection.ItemList
+# io.casehub.agency.perception.observation.affordance.ObservationSection.ItemList
 
-**Package:** `io.casehub.agency.summarisation.observation.affordance`
+**Package:** `io.casehub.agency.perception.observation.affordance`
 
 **Kind:** `record`
 

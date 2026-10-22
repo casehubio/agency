@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.OptimiserConfig
+# io.casehub.agency.optimisation.prompt.OptimiserConfig
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
@@ -37,7 +37,7 @@
 
 ## Methods
 
-### `public static io.casehub.agency.prompt.OptimiserConfig defaults()`
+### `public static io.casehub.agency.optimisation.prompt.OptimiserConfig defaults()`
 
 ### `public final boolean equals(java.lang.Object o)`
 

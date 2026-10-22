@@ -1,8 +1,8 @@
-package io.casehub.agency.channel.examples.summarisation;
+package io.casehub.agency.communication.dispatch.examples.summarisation;
 
 import io.casehub.agency.summarisation.*;
-import io.casehub.agency.channel.ChannelEventAdapter;
-import io.casehub.agency.channel.ChannelEventPublisher;
+import io.casehub.agency.communication.dispatch.ChannelEventAdapter;
+import io.casehub.agency.communication.dispatch.ChannelEventPublisher;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.gateway.MessageReceivedEvent;
 import io.casehub.qhorus.api.message.DispatchResult;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static io.casehub.agency.channel.TestMessages.received;
+import static io.casehub.agency.communication.dispatch.TestMessages.received;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ChannelSummarisationPipelineTest {

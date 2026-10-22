@@ -142,7 +142,7 @@ Three mechanisms, matching InnerLifeConfig.ContentQualityGate:
 
 ## Type System
 
-### Package: `io.casehub.agency.agentic.social.narrative`
+### Package: `io.casehub.agency.core.social.narrative`
 
 #### NarrativeFragment (sealed interface)
 
@@ -520,7 +520,7 @@ public interface ReflectionQueryStore {
 `NoOpReflectionQueryStore` @DefaultBean returns empty lists. Consumers that enable
 reflection persistence provide a real implementation.
 
-### Package: `io.casehub.agency.agentic.social.emergence`
+### Package: `io.casehub.agency.core.social.emergence`
 
 #### SocialNorm (record)
 

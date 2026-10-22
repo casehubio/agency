@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.CbrCaseOutcomeWeights
+# io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `interface`
 

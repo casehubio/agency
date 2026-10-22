@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.termination.GoalReached
+# io.casehub.agency.orchestration.termination.GoalReached
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `class`
 
@@ -18,8 +18,8 @@
 
 ## Methods
 
-### `public Uni<io.casehub.agency.agentic.termination.TerminationDecision> evaluate(io.casehub.agency.agentic.termination.TerminationContext<T> context)`
+### `public Uni<io.casehub.agency.orchestration.termination.TerminationDecision> evaluate(io.casehub.agency.orchestration.termination.TerminationContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.termination.TerminationContext<T>`)
+- `context` (`io.casehub.agency.orchestration.termination.TerminationContext<T>`)

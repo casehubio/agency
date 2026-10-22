@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.OptimiserResult
+# io.casehub.agency.optimisation.prompt.OptimiserResult
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
@@ -8,7 +8,7 @@
 
 ### `estimatedQuality` (`double`)
 
-### `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+### `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 
 ### `instructionDelta` (`java.lang.String`)
 
@@ -16,17 +16,17 @@
 
 ### `estimatedQuality` (`double`)
 
-### `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+### `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 
 ### `instructionDelta` (`java.lang.String`)
 
 ## Constructors
 
-### `public OptimiserResult(java.util.List<io.casehub.agency.prompt.FewShotExample> examples, java.lang.String instructionDelta, double estimatedQuality)`
+### `public OptimiserResult(java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample> examples, java.lang.String instructionDelta, double estimatedQuality)`
 
 #### Parameters
 
-- `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+- `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 - `instructionDelta` (`java.lang.String`)
 - `estimatedQuality` (`double`)
 
@@ -40,7 +40,7 @@
 
 ### `public double estimatedQuality()`
 
-### `public java.util.List<io.casehub.agency.prompt.FewShotExample> examples()`
+### `public java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample> examples()`
 
 ### `public final int hashCode()`
 

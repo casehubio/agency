@@ -1,28 +1,28 @@
-# io.casehub.agency.agentic.model.ExecutionState.WaitingForAgent
+# io.casehub.agency.orchestration.execution.ExecutionState.WaitingForAgent
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 
 ## Fields
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ## Record Components
 
-### `agent` (`io.casehub.agency.agentic.AgentRef`)
+### `agent` (`io.casehub.agency.core.AgentRef`)
 
 ## Constructors
 
-### `public WaitingForAgent(io.casehub.agency.agentic.AgentRef agent)`
+### `public WaitingForAgent(io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
 ## Methods
 
-### `public io.casehub.agency.agentic.AgentRef agent()`
+### `public io.casehub.agency.core.AgentRef agent()`
 
 ### `public final boolean equals(java.lang.Object o)`
 

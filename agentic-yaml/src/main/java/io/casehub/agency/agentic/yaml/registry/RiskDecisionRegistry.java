@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.api.spi.RiskDecision;
-import io.casehub.agency.agentic.yaml.spec.RiskDecisionSpec;
+import io.casehub.agency.core.yaml.spec.RiskDecisionSpec;
 
 public class RiskDecisionRegistry {
 

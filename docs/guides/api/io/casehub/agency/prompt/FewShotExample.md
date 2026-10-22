@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.FewShotExample
+# io.casehub.agency.optimisation.prompt.FewShotExample
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

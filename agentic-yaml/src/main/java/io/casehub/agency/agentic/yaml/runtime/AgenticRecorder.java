@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.runtime;
+package io.casehub.agency.core.yaml.runtime;
 
-import io.casehub.agency.agentic.yaml.compiler.CognitionCompiler;
-import io.casehub.agency.agentic.yaml.compiler.PatternCompiler;
-import io.casehub.agency.agentic.yaml.compiler.PromptOptimisationCompiler;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.core.yaml.compiler.PatternCompiler;
+import io.casehub.agency.core.yaml.compiler.PromptOptimisationCompiler;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import io.quarkus.runtime.annotations.Recorder;
@@ -21,9 +21,9 @@ public class AgenticRecorder {
 
     public PromptOptimisationCompiler createPromptOptimisationCompiler(
             @Nullable AgentProvider agentProvider) {
-        var diversityRegistry = new io.casehub.agency.agentic.yaml.registry.DiversityStrategyRegistry();
-        var optimiserRegistry = new io.casehub.agency.agentic.yaml.registry.PromptOptimiserRegistry(diversityRegistry);
-        var scorerRegistry    = new io.casehub.agency.agentic.yaml.registry.ConfidenceScorerRegistry();
+        var diversityRegistry = new io.casehub.agency.core.yaml.registry.DiversityStrategyRegistry();
+        var optimiserRegistry = new io.casehub.agency.core.yaml.registry.PromptOptimiserRegistry(diversityRegistry);
+        var scorerRegistry    = new io.casehub.agency.core.yaml.registry.ConfidenceScorerRegistry();
         return new PromptOptimisationCompiler(
                 optimiserRegistry, scorerRegistry, agentProvider);
     }

@@ -36,8 +36,8 @@ pipelines:
       id: routing-prompt
       description: "LLM-based agent routing"
       baseSystemPrompt: "Evaluate which agent best fits the task..."
-      inputType: io.casehub.agency.routing.RoutingContext
-      outputType: io.casehub.agency.routing.RoutingDecision
+      inputType: io.casehub.agency.governance.routing.RoutingContext
+      outputType: io.casehub.agency.governance.routing.RoutingDecision
 
     optimiser:
       type: few-shot
@@ -102,7 +102,7 @@ All fields except `signature` are optional — defaults are applied at compilati
 ### PromptOptimiserSpec (named type registry)
 
 ```java
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 @JsonTypeInfo(use = Id.NAME, property = "type")
 @JsonSubTypes({

@@ -22,8 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.casehub.api.engine.WorkerRuntime;
-import io.casehub.agency.agentic.AgentRef;
-import io.casehub.agency.agentic.AgentResult;
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
 import io.casehub.worker.api.WorkerResult;
 import java.util.Map;
 import java.util.UUID;
@@ -93,7 +93,7 @@ class EngineAgentInvokerTest {
   void channelAgentReturnsFailure() {
     var agent =
         AgentRef.channel(
-            UUID.randomUUID(), mock(io.casehub.agency.channel.ChannelAgentHandler.class));
+            UUID.randomUUID(), mock(io.casehub.agency.communication.dispatch.ChannelAgentHandler.class));
 
     var result = invoker.invoke(agent, Map.of()).await().indefinitely();
     assertThat(result.status()).isEqualTo(AgentResult.AgentResultStatus.FAILURE);

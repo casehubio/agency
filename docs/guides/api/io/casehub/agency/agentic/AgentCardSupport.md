@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.AgentCardSupport
+# io.casehub.agency.core.AgentCardSupport
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `class`
 
@@ -10,16 +10,16 @@
 
 ## Methods
 
-### `public static java.lang.String buildCard(io.casehub.agency.agentic.RoutingCandidate candidate, int index)`
+### `public static java.lang.String buildCard(io.casehub.agency.core.RoutingCandidate candidate, int index)`
 
 #### Parameters
 
-- `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+- `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 - `index` (`int`)
 
-### `public static java.lang.String candidateName(io.casehub.agency.agentic.RoutingCandidate candidate, int index)`
+### `public static java.lang.String candidateName(io.casehub.agency.core.RoutingCandidate candidate, int index)`
 
 #### Parameters
 
-- `candidate` (`io.casehub.agency.agentic.RoutingCandidate`)
+- `candidate` (`io.casehub.agency.core.RoutingCandidate`)
 - `index` (`int`)

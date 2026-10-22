@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.ObservationContext
+# io.casehub.agency.perception.observation.ObservationContext
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.AgentResultParseException
+# io.casehub.agency.communication.dispatch.AgentResultParseException
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 

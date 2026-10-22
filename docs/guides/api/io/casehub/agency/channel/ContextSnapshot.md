@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ContextSnapshot
+# io.casehub.agency.communication.dispatch.ContextSnapshot
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `record`
 

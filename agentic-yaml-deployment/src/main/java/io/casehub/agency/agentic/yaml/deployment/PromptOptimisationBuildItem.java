@@ -1,6 +1,6 @@
-package io.casehub.agency.agentic.yaml.deployment;
+package io.casehub.agency.core.yaml.deployment;
 
-import io.casehub.agency.agentic.yaml.spec.PromptOptimisationDefinition;
+import io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition;
 import io.quarkus.builder.item.SimpleBuildItem;
 import org.jspecify.annotations.Nullable;
 

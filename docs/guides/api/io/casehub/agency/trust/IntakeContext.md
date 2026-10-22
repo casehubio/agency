@@ -1,6 +1,6 @@
-# io.casehub.agency.trust.IntakeContext
+# io.casehub.agency.governance.trust.IntakeContext
 
-**Package:** `io.casehub.agency.trust`
+**Package:** `io.casehub.agency.governance.trust`
 
 **Kind:** `record`
 

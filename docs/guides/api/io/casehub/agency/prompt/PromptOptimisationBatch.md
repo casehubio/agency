@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.PromptOptimisationBatch
+# io.casehub.agency.optimisation.prompt.PromptOptimisationBatch
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `class`
 
@@ -12,57 +12,57 @@
 
 ### `LOG` (`java.lang.System.Logger`)
 
-### `metric` (`io.casehub.agency.prompt.PromptQualityMetric`)
+### `metric` (`io.casehub.agency.optimisation.prompt.PromptQualityMetric`)
 
-### `optimisers` (`java.util.List<io.casehub.agency.prompt.PromptOptimiser>`)
+### `optimisers` (`java.util.List<io.casehub.agency.optimisation.prompt.PromptOptimiser>`)
 
 ### `runningSignatures` (`java.util.Set<java.lang.String>`)
 
-### `safetyConfig` (`io.casehub.agency.prompt.SafetyConfig`)
+### `safetyConfig` (`io.casehub.agency.optimisation.prompt.SafetyConfig`)
 
-### `store` (`io.casehub.agency.prompt.PromptVariantStore`)
+### `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Constructors
 
-### `public PromptOptimisationBatch(java.util.List<io.casehub.agency.prompt.PromptOptimiser> optimisers, io.casehub.agency.prompt.PromptQualityMetric metric, io.casehub.agency.prompt.PromptVariantStore store, io.casehub.agency.prompt.SafetyConfig safetyConfig)`
+### `public PromptOptimisationBatch(java.util.List<io.casehub.agency.optimisation.prompt.PromptOptimiser> optimisers, io.casehub.agency.optimisation.prompt.PromptQualityMetric metric, io.casehub.agency.optimisation.prompt.PromptVariantStore store, io.casehub.agency.optimisation.prompt.SafetyConfig safetyConfig)`
 
 #### Parameters
 
-- `optimisers` (`java.util.List<io.casehub.agency.prompt.PromptOptimiser>`)
-- `metric` (`io.casehub.agency.prompt.PromptQualityMetric`)
-- `store` (`io.casehub.agency.prompt.PromptVariantStore`)
-- `safetyConfig` (`io.casehub.agency.prompt.SafetyConfig`)
+- `optimisers` (`java.util.List<io.casehub.agency.optimisation.prompt.PromptOptimiser>`)
+- `metric` (`io.casehub.agency.optimisation.prompt.PromptQualityMetric`)
+- `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
+- `safetyConfig` (`io.casehub.agency.optimisation.prompt.SafetyConfig`)
 
 ## Methods
 
-### `private java.util.concurrent.CompletionStage<io.casehub.agency.prompt.BatchResult> doRun(io.casehub.agency.prompt.PromptSignature signature, io.casehub.agency.prompt.OptimisationDataset dataset, io.casehub.agency.prompt.OptimiserConfig config)`
+### `private java.util.concurrent.CompletionStage<io.casehub.agency.optimisation.prompt.BatchResult> doRun(io.casehub.agency.optimisation.prompt.PromptSignature signature, io.casehub.agency.optimisation.prompt.OptimisationDataset dataset, io.casehub.agency.optimisation.prompt.OptimiserConfig config)`
 
 #### Parameters
 
-- `signature` (`io.casehub.agency.prompt.PromptSignature`)
-- `dataset` (`io.casehub.agency.prompt.OptimisationDataset`)
-- `config` (`io.casehub.agency.prompt.OptimiserConfig`)
+- `signature` (`io.casehub.agency.optimisation.prompt.PromptSignature`)
+- `dataset` (`io.casehub.agency.optimisation.prompt.OptimisationDataset`)
+- `config` (`io.casehub.agency.optimisation.prompt.OptimiserConfig`)
 
-### `public java.util.concurrent.CompletionStage<io.casehub.agency.prompt.BatchResult> run(io.casehub.agency.prompt.PromptSignature signature, io.casehub.agency.prompt.OptimisationDataset dataset, io.casehub.agency.prompt.OptimiserConfig config)`
-
-#### Parameters
-
-- `signature` (`io.casehub.agency.prompt.PromptSignature`)
-- `dataset` (`io.casehub.agency.prompt.OptimisationDataset`)
-- `config` (`io.casehub.agency.prompt.OptimiserConfig`)
-
-### `private java.util.concurrent.CompletionStage<io.casehub.agency.prompt.@Nullable PromptVariant> runOptimisersAndCreateVariant(io.casehub.agency.prompt.PromptSignature signature, io.casehub.agency.prompt.OptimisationDataset dataset, io.casehub.agency.prompt.OptimiserConfig config, io.casehub.agency.prompt.PromptVariant parent)`
+### `public java.util.concurrent.CompletionStage<io.casehub.agency.optimisation.prompt.BatchResult> run(io.casehub.agency.optimisation.prompt.PromptSignature signature, io.casehub.agency.optimisation.prompt.OptimisationDataset dataset, io.casehub.agency.optimisation.prompt.OptimiserConfig config)`
 
 #### Parameters
 
-- `signature` (`io.casehub.agency.prompt.PromptSignature`)
-- `dataset` (`io.casehub.agency.prompt.OptimisationDataset`)
-- `config` (`io.casehub.agency.prompt.OptimiserConfig`)
-- `parent` (`io.casehub.agency.prompt.PromptVariant`)
+- `signature` (`io.casehub.agency.optimisation.prompt.PromptSignature`)
+- `dataset` (`io.casehub.agency.optimisation.prompt.OptimisationDataset`)
+- `config` (`io.casehub.agency.optimisation.prompt.OptimiserConfig`)
 
-### `private double scoreVariant(io.casehub.agency.prompt.PromptVariant variant, java.util.Map<java.lang.String,java.util.List<io.casehub.agency.prompt.VariantOutcome>> byVariant)`
+### `private java.util.concurrent.CompletionStage<io.casehub.agency.optimisation.prompt.@Nullable PromptVariant> runOptimisersAndCreateVariant(io.casehub.agency.optimisation.prompt.PromptSignature signature, io.casehub.agency.optimisation.prompt.OptimisationDataset dataset, io.casehub.agency.optimisation.prompt.OptimiserConfig config, io.casehub.agency.optimisation.prompt.PromptVariant parent)`
 
 #### Parameters
 
-- `variant` (`io.casehub.agency.prompt.PromptVariant`)
-- `byVariant` (`java.util.Map<java.lang.String,java.util.List<io.casehub.agency.prompt.VariantOutcome>>`)
+- `signature` (`io.casehub.agency.optimisation.prompt.PromptSignature`)
+- `dataset` (`io.casehub.agency.optimisation.prompt.OptimisationDataset`)
+- `config` (`io.casehub.agency.optimisation.prompt.OptimiserConfig`)
+- `parent` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
+
+### `private double scoreVariant(io.casehub.agency.optimisation.prompt.PromptVariant variant, java.util.Map<java.lang.String,java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>> byVariant)`
+
+#### Parameters
+
+- `variant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
+- `byVariant` (`java.util.Map<java.lang.String,java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>>`)

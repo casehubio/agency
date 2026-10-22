@@ -295,7 +295,7 @@ The prompt sub-package (`agentic.social.prompt`) wires all social cognition orch
 
 **PromptSection lifecycle:** Sections are plain classes (not CDI beans) constructed by `CognitionCore.promptSections()`. Each implements `@Nullable contribute(PromptContext)` -- the context carries `agentId`, `tenantId`, and `@Nullable subjectId` (resolved per-turn by `SpeechSession` via speaker identification). Subject-scoped sections (`MentalModelPromptSection`, `UserModelPromptSection`) return null when `subjectId` is null (no identified speaker).
 
-**Attention-aware section gating:** `CognitionCore.promptSections()` uses `isEnabled(configFlag, relevanceSet)` instead of raw config flags for section inclusion. When an `AttentionBriefing` is present and contains signals relevant to a domain, that domain's section is force-included even when its config flag is `false`. The mapping from signal categories to cognitive domains lives in `AttentionRelevance` (package-private, `io.casehub.agency.agentic.social`):
+**Attention-aware section gating:** `CognitionCore.promptSections()` uses `isEnabled(configFlag, relevanceSet)` instead of raw config flags for section inclusion. When an `AttentionBriefing` is present and contains signals relevant to a domain, that domain's section is force-included even when its config flag is `false`. The mapping from signal categories to cognitive domains lives in `AttentionRelevance` (package-private, `io.casehub.agency.core.social`):
 
 - `GOALS` ← URGENCY_SPIKE, GOAL_RECOGNIZED, DECAY_DETECTED, BLOCKER_RESOLVED, PRIORITY_SHIFT
 - `DRIVES` ← DRIVE_SHIFT

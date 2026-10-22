@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.coalition.CapabilityCoverageEvaluator;
-import io.casehub.agency.agentic.coalition.CoalitionEvaluator;
-import io.casehub.agency.agentic.yaml.spec.CoalitionEvaluatorSpec;
+import io.casehub.agency.deliberation.coalition.CapabilityCoverageEvaluator;
+import io.casehub.agency.deliberation.coalition.CoalitionEvaluator;
+import io.casehub.agency.core.yaml.spec.CoalitionEvaluatorSpec;
 
 public class CoalitionEvaluatorRegistry {
 

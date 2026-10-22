@@ -20,10 +20,10 @@ import io.casehub.api.spi.judgment.CallerIdentity;
 import io.casehub.api.spi.judgment.Evidence;
 import io.casehub.api.spi.judgment.EvidenceType;
 import io.casehub.platform.agent.AgentProvider;
-import io.casehub.agency.agentic.aggregation.AggregationResult;
-import io.casehub.agency.agentic.judgment.JudgmentContext;
-import io.casehub.agency.agentic.judgment.JudgmentDecision;
-import io.casehub.agency.agentic.judgment.JudgmentPhase;
+import io.casehub.agency.orchestration.aggregation.AggregationResult;
+import io.casehub.agency.deliberation.judgment.JudgmentContext;
+import io.casehub.agency.deliberation.judgment.JudgmentDecision;
+import io.casehub.agency.deliberation.judgment.JudgmentPhase;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 

@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import io.casehub.neocortex.cognition.mentalmodel.MentalModelConfig;
 import io.casehub.neocortex.cognition.mood.MoodConfig;
@@ -14,23 +14,23 @@ import io.casehub.neocortex.cognition.goal.GoalEscalationConfig;
 import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitiveGoalConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.CollectiveGoalConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.DriveConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.GoalEscalationConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.GoalProposalConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.MentalModelConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.MoodConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.NarrativeConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.NarrativeSynthesisGateSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.NormDetectionConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.PersonalityEvolutionConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.RelationshipStageConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.RetentionConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.StrategyLearningConfigSpec;
-import io.casehub.agency.agentic.yaml.spec.cognition.UserModelConfigSpec;
-import io.casehub.agency.memory.RetentionConfig;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.core.yaml.spec.cognition.CognitiveGoalConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.CollectiveGoalConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.DriveConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.GoalEscalationConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.GoalProposalConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.MentalModelConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.MoodConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.NarrativeConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.NarrativeSynthesisGateSpec;
+import io.casehub.agency.core.yaml.spec.cognition.NormDetectionConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.PersonalityEvolutionConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.RelationshipStageConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.RetentionConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.StrategyLearningConfigSpec;
+import io.casehub.agency.core.yaml.spec.cognition.UserModelConfigSpec;
+import io.casehub.agency.social.memory.RetentionConfig;
 import org.jspecify.annotations.Nullable;
 
 public class CognitionCompiler {

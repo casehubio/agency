@@ -1,5 +1,5 @@
-# io.casehub.agency.agentic.routing.RoutingDecision
+# io.casehub.agency.orchestration.routing.RoutingDecision
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `interface`

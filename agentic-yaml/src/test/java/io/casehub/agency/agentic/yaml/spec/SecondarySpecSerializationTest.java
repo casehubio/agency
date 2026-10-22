@@ -1,16 +1,16 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
-import io.casehub.agency.agentic.yaml.registry.AcceptancePolicyRegistry;
-import io.casehub.agency.agentic.yaml.registry.ConflictResolutionRegistry;
-import io.casehub.agency.agentic.yaml.registry.ConvergencePolicyRegistry;
-import io.casehub.agency.agentic.yaml.registry.EpistemicRuleRegistry;
-import io.casehub.agency.agentic.yaml.registry.TurnPolicyRegistry;
-import io.casehub.agency.conversation.orchestration.RoundRobinTurnPolicy;
-import io.casehub.agency.negotiation.MajorityAcceptance;
-import io.casehub.agency.negotiation.UnanimousAcceptance;
-import io.casehub.agency.normative.PriorityResolution;
+import io.casehub.agency.core.yaml.registry.AcceptancePolicyRegistry;
+import io.casehub.agency.core.yaml.registry.ConflictResolutionRegistry;
+import io.casehub.agency.core.yaml.registry.ConvergencePolicyRegistry;
+import io.casehub.agency.core.yaml.registry.EpistemicRuleRegistry;
+import io.casehub.agency.core.yaml.registry.TurnPolicyRegistry;
+import io.casehub.agency.deliberation.conversation.orchestration.RoundRobinTurnPolicy;
+import io.casehub.agency.deliberation.negotiation.MajorityAcceptance;
+import io.casehub.agency.deliberation.negotiation.UnanimousAcceptance;
+import io.casehub.agency.deliberation.normative.PriorityResolution;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.api.spi.routing.CandidateSetStrategy;
 import io.casehub.api.spi.routing.StaticSetStrategy;
-import io.casehub.agency.agentic.yaml.spec.CandidateSetStrategySpec;
+import io.casehub.agency.core.yaml.spec.CandidateSetStrategySpec;
 
 public class CandidateSetStrategyRegistry {
 

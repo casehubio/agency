@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations.runtime;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

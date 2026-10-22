@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.listener.EventLogListener
+# io.casehub.agency.orchestration.listener.EventLogListener
 
-**Package:** `io.casehub.agency.agentic.listener`
+**Package:** `io.casehub.agency.orchestration.listener`
 
 **Kind:** `class`
 
@@ -13,76 +13,76 @@ in the sink stalls the execution.
 
 ## Fields
 
-### `sink` (`io.casehub.agency.agentic.listener.EventLogListener.EventSink`)
+### `sink` (`io.casehub.agency.orchestration.listener.EventLogListener.EventSink`)
 
 ## Constructors
 
-### `public EventLogListener(io.casehub.agency.agentic.listener.EventLogListener.EventSink sink)`
+### `public EventLogListener(io.casehub.agency.orchestration.listener.EventLogListener.EventSink sink)`
 
 #### Parameters
 
-- `sink` (`io.casehub.agency.agentic.listener.EventLogListener.EventSink`)
+- `sink` (`io.casehub.agency.orchestration.listener.EventLogListener.EventSink`)
 
 ## Methods
 
-### `public void onActivation(io.casehub.agency.agentic.AgentRef agent, boolean activated)`
+### `public void onActivation(io.casehub.agency.core.AgentRef agent, boolean activated)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `activated` (`boolean`)
 
-### `public void onAgentDispatched(io.casehub.agency.agentic.AgentRef agent)`
+### `public void onAgentDispatched(io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 
-### `public void onAgentResult(io.casehub.agency.agentic.AgentResult result)`
-
-#### Parameters
-
-- `result` (`io.casehub.agency.agentic.AgentResult`)
-
-### `public void onAggregation(io.casehub.agency.agentic.aggregation.AggregationResult result)`
+### `public void onAgentResult(io.casehub.agency.core.AgentResult result)`
 
 #### Parameters
 
-- `result` (`io.casehub.agency.agentic.aggregation.AggregationResult`)
+- `result` (`io.casehub.agency.core.AgentResult`)
 
-### `public void onExecutionComplete(io.casehub.agency.agentic.model.ExecutionResult result, java.time.Duration executionDuration, int iterationCount)`
+### `public void onAggregation(io.casehub.agency.orchestration.aggregation.AggregationResult result)`
 
 #### Parameters
 
-- `result` (`io.casehub.agency.agentic.model.ExecutionResult`)
+- `result` (`io.casehub.agency.orchestration.aggregation.AggregationResult`)
+
+### `public void onExecutionComplete(io.casehub.agency.orchestration.execution.ExecutionResult result, java.time.Duration executionDuration, int iterationCount)`
+
+#### Parameters
+
+- `result` (`io.casehub.agency.orchestration.execution.ExecutionResult`)
 - `executionDuration` (`java.time.Duration`)
 - `iterationCount` (`int`)
 
-### `public void onExecutionStart(io.casehub.agency.agentic.model.ExecutionModel<?> model)`
+### `public void onExecutionStart(io.casehub.agency.orchestration.execution.ExecutionModel<?> model)`
 
 #### Parameters
 
-- `model` (`io.casehub.agency.agentic.model.ExecutionModel<?>`)
+- `model` (`io.casehub.agency.orchestration.execution.ExecutionModel<?>`)
 
-### `public void onFailure(io.casehub.agency.agentic.AgentRef agent, java.lang.Throwable cause)`
+### `public void onFailure(io.casehub.agency.core.AgentRef agent, java.lang.Throwable cause)`
 
 #### Parameters
 
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `agent` (`io.casehub.agency.core.AgentRef`)
 - `cause` (`java.lang.Throwable`)
 
-### `public void onRoutingDecision(io.casehub.agency.agentic.routing.RoutingDecision decision, java.util.List<io.casehub.agency.agentic.RoutingCandidate> candidates)`
+### `public void onRoutingDecision(io.casehub.agency.orchestration.routing.RoutingDecision decision, java.util.List<io.casehub.agency.core.RoutingCandidate> candidates)`
 
 #### Parameters
 
-- `decision` (`io.casehub.agency.agentic.routing.RoutingDecision`)
-- `candidates` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `decision` (`io.casehub.agency.orchestration.routing.RoutingDecision`)
+- `candidates` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
-### `public void onTermination(io.casehub.agency.agentic.termination.TerminationDecision decision)`
+### `public void onTermination(io.casehub.agency.orchestration.termination.TerminationDecision decision)`
 
 #### Parameters
 
-- `decision` (`io.casehub.agency.agentic.termination.TerminationDecision`)
+- `decision` (`io.casehub.agency.orchestration.termination.TerminationDecision`)
 
 ### `private static java.lang.String truncate(java.lang.String s, int max)`
 

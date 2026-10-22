@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.PromptVariantStore
+# io.casehub.agency.optimisation.prompt.PromptVariantStore
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `interface`
 
@@ -14,22 +14,22 @@
 - `variantId` (`java.lang.String`)
 - `variantSlot` (`java.lang.String`)
 
-### `public abstract io.casehub.agency.prompt.PromptVariant getActive(java.lang.String signatureId, java.lang.String variantSlot)`
+### `public abstract io.casehub.agency.optimisation.prompt.PromptVariant getActive(java.lang.String signatureId, java.lang.String variantSlot)`
 
 #### Parameters
 
 - `signatureId` (`java.lang.String`)
 - `variantSlot` (`java.lang.String`)
 
-### `public abstract java.util.List<io.casehub.agency.prompt.PromptVariant> getHistory(java.lang.String signatureId, int limit)`
+### `public abstract java.util.List<io.casehub.agency.optimisation.prompt.PromptVariant> getHistory(java.lang.String signatureId, int limit)`
 
 #### Parameters
 
 - `signatureId` (`java.lang.String`)
 - `limit` (`int`)
 
-### `public abstract void store(io.casehub.agency.prompt.PromptVariant variant)`
+### `public abstract void store(io.casehub.agency.optimisation.prompt.PromptVariant variant)`
 
 #### Parameters
 
-- `variant` (`io.casehub.agency.prompt.PromptVariant`)
+- `variant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)

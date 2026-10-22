@@ -1,12 +1,12 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.ConflictResolutionSpec;
-import io.casehub.agency.normative.ConflictResolutionStrategy;
-import io.casehub.agency.normative.EscalationResolution;
-import io.casehub.agency.normative.MostRestrictiveResolution;
-import io.casehub.agency.normative.PriorityResolution;
-import io.casehub.agency.normative.RecencyResolution;
-import io.casehub.agency.normative.SpecificityResolution;
+import io.casehub.agency.core.yaml.spec.ConflictResolutionSpec;
+import io.casehub.agency.deliberation.normative.ConflictResolutionStrategy;
+import io.casehub.agency.deliberation.normative.EscalationResolution;
+import io.casehub.agency.deliberation.normative.MostRestrictiveResolution;
+import io.casehub.agency.deliberation.normative.PriorityResolution;
+import io.casehub.agency.deliberation.normative.RecencyResolution;
+import io.casehub.agency.deliberation.normative.SpecificityResolution;
 
 public class ConflictResolutionRegistry {
 

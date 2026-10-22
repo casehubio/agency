@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.summarisation.observation.affordance.ObservationFilter;
-import io.casehub.agency.summarisation.observation.affordance.PerceptionFilter;
+import io.casehub.agency.perception.observation.affordance.ObservationFilter;
+import io.casehub.agency.perception.observation.affordance.PerceptionFilter;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import io.casehub.api.spi.judgment.EvidenceRequirement;
 import org.jspecify.annotations.Nullable;

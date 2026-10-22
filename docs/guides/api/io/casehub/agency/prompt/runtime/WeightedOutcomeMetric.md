@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.runtime.WeightedOutcomeMetric
+# io.casehub.agency.optimisation.prompt.runtime.WeightedOutcomeMetric
 
-**Package:** `io.casehub.agency.prompt.runtime`
+**Package:** `io.casehub.agency.optimisation.prompt.runtime`
 
 **Kind:** `class`
 
@@ -14,8 +14,8 @@
 
 ## Methods
 
-### `public double score(java.util.List<io.casehub.agency.prompt.VariantOutcome> outcomes)`
+### `public double score(java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome> outcomes)`
 
 #### Parameters
 
-- `outcomes` (`java.util.List<io.casehub.agency.prompt.VariantOutcome>`)
+- `outcomes` (`java.util.List<io.casehub.agency.optimisation.prompt.VariantOutcome>`)

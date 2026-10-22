@@ -4,7 +4,7 @@
 **Issue:** #68
 **Status:** Draft
 **Repo:** casehubio/blocks
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 ## Problem
 
@@ -437,7 +437,7 @@ All plain JUnit 5 + AssertJ. No CDI, no Quarkus. Zero-dependency tests.
 
 ## Documentation Updates
 
-- Update blocks ARC42STORIES.MD §5: add `io.casehub.agency.summarisation.observation`
+- Update blocks ARC42STORIES.MD §5: add `io.casehub.agency.perception.observation`
   sub-package entry under the existing `io.casehub.agency.summarisation` section,
   listing all 7 types with their roles
 - Update blocks CLAUDE.md with observation sub-package documentation

@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.CoordinationOutcomeWeightsSpec;
-import io.casehub.agency.routing.agent.CoordinationOutcomeWeights;
+import io.casehub.agency.core.yaml.spec.CoordinationOutcomeWeightsSpec;
+import io.casehub.agency.governance.routing.agent.CoordinationOutcomeWeights;
 
 import java.util.Map;
 

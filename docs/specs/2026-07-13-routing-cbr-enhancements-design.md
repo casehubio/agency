@@ -59,7 +59,7 @@ spec addresses. Issue #37 title/body should be updated to reflect the reframed s
 ### 1. CbrOutcomeWeights SPI
 
 ```java
-package io.casehub.agency.routing.agent;
+package io.casehub.agency.governance.routing.agent;
 
 import io.casehub.api.spi.routing.RoutingOutcome;
 
@@ -303,7 +303,7 @@ produce a positive score, fall through to graph query fallback.
 ### 1. PlanCompositionAnalyser — a RoutingSignalProvider
 
 ```java
-package io.casehub.agency.routing.agent;
+package io.casehub.agency.governance.routing.agent;
 
 @ApplicationScoped
 public class PlanCompositionAnalyser implements RoutingSignalProvider {
@@ -335,7 +335,7 @@ from step-level outcomes (`RoutingOutcome` enum: SUCCESS, FAILURE, GATE_REJECTED
 GATE_EXPIRED). A separate weight map is required.
 
 ```java
-package io.casehub.agency.routing.agent;
+package io.casehub.agency.governance.routing.agent;
 
 public interface CbrCaseOutcomeWeights {
     Map<String, Double> weights();

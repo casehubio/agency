@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.agentic.yaml.spec.world.*;
-import io.casehub.agency.summarisation.observation.affordance.*;
+import io.casehub.agency.core.yaml.spec.world.*;
+import io.casehub.agency.perception.observation.affordance.*;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;

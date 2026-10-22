@@ -578,10 +578,10 @@ The annotation model handles the 80% case. The builders handle the 20% that need
 - ADR-0004: `docs/adr/0004-own-orchestration-annotations.md`
 - Engine-annotations spec: `casehub-engine/docs/specs/issue-909-engine-annotations/2026-08-16-annotation-driven-programming-model-design.md`
 - Engine-annotations decisions: `casehub-engine/docs/specs/issue-909-engine-annotations/decisions.md`
-- `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
-- `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
-- `io.casehub.agency.agentic.pattern.AbstractPatternBuilder` — base builder with SPI setters
-- `io.casehub.agency.agentic.pattern.DebateBuilder` — debate-specific builder
+- `io.casehub.agency.orchestration.pattern.Patterns` — 8 pattern builders
+- `io.casehub.agency.orchestration.execution.ExecutionModel` — 5-SPI composition record
+- `io.casehub.agency.orchestration.pattern.AbstractPatternBuilder` — base builder with SPI setters
+- `io.casehub.agency.orchestration.pattern.DebateBuilder` — debate-specific builder
 - GE-20260818-d7915b — SyntheticBeanBuildItem.supplier() non-recordable objects
 - GE-20260817-48caeb — setRuntimeInit() required for RUNTIME_INIT recorders
 - GE-20260614-efee3b — SyntheticBeanBuildItem without addInjectionPoint

@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.summary.ThreadSummaryObserver
+# io.casehub.agency.communication.channel.summary.ThreadSummaryObserver
 
-**Package:** `io.casehub.agency.channel.summary`
+**Package:** `io.casehub.agency.communication.channel.summary`
 
 **Kind:** `class`
 

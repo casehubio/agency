@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.DefaultCoordinationOutcomeWeights
+# io.casehub.agency.governance.routing.agent.DefaultCoordinationOutcomeWeights
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 

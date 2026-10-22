@@ -1,26 +1,26 @@
-# io.casehub.agency.agentic.model.PatternType
+# io.casehub.agency.orchestration.execution.PatternType
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `CONDITIONAL` (`io.casehub.agency.agentic.model.PatternType`)
+### `CONDITIONAL` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `DEBATE` (`io.casehub.agency.agentic.model.PatternType`)
+### `DEBATE` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `HTN` (`io.casehub.agency.agentic.model.PatternType`)
+### `HTN` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `LOOP` (`io.casehub.agency.agentic.model.PatternType`)
+### `LOOP` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `PARALLEL` (`io.casehub.agency.agentic.model.PatternType`)
+### `PARALLEL` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `SEQUENCE` (`io.casehub.agency.agentic.model.PatternType`)
+### `SEQUENCE` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `SUPERVISOR` (`io.casehub.agency.agentic.model.PatternType`)
+### `SUPERVISOR` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `VOTING` (`io.casehub.agency.agentic.model.PatternType`)
+### `VOTING` (`io.casehub.agency.orchestration.execution.PatternType`)
 
 ## Constructors
 
@@ -30,10 +30,10 @@
 
 ### `public boolean isWorkflowShaped()`
 
-### `public static io.casehub.agency.agentic.model.PatternType valueOf(java.lang.String name)`
+### `public static io.casehub.agency.orchestration.execution.PatternType valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.agentic.model.PatternType[] values()`
+### `public static io.casehub.agency.orchestration.execution.PatternType[] values()`

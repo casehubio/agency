@@ -1,20 +1,20 @@
-# io.casehub.agency.prompt.runtime.VariantAwareSystemPromptCustomiser
+# io.casehub.agency.optimisation.prompt.runtime.VariantAwareSystemPromptCustomiser
 
-**Package:** `io.casehub.agency.prompt.runtime`
+**Package:** `io.casehub.agency.optimisation.prompt.runtime`
 
 **Kind:** `class`
 
 ## Fields
 
-### `store` (`io.casehub.agency.prompt.PromptVariantStore`)
+### `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Constructors
 
-### `public VariantAwareSystemPromptCustomiser(io.casehub.agency.prompt.PromptVariantStore store)`
+### `public VariantAwareSystemPromptCustomiser(io.casehub.agency.optimisation.prompt.PromptVariantStore store)`
 
 #### Parameters
 
-- `store` (`io.casehub.agency.prompt.PromptVariantStore`)
+- `store` (`io.casehub.agency.optimisation.prompt.PromptVariantStore`)
 
 ## Methods
 

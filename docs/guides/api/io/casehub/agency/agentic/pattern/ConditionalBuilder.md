@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.ConditionalBuilder
+# io.casehub.agency.orchestration.pattern.ConditionalBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -10,9 +10,9 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.pattern.ConditionalBuilder<T> when(java.util.function.Predicate<io.casehub.agency.agentic.RoutingCandidate> predicate, io.casehub.agency.agentic.AgentRef agent)`
+### `public io.casehub.agency.orchestration.pattern.ConditionalBuilder<T> when(java.util.function.Predicate<io.casehub.agency.core.RoutingCandidate> predicate, io.casehub.agency.core.AgentRef agent)`
 
 #### Parameters
 
-- `predicate` (`java.util.function.Predicate<io.casehub.agency.agentic.RoutingCandidate>`)
-- `agent` (`io.casehub.agency.agentic.AgentRef`)
+- `predicate` (`java.util.function.Predicate<io.casehub.agency.core.RoutingCandidate>`)
+- `agent` (`io.casehub.agency.core.AgentRef`)

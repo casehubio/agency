@@ -1,31 +1,31 @@
-# io.casehub.agency.agentic.decomposition.CompositeHeuristic
+# io.casehub.agency.orchestration.decomposition.CompositeHeuristic
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
 ## Fields
 
-### `delegates` (`java.util.List<io.casehub.agency.agentic.decomposition.CompositeHeuristic.WeightedHeuristic<T>>`)
+### `delegates` (`java.util.List<io.casehub.agency.orchestration.decomposition.CompositeHeuristic.WeightedHeuristic<T>>`)
 
 ## Constructors
 
-### `public CompositeHeuristic(java.util.List<io.casehub.agency.agentic.decomposition.CompositeHeuristic.WeightedHeuristic<T>> delegates)`
+### `public CompositeHeuristic(java.util.List<io.casehub.agency.orchestration.decomposition.CompositeHeuristic.WeightedHeuristic<T>> delegates)`
 
 #### Parameters
 
-- `delegates` (`java.util.List<io.casehub.agency.agentic.decomposition.CompositeHeuristic.WeightedHeuristic<T>>`)
+- `delegates` (`java.util.List<io.casehub.agency.orchestration.decomposition.CompositeHeuristic.WeightedHeuristic<T>>`)
 
 ## Methods
 
-### `private java.util.List<io.casehub.agency.agentic.decomposition.ScoredMethod<T>> combine(java.util.List<DecompositionMethod<T>> methods, java.util.List<java.util.List<io.casehub.agency.agentic.decomposition.ScoredMethod<T>>> delegateResults)`
+### `private java.util.List<io.casehub.agency.orchestration.decomposition.ScoredMethod<T>> combine(java.util.List<DecompositionMethod<T>> methods, java.util.List<java.util.List<io.casehub.agency.orchestration.decomposition.ScoredMethod<T>>> delegateResults)`
 
 #### Parameters
 
 - `methods` (`java.util.List<DecompositionMethod<T>>`)
-- `delegateResults` (`java.util.List<java.util.List<io.casehub.agency.agentic.decomposition.ScoredMethod<T>>>`)
+- `delegateResults` (`java.util.List<java.util.List<io.casehub.agency.orchestration.decomposition.ScoredMethod<T>>>`)
 
-### `public Uni<java.util.List<io.casehub.agency.agentic.decomposition.ScoredMethod<T>>> evaluate(TaskNode.CompoundTask<T> task, java.util.List<DecompositionMethod<T>> methods, DecompositionContext<T> context)`
+### `public Uni<java.util.List<io.casehub.agency.orchestration.decomposition.ScoredMethod<T>>> evaluate(TaskNode.CompoundTask<T> task, java.util.List<DecompositionMethod<T>> methods, DecompositionContext<T> context)`
 
 #### Parameters
 

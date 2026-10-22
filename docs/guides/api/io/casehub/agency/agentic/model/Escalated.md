@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionResult.Escalated
+# io.casehub.agency.orchestration.execution.ExecutionResult.Escalated
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

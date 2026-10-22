@@ -1,19 +1,19 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.judgment.JudgmentPolicy;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.RoundRobinRouting;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.RoundRobinRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
-import io.casehub.agency.agentic.yaml.compiler.CompiledWorld;
-import io.casehub.agency.agentic.yaml.spec.ConversationSpec;
-import io.casehub.agency.agentic.yaml.spec.JointIntentionSpec;
-import io.casehub.agency.conversation.orchestration.RoundRobinTurnPolicy;
-import io.casehub.agency.agentic.yaml.registry.ConvergencePolicyRegistry;
-import io.casehub.agency.agentic.yaml.registry.EpistemicRuleRegistry;
-import io.casehub.agency.agentic.yaml.registry.TurnPolicyRegistry;
-import io.casehub.agency.summarisation.observation.affordance.AffordanceRenderer;
-import io.casehub.agency.summarisation.observation.affordance.AnnotatedSection;
-import io.casehub.agency.summarisation.observation.affordance.ObservationSection;
+import io.casehub.agency.core.yaml.compiler.CompiledWorld;
+import io.casehub.agency.core.yaml.spec.ConversationSpec;
+import io.casehub.agency.core.yaml.spec.JointIntentionSpec;
+import io.casehub.agency.deliberation.conversation.orchestration.RoundRobinTurnPolicy;
+import io.casehub.agency.core.yaml.registry.ConvergencePolicyRegistry;
+import io.casehub.agency.core.yaml.registry.EpistemicRuleRegistry;
+import io.casehub.agency.core.yaml.registry.TurnPolicyRegistry;
+import io.casehub.agency.perception.observation.affordance.AffordanceRenderer;
+import io.casehub.agency.perception.observation.affordance.AnnotatedSection;
+import io.casehub.agency.perception.observation.affordance.ObservationSection;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -118,7 +118,7 @@ class HistoricalEncounterExampleTest extends ExampleTestBase {
         var journals = (AnnotatedSection) compiled.sections().get(3);
         assertThat(journals.requiredTags()).containsExactly("deep-trust");
         assertThat(journals.resolutions()).containsKey(
-                io.casehub.agency.summarisation.observation.affordance.ResolutionTier.REDUCED);
+                io.casehub.agency.perception.observation.affordance.ResolutionTier.REDUCED);
 
         var seeds = (ObservationSection.ItemList) compiled.sections().get(4);
         assertThat(seeds.items()).hasSize(5);

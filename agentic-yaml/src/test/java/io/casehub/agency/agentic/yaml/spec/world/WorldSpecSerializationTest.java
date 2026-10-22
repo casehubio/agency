@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.spec.world;
+package io.casehub.agency.core.yaml.spec.world;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.casehub.agency.summarisation.observation.affordance.ResolutionTier;
+import io.casehub.agency.perception.observation.affordance.ResolutionTier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

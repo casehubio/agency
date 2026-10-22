@@ -1,13 +1,13 @@
-package io.casehub.agency.agentic.yaml.llm;
+package io.casehub.agency.core.yaml.llm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.compiler.CognitionCompiler;
-import io.casehub.agency.agentic.yaml.compiler.ObservationFilterRegistry;
-import io.casehub.agency.agentic.yaml.compiler.WorldCompiler;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
+import io.casehub.agency.core.yaml.compiler.WorldCompiler;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ class ConversationRunnerTest {
         }
     }
 
-    private static io.casehub.agency.agentic.yaml.compiler.CompiledWorld buildWorld() throws IOException {
+    private static io.casehub.agency.core.yaml.compiler.CompiledWorld buildWorld() throws IOException {
         try (var is = ConversationRunnerTest.class.getResourceAsStream(
                 "/examples/historical-encounter/world.yaml")) {
             var def = YAML.readValue(is, WorldDefinition.class);

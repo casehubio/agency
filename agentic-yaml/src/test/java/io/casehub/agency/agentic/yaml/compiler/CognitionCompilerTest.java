@@ -1,4 +1,4 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
@@ -8,8 +8,8 @@ import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
-import io.casehub.agency.agentic.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.memory.RetentionConfig;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
+import io.casehub.agency.social.memory.RetentionConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

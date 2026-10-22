@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.affordance.ObservationSection.TextBlock
+# io.casehub.agency.perception.observation.affordance.ObservationSection.TextBlock
 
-**Package:** `io.casehub.agency.summarisation.observation.affordance`
+**Package:** `io.casehub.agency.perception.observation.affordance`
 
 **Kind:** `record`
 

@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.aggregation.MajorityVote;
-import io.casehub.agency.agentic.judgment.JudgmentPolicy;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.SelectAllRouting;
-import io.casehub.agency.agentic.yaml.compiler.CompiledWorld;
-import io.casehub.agency.summarisation.observation.affordance.AnnotatedSection;
+import io.casehub.agency.orchestration.aggregation.MajorityVote;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.SelectAllRouting;
+import io.casehub.agency.core.yaml.compiler.CompiledWorld;
+import io.casehub.agency.perception.observation.affordance.AnnotatedSection;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

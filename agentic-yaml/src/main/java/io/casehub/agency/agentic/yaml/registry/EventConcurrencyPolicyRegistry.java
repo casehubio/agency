@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.model.EventConcurrencyPolicy;
-import io.casehub.agency.agentic.yaml.spec.EventConcurrencyPolicySpec;
+import io.casehub.agency.orchestration.execution.EventConcurrencyPolicy;
+import io.casehub.agency.core.yaml.spec.EventConcurrencyPolicySpec;
 
 public class EventConcurrencyPolicyRegistry {
 

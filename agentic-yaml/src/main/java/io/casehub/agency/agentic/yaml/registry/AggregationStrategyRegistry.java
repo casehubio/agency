@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.aggregation.AggregationStrategy;
-import io.casehub.agency.agentic.aggregation.CollectAll;
-import io.casehub.agency.agentic.aggregation.MajorityVote;
-import io.casehub.agency.agentic.aggregation.PassThrough;
-import io.casehub.agency.agentic.yaml.spec.AggregationSpec;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.aggregation.CollectAll;
+import io.casehub.agency.orchestration.aggregation.MajorityVote;
+import io.casehub.agency.orchestration.aggregation.PassThrough;
+import io.casehub.agency.core.yaml.spec.AggregationSpec;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;

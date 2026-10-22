@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.BatchResult.VariantCreated
+# io.casehub.agency.optimisation.prompt.BatchResult.VariantCreated
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
@@ -8,21 +8,21 @@
 
 ### `assignedSlot` (`java.lang.String`)
 
-### `variant` (`io.casehub.agency.prompt.PromptVariant`)
+### `variant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
 
 ## Record Components
 
 ### `assignedSlot` (`java.lang.String`)
 
-### `variant` (`io.casehub.agency.prompt.PromptVariant`)
+### `variant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
 
 ## Constructors
 
-### `public VariantCreated(io.casehub.agency.prompt.PromptVariant variant, java.lang.String assignedSlot)`
+### `public VariantCreated(io.casehub.agency.optimisation.prompt.PromptVariant variant, java.lang.String assignedSlot)`
 
 #### Parameters
 
-- `variant` (`io.casehub.agency.prompt.PromptVariant`)
+- `variant` (`io.casehub.agency.optimisation.prompt.PromptVariant`)
 - `assignedSlot` (`java.lang.String`)
 
 ## Methods
@@ -39,4 +39,4 @@
 
 ### `public final java.lang.String toString()`
 
-### `public io.casehub.agency.prompt.PromptVariant variant()`
+### `public io.casehub.agency.optimisation.prompt.PromptVariant variant()`

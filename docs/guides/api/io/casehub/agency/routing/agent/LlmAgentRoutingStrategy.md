@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.LlmAgentRoutingStrategy
+# io.casehub.agency.governance.routing.agent.LlmAgentRoutingStrategy
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -52,11 +52,11 @@ unknown agent selection.
 
 ### `scoreSource` (`TrustScoreSource`)
 
-### `systemPromptCustomiser` (`io.casehub.agency.prompt.SystemPromptCustomiser`)
+### `systemPromptCustomiser` (`io.casehub.agency.optimisation.prompt.SystemPromptCustomiser`)
 
 ## Constructors
 
-### `public LlmAgentRoutingStrategy(AgentProvider agentProvider, TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, RoutingPromptAssembler promptAssembler, io.casehub.agency.prompt.SystemPromptCustomiser systemPromptCustomiser)`
+### `public LlmAgentRoutingStrategy(AgentProvider agentProvider, TrustCandidateClassifier classifier, TrustScoreSource scoreSource, TrustRoutingPolicyProvider policyProvider, RoutingPromptAssembler promptAssembler, io.casehub.agency.optimisation.prompt.SystemPromptCustomiser systemPromptCustomiser)`
 
 #### Parameters
 
@@ -65,9 +65,9 @@ unknown agent selection.
 - `scoreSource` (`TrustScoreSource`)
 - `policyProvider` (`TrustRoutingPolicyProvider`)
 - `promptAssembler` (`RoutingPromptAssembler`)
-- `systemPromptCustomiser` (`io.casehub.agency.prompt.SystemPromptCustomiser`)
+- `systemPromptCustomiser` (`io.casehub.agency.optimisation.prompt.SystemPromptCustomiser`)
 
-### `public LlmAgentRoutingStrategy(Instance<AgentProvider> agentProvider, Instance<TrustCandidateClassifier> classifier, Instance<TrustScoreSource> scoreSource, Instance<TrustRoutingPolicyProvider> policyProvider, RoutingPromptAssembler promptAssembler, Instance<io.casehub.agency.prompt.SystemPromptCustomiser> systemPromptCustomiser)`
+### `public LlmAgentRoutingStrategy(Instance<AgentProvider> agentProvider, Instance<TrustCandidateClassifier> classifier, Instance<TrustScoreSource> scoreSource, Instance<TrustRoutingPolicyProvider> policyProvider, RoutingPromptAssembler promptAssembler, Instance<io.casehub.agency.optimisation.prompt.SystemPromptCustomiser> systemPromptCustomiser)`
 
 #### Parameters
 
@@ -76,7 +76,7 @@ unknown agent selection.
 - `scoreSource` (`Instance<TrustScoreSource>`)
 - `policyProvider` (`Instance<TrustRoutingPolicyProvider>`)
 - `promptAssembler` (`RoutingPromptAssembler`)
-- `systemPromptCustomiser` (`Instance<io.casehub.agency.prompt.SystemPromptCustomiser>`)
+- `systemPromptCustomiser` (`Instance<io.casehub.agency.optimisation.prompt.SystemPromptCustomiser>`)
 
 ## Methods
 

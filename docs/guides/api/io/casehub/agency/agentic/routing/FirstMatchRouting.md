@@ -1,25 +1,25 @@
-# io.casehub.agency.agentic.routing.FirstMatchRouting
+# io.casehub.agency.orchestration.routing.FirstMatchRouting
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `class`
 
 ## Fields
 
-### `matcher` (`java.util.function.Predicate<io.casehub.agency.agentic.RoutingCandidate>`)
+### `matcher` (`java.util.function.Predicate<io.casehub.agency.core.RoutingCandidate>`)
 
 ## Constructors
 
-### `public FirstMatchRouting(java.util.function.Predicate<io.casehub.agency.agentic.RoutingCandidate> matcher)`
+### `public FirstMatchRouting(java.util.function.Predicate<io.casehub.agency.core.RoutingCandidate> matcher)`
 
 #### Parameters
 
-- `matcher` (`java.util.function.Predicate<io.casehub.agency.agentic.RoutingCandidate>`)
+- `matcher` (`java.util.function.Predicate<io.casehub.agency.core.RoutingCandidate>`)
 
 ## Methods
 
-### `public Uni<io.casehub.agency.agentic.routing.RoutingDecision> route(io.casehub.agency.agentic.routing.RoutingContext<T> context)`
+### `public Uni<io.casehub.agency.orchestration.routing.RoutingDecision> route(io.casehub.agency.orchestration.routing.RoutingContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.routing.RoutingContext<T>`)
+- `context` (`io.casehub.agency.orchestration.routing.RoutingContext<T>`)

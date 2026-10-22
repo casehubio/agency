@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.spec;
+package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import io.casehub.agency.agentic.FailurePolicy;
+import io.casehub.agency.core.FailurePolicy;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;

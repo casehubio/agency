@@ -38,7 +38,7 @@ A `PromptVariant` is a versioned bundle: curated examples, an optional instructi
 
 ## When You Can Use It
 
-The framework is in blocks and ready to deploy. No cross-repo changes are needed for the core functionality — the prompt optimisation types, the batch orchestrator, the store, the selector, the optimisers, the runtime sections all live in `io.casehub.agency.prompt`.
+The framework is in blocks and ready to deploy. No cross-repo changes are needed for the core functionality — the prompt optimisation types, the batch orchestrator, the store, the selector, the optimisers, the runtime sections all live in `io.casehub.agency.optimisation.prompt`.
 
 For **manual enrichment** — curating your own examples and storing them in `InMemoryPromptVariantStore` — you can start today. The `OptimisedFewShotSection` and `VariantAwareSystemPromptCustomiser` will serve them at routing time without any A/B machinery.
 

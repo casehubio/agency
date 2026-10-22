@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.PromptVariant
+# io.casehub.agency.optimisation.prompt.PromptVariant
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 
@@ -10,7 +10,7 @@
 
 ### `createdAt` (`java.time.Instant`)
 
-### `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+### `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 
 ### `instructionDelta` (`java.lang.String`)
 
@@ -28,7 +28,7 @@
 
 ### `createdAt` (`java.time.Instant`)
 
-### `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+### `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 
 ### `instructionDelta` (`java.lang.String`)
 
@@ -42,13 +42,13 @@
 
 ## Constructors
 
-### `public PromptVariant(java.lang.String signatureId, java.lang.String variantId, java.util.List<io.casehub.agency.prompt.FewShotExample> examples, java.lang.String instructionDelta, double qualityScore, java.time.Instant createdAt, java.lang.String parentVariantId, int consecutiveWins)`
+### `public PromptVariant(java.lang.String signatureId, java.lang.String variantId, java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample> examples, java.lang.String instructionDelta, double qualityScore, java.time.Instant createdAt, java.lang.String parentVariantId, int consecutiveWins)`
 
 #### Parameters
 
 - `signatureId` (`java.lang.String`)
 - `variantId` (`java.lang.String`)
-- `examples` (`java.util.List<io.casehub.agency.prompt.FewShotExample>`)
+- `examples` (`java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample>`)
 - `instructionDelta` (`java.lang.String`)
 - `qualityScore` (`double`)
 - `createdAt` (`java.time.Instant`)
@@ -67,7 +67,7 @@
 
 - `o` (`java.lang.Object`)
 
-### `public java.util.List<io.casehub.agency.prompt.FewShotExample> examples()`
+### `public java.util.List<io.casehub.agency.optimisation.prompt.FewShotExample> examples()`
 
 ### `public final int hashCode()`
 

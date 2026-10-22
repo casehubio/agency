@@ -23,7 +23,7 @@ The fix is in the observation, not the output contract. Three links per entity, 
 
 Wacky Manor's `ObservationBuilder` had this baked into `appendVisibleObjects()` — a method that manually formatted each game object with its affordances. It worked, but it was domain-specific code solving a general problem. Any LLM agent system where agents observe entities and generate structured actions needs the same grounding chain.
 
-AffordanceRenderer is the extraction. Five types in `io.casehub.agency.summarisation.observation.affordance`:
+AffordanceRenderer is the extraction. Five types in `io.casehub.agency.perception.observation.affordance`:
 
 - `Affordance` and `ObservableEntity` — the grounding chain data model
 - `ObservationSection` — sealed interface with three variants: `EntityGroup` (entities with affordances), `TextBlock` (contextual prose), `ItemList` (bulleted items)

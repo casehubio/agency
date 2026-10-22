@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations.runtime;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 
 import java.util.List;
 import java.util.Map;

@@ -1,5 +1,5 @@
-# io.casehub.agency.routing.agent.RoutingSupport.TrustFilterOutcome
+# io.casehub.agency.governance.routing.agent.RoutingSupport.TrustFilterOutcome
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `interface`

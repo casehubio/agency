@@ -1,18 +1,18 @@
-# io.casehub.agency.routing.RequirementStatus
+# io.casehub.agency.governance.routing.RequirementStatus
 
-**Package:** `io.casehub.agency.routing`
+**Package:** `io.casehub.agency.governance.routing`
 
 **Kind:** `enum`
 
 ## Enum Constants
 
-### `BREACHED` (`io.casehub.agency.routing.RequirementStatus`)
+### `BREACHED` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
-### `CLOSED` (`io.casehub.agency.routing.RequirementStatus`)
+### `CLOSED` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
-### `GAP` (`io.casehub.agency.routing.RequirementStatus`)
+### `GAP` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
-### `PARTIAL` (`io.casehub.agency.routing.RequirementStatus`)
+### `PARTIAL` (`io.casehub.agency.governance.routing.RequirementStatus`)
 
 ## Constructors
 
@@ -20,10 +20,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.routing.RequirementStatus valueOf(java.lang.String name)`
+### `public static io.casehub.agency.governance.routing.RequirementStatus valueOf(java.lang.String name)`
 
 #### Parameters
 
 - `name` (`java.lang.String`)
 
-### `public static io.casehub.agency.routing.RequirementStatus[] values()`
+### `public static io.casehub.agency.governance.routing.RequirementStatus[] values()`

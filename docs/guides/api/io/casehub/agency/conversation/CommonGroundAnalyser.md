@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.CommonGroundAnalyser
+# io.casehub.agency.deliberation.conversation.CommonGroundAnalyser
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
@@ -10,22 +10,22 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.CommonGroundState analyse(io.casehub.agency.conversation.ConversationState state, io.casehub.agency.conversation.EpistemicRule rule)`
+### `public static io.casehub.agency.deliberation.conversation.CommonGroundState analyse(io.casehub.agency.deliberation.conversation.ConversationState state, io.casehub.agency.deliberation.conversation.EpistemicRule rule)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
-- `rule` (`io.casehub.agency.conversation.EpistemicRule`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
+- `rule` (`io.casehub.agency.deliberation.conversation.EpistemicRule`)
 
-### `static io.casehub.agency.conversation.ParticipantContext buildContext(io.casehub.agency.conversation.ConversationPoint point, int maxRound)`
+### `static io.casehub.agency.deliberation.conversation.ParticipantContext buildContext(io.casehub.agency.deliberation.conversation.ConversationPoint point, int maxRound)`
 
 #### Parameters
 
-- `point` (`io.casehub.agency.conversation.ConversationPoint`)
+- `point` (`io.casehub.agency.deliberation.conversation.ConversationPoint`)
 - `maxRound` (`int`)
 
-### `private static int maxRound(io.casehub.agency.conversation.ConversationState state)`
+### `private static int maxRound(io.casehub.agency.deliberation.conversation.ConversationState state)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)

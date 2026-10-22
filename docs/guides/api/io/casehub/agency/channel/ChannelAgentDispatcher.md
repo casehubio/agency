@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ChannelAgentDispatcher
+# io.casehub.agency.communication.dispatch.ChannelAgentDispatcher
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 
@@ -15,9 +15,9 @@ The routing loop and agent invocation are generic.
 
 ### `LOG` (`java.util.logging.Logger`)
 
-### `agentProvider` (`java.util.function.Function<io.casehub.agency.channel.AgentTask,java.lang.String>`)
+### `agentProvider` (`java.util.function.Function<io.casehub.agency.communication.dispatch.AgentTask,java.lang.String>`)
 
-### `handlers` (`java.lang.Iterable<io.casehub.agency.channel.ChannelAgentHandler>`)
+### `handlers` (`java.lang.Iterable<io.casehub.agency.communication.dispatch.ChannelAgentHandler>`)
 
 ### `messageSink` (`java.util.function.Consumer<MessageDispatch>`)
 
@@ -27,33 +27,33 @@ The routing loop and agent invocation are generic.
 
 ### `protected ChannelAgentDispatcher()`
 
-### `public ChannelAgentDispatcher(java.util.function.Function<io.casehub.agency.channel.AgentTask,java.lang.String> agentProvider, java.util.function.Consumer<MessageDispatch> messageSink, java.lang.Iterable<io.casehub.agency.channel.ChannelAgentHandler> handlers, java.lang.String senderId)`
+### `public ChannelAgentDispatcher(java.util.function.Function<io.casehub.agency.communication.dispatch.AgentTask,java.lang.String> agentProvider, java.util.function.Consumer<MessageDispatch> messageSink, java.lang.Iterable<io.casehub.agency.communication.dispatch.ChannelAgentHandler> handlers, java.lang.String senderId)`
 
 #### Parameters
 
-- `agentProvider` (`java.util.function.Function<io.casehub.agency.channel.AgentTask,java.lang.String>`) — invokes the LLM — takes AgentTask, returns output string
+- `agentProvider` (`java.util.function.Function<io.casehub.agency.communication.dispatch.AgentTask,java.lang.String>`) — invokes the LLM — takes AgentTask, returns output string
 - `messageSink` (`java.util.function.Consumer<MessageDispatch>`) — posts messages to the channel (typically messageService::dispatch)
-- `handlers` (`java.lang.Iterable<io.casehub.agency.channel.ChannelAgentHandler>`) — handler beans, iterated in CDI discovery order
+- `handlers` (`java.lang.Iterable<io.casehub.agency.communication.dispatch.ChannelAgentHandler>`) — handler beans, iterated in CDI discovery order
 - `senderId` (`java.lang.String`) — the instance ID used as sender for dispatched messages
 
 ## Methods
 
-### `public void dispatch(io.casehub.agency.channel.ChannelAgentRequest request)`
+### `public void dispatch(io.casehub.agency.communication.dispatch.ChannelAgentRequest request)`
 
 #### Parameters
 
-- `request` (`io.casehub.agency.channel.ChannelAgentRequest`)
+- `request` (`io.casehub.agency.communication.dispatch.ChannelAgentRequest`)
 
 ### `protected java.util.function.Consumer<MessageDispatch> messageSink()`
 
-### `protected void onError(io.casehub.agency.channel.ChannelAgentRequest request, java.lang.String reason)`
+### `protected void onError(io.casehub.agency.communication.dispatch.ChannelAgentRequest request, java.lang.String reason)`
 
 Called when dispatch fails. Apps override to encode error messages
 in their protocol format and post to the channel.
 
 #### Parameters
 
-- `request` (`io.casehub.agency.channel.ChannelAgentRequest`)
+- `request` (`io.casehub.agency.communication.dispatch.ChannelAgentRequest`)
 - `reason` (`java.lang.String`)
 
 ### `protected java.lang.String senderId()`

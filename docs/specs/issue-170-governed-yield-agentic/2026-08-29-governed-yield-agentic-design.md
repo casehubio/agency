@@ -39,7 +39,7 @@ The core contribution is `JudgmentPolicy<T> implements JudgmentPhase<T>` — a c
 | Retry not configurable | `RetryPolicy` + `VerifierFailurePolicy` | Per-verifier failure handling (retry vs escalate vs fail) |
 | No dispatch abstraction | `JudgmentDispatcher` — pluggable dispatch | Standalone (AgentInvoker) vs engine-integrated (JudgmentScheduler) |
 
-## Package: `io.casehub.agency.agentic.judgment`
+## Package: `io.casehub.agency.deliberation.judgment`
 
 ### JudgmentPolicy
 

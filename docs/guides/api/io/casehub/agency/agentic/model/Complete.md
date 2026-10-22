@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.model.ExecutionState.Complete
+# io.casehub.agency.orchestration.execution.ExecutionState.Complete
 
-**Package:** `io.casehub.agency.agentic.model`
+**Package:** `io.casehub.agency.orchestration.execution`
 
 **Kind:** `record`
 

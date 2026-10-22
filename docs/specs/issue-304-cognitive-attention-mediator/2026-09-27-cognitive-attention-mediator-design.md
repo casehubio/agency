@@ -27,7 +27,7 @@ Neocortex consolidation phases
 
 ### 2.2 Module Placement
 
-All new classes live in `blocks-core` (`io.casehub.agency.agentic.social` package), alongside CognitionCore. CDI wiring in `blocks` module (`AgencyBeans`).
+All new classes live in `blocks-core` (`io.casehub.agency.core.social` package), alongside CognitionCore. CDI wiring in `blocks` module (`AgencyBeans`).
 
 The types consumed — `AttentionBriefing`, `AttentionSignal`, `CognitiveAttentionRequired`, `SignalCategory` — all live in neocortex's `mindmap-api`, which blocks already depends on.
 

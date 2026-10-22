@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ParticipantContext
+# io.casehub.agency.deliberation.conversation.ParticipantContext
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

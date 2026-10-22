@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ChannelEventAdapter
+# io.casehub.agency.communication.dispatch.ChannelEventAdapter
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 

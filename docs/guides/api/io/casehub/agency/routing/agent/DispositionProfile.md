@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.DispositionProfile
+# io.casehub.agency.governance.routing.agent.DispositionProfile
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `record`
 

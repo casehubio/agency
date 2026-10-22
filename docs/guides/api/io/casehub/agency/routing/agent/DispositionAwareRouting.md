@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.DispositionAwareRouting
+# io.casehub.agency.governance.routing.agent.DispositionAwareRouting
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -23,7 +23,7 @@
 - `context` (`AgentRoutingContext`)
 - `eligible` (`java.util.List<AgentCandidate>`)
 
-### `static io.casehub.agency.routing.agent.DispositionProfile extractProfile(JsonNode caseContext, java.lang.String capabilityName)`
+### `static io.casehub.agency.governance.routing.agent.DispositionProfile extractProfile(JsonNode caseContext, java.lang.String capabilityName)`
 
 #### Parameters
 
@@ -32,15 +32,15 @@
 
 ### `public java.lang.String id()`
 
-### `private static io.casehub.agency.routing.agent.DispositionProfile parseProfile(JsonNode node)`
+### `private static io.casehub.agency.governance.routing.agent.DispositionProfile parseProfile(JsonNode node)`
 
 #### Parameters
 
 - `node` (`JsonNode`)
 
-### `static double score(io.casehub.agency.routing.agent.DispositionProfile profile, AgentDisposition disposition)`
+### `static double score(io.casehub.agency.governance.routing.agent.DispositionProfile profile, AgentDisposition disposition)`
 
 #### Parameters
 
-- `profile` (`io.casehub.agency.routing.agent.DispositionProfile`)
+- `profile` (`io.casehub.agency.governance.routing.agent.DispositionProfile`)
 - `disposition` (`AgentDisposition`)

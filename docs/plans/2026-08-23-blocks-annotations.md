@@ -317,12 +317,12 @@ Create each annotation per spec §Pattern Annotations. Key: attribute defaults m
 ```java
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.aggregation.PassThrough;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.aggregation.PassThrough;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import io.casehub.engine.plan.DecompositionStrategy;
-import io.casehub.agency.agentic.decomposition.IdentityDecomposition;
-import io.casehub.agency.agentic.routing.RoutingStrategy;
-import io.casehub.agency.agentic.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 
 import java.lang.annotation.*;
 
@@ -355,8 +355,8 @@ public @interface Debate {
 ```java
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.aggregation.AggregationStrategy;
-import io.casehub.agency.agentic.aggregation.MajorityVote;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.aggregation.MajorityVote;
 
 import java.lang.annotation.*;
 
@@ -372,7 +372,7 @@ public @interface Voting {
 ```java
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.decomposition.StaticDecomposition;
+import io.casehub.agency.orchestration.decomposition.StaticDecomposition;
 import io.casehub.engine.plan.DecompositionStrategy;
 
 import java.lang.annotation.*;
@@ -490,7 +490,7 @@ class GovernanceAnnotationTest {
 ```java
 package io.casehub.agency.annotations.runtime;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.*;
@@ -565,7 +565,7 @@ Expected: FAIL — types don't exist
 ```java
 package io.casehub.agency.annotations.runtime;
 
-import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.orchestration.execution.PatternType;
 import java.util.*;
 
 public record PatternDescriptor(
@@ -591,7 +591,7 @@ public record PatternDescriptor(
 package io.casehub.agency.annotations.runtime;
 
 import io.casehub.api.spi.ActionRiskClassifier;
-import io.casehub.agency.attestation.LifecycleAttestationObserver;
+import io.casehub.agency.governance.attestation.LifecycleAttestationObserver;
 import java.util.List;
 
 public sealed interface GovernanceDescriptor {
@@ -688,7 +688,7 @@ class PatternValidationTest {
     interface DualPatternBad {
         @Debate(maxRounds = 3)
         @Supervisor
-        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a);
+        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.core.AgentRef a);
     }
 
     @Test
@@ -704,7 +704,7 @@ class PatternValidationTest {
     // Fixture: missing role annotation — should fail
     interface MissingRoleBad {
         @Debate(maxRounds = 3)
-        String review(io.casehub.agency.agentic.AgentRef bare);
+        String review(io.casehub.agency.core.AgentRef bare);
     }
 
     @Test
@@ -721,7 +721,7 @@ class PatternValidationTest {
     interface WorkerAndPatternBad {
         @io.casehub.engine.annotations.Worker(capability = "review")
         @Debate(maxRounds = 3)
-        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a);
+        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.core.AgentRef a);
     }
 
     @Test
@@ -738,9 +738,9 @@ class PatternValidationTest {
     interface ValidDebate {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
-            @Debater(role = "advocate", systemPrompt = "Defend") io.casehub.agency.agentic.AgentRef advocate,
-            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.core.AgentRef critic,
+            @Debater(role = "advocate", systemPrompt = "Defend") io.casehub.agency.core.AgentRef advocate,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.core.AgentRef judge,
             String document);
     }
 
@@ -752,7 +752,7 @@ class PatternValidationTest {
 
         assertThat(descriptors).hasSize(1);
         assertThat(descriptors.get(0).patternType())
-            .isEqualTo(io.casehub.agency.agentic.model.PatternType.DEBATE);
+            .isEqualTo(io.casehub.agency.orchestration.execution.PatternType.DEBATE);
         assertThat(descriptors.get(0).participants()).hasSize(3);
     }
 }
@@ -822,7 +822,7 @@ Test that the recorder creates `ExecutionModel` instances matching builder outpu
 package io.casehub.agency.annotations.deployment;
 
 import io.casehub.agency.annotations.runtime.*;
-import io.casehub.agency.agentic.model.*;
+import io.casehub.agency.orchestration.execution.*;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.*;
@@ -853,7 +853,7 @@ class RecorderWiringTest {
         assertThat(model.candidateSupplier().get()).hasSize(3);
         // JUDGE participant triggers JudgeConvergence termination
         assertThat(model.termination())
-            .isInstanceOf(io.casehub.agency.agentic.termination.JudgeConvergence.class);
+            .isInstanceOf(io.casehub.agency.orchestration.termination.JudgeConvergence.class);
     }
 
     @Test
@@ -871,7 +871,7 @@ class RecorderWiringTest {
         var model = recorder.createExecutionModel(desc).get();
 
         assertThat(model.termination())
-            .isInstanceOf(io.casehub.agency.agentic.termination.MaxIterationsTermination.class);
+            .isInstanceOf(io.casehub.agency.orchestration.termination.MaxIterationsTermination.class);
     }
 
     @Test
@@ -888,7 +888,7 @@ class RecorderWiringTest {
 
         assertThat(model.patternType()).isEqualTo(PatternType.SUPERVISOR);
         assertThat(model.routing())
-            .isInstanceOf(io.casehub.agency.agentic.routing.FirstMatchRouting.class);
+            .isInstanceOf(io.casehub.agency.orchestration.routing.FirstMatchRouting.class);
         assertThat(model.candidateSupplier().get()).hasSize(1);
     }
 
@@ -930,7 +930,7 @@ class RecorderWiringTest {
         var candidates = model.candidateSupplier().get();
 
         assertThat(candidates.get(0).ref())
-            .isInstanceOf(io.casehub.agency.agentic.AgentRef.ExternalAgent.class);
+            .isInstanceOf(io.casehub.agency.core.AgentRef.ExternalAgent.class);
         assertThat(candidates.get(0).ref().name()).isEqualTo("triage");
     }
 }
@@ -1041,8 +1041,8 @@ class GovernanceValidationTest {
         @OversightGate(TestClassifier.class)
         @TrustRouted(threshold = 0.8)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
-            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.core.AgentRef critic,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.core.AgentRef judge,
             String document);
     }
 
@@ -1113,7 +1113,7 @@ feat(#116): governance annotation processing — @OversightGate, @TrustRouted, @
 package io.casehub.agency.annotations.deployment;
 
 import io.casehub.agency.annotations.*;
-import io.casehub.agency.agentic.pattern.DebateBuilder;
+import io.casehub.agency.orchestration.pattern.DebateBuilder;
 import io.casehub.engine.annotations.Customize;
 import io.casehub.platform.agent.AgentProvider;
 import org.jboss.jandex.*;
@@ -1138,8 +1138,8 @@ class CustomizeTest {
     interface CustomizedDebate {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
-            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.core.AgentRef critic,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.core.AgentRef judge,
             String document);
 
         @Customize
@@ -1164,7 +1164,7 @@ class CustomizeTest {
     interface BadCustomize {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a,
+            @Debater(role = "a", systemPrompt = "p") io.casehub.agency.core.AgentRef a,
             String doc);
 
         @Customize

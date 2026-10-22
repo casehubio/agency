@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.judgment.ConfidenceThreshold;
-import io.casehub.agency.agentic.yaml.spec.JudgmentSpec.TriggerSpec;
+import io.casehub.agency.deliberation.judgment.ConfidenceThreshold;
+import io.casehub.agency.core.yaml.spec.JudgmentSpec.TriggerSpec;
 import io.casehub.platform.expression.MvelExpressionEngine;
 import org.junit.jupiter.api.Test;
 

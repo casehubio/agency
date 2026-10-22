@@ -55,14 +55,14 @@ the caller skips the section when empty. No null handling inside the method.
 
 ### Package placement
 
-Same class: `io.casehub.agency.summarisation.observation.affordance.CognitiveObservationSections`.
+Same class: `io.casehub.agency.perception.observation.affordance.CognitiveObservationSections`.
 Follows the established pattern — goals, activity, experience, insights,
 and relationship notes are all factory methods on this class.
 
 ### New dependency
 
 `CognitiveObservationSections` gains a compile dependency on
-`io.casehub.agency.agentic.social.drive.DriveProfile` and `DriveAxis`.
+`io.casehub.agency.core.social.drive.DriveProfile` and `DriveAxis`.
 Both are in the same module (blocks) — no new Maven dependencies.
 
 ## 2. Tick Lifecycle Wiring

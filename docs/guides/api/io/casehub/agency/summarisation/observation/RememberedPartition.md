@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.RememberedPartition
+# io.casehub.agency.perception.observation.RememberedPartition
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 
@@ -8,21 +8,21 @@
 
 ### `cachedAt` (`long`)
 
-### `result` (`io.casehub.agency.summarisation.observation.ObservationResult`)
+### `result` (`io.casehub.agency.perception.observation.ObservationResult`)
 
 ## Record Components
 
 ### `cachedAt` (`long`)
 
-### `result` (`io.casehub.agency.summarisation.observation.ObservationResult`)
+### `result` (`io.casehub.agency.perception.observation.ObservationResult`)
 
 ## Constructors
 
-### `public RememberedPartition(io.casehub.agency.summarisation.observation.ObservationResult result, long cachedAt)`
+### `public RememberedPartition(io.casehub.agency.perception.observation.ObservationResult result, long cachedAt)`
 
 #### Parameters
 
-- `result` (`io.casehub.agency.summarisation.observation.ObservationResult`)
+- `result` (`io.casehub.agency.perception.observation.ObservationResult`)
 - `cachedAt` (`long`)
 
 ## Methods
@@ -37,6 +37,6 @@
 
 ### `public final int hashCode()`
 
-### `public io.casehub.agency.summarisation.observation.ObservationResult result()`
+### `public io.casehub.agency.perception.observation.ObservationResult result()`
 
 ### `public final java.lang.String toString()`

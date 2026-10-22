@@ -1,14 +1,14 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.registry.ConvergencePolicyRegistry;
-import io.casehub.agency.agentic.yaml.registry.EpistemicRuleRegistry;
-import io.casehub.agency.agentic.yaml.registry.TerminationConditionRegistry;
-import io.casehub.agency.agentic.yaml.registry.TurnPolicyRegistry;
-import io.casehub.agency.agentic.yaml.spec.ChannelExecutionStrategySpec;
-import io.casehub.agency.conversation.orchestration.RoundRobinTurnPolicy;
+import io.casehub.agency.core.yaml.registry.ConvergencePolicyRegistry;
+import io.casehub.agency.core.yaml.registry.EpistemicRuleRegistry;
+import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
+import io.casehub.agency.core.yaml.registry.TurnPolicyRegistry;
+import io.casehub.agency.core.yaml.spec.ChannelExecutionStrategySpec;
+import io.casehub.agency.deliberation.conversation.orchestration.RoundRobinTurnPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

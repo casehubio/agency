@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.DebateBuilder
+# io.casehub.agency.orchestration.pattern.DebateBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -8,7 +8,7 @@
 
 ### `convergenceExplicitlySet` (`boolean`)
 
-### `judge` (`io.casehub.agency.agentic.AgentRef`)
+### `judge` (`io.casehub.agency.core.AgentRef`)
 
 ### `maxRounds` (`int`)
 
@@ -18,27 +18,27 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.model.ExecutionModel<T> build()`
+### `public io.casehub.agency.orchestration.execution.ExecutionModel<T> build()`
 
-### `public io.casehub.agency.agentic.pattern.DebateBuilder<T> convergence(io.casehub.agency.agentic.termination.TerminationCondition<T> convergence)`
-
-#### Parameters
-
-- `convergence` (`io.casehub.agency.agentic.termination.TerminationCondition<T>`)
-
-### `public io.casehub.agency.agentic.pattern.DebateBuilder<T> debaters(io.casehub.agency.agentic.AgentRef[] agents)`
+### `public io.casehub.agency.orchestration.pattern.DebateBuilder<T> convergence(io.casehub.agency.orchestration.termination.TerminationCondition<T> convergence)`
 
 #### Parameters
 
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
+- `convergence` (`io.casehub.agency.orchestration.termination.TerminationCondition<T>`)
 
-### `public io.casehub.agency.agentic.pattern.DebateBuilder<T> judge(io.casehub.agency.agentic.AgentRef judge)`
+### `public io.casehub.agency.orchestration.pattern.DebateBuilder<T> debaters(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `judge` (`io.casehub.agency.agentic.AgentRef`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public io.casehub.agency.agentic.pattern.DebateBuilder<T> maxRounds(int rounds)`
+### `public io.casehub.agency.orchestration.pattern.DebateBuilder<T> judge(io.casehub.agency.core.AgentRef judge)`
+
+#### Parameters
+
+- `judge` (`io.casehub.agency.core.AgentRef`)
+
+### `public io.casehub.agency.orchestration.pattern.DebateBuilder<T> maxRounds(int rounds)`
 
 #### Parameters
 

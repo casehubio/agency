@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.HeuristicDecomposition
+# io.casehub.agency.orchestration.decomposition.HeuristicDecomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 
@@ -8,15 +8,15 @@
 
 ### `LOG` (`java.lang.System.Logger`)
 
-### `heuristic` (`io.casehub.agency.agentic.decomposition.DecompositionHeuristic<T>`)
+### `heuristic` (`io.casehub.agency.orchestration.decomposition.DecompositionHeuristic<T>`)
 
 ## Constructors
 
-### `public HeuristicDecomposition(io.casehub.agency.agentic.decomposition.DecompositionHeuristic<T> heuristic)`
+### `public HeuristicDecomposition(io.casehub.agency.orchestration.decomposition.DecompositionHeuristic<T> heuristic)`
 
 #### Parameters
 
-- `heuristic` (`io.casehub.agency.agentic.decomposition.DecompositionHeuristic<T>`)
+- `heuristic` (`io.casehub.agency.orchestration.decomposition.DecompositionHeuristic<T>`)
 
 ## Methods
 

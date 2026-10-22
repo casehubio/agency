@@ -23,7 +23,7 @@
 
 ## D3: Package
 
-**Choice:** New `io.casehub.agency.normative`
+**Choice:** New `io.casehub.agency.deliberation.normative`
 **Alternatives:**
 - `io.casehub.agency.oversight` (create it) — oversight is the primary consumer but the SPI is generic
 **Rationale:** Generic norm conflict resolution is broader than oversight. Clean boundary.

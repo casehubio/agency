@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ChannelAgentHandler
+# io.casehub.agency.communication.dispatch.ChannelAgentHandler
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `interface`
 
@@ -9,23 +9,23 @@ Handlers must have non-overlapping handles() predicates — first-match routing.
 
 ## Methods
 
-### `public abstract MessageDispatch buildResponse(java.util.UUID channelId, java.lang.String senderId, java.lang.String llmOutput, io.casehub.agency.channel.ChannelAgentRequest trigger)`
+### `public abstract MessageDispatch buildResponse(java.util.UUID channelId, java.lang.String senderId, java.lang.String llmOutput, io.casehub.agency.communication.dispatch.ChannelAgentRequest trigger)`
 
 #### Parameters
 
 - `channelId` (`java.util.UUID`)
 - `senderId` (`java.lang.String`)
 - `llmOutput` (`java.lang.String`)
-- `trigger` (`io.casehub.agency.channel.ChannelAgentRequest`)
+- `trigger` (`io.casehub.agency.communication.dispatch.ChannelAgentRequest`)
 
-### `public abstract boolean handles(io.casehub.agency.channel.ChannelAgentRequest request)`
-
-#### Parameters
-
-- `request` (`io.casehub.agency.channel.ChannelAgentRequest`)
-
-### `public abstract io.casehub.agency.channel.AgentTask prepareTask(io.casehub.agency.channel.ChannelAgentRequest request)`
+### `public abstract boolean handles(io.casehub.agency.communication.dispatch.ChannelAgentRequest request)`
 
 #### Parameters
 
-- `request` (`io.casehub.agency.channel.ChannelAgentRequest`)
+- `request` (`io.casehub.agency.communication.dispatch.ChannelAgentRequest`)
+
+### `public abstract io.casehub.agency.communication.dispatch.AgentTask prepareTask(io.casehub.agency.communication.dispatch.ChannelAgentRequest request)`
+
+#### Parameters
+
+- `request` (`io.casehub.agency.communication.dispatch.ChannelAgentRequest`)

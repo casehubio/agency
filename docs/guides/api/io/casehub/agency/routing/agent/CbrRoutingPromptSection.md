@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.CbrRoutingPromptSection
+# io.casehub.agency.governance.routing.agent.CbrRoutingPromptSection
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 

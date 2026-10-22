@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.AgentRef;
+import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.annotations.Attestation;
 import io.casehub.agency.annotations.CbrRouted;
 import io.casehub.agency.annotations.Debate;
@@ -9,7 +9,7 @@ import io.casehub.agency.annotations.Judge;
 import io.casehub.agency.annotations.OversightGate;
 import io.casehub.agency.annotations.TrustRouted;
 import io.casehub.agency.annotations.runtime.GovernanceDescriptor;
-import io.casehub.agency.attestation.LifecycleAttestationObserver;
+import io.casehub.agency.governance.attestation.LifecycleAttestationObserver;
 import io.casehub.engine.annotations.Worker;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.Indexer;

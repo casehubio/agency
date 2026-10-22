@@ -106,7 +106,7 @@ Lives in blocks main scope — designed for future compatibility with
 neocortex #333's `cognition_inspect` and `cognition_diff` tools.
 
 ```java
-package io.casehub.agency.agentic.social;
+package io.casehub.agency.core.social;
 
 public record CognitionSnapshot(
     String agentId,
@@ -175,7 +175,7 @@ Captures what changed during a tick+record cycle. Built from snapshot
 diffs, not from event callbacks — simple, non-intrusive.
 
 ```java
-package io.casehub.agency.agentic.social;
+package io.casehub.agency.core.social;
 
 public record CognitionMetrics(
     int turnNumber,

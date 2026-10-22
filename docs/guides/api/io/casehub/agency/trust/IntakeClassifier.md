@@ -1,14 +1,14 @@
-# io.casehub.agency.trust.IntakeClassifier
+# io.casehub.agency.governance.trust.IntakeClassifier
 
-**Package:** `io.casehub.agency.trust`
+**Package:** `io.casehub.agency.governance.trust`
 
 **Kind:** `interface`
 
 ## Methods
 
-### `public abstract io.casehub.agency.trust.IntakeResult classify(S subject, io.casehub.agency.trust.IntakeContext context)`
+### `public abstract io.casehub.agency.governance.trust.IntakeResult classify(S subject, io.casehub.agency.governance.trust.IntakeContext context)`
 
 #### Parameters
 
 - `subject` (`S`)
-- `context` (`io.casehub.agency.trust.IntakeContext`)
+- `context` (`io.casehub.agency.governance.trust.IntakeContext`)

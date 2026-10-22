@@ -1,16 +1,16 @@
-# io.casehub.agency.summarisation.observation.ObservationTier
+# io.casehub.agency.perception.observation.ObservationTier
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 
 ## Fields
 
-### `GROUPED` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `GROUPED` (`io.casehub.agency.perception.observation.ObservationTier`)
 
-### `SUMMARISED` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `SUMMARISED` (`io.casehub.agency.perception.observation.ObservationTier`)
 
-### `VERBATIM` (`io.casehub.agency.summarisation.observation.ObservationTier`)
+### `VERBATIM` (`io.casehub.agency.perception.observation.ObservationTier`)
 
 ### `name` (`java.lang.String`)
 

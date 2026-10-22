@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations.deployment;
 
-import io.casehub.agency.agentic.AgentRef;
+import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.annotations.Agent;
 import io.casehub.agency.annotations.Debate;
 import io.casehub.agency.annotations.Debater;

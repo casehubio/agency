@@ -1,6 +1,6 @@
-# io.casehub.agency.channel.ChannelMessageMeta
+# io.casehub.agency.communication.dispatch.ChannelMessageMeta
 
-**Package:** `io.casehub.agency.channel`
+**Package:** `io.casehub.agency.communication.dispatch`
 
 **Kind:** `class`
 

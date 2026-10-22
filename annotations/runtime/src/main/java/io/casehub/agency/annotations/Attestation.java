@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.attestation.LifecycleAttestationObserver;
+import io.casehub.agency.governance.attestation.LifecycleAttestationObserver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

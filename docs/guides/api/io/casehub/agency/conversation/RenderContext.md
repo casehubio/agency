@@ -1,16 +1,16 @@
-# io.casehub.agency.conversation.RenderContext
+# io.casehub.agency.deliberation.conversation.RenderContext
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
 ## Fields
 
-### `EMPTY` (`io.casehub.agency.conversation.RenderContext`)
+### `EMPTY` (`io.casehub.agency.deliberation.conversation.RenderContext`)
 
-### `commonGround` (`io.casehub.agency.conversation.CommonGroundState`)
+### `commonGround` (`io.casehub.agency.deliberation.conversation.CommonGroundState`)
 
-### `convergence` (`io.casehub.agency.conversation.ConvergenceSignal`)
+### `convergence` (`io.casehub.agency.deliberation.conversation.ConvergenceSignal`)
 
 ### `progress` (`java.util.Map<java.lang.String,java.util.List<ProgressInstance>>`)
 
@@ -18,9 +18,9 @@
 
 ## Record Components
 
-### `commonGround` (`io.casehub.agency.conversation.CommonGroundState`)
+### `commonGround` (`io.casehub.agency.deliberation.conversation.CommonGroundState`)
 
-### `convergence` (`io.casehub.agency.conversation.ConvergenceSignal`)
+### `convergence` (`io.casehub.agency.deliberation.conversation.ConvergenceSignal`)
 
 ### `progress` (`java.util.Map<java.lang.String,java.util.List<ProgressInstance>>`)
 
@@ -28,20 +28,20 @@
 
 ## Constructors
 
-### `public RenderContext(java.util.Map<java.lang.Long,java.util.List<ReactionGroup>> reactions, io.casehub.agency.conversation.CommonGroundState commonGround, io.casehub.agency.conversation.ConvergenceSignal convergence, java.util.Map<java.lang.String,java.util.List<ProgressInstance>> progress)`
+### `public RenderContext(java.util.Map<java.lang.Long,java.util.List<ReactionGroup>> reactions, io.casehub.agency.deliberation.conversation.CommonGroundState commonGround, io.casehub.agency.deliberation.conversation.ConvergenceSignal convergence, java.util.Map<java.lang.String,java.util.List<ProgressInstance>> progress)`
 
 #### Parameters
 
 - `reactions` (`java.util.Map<java.lang.Long,java.util.List<ReactionGroup>>`)
-- `commonGround` (`io.casehub.agency.conversation.CommonGroundState`)
-- `convergence` (`io.casehub.agency.conversation.ConvergenceSignal`)
+- `commonGround` (`io.casehub.agency.deliberation.conversation.CommonGroundState`)
+- `convergence` (`io.casehub.agency.deliberation.conversation.ConvergenceSignal`)
 - `progress` (`java.util.Map<java.lang.String,java.util.List<ProgressInstance>>`)
 
 ## Methods
 
-### `public io.casehub.agency.conversation.CommonGroundState commonGround()`
+### `public io.casehub.agency.deliberation.conversation.CommonGroundState commonGround()`
 
-### `public io.casehub.agency.conversation.ConvergenceSignal convergence()`
+### `public io.casehub.agency.deliberation.conversation.ConvergenceSignal convergence()`
 
 ### `public final boolean equals(java.lang.Object o)`
 
@@ -57,13 +57,13 @@
 
 ### `public final java.lang.String toString()`
 
-### `public static io.casehub.agency.conversation.RenderContext withProgress(java.util.Map<java.lang.String,java.util.List<ProgressInstance>> progress)`
+### `public static io.casehub.agency.deliberation.conversation.RenderContext withProgress(java.util.Map<java.lang.String,java.util.List<ProgressInstance>> progress)`
 
 #### Parameters
 
 - `progress` (`java.util.Map<java.lang.String,java.util.List<ProgressInstance>>`)
 
-### `public static io.casehub.agency.conversation.RenderContext withReactions(java.util.Map<java.lang.Long,java.util.List<ReactionGroup>> reactions)`
+### `public static io.casehub.agency.deliberation.conversation.RenderContext withReactions(java.util.Map<java.lang.Long,java.util.List<ReactionGroup>> reactions)`
 
 #### Parameters
 

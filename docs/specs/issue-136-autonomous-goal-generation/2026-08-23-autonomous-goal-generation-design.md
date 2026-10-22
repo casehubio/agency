@@ -163,7 +163,7 @@ migrated to pass `null` as the sixth argument. Known call sites:
 and application-tier code constructing `AgentGoal` directly. This is intentional —
 the breakage forces every caller to be explicit about attributes.
 
-### Blocks (new package: `io.casehub.agency.agentic.social.goal`)
+### Blocks (new package: `io.casehub.agency.core.social.goal`)
 
 #### DriveGoalMapper (functional interface — SPI)
 

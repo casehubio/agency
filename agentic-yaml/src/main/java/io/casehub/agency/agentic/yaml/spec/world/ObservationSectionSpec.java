@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.spec.world;
+package io.casehub.agency.core.yaml.spec.world;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import io.casehub.agency.summarisation.observation.affordance.ResolutionTier;
+import io.casehub.agency.perception.observation.affordance.ResolutionTier;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;

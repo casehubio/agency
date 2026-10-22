@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.StaticDecomposition
+# io.casehub.agency.orchestration.decomposition.StaticDecomposition
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 

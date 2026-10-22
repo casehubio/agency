@@ -1,0 +1,28 @@
+package io.casehub.agency.orchestration.aggregation;
+
+import io.casehub.agency.core.AgentRef;
+import io.casehub.agency.core.AgentResult;
+import io.casehub.worker.api.Worker;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+class CollectAllTest {
+
+    @Test
+    void collectsAllResultsIntoList() {
+        var r1 = AgentResult.success(AgentRef.worker(mock(Worker.class)), "a");
+        var r2 = AgentResult.success(AgentRef.worker(mock(Worker.class)), "b");
+        var agg = new CollectAll<String>();
+
+        var aggregated = agg.aggregate(List.of(r1, r2), new AggregationContext<>("state"));
+
+        assertThat(aggregated).isInstanceOf(AggregationResult.Resolved.class);
+        @SuppressWarnings("unchecked")
+        var collected = (List<AgentResult>) ((AggregationResult.Resolved) aggregated).value();
+        assertThat(collected).hasSize(2);
+    }
+}

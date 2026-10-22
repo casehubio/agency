@@ -1,9 +1,9 @@
 package io.casehub.agency.summarisation.examples.channel;
 
-import io.casehub.agency.channel.summary.ChannelSummariser;
-import io.casehub.agency.channel.summary.HeuristicMessageSummariser;
+import io.casehub.agency.communication.channel.summary.ChannelSummariser;
+import io.casehub.agency.communication.channel.summary.HeuristicMessageSummariser;
 import io.casehub.agency.summarisation.*;
-import io.casehub.agency.summarisation.llm.LlmContentSummariser;
+import io.casehub.agency.perception.llm.LlmContentSummariser;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.qhorus.api.message.Message;

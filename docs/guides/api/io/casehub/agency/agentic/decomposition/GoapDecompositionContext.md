@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.decomposition.GoapDecompositionContext
+# io.casehub.agency.orchestration.decomposition.GoapDecompositionContext
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `record`
 
 ## Fields
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `availableTypes` (`java.util.Set<java.lang.String>`)
 
@@ -18,7 +18,7 @@
 
 ## Record Components
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `availableTypes` (`java.util.Set<java.lang.String>`)
 
@@ -30,19 +30,19 @@
 
 ## Constructors
 
-### `public GoapDecompositionContext(T state, java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents, int depth, java.util.Set<java.lang.String> goalTypes, java.util.Set<java.lang.String> availableTypes)`
+### `public GoapDecompositionContext(T state, java.util.List<io.casehub.agency.core.RoutingCandidate> agents, int depth, java.util.Set<java.lang.String> goalTypes, java.util.Set<java.lang.String> availableTypes)`
 
 #### Parameters
 
 - `state` (`T`)
-- `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 - `depth` (`int`)
 - `goalTypes` (`java.util.Set<java.lang.String>`)
 - `availableTypes` (`java.util.Set<java.lang.String>`)
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents()`
+### `public java.util.List<io.casehub.agency.core.RoutingCandidate> agents()`
 
 ### `public java.util.Set<java.lang.String> availableTypes()`
 

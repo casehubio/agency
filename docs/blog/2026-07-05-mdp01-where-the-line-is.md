@@ -9,7 +9,7 @@ projects: [casehub-agency]
 tags: [consolidation, compliance, type-design]
 ---
 
-The compliance record consolidation from blocks #17 had been sitting as a trailing obligation for weeks — "shared types exist but aml and devtown haven't migrated." Except the shared types didn't exist. CLAUDE.md said they did. The handover said they did. Neither was true. The `io.casehub.agency.routing` package had the `agent/` sub-package from the AI routing work, but `RequirementStatus`, `RoutingDecisionRecord`, and `TrustRoutingRequirement` were aspirational documentation, not code.
+The compliance record consolidation from blocks #17 had been sitting as a trailing obligation for weeks — "shared types exist but aml and devtown haven't migrated." Except the shared types didn't exist. CLAUDE.md said they did. The handover said they did. Neither was true. The `io.casehub.agency.governance.routing` package had the `agent/` sub-package from the AI routing work, but `RequirementStatus`, `RoutingDecisionRecord`, and `TrustRoutingRequirement` were aspirational documentation, not code.
 
 The interesting question wasn't whether to extract these types — that was obvious — but where to draw the line between shared and domain-specific. Both repos had the same three types, but they weren't identical.
 

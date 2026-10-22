@@ -1,12 +1,12 @@
-# io.casehub.agency.agentic.decomposition.AgenticDecompositionContext
+# io.casehub.agency.orchestration.decomposition.AgenticDecompositionContext
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `record`
 
 ## Fields
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `decomposer` (`DecompositionStrategy<T>`)
 
@@ -24,7 +24,7 @@
 
 ## Record Components
 
-### `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+### `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 
 ### `decomposer` (`DecompositionStrategy<T>`)
 
@@ -42,29 +42,29 @@
 
 ## Constructors
 
-### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents, int depth)`
+### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.core.RoutingCandidate> agents, int depth)`
 
 #### Parameters
 
 - `state` (`T`)
-- `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 - `depth` (`int`)
 
-### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents, int depth, java.lang.String staticFailureHint)`
+### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.core.RoutingCandidate> agents, int depth, java.lang.String staticFailureHint)`
 
 #### Parameters
 
 - `state` (`T`)
-- `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 - `depth` (`int`)
 - `staticFailureHint` (`java.lang.String`)
 
-### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents, int depth, java.lang.String staticFailureHint, java.lang.String subtaskDescription, java.lang.String parentGoal, java.util.List<java.lang.String> siblingNames, DecompositionStrategy<T> decomposer)`
+### `public AgenticDecompositionContext(T state, java.util.List<io.casehub.agency.core.RoutingCandidate> agents, int depth, java.lang.String staticFailureHint, java.lang.String subtaskDescription, java.lang.String parentGoal, java.util.List<java.lang.String> siblingNames, DecompositionStrategy<T> decomposer)`
 
 #### Parameters
 
 - `state` (`T`)
-- `agents` (`java.util.List<io.casehub.agency.agentic.RoutingCandidate>`)
+- `agents` (`java.util.List<io.casehub.agency.core.RoutingCandidate>`)
 - `depth` (`int`)
 - `staticFailureHint` (`java.lang.String`)
 - `subtaskDescription` (`java.lang.String`)
@@ -74,7 +74,7 @@
 
 ## Methods
 
-### `public java.util.List<io.casehub.agency.agentic.RoutingCandidate> agents()`
+### `public java.util.List<io.casehub.agency.core.RoutingCandidate> agents()`
 
 ### `public DecompositionStrategy<T> decomposer()`
 

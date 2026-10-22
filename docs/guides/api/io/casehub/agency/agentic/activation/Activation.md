@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.activation.Activation
+# io.casehub.agency.orchestration.activation.Activation
 
-**Package:** `io.casehub.agency.agentic.activation`
+**Package:** `io.casehub.agency.orchestration.activation`
 
 **Kind:** `class`
 
@@ -10,10 +10,10 @@
 
 ## Methods
 
-### `public static io.casehub.agency.agentic.activation.MaxIterationsGuard<T> maxIterations(int max)`
+### `public static io.casehub.agency.orchestration.activation.MaxIterationsGuard<T> maxIterations(int max)`
 
 #### Parameters
 
 - `max` (`int`)
 
-### `public static io.casehub.agency.agentic.activation.OnExplicitDispatch<T> onExplicitDispatch()`
+### `public static io.casehub.agency.orchestration.activation.OnExplicitDispatch<T> onExplicitDispatch()`

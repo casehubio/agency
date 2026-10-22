@@ -12,7 +12,7 @@ Four enhancements on a single branch: three trust SPIs extracted from domain rep
 
 ## 1. Attestation Package (#79)
 
-**Package:** `io.casehub.agency.attestation`
+**Package:** `io.casehub.agency.governance.attestation`
 
 ### 1.1 Existing Types (commit + modify)
 
@@ -74,7 +74,7 @@ public record AttestationContext(
 
 ## 2. Trust SPIs (#80, #81)
 
-**Package:** `io.casehub.agency.trust`
+**Package:** `io.casehub.agency.governance.trust`
 
 Separate from `blocks.attestation` — these SPIs have no compile-time dependency on attestation types. They orbit the trust lifecycle but their inputs and outputs are self-contained.
 
@@ -216,12 +216,12 @@ public class VouchService {
 
 ## 3. FewShotOptimiser Diversity (#78)
 
-**Package:** `io.casehub.agency.prompt` (SPI) + `io.casehub.agency.prompt.optimiser` (implementations)
+**Package:** `io.casehub.agency.optimisation.prompt` (SPI) + `io.casehub.agency.optimisation.prompt.optimiser` (implementations)
 
 ### 3.1 DiversityStrategy SPI
 
 ```java
-package io.casehub.agency.prompt;
+package io.casehub.agency.optimisation.prompt;
 
 @FunctionalInterface
 public interface DiversityStrategy {
@@ -239,7 +239,7 @@ public interface DiversityStrategy {
 ### 3.2 TopNDiversityStrategy (identity implementation)
 
 ```java
-package io.casehub.agency.prompt.optimiser;
+package io.casehub.agency.optimisation.prompt.optimiser;
 
 public class TopNDiversityStrategy implements DiversityStrategy {
     @Override
@@ -256,7 +256,7 @@ Pure relevance selection — returns the first `maxExamples` candidates from the
 Outcome coverage + token-level Jaccard MMR:
 
 ```java
-package io.casehub.agency.prompt.optimiser;
+package io.casehub.agency.optimisation.prompt.optimiser;
 
 public class OutcomeAwareDiversityStrategy implements DiversityStrategy {
 

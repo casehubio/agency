@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.llm.LlmContentSummariser
+# io.casehub.agency.perception.llm.LlmContentSummariser
 
-**Package:** `io.casehub.agency.summarisation.llm`
+**Package:** `io.casehub.agency.perception.llm`
 
 **Kind:** `class`
 

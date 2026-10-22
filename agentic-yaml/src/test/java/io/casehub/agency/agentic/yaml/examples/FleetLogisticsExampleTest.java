@@ -1,12 +1,11 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.FailurePolicy;
-import io.casehub.agency.agentic.aggregation.CollectAll;
-import io.casehub.agency.agentic.judgment.JudgmentPolicy;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.core.FailurePolicy;
+import io.casehub.agency.orchestration.aggregation.CollectAll;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
-import io.casehub.neocortex.cognition.drive.DriveConfig;
 import io.casehub.agency.summarisation.EventLevel;
 import io.casehub.agency.summarisation.LevelEvent;
 import org.junit.jupiter.api.Test;

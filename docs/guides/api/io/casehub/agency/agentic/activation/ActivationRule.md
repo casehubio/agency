@@ -1,13 +1,13 @@
-# io.casehub.agency.agentic.activation.ActivationRule
+# io.casehub.agency.orchestration.activation.ActivationRule
 
-**Package:** `io.casehub.agency.agentic.activation`
+**Package:** `io.casehub.agency.orchestration.activation`
 
 **Kind:** `interface`
 
 ## Methods
 
-### `public abstract Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.agentic.activation.ActivationContext<T> context)`
+### `public abstract Uni<java.lang.Boolean> shouldActivate(io.casehub.agency.orchestration.activation.ActivationContext<T> context)`
 
 #### Parameters
 
-- `context` (`io.casehub.agency.agentic.activation.ActivationContext<T>`)
+- `context` (`io.casehub.agency.orchestration.activation.ActivationContext<T>`)

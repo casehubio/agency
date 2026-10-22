@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.judgment.CallerRef;
-import io.casehub.agency.agentic.judgment.CallerStrategy;
-import io.casehub.agency.agentic.judgment.ConsensusAgreement;
-import io.casehub.agency.agentic.yaml.spec.JudgmentSpec.AgreementSpec;
-import io.casehub.agency.agentic.yaml.spec.JudgmentSpec.CallerSpec;
+import io.casehub.agency.deliberation.judgment.CallerRef;
+import io.casehub.agency.deliberation.judgment.CallerStrategy;
+import io.casehub.agency.deliberation.judgment.ConsensusAgreement;
+import io.casehub.agency.core.yaml.spec.JudgmentSpec.AgreementSpec;
+import io.casehub.agency.core.yaml.spec.JudgmentSpec.CallerSpec;
 
 public class CallerStrategyRegistry {
 

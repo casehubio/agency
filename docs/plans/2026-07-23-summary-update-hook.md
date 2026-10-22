@@ -246,7 +246,7 @@ Refs casehubio/blocks#64"
 Use `ide_create_file`:
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 public enum SummaryMode {
     APPEND,
@@ -259,7 +259,7 @@ public enum SummaryMode {
 Use `ide_create_file`:
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
 import org.junit.jupiter.api.Test;
@@ -295,7 +295,7 @@ Expected: FAIL — class does not exist.
 Use `ide_create_file`:
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
 import io.casehub.qhorus.api.spi.SummaryUpdateHook;
@@ -379,7 +379,7 @@ void nullCurrentSummary_producesFreshSummary() {
 ```
 
 Where `TestMessages` is the existing test helper. Check if
-`io.casehub.agency.channel.TestMessages` exists and has a `message()`
+`io.casehub.agency.communication.dispatch.TestMessages` exists and has a `message()`
 factory. If not, create a local helper method:
 
 ```java
@@ -491,7 +491,7 @@ Refs casehubio/blocks#64"
 Use `ide_create_file`:
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
@@ -532,7 +532,7 @@ Expected: FAIL — class does not exist.
 Use `ide_create_file`:
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
@@ -804,11 +804,11 @@ Refs casehubio/blocks#64"
 
 - [ ] **Step 1: Update CLAUDE.md package table**
 
-Add the new package to the `## Package: io.casehub.agency.channel` section
+Add the new package to the `## Package: io.casehub.agency.communication.dispatch` section
 or create a new section:
 
 ```markdown
-## Package: `io.casehub.agency.channel.summary`
+## Package: `io.casehub.agency.communication.channel.summary`
 
 | Class | What it does |
 |-------|-------------|

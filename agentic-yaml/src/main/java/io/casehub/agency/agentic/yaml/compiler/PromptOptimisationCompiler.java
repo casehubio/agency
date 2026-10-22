@@ -1,15 +1,15 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.agentic.yaml.registry.ConfidenceScorerRegistry;
-import io.casehub.agency.agentic.yaml.registry.PromptOptimiserRegistry;
-import io.casehub.agency.agentic.yaml.spec.PromptOptimisationDefinition;
-import io.casehub.agency.agentic.yaml.spec.PromptOptimisationPipelineSpec;
-import io.casehub.agency.agentic.yaml.spec.PromptSignatureSpec;
-import io.casehub.agency.prompt.FewShotExample;
-import io.casehub.agency.prompt.OptimiserConfig;
-import io.casehub.agency.prompt.PromptSignature;
-import io.casehub.agency.prompt.SafetyConfig;
-import io.casehub.agency.prompt.optimiser.FewShotOptimiser;
+import io.casehub.agency.core.yaml.registry.ConfidenceScorerRegistry;
+import io.casehub.agency.core.yaml.registry.PromptOptimiserRegistry;
+import io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition;
+import io.casehub.agency.core.yaml.spec.PromptOptimisationPipelineSpec;
+import io.casehub.agency.core.yaml.spec.PromptSignatureSpec;
+import io.casehub.agency.optimisation.prompt.FewShotExample;
+import io.casehub.agency.optimisation.prompt.OptimiserConfig;
+import io.casehub.agency.optimisation.prompt.PromptSignature;
+import io.casehub.agency.optimisation.prompt.SafetyConfig;
+import io.casehub.agency.optimisation.prompt.optimiser.FewShotOptimiser;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
 

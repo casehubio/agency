@@ -1,7 +1,7 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.api.spi.routing.TrustRoutingPolicyKeys;
-import io.casehub.agency.agentic.yaml.spec.TrustRoutingPolicyKeysSpec;
+import io.casehub.agency.core.yaml.spec.TrustRoutingPolicyKeysSpec;
 
 public class TrustRoutingPolicyKeysRegistry {
 

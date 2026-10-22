@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.ScoredMethod
+# io.casehub.agency.orchestration.decomposition.ScoredMethod
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `record`
 

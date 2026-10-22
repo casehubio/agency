@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.decomposition.NoMethodMatchedException
+# io.casehub.agency.orchestration.decomposition.NoMethodMatchedException
 
-**Package:** `io.casehub.agency.agentic.decomposition`
+**Package:** `io.casehub.agency.orchestration.decomposition`
 
 **Kind:** `class`
 

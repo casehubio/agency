@@ -229,7 +229,7 @@ Lives in `blocks.summarisation.llm` — separate from the pure-Java `blocks.summ
 An optional `preamble` provides static context for the LLM prompt (e.g., `"Channel: design-review"`). This replaces the channel-name context that the old `LlmChannelSummariser.buildUserPrompt()` included directly from `SummaryUpdateContext`. Since `LlmContentSummariser<T>` is generic, per-invocation context like channel name must be provided at construction time.
 
 ```java
-package io.casehub.agency.summarisation.llm;
+package io.casehub.agency.perception.llm;
 
 public class LlmContentSummariser<T> implements ContentSummariser<T> {
     private static final System.Logger LOG =
@@ -381,7 +381,7 @@ public class ContentSummariserToSummariser<T> implements Summariser<T, String> {
 `ContentSummariser<Message>` that extracts structural metadata from qhorus messages. Always APPEND mode — appends a delta section to the previous summary text.
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 @DefaultBean
 @ApplicationScoped
@@ -454,7 +454,7 @@ public class HeuristicMessageSummariser implements ContentSummariser<Message> {
 The single `SummaryUpdateHook` implementation. Delegates to an injected `ContentSummariser<Message>`.
 
 ```java
-package io.casehub.agency.channel.summary;
+package io.casehub.agency.communication.channel.summary;
 
 @ApplicationScoped
 public class ChannelSummariser implements SummaryUpdateHook {

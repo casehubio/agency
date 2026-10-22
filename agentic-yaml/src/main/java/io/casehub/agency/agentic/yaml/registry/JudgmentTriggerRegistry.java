@@ -1,11 +1,11 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.judgment.AlwaysYield;
-import io.casehub.agency.agentic.judgment.ConfidenceThreshold;
-import io.casehub.agency.agentic.judgment.IterationBased;
-import io.casehub.agency.agentic.judgment.JudgmentTrigger;
-import io.casehub.agency.agentic.judgment.NeverYield;
-import io.casehub.agency.agentic.yaml.spec.JudgmentSpec.TriggerSpec;
+import io.casehub.agency.deliberation.judgment.AlwaysYield;
+import io.casehub.agency.deliberation.judgment.ConfidenceThreshold;
+import io.casehub.agency.deliberation.judgment.IterationBased;
+import io.casehub.agency.deliberation.judgment.JudgmentTrigger;
+import io.casehub.agency.deliberation.judgment.NeverYield;
+import io.casehub.agency.core.yaml.spec.JudgmentSpec.TriggerSpec;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;
 

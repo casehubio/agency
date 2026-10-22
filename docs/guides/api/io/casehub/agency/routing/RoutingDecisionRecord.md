@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.RoutingDecisionRecord
+# io.casehub.agency.governance.routing.RoutingDecisionRecord
 
-**Package:** `io.casehub.agency.routing`
+**Package:** `io.casehub.agency.governance.routing`
 
 **Kind:** `record`
 

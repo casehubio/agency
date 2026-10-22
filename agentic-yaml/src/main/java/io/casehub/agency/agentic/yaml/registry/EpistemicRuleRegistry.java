@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.EpistemicRuleSpec;
-import io.casehub.agency.conversation.EpistemicRule;
-import io.casehub.agency.conversation.EpistemicRules;
+import io.casehub.agency.core.yaml.spec.EpistemicRuleSpec;
+import io.casehub.agency.deliberation.conversation.EpistemicRule;
+import io.casehub.agency.deliberation.conversation.EpistemicRules;
 
 public class EpistemicRuleRegistry {
     public EpistemicRule resolve(EpistemicRuleSpec spec) {

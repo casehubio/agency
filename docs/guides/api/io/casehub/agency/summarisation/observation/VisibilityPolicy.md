@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.VisibilityPolicy
+# io.casehub.agency.perception.observation.VisibilityPolicy
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `interface`
 

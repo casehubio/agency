@@ -1,33 +1,33 @@
-# io.casehub.agency.summarisation.observation.PartitionedDrain
+# io.casehub.agency.perception.observation.PartitionedDrain
 
-**Package:** `io.casehub.agency.summarisation.observation`
+**Package:** `io.casehub.agency.perception.observation`
 
 **Kind:** `record`
 
 ## Fields
 
-### `currentPartition` (`io.casehub.agency.summarisation.observation.ObservationResult`)
+### `currentPartition` (`io.casehub.agency.perception.observation.ObservationResult`)
 
-### `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.summarisation.observation.RememberedPartition>`)
+### `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.perception.observation.RememberedPartition>`)
 
 ## Record Components
 
-### `currentPartition` (`io.casehub.agency.summarisation.observation.ObservationResult`)
+### `currentPartition` (`io.casehub.agency.perception.observation.ObservationResult`)
 
-### `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.summarisation.observation.RememberedPartition>`)
+### `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.perception.observation.RememberedPartition>`)
 
 ## Constructors
 
-### `public PartitionedDrain(io.casehub.agency.summarisation.observation.ObservationResult currentPartition, java.util.Map<K,io.casehub.agency.summarisation.observation.RememberedPartition> rememberedPartitions)`
+### `public PartitionedDrain(io.casehub.agency.perception.observation.ObservationResult currentPartition, java.util.Map<K,io.casehub.agency.perception.observation.RememberedPartition> rememberedPartitions)`
 
 #### Parameters
 
-- `currentPartition` (`io.casehub.agency.summarisation.observation.ObservationResult`)
-- `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.summarisation.observation.RememberedPartition>`)
+- `currentPartition` (`io.casehub.agency.perception.observation.ObservationResult`)
+- `rememberedPartitions` (`java.util.Map<K,io.casehub.agency.perception.observation.RememberedPartition>`)
 
 ## Methods
 
-### `public io.casehub.agency.summarisation.observation.ObservationResult currentPartition()`
+### `public io.casehub.agency.perception.observation.ObservationResult currentPartition()`
 
 ### `public final boolean equals(java.lang.Object o)`
 
@@ -37,6 +37,6 @@
 
 ### `public final int hashCode()`
 
-### `public java.util.Map<K,io.casehub.agency.summarisation.observation.RememberedPartition> rememberedPartitions()`
+### `public java.util.Map<K,io.casehub.agency.perception.observation.RememberedPartition> rememberedPartitions()`
 
 ### `public final java.lang.String toString()`

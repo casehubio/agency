@@ -136,7 +136,7 @@ affected.
 
 ## blocks — ThreadSummaryObserver
 
-Package: `io.casehub.agency.channel.summary`
+Package: `io.casehub.agency.communication.channel.summary`
 
 `@ApplicationScoped`. Bridges qhorus message events to `ContentSummariser<Message>`
 and `ThreadSummaryStore`.

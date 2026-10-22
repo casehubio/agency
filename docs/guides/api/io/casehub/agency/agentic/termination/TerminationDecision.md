@@ -1,5 +1,5 @@
-# io.casehub.agency.agentic.termination.TerminationDecision
+# io.casehub.agency.orchestration.termination.TerminationDecision
 
-**Package:** `io.casehub.agency.agentic.termination`
+**Package:** `io.casehub.agency.orchestration.termination`
 
 **Kind:** `interface`

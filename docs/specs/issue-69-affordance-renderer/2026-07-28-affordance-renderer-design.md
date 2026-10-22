@@ -62,7 +62,7 @@ factory methods.
 
 ## Package
 
-`io.casehub.agency.summarisation.observation.affordance`
+`io.casehub.agency.perception.observation.affordance`
 
 Sub-package co-locates the section model (`ObservationSection` and variants) with
 its consumer (`AffordanceRenderer`). The parent `observation` package is
@@ -405,8 +405,8 @@ framework prescribing one).
 ## Documentation Updates
 
 - Update blocks ARC42STORIES.MD §5: add
-  `io.casehub.agency.summarisation.observation.affordance` sub-package entry
-  under the existing `io.casehub.agency.summarisation.observation` section,
+  `io.casehub.agency.perception.observation.affordance` sub-package entry
+  under the existing `io.casehub.agency.perception.observation` section,
   listing all 5 types (`ObservableEntity`, `Affordance`, `ObservationSection`,
   `ActionDescriptor`, `AffordanceRenderer`) with their roles
 - Update blocks CLAUDE.md with affordance sub-package documentation

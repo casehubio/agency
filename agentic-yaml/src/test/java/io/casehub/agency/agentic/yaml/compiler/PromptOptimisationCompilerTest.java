@@ -1,17 +1,17 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.agentic.yaml.registry.ConfidenceScorerRegistry;
-import io.casehub.agency.agentic.yaml.registry.DiversityStrategyRegistry;
-import io.casehub.agency.agentic.yaml.registry.PromptOptimiserRegistry;
-import io.casehub.agency.agentic.yaml.spec.PromptOptimisationDefinition;
-import io.casehub.agency.memory.CompositeConfidenceScorer;
-import io.casehub.agency.prompt.OptimiserConfig;
-import io.casehub.agency.prompt.SafetyConfig;
-import io.casehub.agency.prompt.optimiser.FewShotOptimiser;
-import io.casehub.agency.prompt.optimiser.InstructionOptimiser;
+import io.casehub.agency.core.yaml.registry.ConfidenceScorerRegistry;
+import io.casehub.agency.core.yaml.registry.DiversityStrategyRegistry;
+import io.casehub.agency.core.yaml.registry.PromptOptimiserRegistry;
+import io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition;
+import io.casehub.agency.social.memory.CompositeConfidenceScorer;
+import io.casehub.agency.optimisation.prompt.OptimiserConfig;
+import io.casehub.agency.optimisation.prompt.SafetyConfig;
+import io.casehub.agency.optimisation.prompt.optimiser.FewShotOptimiser;
+import io.casehub.agency.optimisation.prompt.optimiser.InstructionOptimiser;
 import io.casehub.platform.agent.AgentProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

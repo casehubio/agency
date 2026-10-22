@@ -13,7 +13,7 @@ subtype: diary
 
 Long-running agents accumulate memories the way old houses accumulate junk — everything gets kept because nothing seems worth the effort of deciding whether to throw it away. LUFY's finding that keeping less than 10% of conversation data actually *improves* user experience isn't surprising once you think about it. The value isn't in remembering everything; it's in remembering the right things.
 
-The MemoryHygiene pattern is blocks' answer to this. It sits in `io.casehub.agency.memory` — deliberately not under `agentic`, because memory lifecycle management isn't inherently about multi-agent interaction. A single-agent CBR system benefits from forgetting just as much as a swarm does. The placement mirrors `blocks.summarisation` — reusable infrastructure that agentic patterns compose but don't own.
+The MemoryHygiene pattern is blocks' answer to this. It sits in `io.casehub.agency.social.memory` — deliberately not under `agentic`, because memory lifecycle management isn't inherently about multi-agent interaction. A single-agent CBR system benefits from forgetting just as much as a swarm does. The placement mirrors `blocks.summarisation` — reusable infrastructure that agentic patterns compose but don't own.
 
 ## The pipeline that changed its mind
 

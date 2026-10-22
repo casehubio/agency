@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.SystemPromptCustomiser
+# io.casehub.agency.optimisation.prompt.SystemPromptCustomiser
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `interface`
 

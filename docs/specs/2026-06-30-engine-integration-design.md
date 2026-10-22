@@ -264,7 +264,7 @@ public record AgentRetryPolicy(
 )
 ```
 
-BackoffStrategy defined locally in blocks (`io.casehub.agency.agentic.FailurePolicy.BackoffStrategy`): FIXED, EXPONENTIAL, EXPONENTIAL_WITH_JITTER. Three enum values — no cross-repo dependency justified per PLATFORM.md scope rules.
+BackoffStrategy defined locally in blocks (`io.casehub.agency.core.FailurePolicy.BackoffStrategy`): FIXED, EXPONENTIAL, EXPONENTIAL_WITH_JITTER. Three enum values — no cross-repo dependency justified per PLATFORM.md scope rules.
 
 `defaults()` factory sets FIXED — backward compatible. PlatformAgentInvoker's infrastructure retry uses these fields. Backoff calculation is ~15 lines inline.
 

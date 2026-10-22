@@ -1,6 +1,6 @@
-# io.casehub.agency.summarisation.observation.affordance.ObservationSection.EntityGroup
+# io.casehub.agency.perception.observation.affordance.ObservationSection.EntityGroup
 
-**Package:** `io.casehub.agency.summarisation.observation.affordance`
+**Package:** `io.casehub.agency.perception.observation.affordance`
 
 **Kind:** `record`
 
@@ -8,7 +8,7 @@
 
 ### `emptyMessage` (`java.lang.String`)
 
-### `entities` (`java.util.List<io.casehub.agency.summarisation.observation.affordance.ObservableEntity>`)
+### `entities` (`java.util.List<io.casehub.agency.perception.observation.affordance.ObservableEntity>`)
 
 ### `header` (`java.lang.String`)
 
@@ -16,25 +16,25 @@
 
 ### `emptyMessage` (`java.lang.String`)
 
-### `entities` (`java.util.List<io.casehub.agency.summarisation.observation.affordance.ObservableEntity>`)
+### `entities` (`java.util.List<io.casehub.agency.perception.observation.affordance.ObservableEntity>`)
 
 ### `header` (`java.lang.String`)
 
 ## Constructors
 
-### `public EntityGroup(java.lang.String header, java.lang.String emptyMessage, java.util.List<io.casehub.agency.summarisation.observation.affordance.ObservableEntity> entities)`
+### `public EntityGroup(java.lang.String header, java.lang.String emptyMessage, java.util.List<io.casehub.agency.perception.observation.affordance.ObservableEntity> entities)`
 
 #### Parameters
 
 - `header` (`java.lang.String`)
 - `emptyMessage` (`java.lang.String`)
-- `entities` (`java.util.List<io.casehub.agency.summarisation.observation.affordance.ObservableEntity>`)
+- `entities` (`java.util.List<io.casehub.agency.perception.observation.affordance.ObservableEntity>`)
 
 ## Methods
 
 ### `public java.lang.String emptyMessage()`
 
-### `public java.util.List<io.casehub.agency.summarisation.observation.affordance.ObservableEntity> entities()`
+### `public java.util.List<io.casehub.agency.perception.observation.affordance.ObservableEntity> entities()`
 
 ### `public final boolean equals(java.lang.Object o)`
 

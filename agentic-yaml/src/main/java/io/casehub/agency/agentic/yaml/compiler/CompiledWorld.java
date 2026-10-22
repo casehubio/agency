@@ -1,9 +1,9 @@
-package io.casehub.agency.agentic.yaml.compiler;
+package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.summarisation.observation.affordance.ActionDescriptor;
-import io.casehub.agency.summarisation.observation.affordance.ObservableEntity;
-import io.casehub.agency.summarisation.observation.affordance.ObservationPipeline;
-import io.casehub.agency.summarisation.observation.affordance.ObservationSection;
+import io.casehub.agency.perception.observation.affordance.ActionDescriptor;
+import io.casehub.agency.perception.observation.affordance.ObservableEntity;
+import io.casehub.agency.perception.observation.affordance.ObservationPipeline;
+import io.casehub.agency.perception.observation.affordance.ObservationSection;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;

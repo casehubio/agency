@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.HtnBuilder
+# io.casehub.agency.orchestration.pattern.HtnBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -14,19 +14,19 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.pattern.HtnBuilder<T> agents(io.casehub.agency.agentic.AgentRef[] agents)`
+### `public io.casehub.agency.orchestration.pattern.HtnBuilder<T> agents(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public io.casehub.agency.agentic.pattern.HtnBuilder<T> agents(io.casehub.agency.agentic.RoutingCandidate[] candidates)`
+### `public io.casehub.agency.orchestration.pattern.HtnBuilder<T> agents(io.casehub.agency.core.RoutingCandidate[] candidates)`
 
 #### Parameters
 
-- `candidates` (`io.casehub.agency.agentic.RoutingCandidate[]`)
+- `candidates` (`io.casehub.agency.core.RoutingCandidate[]`)
 
-### `public Uni<io.casehub.agency.agentic.model.ExecutionResult> execute(T initialContext)`
+### `public Uni<io.casehub.agency.orchestration.execution.ExecutionResult> execute(T initialContext)`
 
 #### Parameters
 
@@ -39,7 +39,7 @@
 - `node` (`TaskNode<T>`)
 - `state` (`T`)
 
-### `public io.casehub.agency.agentic.pattern.HtnBuilder<T> rootTask(TaskNode<T> rootTask)`
+### `public io.casehub.agency.orchestration.pattern.HtnBuilder<T> rootTask(TaskNode<T> rootTask)`
 
 #### Parameters
 

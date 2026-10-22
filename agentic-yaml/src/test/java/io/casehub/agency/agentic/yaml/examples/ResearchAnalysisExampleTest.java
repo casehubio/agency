@@ -1,8 +1,8 @@
-package io.casehub.agency.agentic.yaml.examples;
+package io.casehub.agency.core.yaml.examples;
 
-import io.casehub.agency.agentic.judgment.JudgmentPolicy;
-import io.casehub.agency.agentic.model.PatternType;
-import io.casehub.agency.agentic.routing.RoundRobinRouting;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.RoundRobinRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
 import org.junit.jupiter.api.Test;
 

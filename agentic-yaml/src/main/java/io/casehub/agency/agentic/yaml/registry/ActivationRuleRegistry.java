@@ -1,9 +1,9 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.activation.ActivationRule;
-import io.casehub.agency.agentic.activation.MaxIterationsGuard;
-import io.casehub.agency.agentic.activation.OnExplicitDispatch;
-import io.casehub.agency.agentic.yaml.spec.ActivationSpec;
+import io.casehub.agency.orchestration.activation.ActivationRule;
+import io.casehub.agency.orchestration.activation.MaxIterationsGuard;
+import io.casehub.agency.orchestration.activation.OnExplicitDispatch;
+import io.casehub.agency.core.yaml.spec.ActivationSpec;
 
 public class ActivationRuleRegistry {
 

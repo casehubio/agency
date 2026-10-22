@@ -1,10 +1,10 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.termination.GoalReached;
-import io.casehub.agency.agentic.yaml.spec.TerminationSpec;
-import io.casehub.agency.negotiation.AcceptedTermination;
-import io.casehub.agency.negotiation.DeadlineTermination;
-import io.casehub.agency.negotiation.TerminalOutcomeTermination;
+import io.casehub.agency.orchestration.termination.GoalReached;
+import io.casehub.agency.core.yaml.spec.TerminationSpec;
+import io.casehub.agency.deliberation.negotiation.AcceptedTermination;
+import io.casehub.agency.deliberation.negotiation.DeadlineTermination;
+import io.casehub.agency.deliberation.negotiation.TerminalOutcomeTermination;
 
 import java.time.Duration;
 import io.casehub.platform.expression.MvelExpressionEngine;

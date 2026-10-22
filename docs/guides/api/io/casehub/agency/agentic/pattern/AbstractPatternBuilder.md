@@ -1,32 +1,32 @@
-# io.casehub.agency.agentic.pattern.AbstractPatternBuilder
+# io.casehub.agency.orchestration.pattern.AbstractPatternBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
 ## Fields
 
-### `activation` (`io.casehub.agency.agentic.activation.ActivationRule<T>`)
+### `activation` (`io.casehub.agency.orchestration.activation.ActivationRule<T>`)
 
-### `aggregation` (`io.casehub.agency.agentic.aggregation.AggregationStrategy<T>`)
+### `aggregation` (`io.casehub.agency.orchestration.aggregation.AggregationStrategy<T>`)
 
-### `backend` (`io.casehub.agency.agentic.model.ExecutionBackend<T>`)
+### `backend` (`io.casehub.agency.orchestration.execution.ExecutionBackend<T>`)
 
-### `candidateSupplier` (`java.util.function.Supplier<java.util.List<io.casehub.agency.agentic.RoutingCandidate>>`)
+### `candidateSupplier` (`java.util.function.Supplier<java.util.List<io.casehub.agency.core.RoutingCandidate>>`)
 
 ### `decomposition` (`DecompositionStrategy<T>`)
 
-### `failurePolicy` (`io.casehub.agency.agentic.FailurePolicy`)
+### `failurePolicy` (`io.casehub.agency.core.FailurePolicy`)
 
-### `listeners` (`java.util.List<io.casehub.agency.agentic.model.ExecutionEventListener>`)
+### `listeners` (`java.util.List<io.casehub.agency.orchestration.execution.ExecutionEventListener>`)
 
-### `patternType` (`io.casehub.agency.agentic.model.PatternType`)
+### `patternType` (`io.casehub.agency.orchestration.execution.PatternType`)
 
-### `routing` (`io.casehub.agency.agentic.routing.RoutingStrategy<T>`)
+### `routing` (`io.casehub.agency.orchestration.routing.RoutingStrategy<T>`)
 
 ### `task` (`java.lang.String`)
 
-### `termination` (`io.casehub.agency.agentic.termination.TerminationCondition<T>`)
+### `termination` (`io.casehub.agency.orchestration.termination.TerminationCondition<T>`)
 
 ## Constructors
 
@@ -34,37 +34,37 @@
 
 ## Methods
 
-### `public B activate(io.casehub.agency.agentic.activation.ActivationRule<T> activation)`
+### `public B activate(io.casehub.agency.orchestration.activation.ActivationRule<T> activation)`
 
 #### Parameters
 
-- `activation` (`io.casehub.agency.agentic.activation.ActivationRule<T>`)
+- `activation` (`io.casehub.agency.orchestration.activation.ActivationRule<T>`)
 
-### `protected B agents(io.casehub.agency.agentic.AgentRef[] agents)`
-
-#### Parameters
-
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
-
-### `protected B agents(io.casehub.agency.agentic.RoutingCandidate[] candidates)`
+### `protected B agents(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `candidates` (`io.casehub.agency.agentic.RoutingCandidate[]`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public B aggregate(io.casehub.agency.agentic.aggregation.AggregationStrategy<T> aggregation)`
-
-#### Parameters
-
-- `aggregation` (`io.casehub.agency.agentic.aggregation.AggregationStrategy<T>`)
-
-### `public B backend(io.casehub.agency.agentic.model.ExecutionBackend<T> backend)`
+### `protected B agents(io.casehub.agency.core.RoutingCandidate[] candidates)`
 
 #### Parameters
 
-- `backend` (`io.casehub.agency.agentic.model.ExecutionBackend<T>`)
+- `candidates` (`io.casehub.agency.core.RoutingCandidate[]`)
 
-### `public io.casehub.agency.agentic.model.ExecutionModel<T> build()`
+### `public B aggregate(io.casehub.agency.orchestration.aggregation.AggregationStrategy<T> aggregation)`
+
+#### Parameters
+
+- `aggregation` (`io.casehub.agency.orchestration.aggregation.AggregationStrategy<T>`)
+
+### `public B backend(io.casehub.agency.orchestration.execution.ExecutionBackend<T> backend)`
+
+#### Parameters
+
+- `backend` (`io.casehub.agency.orchestration.execution.ExecutionBackend<T>`)
+
+### `public io.casehub.agency.orchestration.execution.ExecutionModel<T> build()`
 
 ### `public B decompose(DecompositionStrategy<T> decomposition)`
 
@@ -72,17 +72,17 @@
 
 - `decomposition` (`DecompositionStrategy<T>`)
 
-### `public Uni<io.casehub.agency.agentic.model.ExecutionResult> execute(T initialContext)`
+### `public Uni<io.casehub.agency.orchestration.execution.ExecutionResult> execute(T initialContext)`
 
 #### Parameters
 
 - `initialContext` (`T`)
 
-### `public B listener(io.casehub.agency.agentic.model.ExecutionEventListener listener)`
+### `public B listener(io.casehub.agency.orchestration.execution.ExecutionEventListener listener)`
 
 #### Parameters
 
-- `listener` (`io.casehub.agency.agentic.model.ExecutionEventListener`)
+- `listener` (`io.casehub.agency.orchestration.execution.ExecutionEventListener`)
 
 ### `public B maxAgentRetries(int max)`
 
@@ -90,23 +90,23 @@
 
 - `max` (`int`)
 
-### `public B onDeadlock(io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction action)`
+### `public B onDeadlock(io.casehub.agency.core.FailurePolicy.AggregationFailureAction action)`
 
 #### Parameters
 
-- `action` (`io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction`)
+- `action` (`io.casehub.agency.core.FailurePolicy.AggregationFailureAction`)
 
-### `public B onRoutingFailure(io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction action)`
-
-#### Parameters
-
-- `action` (`io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction`)
-
-### `public B route(io.casehub.agency.agentic.routing.RoutingStrategy<T> routing)`
+### `public B onRoutingFailure(io.casehub.agency.core.FailurePolicy.RoutingFailureAction action)`
 
 #### Parameters
 
-- `routing` (`io.casehub.agency.agentic.routing.RoutingStrategy<T>`)
+- `action` (`io.casehub.agency.core.FailurePolicy.RoutingFailureAction`)
+
+### `public B route(io.casehub.agency.orchestration.routing.RoutingStrategy<T> routing)`
+
+#### Parameters
+
+- `routing` (`io.casehub.agency.orchestration.routing.RoutingStrategy<T>`)
 
 ### `public B task(java.lang.String task)`
 
@@ -114,8 +114,8 @@
 
 - `task` (`java.lang.String`)
 
-### `public B terminate(io.casehub.agency.agentic.termination.TerminationCondition<T> termination)`
+### `public B terminate(io.casehub.agency.orchestration.termination.TerminationCondition<T> termination)`
 
 #### Parameters
 
-- `termination` (`io.casehub.agency.agentic.termination.TerminationCondition<T>`)
+- `termination` (`io.casehub.agency.orchestration.termination.TerminationCondition<T>`)

@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.routing.RoutingDecision.Escalate
+# io.casehub.agency.orchestration.routing.RoutingDecision.Escalate
 
-**Package:** `io.casehub.agency.agentic.routing`
+**Package:** `io.casehub.agency.orchestration.routing`
 
 **Kind:** `record`
 

@@ -1,6 +1,6 @@
-package io.casehub.agency.agentic.yaml.deployment;
+package io.casehub.agency.core.yaml.deployment;
 
-import io.casehub.agency.agentic.yaml.spec.world.WorldDefinition;
+import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.quarkus.builder.item.SimpleBuildItem;
 import org.jspecify.annotations.Nullable;
 

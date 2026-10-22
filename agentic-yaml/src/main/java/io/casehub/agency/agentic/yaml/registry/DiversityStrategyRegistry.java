@@ -1,9 +1,9 @@
-package io.casehub.agency.agentic.yaml.registry;
+package io.casehub.agency.core.yaml.registry;
 
-import io.casehub.agency.agentic.yaml.spec.DiversityStrategySpec;
-import io.casehub.agency.prompt.DiversityStrategy;
-import io.casehub.agency.prompt.optimiser.OutcomeAwareDiversityStrategy;
-import io.casehub.agency.prompt.optimiser.TopNDiversityStrategy;
+import io.casehub.agency.core.yaml.spec.DiversityStrategySpec;
+import io.casehub.agency.optimisation.prompt.DiversityStrategy;
+import io.casehub.agency.optimisation.prompt.optimiser.OutcomeAwareDiversityStrategy;
+import io.casehub.agency.optimisation.prompt.optimiser.TopNDiversityStrategy;
 
 public class DiversityStrategyRegistry {
 

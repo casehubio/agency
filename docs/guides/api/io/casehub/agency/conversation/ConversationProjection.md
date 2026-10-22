@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConversationProjection
+# io.casehub.agency.deliberation.conversation.ConversationProjection
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
@@ -24,90 +24,90 @@ unrecognised messages are logged and the state is returned unchanged.
 
 ## Methods
 
-### `public io.casehub.agency.conversation.ConversationState apply(io.casehub.agency.conversation.ConversationState state, MessageView message)`
+### `public io.casehub.agency.deliberation.conversation.ConversationState apply(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 
-### `private io.casehub.agency.conversation.ConversationState doApply(io.casehub.agency.conversation.ConversationState state, MessageView message)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState doApply(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 
-### `private io.casehub.agency.conversation.ConversationState handleDomain(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String entryType)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleDomain(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String entryType)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 - `entryType` (`java.lang.String`)
 
-### `private io.casehub.agency.conversation.ConversationState handleFlagHuman(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleFlagHuman(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `private io.casehub.agency.conversation.ConversationState handleMemo(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleMemo(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `private io.casehub.agency.conversation.ConversationState handlePointInitiation(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String role, java.lang.String entryType)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handlePointInitiation(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String role, java.lang.String entryType)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 - `role` (`java.lang.String`)
 - `entryType` (`java.lang.String`)
 
-### `private io.casehub.agency.conversation.ConversationState handlePointResponse(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String role, java.lang.String entryType)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handlePointResponse(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta, java.lang.String role, java.lang.String entryType)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 - `role` (`java.lang.String`)
 - `entryType` (`java.lang.String`)
 
-### `private io.casehub.agency.conversation.ConversationState handleSubTaskError(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleSubTaskError(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `private io.casehub.agency.conversation.ConversationState handleSubTaskFinding(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleSubTaskFinding(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `private io.casehub.agency.conversation.ConversationState handleSubTaskRequest(io.casehub.agency.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
+### `private io.casehub.agency.deliberation.conversation.ConversationState handleSubTaskRequest(io.casehub.agency.deliberation.conversation.ConversationState state, MessageView message, java.util.Map<java.lang.String,java.lang.String> meta)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `message` (`MessageView`)
 - `meta` (`java.util.Map<java.lang.String,java.lang.String>`)
 
-### `public io.casehub.agency.conversation.ConversationState identity()`
+### `public io.casehub.agency.deliberation.conversation.ConversationState identity()`
 
 ### `protected abstract boolean isPointInitiator(java.lang.String entryType)`
 
@@ -119,7 +119,7 @@ Returns `true` if the given entry type initiates a new conversation point
 
 - `entryType` (`java.lang.String`)
 
-### `private io.casehub.agency.conversation.Priority parsePriority(java.lang.String s)`
+### `private io.casehub.agency.deliberation.conversation.Priority parsePriority(java.lang.String s)`
 
 #### Parameters
 

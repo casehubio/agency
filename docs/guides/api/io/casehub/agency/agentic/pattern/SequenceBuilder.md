@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.pattern.SequenceBuilder
+# io.casehub.agency.orchestration.pattern.SequenceBuilder
 
-**Package:** `io.casehub.agency.agentic.pattern`
+**Package:** `io.casehub.agency.orchestration.pattern`
 
 **Kind:** `class`
 
@@ -14,14 +14,14 @@
 
 ## Methods
 
-### `public io.casehub.agency.agentic.pattern.SequenceBuilder<T> agents(io.casehub.agency.agentic.AgentRef[] agents)`
+### `public io.casehub.agency.orchestration.pattern.SequenceBuilder<T> agents(io.casehub.agency.core.AgentRef[] agents)`
 
 #### Parameters
 
-- `agents` (`io.casehub.agency.agentic.AgentRef[]`)
+- `agents` (`io.casehub.agency.core.AgentRef[]`)
 
-### `public io.casehub.agency.agentic.pattern.SequenceBuilder<T> agents(io.casehub.agency.agentic.RoutingCandidate[] candidates)`
+### `public io.casehub.agency.orchestration.pattern.SequenceBuilder<T> agents(io.casehub.agency.core.RoutingCandidate[] candidates)`
 
 #### Parameters
 
-- `candidates` (`io.casehub.agency.agentic.RoutingCandidate[]`)
+- `candidates` (`io.casehub.agency.core.RoutingCandidate[]`)

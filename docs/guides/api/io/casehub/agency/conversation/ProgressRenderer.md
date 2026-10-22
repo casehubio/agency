@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ProgressRenderer
+# io.casehub.agency.deliberation.conversation.ProgressRenderer
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `interface`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConvergenceSignal
+# io.casehub.agency.deliberation.conversation.ConvergenceSignal
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
@@ -10,7 +10,7 @@
 
 ### `reason` (`java.lang.String`)
 
-### `state` (`io.casehub.agency.conversation.ConvergenceState`)
+### `state` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
 ## Record Components
 
@@ -18,15 +18,15 @@
 
 ### `reason` (`java.lang.String`)
 
-### `state` (`io.casehub.agency.conversation.ConvergenceState`)
+### `state` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 
 ## Constructors
 
-### `public ConvergenceSignal(io.casehub.agency.conversation.ConvergenceState state, double confidence, java.lang.String reason)`
+### `public ConvergenceSignal(io.casehub.agency.deliberation.conversation.ConvergenceState state, double confidence, java.lang.String reason)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConvergenceState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConvergenceState`)
 - `origin` (`double`)
 - `reason` (`java.lang.String`)
 
@@ -44,6 +44,6 @@
 
 ### `public java.lang.String reason()`
 
-### `public io.casehub.agency.conversation.ConvergenceState state()`
+### `public io.casehub.agency.deliberation.conversation.ConvergenceState state()`
 
 ### `public final java.lang.String toString()`

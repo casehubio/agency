@@ -1,6 +1,6 @@
-# io.casehub.agency.routing.agent.PlanCompositionAnalyser
+# io.casehub.agency.governance.routing.agent.PlanCompositionAnalyser
 
-**Package:** `io.casehub.agency.routing.agent`
+**Package:** `io.casehub.agency.governance.routing.agent`
 
 **Kind:** `class`
 
@@ -16,15 +16,15 @@ in any trace.
 
 ## Fields
 
-### `caseOutcomeWeights` (`io.casehub.agency.routing.agent.CbrCaseOutcomeWeights`)
+### `caseOutcomeWeights` (`io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights`)
 
 ## Constructors
 
-### `public PlanCompositionAnalyser(Instance<io.casehub.agency.routing.agent.CbrCaseOutcomeWeights> caseOutcomeWeights)`
+### `public PlanCompositionAnalyser(Instance<io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights> caseOutcomeWeights)`
 
 #### Parameters
 
-- `caseOutcomeWeights` (`Instance<io.casehub.agency.routing.agent.CbrCaseOutcomeWeights>`)
+- `caseOutcomeWeights` (`Instance<io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights>`)
 
 ## Methods
 

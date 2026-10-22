@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.GroundedFact
+# io.casehub.agency.deliberation.conversation.GroundedFact
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
@@ -16,7 +16,7 @@
 
 ### `round` (`int`)
 
-### `status` (`io.casehub.agency.conversation.EpistemicStatus`)
+### `status` (`io.casehub.agency.deliberation.conversation.EpistemicStatus`)
 
 ### `topic` (`java.lang.String`)
 
@@ -32,19 +32,19 @@
 
 ### `round` (`int`)
 
-### `status` (`io.casehub.agency.conversation.EpistemicStatus`)
+### `status` (`io.casehub.agency.deliberation.conversation.EpistemicStatus`)
 
 ### `topic` (`java.lang.String`)
 
 ## Constructors
 
-### `public GroundedFact(java.lang.String pointId, java.lang.String topic, io.casehub.agency.conversation.EpistemicStatus status, java.lang.String content, java.util.Set<java.lang.String> acknowledgedBy, java.util.Set<java.lang.String> disputedBy, int round)`
+### `public GroundedFact(java.lang.String pointId, java.lang.String topic, io.casehub.agency.deliberation.conversation.EpistemicStatus status, java.lang.String content, java.util.Set<java.lang.String> acknowledgedBy, java.util.Set<java.lang.String> disputedBy, int round)`
 
 #### Parameters
 
 - `pointId` (`java.lang.String`)
 - `topic` (`java.lang.String`)
-- `status` (`io.casehub.agency.conversation.EpistemicStatus`)
+- `status` (`io.casehub.agency.deliberation.conversation.EpistemicStatus`)
 - `content` (`java.lang.String`)
 - `acknowledgedBy` (`java.util.Set<java.lang.String>`)
 - `disputedBy` (`java.util.Set<java.lang.String>`)
@@ -70,7 +70,7 @@
 
 ### `public int round()`
 
-### `public io.casehub.agency.conversation.EpistemicStatus status()`
+### `public io.casehub.agency.deliberation.conversation.EpistemicStatus status()`
 
 ### `public final java.lang.String toString()`
 

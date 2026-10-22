@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.BatchResult.AlreadyRunning
+# io.casehub.agency.optimisation.prompt.BatchResult.AlreadyRunning
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

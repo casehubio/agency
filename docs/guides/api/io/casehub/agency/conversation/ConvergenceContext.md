@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConvergenceContext
+# io.casehub.agency.deliberation.conversation.ConvergenceContext
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 

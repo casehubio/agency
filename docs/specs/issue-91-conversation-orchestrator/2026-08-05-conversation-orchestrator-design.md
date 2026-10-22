@@ -82,7 +82,7 @@ internally. Interactive mode (human + agents interleaving) is a future layer.
 
 ## Package
 
-`io.casehub.agency.conversation.orchestration`
+`io.casehub.agency.deliberation.conversation.orchestration`
 
 ## Type Inventory
 

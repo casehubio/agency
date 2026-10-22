@@ -1,6 +1,6 @@
-# io.casehub.agency.agentic.AgentRef.HumanAgent
+# io.casehub.agency.core.AgentRef.HumanAgent
 
-**Package:** `io.casehub.agency.agentic`
+**Package:** `io.casehub.agency.core`
 
 **Kind:** `record`
 

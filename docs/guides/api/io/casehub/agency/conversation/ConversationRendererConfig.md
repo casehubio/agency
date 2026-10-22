@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConversationRendererConfig
+# io.casehub.agency.deliberation.conversation.ConversationRendererConfig
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `record`
 
@@ -14,7 +14,7 @@
 
 ### `messageTypeLabel` (`java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String>`)
 
-### `priorityLabel` (`java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String>`)
+### `priorityLabel` (`java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String>`)
 
 ### `resolvedStatuses` (`java.util.Set<java.lang.String>`)
 
@@ -40,7 +40,7 @@
 
 ### `messageTypeLabel` (`java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String>`)
 
-### `priorityLabel` (`java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String>`)
+### `priorityLabel` (`java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String>`)
 
 ### `resolvedStatuses` (`java.util.Set<java.lang.String>`)
 
@@ -58,12 +58,12 @@
 
 ## Constructors
 
-### `public ConversationRendererConfig(java.util.Map<java.lang.String,java.lang.String> statusEmoji, java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String> priorityLabel, java.util.Map<java.lang.String,java.lang.String> entryTypeLabel, java.util.Map<java.lang.String,java.lang.String> roleLabel, java.util.Set<java.lang.String> resolvedStatuses, java.util.Set<java.lang.String> escalatedStatuses, java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String> messageTypeLabel, boolean groupByTopic, boolean showObligationChain, boolean showEpistemicStatus, boolean showConvergenceSignal, boolean showProgress)`
+### `public ConversationRendererConfig(java.util.Map<java.lang.String,java.lang.String> statusEmoji, java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String> priorityLabel, java.util.Map<java.lang.String,java.lang.String> entryTypeLabel, java.util.Map<java.lang.String,java.lang.String> roleLabel, java.util.Set<java.lang.String> resolvedStatuses, java.util.Set<java.lang.String> escalatedStatuses, java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String> messageTypeLabel, boolean groupByTopic, boolean showObligationChain, boolean showEpistemicStatus, boolean showConvergenceSignal, boolean showProgress)`
 
 #### Parameters
 
 - `statusEmoji` (`java.util.Map<java.lang.String,java.lang.String>`)
-- `priorityLabel` (`java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String>`)
+- `priorityLabel` (`java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String>`)
 - `entryTypeLabel` (`java.util.Map<java.lang.String,java.lang.String>`)
 - `roleLabel` (`java.util.Map<java.lang.String,java.lang.String>`)
 - `resolvedStatuses` (`java.util.Set<java.lang.String>`)
@@ -77,7 +77,7 @@
 
 ## Methods
 
-### `public static io.casehub.agency.conversation.ConversationRendererConfig.Builder builder()`
+### `public static io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder builder()`
 
 ### `public java.util.Map<java.lang.String,java.lang.String> entryTypeLabel()`
 
@@ -95,7 +95,7 @@
 
 ### `public java.util.Map<io.casehub.qhorus.api.message.MessageType,java.lang.String> messageTypeLabel()`
 
-### `public java.util.Map<io.casehub.agency.conversation.Priority,java.lang.String> priorityLabel()`
+### `public java.util.Map<io.casehub.agency.deliberation.conversation.Priority,java.lang.String> priorityLabel()`
 
 ### `public java.util.Set<java.lang.String> resolvedStatuses()`
 
@@ -111,6 +111,6 @@
 
 ### `public java.util.Map<java.lang.String,java.lang.String> statusEmoji()`
 
-### `public io.casehub.agency.conversation.ConversationRendererConfig.Builder toBuilder()`
+### `public io.casehub.agency.deliberation.conversation.ConversationRendererConfig.Builder toBuilder()`
 
 ### `public final java.lang.String toString()`

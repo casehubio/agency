@@ -1,6 +1,6 @@
-# io.casehub.agency.prompt.VariantOutcome
+# io.casehub.agency.optimisation.prompt.VariantOutcome
 
-**Package:** `io.casehub.agency.prompt`
+**Package:** `io.casehub.agency.optimisation.prompt`
 
 **Kind:** `record`
 

@@ -1,6 +1,6 @@
-# io.casehub.agency.conversation.ConversationRenderer
+# io.casehub.agency.deliberation.conversation.ConversationRenderer
 
-**Package:** `io.casehub.agency.conversation`
+**Package:** `io.casehub.agency.deliberation.conversation`
 
 **Kind:** `class`
 
@@ -8,82 +8,82 @@
 
 ### `DEFAULT_EMOJI` (`java.lang.String`)
 
-### `config` (`io.casehub.agency.conversation.ConversationRendererConfig`)
+### `config` (`io.casehub.agency.deliberation.conversation.ConversationRendererConfig`)
 
-### `progressRenderer` (`io.casehub.agency.conversation.ProgressRenderer`)
+### `progressRenderer` (`io.casehub.agency.deliberation.conversation.ProgressRenderer`)
 
 ## Constructors
 
-### `public ConversationRenderer(io.casehub.agency.conversation.ConversationRendererConfig config)`
+### `public ConversationRenderer(io.casehub.agency.deliberation.conversation.ConversationRendererConfig config)`
 
 #### Parameters
 
-- `config` (`io.casehub.agency.conversation.ConversationRendererConfig`)
+- `config` (`io.casehub.agency.deliberation.conversation.ConversationRendererConfig`)
 
-### `public ConversationRenderer(io.casehub.agency.conversation.ConversationRendererConfig config, io.casehub.agency.conversation.ProgressRenderer progressRenderer)`
+### `public ConversationRenderer(io.casehub.agency.deliberation.conversation.ConversationRendererConfig config, io.casehub.agency.deliberation.conversation.ProgressRenderer progressRenderer)`
 
 #### Parameters
 
-- `config` (`io.casehub.agency.conversation.ConversationRendererConfig`)
-- `progressRenderer` (`io.casehub.agency.conversation.ProgressRenderer`)
+- `config` (`io.casehub.agency.deliberation.conversation.ConversationRendererConfig`)
+- `progressRenderer` (`io.casehub.agency.deliberation.conversation.ProgressRenderer`)
 
 ## Methods
 
-### `public java.lang.String render(io.casehub.agency.conversation.ConversationState state)`
+### `public java.lang.String render(io.casehub.agency.deliberation.conversation.ConversationState state)`
 
 #### Parameters
 
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 
-### `public java.lang.String render(io.casehub.agency.conversation.ConversationState state, io.casehub.agency.conversation.RenderContext ctx)`
-
-#### Parameters
-
-- `state` (`io.casehub.agency.conversation.ConversationState`)
-- `ctx` (`io.casehub.agency.conversation.RenderContext`)
-
-### `private void renderByTopic(java.lang.StringBuilder sb, io.casehub.agency.conversation.ConversationState state, io.casehub.agency.conversation.RenderContext ctx)`
+### `public java.lang.String render(io.casehub.agency.deliberation.conversation.ConversationState state, io.casehub.agency.deliberation.conversation.RenderContext ctx)`
 
 #### Parameters
 
-- `sb` (`java.lang.StringBuilder`)
-- `state` (`io.casehub.agency.conversation.ConversationState`)
-- `ctx` (`io.casehub.agency.conversation.RenderContext`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
+- `ctx` (`io.casehub.agency.deliberation.conversation.RenderContext`)
 
-### `private void renderEpistemicBadge(java.lang.StringBuilder sb, io.casehub.agency.conversation.ConversationPoint point, io.casehub.agency.conversation.CommonGroundState cg)`
+### `private void renderByTopic(java.lang.StringBuilder sb, io.casehub.agency.deliberation.conversation.ConversationState state, io.casehub.agency.deliberation.conversation.RenderContext ctx)`
 
 #### Parameters
 
 - `sb` (`java.lang.StringBuilder`)
-- `point` (`io.casehub.agency.conversation.ConversationPoint`)
-- `cg` (`io.casehub.agency.conversation.CommonGroundState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
+- `ctx` (`io.casehub.agency.deliberation.conversation.RenderContext`)
 
-### `private java.lang.String renderFinding(io.casehub.agency.conversation.SubTaskFinding f)`
-
-#### Parameters
-
-- `f` (`io.casehub.agency.conversation.SubTaskFinding`)
-
-### `private void renderFlat(java.lang.StringBuilder sb, io.casehub.agency.conversation.ConversationState state, io.casehub.agency.conversation.RenderContext ctx)`
+### `private void renderEpistemicBadge(java.lang.StringBuilder sb, io.casehub.agency.deliberation.conversation.ConversationPoint point, io.casehub.agency.deliberation.conversation.CommonGroundState cg)`
 
 #### Parameters
 
 - `sb` (`java.lang.StringBuilder`)
-- `state` (`io.casehub.agency.conversation.ConversationState`)
-- `ctx` (`io.casehub.agency.conversation.RenderContext`)
+- `point` (`io.casehub.agency.deliberation.conversation.ConversationPoint`)
+- `cg` (`io.casehub.agency.deliberation.conversation.CommonGroundState`)
 
-### `private java.lang.String renderObligationChain(java.util.List<io.casehub.agency.conversation.ConversationPoint> points)`
+### `private java.lang.String renderFinding(io.casehub.agency.deliberation.conversation.SubTaskFinding f)`
 
 #### Parameters
 
-- `points` (`java.util.List<io.casehub.agency.conversation.ConversationPoint>`)
+- `f` (`io.casehub.agency.deliberation.conversation.SubTaskFinding`)
 
-### `private void renderPoints(java.lang.StringBuilder sb, java.util.List<io.casehub.agency.conversation.ConversationPoint> points, io.casehub.agency.conversation.ConversationState state, boolean strikethrough, io.casehub.agency.conversation.RenderContext ctx)`
+### `private void renderFlat(java.lang.StringBuilder sb, io.casehub.agency.deliberation.conversation.ConversationState state, io.casehub.agency.deliberation.conversation.RenderContext ctx)`
 
 #### Parameters
 
 - `sb` (`java.lang.StringBuilder`)
-- `points` (`java.util.List<io.casehub.agency.conversation.ConversationPoint>`)
-- `state` (`io.casehub.agency.conversation.ConversationState`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
+- `ctx` (`io.casehub.agency.deliberation.conversation.RenderContext`)
+
+### `private java.lang.String renderObligationChain(java.util.List<io.casehub.agency.deliberation.conversation.ConversationPoint> points)`
+
+#### Parameters
+
+- `points` (`java.util.List<io.casehub.agency.deliberation.conversation.ConversationPoint>`)
+
+### `private void renderPoints(java.lang.StringBuilder sb, java.util.List<io.casehub.agency.deliberation.conversation.ConversationPoint> points, io.casehub.agency.deliberation.conversation.ConversationState state, boolean strikethrough, io.casehub.agency.deliberation.conversation.RenderContext ctx)`
+
+#### Parameters
+
+- `sb` (`java.lang.StringBuilder`)
+- `points` (`java.util.List<io.casehub.agency.deliberation.conversation.ConversationPoint>`)
+- `state` (`io.casehub.agency.deliberation.conversation.ConversationState`)
 - `strikethrough` (`boolean`)
-- `ctx` (`io.casehub.agency.conversation.RenderContext`)
+- `ctx` (`io.casehub.agency.deliberation.conversation.RenderContext`)

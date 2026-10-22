@@ -27,7 +27,7 @@ reads timestamps from persisted state).
 
 ### Upstream change
 
-`TokenJaccardDistance` in `io.casehub.agency.agentic.social` — both the
+`TokenJaccardDistance` in `io.casehub.agency.core.social` — both the
 class AND the `distance()` method changed from package-private to `public`
 (D16). NarrativeSynthesiser needs it for novelty scoring.
 

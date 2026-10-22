@@ -1,6 +1,6 @@
 package io.casehub.agency.annotations;
 
-import io.casehub.agency.agentic.decomposition.StaticDecomposition;
+import io.casehub.agency.orchestration.decomposition.StaticDecomposition;
 import io.casehub.engine.plan.DecompositionStrategy;
 
 import java.lang.annotation.ElementType;
