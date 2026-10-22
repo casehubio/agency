@@ -8,6 +8,169 @@
 
 type: java
 
+## Pending Rename: blocks → agency
+
+**This repo is being renamed from `casehub-blocks` to `casehub-agency`.** The rename
+covers Maven artifacts, Java packages, GitHub repos, all downstream consumers, CI, and
+platform build infrastructure. Read this entire section before starting.
+
+### Lessons from the casehub-mosaic rename (blocks-ui → mosaic)
+
+The mosaic rename took 10+ passes because each pass missed a category. The playbook
+below is written to avoid every mistake made in that session. Follow it exactly.
+
+### The single most important rule
+
+**After EVERY pass, run a comprehensive grep.** Do not proceed to the next pass until
+the grep is clean. This is the only reliable verification:
+
+```bash
+find <repo> -type f \
+  -not -path '*/node_modules/*' -not -path '*/.yarn/*' \
+  -not -path '*/dist/*' -not -path '*/.git/*' -not -path '*/target/*' \
+  -not -name '*.class' \
+  -print0 | xargs -0 grep -l 'casehub-blocks' 2>/dev/null
+```
+
+Also grep for just `blocks` (without casehub- prefix) in Java package names:
+```bash
+find <repo> -name '*.java' -not -path '*/target/*' -print0 | xargs -0 grep -l 'io\.casehub\.blocks\.' 2>/dev/null
+```
+
+### Scope — everything that must change
+
+**In the blocks (agency) repo itself:**
+
+| Category | Pattern to find | Replace with | Approx count |
+|----------|----------------|-------------|-------------|
+| Maven parent artifactId | `casehub-blocks-parent` | `casehub-agency-parent` | 1 (root pom.xml) |
+| Maven module artifactIds | `casehub-blocks-*` in all 26 pom.xml files | `casehub-agency-*` | ~40 refs |
+| Maven dependency refs | `casehub-blocks-*` in `<artifactId>` deps | `casehub-agency-*` | ~30 refs |
+| Java package declarations | `package io.casehub.blocks` | `package io.casehub.agency` | Every .java file |
+| Java import statements | `import io.casehub.blocks` | `import io.casehub.agency` | Every .java file |
+| Java qualified refs | `io.casehub.blocks.` in strings, annotations | `io.casehub.agency.` | Many |
+| Directory structure | `src/main/java/io/casehub/blocks/` | `src/main/java/io/casehub/agency/` | 26 modules |
+| Test directory structure | `src/test/java/io/casehub/blocks/` | `src/test/java/io/casehub/agency/` | 26 modules |
+| Quarkus deployment processors | Class names like `*BlocksProcessor` | `*AgencyProcessor` | ~3 |
+| Quarkus recorder classes | Class names like `*BlocksRecorder` | `*AgencyRecorder` | ~3 |
+| `application.properties` | `quarkus.index-dependency.casehub-blocks` | `quarkus.index-dependency.casehub-agency` | In consumer repos |
+| CLAUDE.md | All `blocks` references | `agency` | 1 file, many refs |
+| README.md | All `blocks` references | `agency` | 1 file |
+| Docs | `docs/guides/*.md`, protocols, ARC42STORIES | `agency` | ~10 files |
+
+**In EVERY downstream consumer repo (see Consumers table in this file):**
+
+| Category | What to grep for | Replace with |
+|----------|-----------------|-------------|
+| Maven pom.xml deps | `casehub-blocks` artifactIds | `casehub-agency` |
+| Maven version properties | `<version.blocks>` | `<version.agency>` |
+| Java imports | `import io.casehub.blocks.` | `import io.casehub.agency.` |
+| Java qualified refs | `io.casehub.blocks.` in strings | `io.casehub.agency.` |
+| `application.properties` | `casehub-blocks` in index-dependency | `casehub-agency` |
+| CLAUDE.md peer lists | `blocks` | `agency` |
+
+**In the parent/platform repo:**
+
+| Category | File |
+|----------|------|
+| Build module lists | `build/modules-core.csv`, `modules-applications.csv` |
+| Artifact-repo map | `build/artifact-repo-map.csv` |
+| Build script | `build-all.sh` |
+| CI workflows | `.github/workflows/build-all.yml`, `dependency-graph.yml`, `dashboard.yml`, `pr-dashboard.yml` |
+| Python scripts | `scripts/generate-dependency-graph.py`, `guide-sync-config.json` |
+| Docs | `docs/` — 200+ refs across guides, indexes, specs |
+
+**Infrastructure (post-code-rename):**
+
+| What | How |
+|------|-----|
+| GitHub org repo | `gh repo rename casehub-agency --repo casehubio/blocks --yes` |
+| GitHub fork | `gh repo rename casehub-agency --repo mdproctor/blocks --yes` |
+| Local canonical clone | `mv ~/claude/casehub/blocks ~/claude/casehub/casehub-agency` |
+| `.claude/projects/` history | `mv` the project dir to match new path |
+| Remote URLs | `git remote set-url origin/upstream` in canonical |
+| Git alternates | Update `.git/objects/info/alternates` in ALL slot clones |
+| Slot `local` remotes | `git remote set-url local` to new canonical path |
+| Feature branches | Rebase all active branches onto main after rename lands |
+
+### Execution order (do not skip or reorder)
+
+**Phase 1 — Primary repo rename**
+
+1. Create issue and branch
+2. **Maven coordinates** — rename all artifactIds in all 26 pom.xml files. Use IntelliJ refactoring or Edit with replace_all. Pattern: `casehub-blocks-` → `casehub-agency-` (but keep `casehub-blocks-parent` → `casehub-agency-parent`)
+3. **Java package directories** — `git mv` every `src/main/java/io/casehub/blocks` to `src/main/java/io/casehub/agency`, same for `src/test/java/`. This is 26 modules × 2 (main + test)
+4. **Java package declarations + imports** — replace `io.casehub.blocks` with `io.casehub.agency` in every .java file. IntelliJ's `ide_refactor_rename` on the package is ideal but may need manual follow-up
+5. **String literals** — grep for `io.casehub.blocks` in string literals (CDI qualifiers, Quarkus config keys, test assertions). Replace with `io.casehub.agency`
+6. **COMPREHENSIVE GREP** — verify zero `casehub-blocks` and zero `io.casehub.blocks` remain
+7. **Build** — `mvn install` must pass. Fix any compilation errors
+8. **Commit**
+
+**Phase 2 — Downstream consumer repos**
+
+9. For EACH consumer repo: update pom.xml deps, Java imports, application.properties, CLAUDE.md
+10. **COMPREHENSIVE GREP** per repo after changes
+11. **Commit** each repo separately
+
+**Phase 3 — Parent/platform repo**
+
+12. Update build CSVs, build-all.sh, CI workflows, Python scripts, docs
+13. **COMPREHENSIVE GREP** on parent
+14. **Commit**
+
+**Phase 4 — Infrastructure**
+
+15. Push all repos through: slot → canonical → mdproctor → casehubio
+16. Rename GitHub repos
+17. Update remote URLs, alternates, `.claude` history
+18. Rebase any active feature branches
+
+**Phase 5 — Final verification**
+
+19. **COMPREHENSIVE GREP** across ALL repos in the slot for any remaining `casehub-blocks` or `io.casehub.blocks`
+20. Categorise findings as MUST FIX vs COSMETIC
+21. Fix all MUST FIX
+22. Another grep until clean
+
+### Gotchas from the mosaic rename
+
+1. **IntelliJ search results paginate** — always use `pageSize: 500` and follow `nextCursor`. The mosaic rename missed 180 of 380 results because only the first page was processed.
+
+2. **Search scope pollution** — IntelliJ workspace searches return results from ALL repos. Filter by file path to the target repo.
+
+3. **`ide_replace_text_in_file` can silently fail** — always verify with a post-replace grep.
+
+4. **Dependencies sections are separate from name fields** — renaming `name` in package.json does NOT rename dependency entries in other packages. For Java, renaming `<artifactId>` in one pom.xml does NOT rename the `<artifactId>` in another pom.xml's `<dependency>` section.
+
+5. **Version properties** — consumer pom.xml files may have `<version.blocks>` properties. Rename these too.
+
+6. **application.properties** — Quarkus index-dependency config uses the artifact name: `quarkus.index-dependency.casehub-blocks.artifact-id=casehub-blocks`. Both the key suffix AND the value need renaming.
+
+7. **Comments and Javadoc** — grep catches these. Fix the functional ones (config examples, usage instructions). Historical comments can stay.
+
+8. **Build order matters** — install the renamed blocks (agency) to local Maven repo BEFORE compiling consumers: `mvn install -DskipTests`. Otherwise consumers can't resolve the new artifact.
+
+9. **esbuild.config.mjs and vite.config.ts** — if any consumer has JS/TS build configs referencing blocks Java artifacts (e.g. through WebJar paths), update those too.
+
+10. **The parent repo is operational infrastructure** — its build configs determine what CI builds. Stale refs here break the entire platform, not just one repo.
+
+11. **Push through the full chain** — slot → canonical local → mdproctor fork → casehubio org. Missing any link means another session sees stale code.
+
+12. **Feature branches on other repos** — any branch created before the rename will have old imports. Rebase them after landing.
+
+13. **Git alternates** — slot clones share objects with the canonical clone via absolute paths. Renaming the canonical clone breaks ALL slot clones until alternates are updated. There can be 30+ of these.
+
+### Consumer repos to update
+
+From the Consumers table in this file: drafthouse, engine, openclaw, aml, devtown, life, soc, clinical, iot, quarkmind, claudony
+
+### What NOT to rename
+
+- `@casehubio/mosaic-*` npm packages — those are the UI layer, already renamed, not related
+- `casehub-pages-*` — pages repo, not blocks
+- Historical blog entries, specs, plans — they reference the name as it was at time of writing
+- The slot directory name (e.g. `slots/217/blocks`) — optional, doesn't affect builds
+
 ## Repository Role
 
 Reusable building blocks for CaseHub applications — composed from qhorus, engine, and work primitives. Foundation-adjacent library (sits between foundation and application tier). Single module, single artifact: `casehub-blocks`.
