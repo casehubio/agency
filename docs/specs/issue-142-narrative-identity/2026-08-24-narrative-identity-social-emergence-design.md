@@ -1,6 +1,6 @@
 # Narrative Identity + Social Emergence — Design Spec
 
-**Issue:** casehubio/blocks#142
+**Issue:** casehubio/agency#142
 **Date:** 2026-08-24
 **Branch:** issue-142-narrative-identity
 **Repos:** blocks (primary), engine-api (GoalPriorityEscalationPolicy)

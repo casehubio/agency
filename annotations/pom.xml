@@ -12,7 +12,7 @@
 
     <artifactId>casehub-agency-annotations-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Case Hub :: Blocks Annotations</name>
+    <name>Case Hub :: Agency Annotations</name>
 
     <modules>
         <module>runtime</module>

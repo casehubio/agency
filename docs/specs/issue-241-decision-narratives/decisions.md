@@ -56,7 +56,7 @@
 - Heterogeneous input with multiple `EventStreamBus` sources merged — loses type safety, summariser receives untyped payloads
 **Rationale:** `sealed interface DecisionSignal` with variants: `RoutingDecision`, `CbrRetrieval`, `TrustAssessment`, `DeliberationOutcome`, `StepOutcome`. Each is a record carrying relevant data from its platform source. Flows as `LevelEvent<DecisionSignal>` into the pipeline. `NarrativeSignalStrategy` SPI produces these events from platform sources — domain repos (fsitrading) implement it. Exhaustive `switch` matching in the summariser.
 **Trade-offs:** All signal types must implement `DecisionSignal` — new signal sources require adding a permit to the sealed interface. But sealed hierarchies are the project's standard pattern for this.
-**Sources:** casehubio/blocks#241 (issue body — listed 5 fragment types, reinterpreted as signal types), `NarrativeFragment.java` (existing sealed pattern)
+**Sources:** casehubio/agency#241 (issue body — listed 5 fragment types, reinterpreted as signal types), `NarrativeFragment.java` (existing sealed pattern)
 **Exploration:** quick
 **Status:** captured
 

@@ -5,7 +5,7 @@ date: 2026-07-11
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-mosaic]
 tags: [data-pipeline, typeddataset, architecture]
 series: issue-49-typeddataset-native
 ---

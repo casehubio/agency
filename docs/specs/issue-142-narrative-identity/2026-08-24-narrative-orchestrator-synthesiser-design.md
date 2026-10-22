@@ -1,6 +1,6 @@
 # NarrativeOrchestrator + NarrativeSynthesiser — Implementation Spec
 
-**Issue:** casehubio/blocks#143
+**Issue:** casehubio/agency#143
 **Date:** 2026-08-24
 **Branch:** issue-142-narrative-identity
 **Parent spec:** 2026-08-24-narrative-identity-social-emergence-design.md (#142)

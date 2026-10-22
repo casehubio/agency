@@ -1,6 +1,6 @@
 # TTS Model Filename Auto-Detection
 
-**Issue:** casehubio/blocks#177
+**Issue:** casehubio/agency#177
 **Scale:** XS | **Complexity:** Low
 **Date:** 2026-08-26
 

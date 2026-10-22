@@ -1,6 +1,6 @@
 # Execution Infrastructure — YAML Surface
 
-**Issue:** casehubio/blocks#251
+**Issue:** casehubio/agency#251
 **Date:** 2026-09-11
 **Scope:** 6 capabilities from coverage matrix §18 → spec records, registries
 

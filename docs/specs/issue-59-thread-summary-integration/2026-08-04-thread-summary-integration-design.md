@@ -3,7 +3,7 @@
 Live `ContentSummariser<Message>` output driving per-thread summaries in qhorus,
 triggered by terminal messages on correlated threads.
 
-**Issue:** casehubio/blocks#59
+**Issue:** casehubio/agency#59
 **Cross-ref:** casehubio/qhorus#TBD (thread summary storage)
 **Branch:** `issue-59-thread-summary-integration`
 

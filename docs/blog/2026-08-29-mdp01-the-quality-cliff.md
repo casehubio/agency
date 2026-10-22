@@ -5,7 +5,7 @@ date: 2026-08-29
 entry_type: note
 subtype: diary
 series: issue-213-fish-speech-tts
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [tts, onnx, audio8, quality, cosyvoice, streaming, lip-sync, avatar]
 ---
 

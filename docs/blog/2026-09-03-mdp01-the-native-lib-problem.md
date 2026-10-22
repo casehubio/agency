@@ -4,7 +4,7 @@ title: "The Native Lib Problem Is a Distribution Problem"
 date: 2026-09-03
 entry_type: article
 subtype: diary
-projects: [casehubio/blocks-ui, casehubio/blocks]
+projects: [casehubio/agency-ui, casehubio/agency]
 tags: [speech, sherpa-onnx, maven, native-libs, ffm, distribution, zero-install]
 series: issue-190-speech-denoising
 ---

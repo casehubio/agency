@@ -10,7 +10,7 @@ tags: [orchestration, unification, shared-types]
 series: issue-52-shared-orchestration-types
 ---
 
-*Part of a series on [#44 — agentic planning architecture](https://github.com/casehubio/blocks/issues/44). Previous: [The Type System as Architecture Document](2026-07-10-mdp01-type-system-as-architecture.md).*
+*Part of a series on [#44 — agentic planning architecture](https://github.com/casehubio/agency/issues/44). Previous: [The Type System as Architecture Document](2026-07-10-mdp01-type-system-as-architecture.md).*
 
 ## What Landed
 

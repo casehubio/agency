@@ -4,7 +4,7 @@ title: "The Race the Review Caught"
 date: 2026-08-26
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [speech, threading, ffm, sherpa-onnx, design-review]
 series: issue-194-talking-avatar-tier1
 ---

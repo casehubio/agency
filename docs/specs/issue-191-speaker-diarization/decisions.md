@@ -6,7 +6,7 @@
 - Diarization engine only — produces segments without transcription. Defers value.
 **Rationale:** "Speaker awareness" is one capability from the user's perspective. The shared foundation (campplus model, provisioning, SPI design) means splitting creates rework at the seam. Both features target the same branch and developer — no benefit from independent delivery.
 **Trade-offs:** XL/High scope, but decomposes into independent batches (shared foundation → offline diarization → real-time speaker ID + avatar integration).
-**Sources:** casehubio/blocks#191, casehubio/blocks#211, user: "think about how a family interacts"
+**Sources:** casehubio/agency#191, casehubio/agency#211, user: "think about how a family interacts"
 **Exploration:** quick → reviewer revised → user override (first-principles analysis: shared foundation, single developer, primary use case requires both)
 **Status:** captured (user override of reviewer revision)
 

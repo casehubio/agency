@@ -1,6 +1,6 @@
 # DriveProfile Prompt Enrichment — Design Spec
 
-**Issue:** casehubio/blocks#149
+**Issue:** casehubio/agency#149
 **Date:** 2026-08-22
 **Branch:** issue-149-drive-prompt-enrichment
 **Repos:** blocks (primary)

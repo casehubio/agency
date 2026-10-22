@@ -1,9 +1,9 @@
 # Auto-Download Provisioner — Native Library + Model
 
-> **Issue:** casehubio/blocks#175
+> **Issue:** casehubio/agency#175
 > **Date:** 2026-08-26
 > **Status:** Design
-> **Parent:** casehubio/blocks#194 (Talking Avatar Tier 1), casehubio/blocks#174 (Zero-Install Speech)
+> **Parent:** casehubio/agency#194 (Talking Avatar Tier 1), casehubio/agency#174 (Zero-Install Speech)
 
 ## 1. Problem Statement
 
@@ -248,8 +248,8 @@ Unit tests mock the HTTP client. Integration tests (CI-only, `@EnabledIf`) test 
 - [GE-20260826-3608ec] — JNI vs C API library gotcha
 - [GE-20260630-e18bed] — streaming download pattern
 - [GE-20260420-b9c06c] — Java stdlib doesn't support bzip2
-- [casehubio/blocks#174] — parent epic (Zero-Install Speech)
-- [casehubio/blocks#194] — Tier 1 epic (Talking Avatar)
+- [casehubio/agency#174] — parent epic (Zero-Install Speech)
+- [casehubio/agency#194] — Tier 1 epic (Talking Avatar)
 - Decision review R1-10 — SPI contract violation (moved provisioning out of transcribe())
 - Decision review R1-14, R1-15 — FileLock + atomic sibling rename (replaced marker file)
 - Decision review R1-18 — SHA-256 checksum verification

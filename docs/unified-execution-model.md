@@ -12,6 +12,6 @@ model catalogue, AI pattern walkthroughs, and type boundary design — is in the
 engine spec.
 
 **Companion documents (blocks-specific):**
-- Migration spec: casehubio/blocks#60
+- Migration spec: casehubio/agency#60
 - Execution backend architecture: [docs/execution-backend-architecture.md](execution-backend-architecture.md)
 - Agentic orchestration research: [docs/agentic-orchestration-research.md](agentic-orchestration-research.md)

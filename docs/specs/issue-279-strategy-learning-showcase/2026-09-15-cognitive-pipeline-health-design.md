@@ -1,6 +1,6 @@
 # Cognitive Pipeline Health — Design Spec
 
-**Issue:** casehubio/blocks#279 (broadened from strategy learning to full pipeline audit)
+**Issue:** casehubio/agency#279 (broadened from strategy learning to full pipeline audit)
 **Date:** 2026-09-15
 **Scope:** Fix all "wired but not flowing" gaps across 8 cognitive orchestrators, add LLM proof tests
 

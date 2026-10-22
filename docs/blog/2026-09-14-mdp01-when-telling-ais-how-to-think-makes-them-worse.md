@@ -4,7 +4,7 @@ title: "When Telling AIs How to Think Makes Them Worse"
 date: 2026-09-14
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [cognition, llm, measurement, neurocortex, social-cognition, prompt-engineering]
 series: issue-261-measurement-driven-cognition
 ---

@@ -1,9 +1,9 @@
 # Avatar Web Component — Tier 1 Design
 
-> **Issue:** casehubio/blocks#195
+> **Issue:** casehubio/agency#195
 > **Date:** 2026-08-27
 > **Status:** Design
-> **Parent:** casehubio/blocks#194 (Critical Path: Talking Avatar with Personality)
+> **Parent:** casehubio/agency#194 (Critical Path: Talking Avatar with Personality)
 
 ## 1. Problem Statement
 

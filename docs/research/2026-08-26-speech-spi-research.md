@@ -1,7 +1,7 @@
 # Speech SPI Research — Comprehensive Findings
 
 > **Date:** 2026-08-25/26
-> **Issues:** casehubio/blocks#155 (restructuring), casehubio/blocks#157 (implementation)
+> **Issues:** casehubio/agency#155 (restructuring), casehubio/agency#157 (implementation)
 > **Branch:** `issue-155-multi-module-restructure`
 > **Driven by:** casehubio/drafthouse#117 (voice-first drafting mode)
 
@@ -301,7 +301,7 @@ TTS: 587ms, STT: 353ms — perfect round-trip match.
 ### Phoneme timing
 
 `SynthesisResult.phonemes()` returns `List<PhonemeTiming>` with per-phoneme start/end
-millisecond offsets. Critical for downstream avatar lip-sync (casehubio/blocks#154).
+millisecond offsets. Critical for downstream avatar lip-sync (casehubio/agency#154).
 Currently returns empty list — sherpa-onnx's `SherpaOnnxGeneratedAudio` struct doesn't
 include phoneme data directly. Phoneme extraction requires a separate API or model-specific
 post-processing.
@@ -708,7 +708,7 @@ Models are separate from the native library (39MB–1.5GB). Options:
 
 6. **Phoneme timing from TTS** — The `PhonemeTiming` type exists but returns empty.
    Need to investigate sherpa-onnx's VITS phoneme output or use a separate alignment model.
-   Critical for avatar lip-sync (casehubio/blocks#154).
+   Critical for avatar lip-sync (casehubio/agency#154).
 
 ### Medium-term
 

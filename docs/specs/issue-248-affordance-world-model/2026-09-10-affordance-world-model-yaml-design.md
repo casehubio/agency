@@ -1,6 +1,6 @@
 # Affordance / World Model — YAML Surface
 
-**Issue:** casehubio/blocks#248
+**Issue:** casehubio/agency#248
 **Date:** 2026-09-10
 **Scope:** 8 capabilities from coverage matrix §15 → spec records + compiler + deployment processor
 

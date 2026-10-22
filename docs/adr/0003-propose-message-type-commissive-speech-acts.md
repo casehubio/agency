@@ -59,6 +59,6 @@ Chosen option: **Option A (PROPOSE)**, because it completes qhorus's FIPA speech
 ## Links
 
 * [casehubio/qhorus#395](https://github.com/casehubio/qhorus/issues/395) — PROPOSE implementation
-* [casehubio/blocks#104](https://github.com/casehubio/blocks/issues/104) — Negotiation protocol (consuming use case)
+* [casehubio/agency#104](https://github.com/casehubio/agency/issues/104) — Negotiation protocol (consuming use case)
 * [FIPA Propose IP (SC00036)](http://www.fipa.org/specs/fipa00036/SC00036H.html)
 * [FIPA Communicative Act Library (SC00037)](https://www.fipa.org/specs/fipa00037/SC00037J.html)

@@ -3,7 +3,7 @@
 **Date:** 2026-07-07
 **Issues:** #27 (extraction), #38 (domain-agnostic examples)
 **Status:** Draft
-**Repo:** casehubio/blocks
+**Repo:** casehubio/agency
 
 ## Problem
 
@@ -410,12 +410,12 @@ with tests run between.
 
 ## Related issues
 
-- [#40](https://github.com/casehubio/blocks/issues/40) — qhorus channel
+- [#40](https://github.com/casehubio/agency/issues/40) — qhorus channel
   integration for summarisation (bidirectional bridge). The summarisation
   hierarchy maps naturally to qhorus's Space -> Channel -> Topic -> Thread
   hierarchy. Correlation chains map to episodes, topics map to phases,
   channels carry the event stream. Should develop in parallel with qhorus#328.
-- [#41](https://github.com/casehubio/blocks/issues/41) — generalised
+- [#41](https://github.com/casehubio/agency/issues/41) — generalised
   summarisation pipeline viewer. Concept mockup at
   `docs/assets/summarisation-viewer-concept.svg`.
 

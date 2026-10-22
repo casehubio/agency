@@ -1,6 +1,6 @@
 # Channel Infrastructure — YAML Surface
 
-**Issue:** casehubio/blocks#249
+**Issue:** casehubio/agency#249
 **Date:** 2026-09-11
 **Scope:** 12 capabilities across §4 (Conversation), §5 (Negotiation), §16 (Channel) → spec records, compilers, termination type extensions
 

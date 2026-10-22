@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-08-14
-**Issue:** casehubio/blocks#97
+**Issue:** casehubio/agency#97
 
 ## Context
 

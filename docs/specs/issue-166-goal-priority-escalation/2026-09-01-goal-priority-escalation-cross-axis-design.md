@@ -1,6 +1,6 @@
 # Goal Priority Escalation + Cross-Axis Composition — Design Spec
 
-**Issues:** casehubio/blocks#166, #160, #159
+**Issues:** casehubio/agency#166, #160, #159
 **Date:** 2026-09-01
 **Branch:** issue-166-goal-priority-escalation
 **Repos:** blocks (primary), engine (DefaultGoalFormationService guard)

@@ -1,6 +1,6 @@
 # Cognition Scheduler SPI — Design Spec
 
-**Issue:** casehubio/blocks#161
+**Issue:** casehubio/agency#161
 **Date:** 2026-09-16
 **Branch:** issue-161-innerlife-scheduler-spi
 

@@ -1,6 +1,6 @@
 # Type-safe Expression Compilation for YAML Predicates
 
-**Issue:** casehubio/blocks#242
+**Issue:** casehubio/agency#242
 **Date:** 2026-09-10
 **Scope:** Layer 1 — per-site compilation with `Class<?>`. Layer 2 (yaml-core descriptor model) deferred.
 

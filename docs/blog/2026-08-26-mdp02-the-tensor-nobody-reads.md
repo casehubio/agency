@@ -4,7 +4,7 @@ title: "The Tensor Nobody Reads"
 date: 2026-08-26
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [speech, tts, phoneme-timing, onnx, ffm, gector]
 series: issue-194-talking-avatar-tier1
 ---

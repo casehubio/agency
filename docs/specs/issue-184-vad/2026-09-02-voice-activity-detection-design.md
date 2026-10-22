@@ -1,6 +1,6 @@
 # Voice Activity Detection (VAD) Pre-filtering Design
 
-> **Issue:** casehubio/blocks#184
+> **Issue:** casehubio/agency#184
 > **Date:** 2026-09-02
 > **Status:** Design
 > **Scope:** `speech-api` (SPI) + `speech-sherpa` (FFM implementation)

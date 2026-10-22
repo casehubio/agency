@@ -1,6 +1,6 @@
 # Design: GECToR Grammar Correction TextFilter
 
-**Issue:** casehubio/blocks#179 (epic: #178)
+**Issue:** casehubio/agency#179 (epic: #178)
 **Date:** 2026-08-26
 **Branch:** issue-194-talking-avatar-tier1
 

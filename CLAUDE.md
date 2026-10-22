@@ -700,7 +700,7 @@ This opens all 26 repos in a single IntelliJ window with full cross-project code
 When implementing consolidation work (epic #28), commits to peer repos (aml, devtown, life, etc.) on main are expected and approved. This is an exception to the normal "do not commit to peer repos" rule — consolidation by definition spans repos. Always:
 - Verify all affected repos are on main before starting
 - Install blocks to local Maven repo before compiling consumers (`mvn install -DskipTests`)
-- Commit each repo separately with meaningful messages tagged with the blocks issue (`Refs casehubio/blocks#N`)
+- Commit each repo separately with meaningful messages tagged with the blocks issue (`Refs casehubio/agency#N`)
 - Push all repos after all commits succeed
 
 ## Extraction Plan
@@ -740,5 +740,5 @@ After implementation: `implementation-doc-sync`
 ## Work Tracking
 
 Issue tracking: enabled
-GitHub repo: casehubio/blocks
+GitHub repo: casehubio/agency
 Changelog: GitHub Releases

@@ -4,7 +4,7 @@ Integrate the work-api progress model into the conversation rendering pipeline
 as a supplementary render-time input — the same pattern used for reactions,
 common ground, and convergence.
 
-**Issue:** casehubio/blocks#62
+**Issue:** casehubio/agency#62
 **Depends on:** casehubio/work#237 (progress model — shipped), blocks#49 (topic-aware conversation model — shipped)
 
 ---

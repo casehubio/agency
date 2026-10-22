@@ -6,7 +6,7 @@
 - Assembly-based packaging — non-standard classifier artifacts, poor IDE support
 **Rationale:** Clean separation, consumer adds one dependency, each JAR independently versioned. Matches Netty native transports pattern.
 **Trade-offs:** 5 new Maven modules (mechanical, identical structure)
-**Sources:** casehubio/blocks#176, Netty native transports pattern, SherpaLibrary.java loading tiers
+**Sources:** casehubio/agency#176, Netty native transports pattern, SherpaLibrary.java loading tiers
 **Exploration:** quick
 **Status:** captured
 

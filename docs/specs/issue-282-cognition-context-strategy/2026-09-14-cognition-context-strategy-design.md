@@ -1,6 +1,6 @@
 # CognitionContextStrategy — Situational Context Filtering for CognitionCore
 
-**Issue:** casehubio/blocks#282
+**Issue:** casehubio/agency#282
 **Date:** 2026-09-14
 **Scope:** 3 new SPIs + 1 record type, CognitionCore method signature changes, SocialAvatarCognition adapter updates
 
@@ -181,4 +181,4 @@ No other callers of CognitionCore exist in the codebase.
 - InteractionSignal.java (sealed interface — CustomSignal variant)
 - AvatarCognition.java (published SPI in speech-api — interface unchanged)
 - casehubio/examples#54 (wacky-manor — first consumer)
-- casehubio/blocks#280 (DefaultBean pattern precedent)
+- casehubio/agency#280 (DefaultBean pattern precedent)

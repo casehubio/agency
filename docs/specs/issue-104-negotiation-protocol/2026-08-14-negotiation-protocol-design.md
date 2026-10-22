@@ -1,6 +1,6 @@
 # Negotiation Channel Protocol — Design Spec
 
-**Issue:** casehubio/blocks#104
+**Issue:** casehubio/agency#104
 **Branch:** issue-105-pattern-gaps
 **Date:** 2026-08-14
 **Depends on:** casehubio/qhorus#395 (PROPOSE message type)

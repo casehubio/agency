@@ -4,7 +4,7 @@ title: "The Audio Pipeline Nobody Documents"
 date: 2026-09-02
 entry_type: article
 subtype: diary
-projects: [casehubio/blocks-ui, casehubio/blocks]
+projects: [casehubio/agency-ui, casehubio/agency]
 tags: [speech, sherpa-onnx, denoising, vad, ffm, pipeline, audio]
 series: issue-190-speech-denoising
 ---

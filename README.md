@@ -1,6 +1,6 @@
 # casehub-agency
 
-[![Build](https://github.com/casehubio/blocks/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/casehubio/blocks/actions/workflows/publish.yml)
+[![Build](https://github.com/casehubio/agency/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/casehubio/agency/actions/workflows/publish.yml)
 
 Reusable building blocks for CaseHub applications — composed from qhorus, engine, and work primitives.
 

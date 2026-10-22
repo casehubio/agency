@@ -193,7 +193,7 @@ Six composition patterns identified. Each wires together existing CaseHub capabi
 - Takata et al. — Spontaneous Emergence of Agent Individuality (2024)
 - LLMPTBench (NeurIPS 2025 Workshop) — warning: agentic frameworks exhibit exaggerated shifts
 
-**Issue:** casehubio/blocks#118
+**Issue:** casehubio/agency#118
 
 ### 2.8 Fold-In Mappings
 

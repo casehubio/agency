@@ -4,7 +4,7 @@ date: 2026-09-04
 author: mdp
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-mosaic]
 tags: [speech, testing, tdd, regression, pipeline, kokoro, playwright]
 ---
 

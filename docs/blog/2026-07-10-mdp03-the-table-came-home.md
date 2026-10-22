@@ -2,7 +2,7 @@
 title: "The Table Came Home"
 date: 2026-07-10
 projects:
-  - casehub-blocks-ui
+  - casehub-mosaic
   - casehub-pages
 branch: issue-48-migrate-data-table-to-pages
 tags: [architecture, migration, layering, web-components]

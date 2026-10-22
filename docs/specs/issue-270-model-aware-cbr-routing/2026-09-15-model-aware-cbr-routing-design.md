@@ -1,6 +1,6 @@
 # Model-Aware CBR Routing — Signal Provider Design
 
-**Issue:** casehubio/blocks#270
+**Issue:** casehubio/agency#270
 **Date:** 2026-09-15
 **Scope:** 1 new `RoutingSignalProvider` + 1 outcome weights SPI, engine prerequisite issue filed
 

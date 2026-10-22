@@ -1,6 +1,6 @@
 # TTS Pipeline Framework + CosyVoice3 Integration
 
-**Issue:** casehubio/blocks#217
+**Issue:** casehubio/agency#217
 **Date:** 2026-08-30
 **Status:** Draft
 

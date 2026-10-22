@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>casehub-agency-annotations</artifactId>
-    <name>Case Hub :: Blocks Annotations :: Runtime</name>
+    <name>Case Hub :: Agency Annotations :: Runtime</name>
     <description>Annotation-driven orchestration patterns and governance for CaseHub blocks</description>
 
     <dependencies>

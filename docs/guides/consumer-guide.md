@@ -2,7 +2,7 @@
 
 > Reusable building blocks for CaseHub applications -- LLM integration, agentic orchestration, structured conversations, trust routing, and temporal summarisation.
 
-**GitHub:** [casehubio/blocks](https://github.com/casehubio/blocks)
+**GitHub:** [casehubio/agency](https://github.com/casehubio/agency)
 **Tier:** Foundation-adjacent (between foundation and application)
 
 ---

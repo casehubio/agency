@@ -2,7 +2,7 @@
 
 Connect blocks' summarisation intelligence to qhorus's channel summary slot.
 
-**Issue:** casehubio/blocks#64
+**Issue:** casehubio/agency#64
 **Cross-ref:** casehubio/qhorus#359
 **Branch:** `issue-64-summary-update-hook`
 

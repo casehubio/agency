@@ -4,7 +4,7 @@ title: "The Voice Engine That Doesn't Export"
 date: 2026-08-28
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [tts, onnx, lip-sync, audio8, fish-speech, composable-pipeline]
 ---
 

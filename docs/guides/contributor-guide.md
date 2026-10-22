@@ -2,7 +2,7 @@
 
 > Internals, architecture, and extension points for platform builders working on casehub-agency itself.
 
-**GitHub:** [casehubio/blocks](https://github.com/casehubio/blocks)
+**GitHub:** [casehubio/agency](https://github.com/casehubio/agency)
 
 ---
 
@@ -347,7 +347,7 @@ Epic #28 tracks extraction of shared patterns from domain repos into blocks.
 
 ## Design Documents
 
-- [Agentic orchestration research](https://raw.githubusercontent.com/casehubio/blocks/main/docs/agentic-orchestration-research.md)
-- [Execution backend architecture](https://raw.githubusercontent.com/casehubio/blocks/main/docs/execution-backend-architecture.md)
-- [Unified execution model](https://raw.githubusercontent.com/casehubio/blocks/main/docs/unified-execution-model.md)
-- [Conversation projections vs chat logs](https://raw.githubusercontent.com/casehubio/blocks/main/docs/conversation-projections-vs-chat-logs.md)
+- [Agentic orchestration research](https://raw.githubusercontent.com/casehubio/agency/main/docs/agentic-orchestration-research.md)
+- [Execution backend architecture](https://raw.githubusercontent.com/casehubio/agency/main/docs/execution-backend-architecture.md)
+- [Unified execution model](https://raw.githubusercontent.com/casehubio/agency/main/docs/unified-execution-model.md)
+- [Conversation projections vs chat logs](https://raw.githubusercontent.com/casehubio/agency/main/docs/conversation-projections-vs-chat-logs.md)

@@ -1,6 +1,6 @@
 # Trust, Routing, Oversight — YAML Surface
 
-**Issue:** casehubio/blocks#252
+**Issue:** casehubio/agency#252
 **Date:** 2026-09-11
 **Scope:** 5 config-shaped types from coverage matrix §19–§20 → spec records, registries
 
@@ -313,4 +313,4 @@ already present.
 - GE-20260530-9cdfb5 — MapPreferences.get() null default (TrustRoutingPolicyKeys context)
 - GE-20260607-285229 — TrustRoutingPolicy breaking changes
 - specs/issue-251-execution-infrastructure/ — prior spec pattern reference
-- [GitHub #252](https://github.com/casehubio/blocks/issues/252)
+- [GitHub #252](https://github.com/casehubio/agency/issues/252)

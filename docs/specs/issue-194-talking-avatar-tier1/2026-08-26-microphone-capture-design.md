@@ -1,6 +1,6 @@
 # Live Microphone Capture → RecognitionStream
 
-**Issue:** casehubio/blocks#183
+**Issue:** casehubio/agency#183
 **Scale:** S | **Complexity:** Low
 **Date:** 2026-08-26
 
@@ -129,5 +129,5 @@ java ... SpeechCli listen <model-dir>
 - `SherpaOnnxStreamingSpeechToText.java:135-220` — existing SherpaRecognitionStream implementation
 - `SpeechCli.java:71-110` — stream command showing the chunking pattern
 - `WavReader.java` — existing PCM-to-float conversion
-- Issue casehubio/blocks#183
+- Issue casehubio/agency#183
 - D6 in decisions.md — API shape decision

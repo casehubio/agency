@@ -1,6 +1,6 @@
 # Speech Denoising Pre-processing Design
 
-> **Issue:** casehubio/blocks#190
+> **Issue:** casehubio/agency#190
 > **Date:** 2026-09-02
 > **Status:** Design
 > **Scope:** `speech-api` (SPI) + `speech-sherpa` (FFM implementation) + `speech-ws` (wiring)

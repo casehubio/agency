@@ -4,7 +4,7 @@ title: "The Build Extension That Trusts the Builder"
 date: 2026-08-23
 entry_type: article
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [annotations, quarkus, build-extension, jandex, architecture]
 series: issue-116-blocks-annotations
 ---

@@ -4,8 +4,8 @@ Post-fold derivation layer over `ConversationState` — epistemic fact
 classification and convergence signal detection as configurable pure
 functions, not fold extensions.
 
-**Issues:** casehubio/blocks#65 (common ground), casehubio/blocks#66 (convergence detection)
-**Related:** casehubio/blocks#49 (topic-aware conversation model), casehubio/qhorus#360 (common ground infra), casehubio/qhorus#364 (convergence infra)
+**Issues:** casehubio/agency#65 (common ground), casehubio/agency#66 (convergence detection)
+**Related:** casehubio/agency#49 (topic-aware conversation model), casehubio/qhorus#360 (common ground infra), casehubio/qhorus#364 (convergence infra)
 **Research:** [Common ground via mental imagery](https://arxiv.org/html/2604.21144), [Frame of Reference](https://arxiv.org/html/2601.09365v2), [Grounding gaps (NAACL 2024)](https://aclanthology.org/2024.naacl-long.348/), [MAST taxonomy](https://openreview.net/forum?id=wM521FqPvI)
 
 ---

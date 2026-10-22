@@ -1,6 +1,6 @@
 # Decision Narratives — Design Spec
 
-**Issue:** casehubio/blocks#241
+**Issue:** casehubio/agency#241
 **Date:** 2026-09-11
 **Branch:** issue-241-decision-narratives
 
@@ -856,5 +856,5 @@ pipeline end-to-end with `StepOutcome` signals.
 - `ClinicalPipelineTest.java` — multi-level pipeline precedent
 - `LogisticsPipelineTest.java` — second pipeline example precedent
 - GE-20260825-ba18b3 — polymorphic sealed hierarchy serialization to CBR
-- casehubio/blocks#259 — identity narrative retrofit (deferred SPIs)
+- casehubio/agency#259 — identity narrative retrofit (deferred SPIs)
 - decisions.md — D1–D10 architectural decisions

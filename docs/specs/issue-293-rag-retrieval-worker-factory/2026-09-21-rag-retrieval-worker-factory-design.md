@@ -1,6 +1,6 @@
 # RagRetrievalWorkerFactory — Design Spec
 
-**Issue:** casehubio/blocks#293
+**Issue:** casehubio/agency#293
 **Parent:** casehubio/neocortex#371
 **Date:** 2026-09-21
 

@@ -1,6 +1,6 @@
 # Hybrid Decomposition Strategy — Design Spec
 
-**Issue:** casehubio/blocks#45
+**Issue:** casehubio/agency#45
 **Parent:** #44 (agentic planning architecture epic)
 **Date:** 2026-07-13
 

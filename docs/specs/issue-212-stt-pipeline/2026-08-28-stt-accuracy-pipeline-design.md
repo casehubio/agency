@@ -1,6 +1,6 @@
 # Design: STT Accuracy Pipeline
 
-**Issue:** casehubio/blocks#212
+**Issue:** casehubio/agency#212
 **Date:** 2026-08-28
 **Branch:** (to be created)
 

@@ -223,7 +223,7 @@ scoped query function provides escape hatch for custom access patterns.
 
 Backward-compatible — NoOpSummaryUpdateHook unchanged.
 
-Refs casehubio/blocks#64"
+Refs casehubio/agency#64"
 ```
 
 ---
@@ -469,7 +469,7 @@ git -C /Users/mdproctor/claude/casehub/blocks commit -m "feat(#64): HeuristicCha
 Append-only structural summariser: participant names, message count,
 time span, topics. Zero LLM cost, deterministic, always available.
 
-Refs casehubio/blocks#64"
+Refs casehubio/agency#64"
 ```
 
 ---
@@ -789,7 +789,7 @@ Edit-mode by default — rewrites surrounding context when new messages
 change the picture. APPEND mode via config. Delegates to AgentProvider.
 Activates when AgentProvider is on the classpath.
 
-Refs casehubio/blocks#64"
+Refs casehubio/agency#64"
 ```
 
 ---
@@ -823,5 +823,5 @@ or create a new section:
 git -C /Users/mdproctor/claude/casehub/blocks add CLAUDE.md
 git -C /Users/mdproctor/claude/casehub/blocks commit -m "docs(#64): add channel.summary package to CLAUDE.md
 
-Refs casehubio/blocks#64"
+Refs casehubio/agency#64"
 ```

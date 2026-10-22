@@ -1,6 +1,6 @@
 # Gate Rejection Outcome Recording — Design Spec
 
-**Issue:** casehubio/blocks#36
+**Issue:** casehubio/agency#36
 **Date:** 2026-07-09
 **Status:** Approved
 
@@ -195,7 +195,7 @@ both to the constructor.
   uniformly against the worker's success rate: a worker whose actions
   consistently trigger gate rejection is not producing deployable outcomes,
   regardless of the reason. This is an intentional design choice — future
-  weighted outcome differentiation is tracked as casehubio/blocks#43
+  weighted outcome differentiation is tracked as casehubio/agency#43
 
 ## Repos and modules affected
 

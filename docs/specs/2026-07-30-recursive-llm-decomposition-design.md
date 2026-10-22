@@ -1,6 +1,6 @@
 # Recursive LLM Decomposition — Design Spec
 
-**Issue:** casehubio/blocks#54
+**Issue:** casehubio/agency#54
 **Date:** 2026-07-30
 **Branch:** issue-54-recursive-llm-decomposition
 

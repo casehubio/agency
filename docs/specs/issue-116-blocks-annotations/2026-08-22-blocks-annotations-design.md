@@ -3,8 +3,8 @@
 **Date:** 2026-08-22
 **Status:** Draft
 **Scope:** `casehub-agency-annotations` module — annotation-driven orchestration patterns and governance meta-annotations
-**Issue:** casehubio/blocks#116
-**Epic:** casehubio/blocks#115 (annotation-driven agent programming model)
+**Issue:** casehubio/agency#116
+**Epic:** casehubio/agency#115 (annotation-driven agent programming model)
 
 ## Motivation
 

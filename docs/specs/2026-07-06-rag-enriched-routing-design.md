@@ -1,6 +1,6 @@
 # RAG-Enriched Routing — Design Spec
 
-**Issue:** casehubio/blocks#16
+**Issue:** casehubio/agency#16
 **Branch:** `issue-016-rag-enriched-routing`
 **Date:** 2026-07-06
 

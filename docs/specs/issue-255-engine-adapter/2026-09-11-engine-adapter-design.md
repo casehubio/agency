@@ -1,6 +1,6 @@
 # Engine Adapter — YAML Surface for Engine-Hosted Patterns
 
-**Issue:** casehubio/blocks#255
+**Issue:** casehubio/agency#255
 **Date:** 2026-09-11
 **Scope:** 5 engine adapter types in coverage matrix §21, plus supporting CallerConfigSpec/QuorumConfigSpec
 
@@ -193,4 +193,4 @@ composes `CallerConfigRegistry` and `VerifierStrategyRegistry`.
 - `engine-api: EvidenceRequirement.java`, `EvidenceType.java` — direct reuse
 - `engine-api: QuorumConfig.java` — adapted (validation removed in spec)
 - `agentic-yaml: CandidateSetStrategySpec.java` — reused for candidate groups
-- [GitHub #255](https://github.com/casehubio/blocks/issues/255)
+- [GitHub #255](https://github.com/casehubio/agency/issues/255)

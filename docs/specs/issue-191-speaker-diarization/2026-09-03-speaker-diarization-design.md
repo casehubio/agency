@@ -1,6 +1,6 @@
 # Speaker Diarization & Identification — Design Spec
 
-**Issue:** casehubio/blocks#191 (Speaker diarization), casehubio/blocks#211 (Speaker identification/voiceprint) — merged
+**Issue:** casehubio/agency#191 (Speaker diarization), casehubio/agency#211 (Speaker identification/voiceprint) — merged
 **Date:** 2026-09-03
 **Scale:** XL / High
 

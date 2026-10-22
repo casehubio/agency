@@ -1,6 +1,6 @@
 # Social Cognition Configs — YAML Surface
 
-**Issue:** casehubio/blocks#247
+**Issue:** casehubio/agency#247
 **Date:** 2026-09-10
 **Scope:** 13 config records → YAML-expressible via spec records + compiler + deployment processor
 

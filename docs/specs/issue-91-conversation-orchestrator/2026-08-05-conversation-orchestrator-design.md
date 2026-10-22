@@ -1,6 +1,6 @@
 # ConversationOrchestrator Design
 
-Refs casehubio/blocks#91
+Refs casehubio/agency#91
 
 ## Context
 

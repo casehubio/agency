@@ -5,12 +5,12 @@ date: 2026-07-11
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-mosaic]
 tags: [data-pipeline, typeddataset, implementation]
 series: issue-49-typeddataset-native
 ---
 
-*Part of a series on [#49 — TypedDataSet native](https://github.com/casehubio/blocks-ui/issues/49). Previous: [Fetch Is Just Push](2026-07-11-mdp01-fetch-is-just-push.md).*
+*Part of a series on [#49 — TypedDataSet native](https://github.com/casehubio/agency-ui/issues/49). Previous: [Fetch Is Just Push](2026-07-11-mdp01-fetch-is-just-push.md).*
 
 ## The `as never` Dies
 

@@ -2,7 +2,7 @@
 
 The build broke and the error messages pointed at the wrong code.
 
-Every component in blocks-ui reported the same thing: `Module '"@casehubio/blocks-ui-core"' has no exported member 'WorkIdentity'`. The fix seemed obvious — update the imports. Except WorkIdentity was still exported. The re-export chain was intact. The barrel files were correct.
+Every component in blocks-ui reported the same thing: `Module '"@casehubio/mosaic-core"' has no exported member 'WorkIdentity'`. The fix seemed obvious — update the imports. Except WorkIdentity was still exported. The re-export chain was intact. The barrel files were correct.
 
 The actual problem was three levels upstream. `blocks-ui-core` itself wouldn't compile — `exactOptionalPropertyTypes` violations in `fetch-source.ts` and `data-source-mixin.ts` meant TypeScript couldn't generate declaration files. With project references, downstream packages read from `.d.ts` outputs, not source. No declarations, no exports. 343 errors, all pointing at consumers, none pointing at the producer.
 

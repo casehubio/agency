@@ -1,6 +1,6 @@
 # Speech SPIs — SpeechToTextService & TextToSpeechService
 
-> **Issues:** casehubio/blocks#155 (restructuring), casehubio/blocks#157 (implementation)
+> **Issues:** casehubio/agency#155 (restructuring), casehubio/agency#157 (implementation)
 > **Date:** 2026-08-23
 > **Status:** Design — pending implementation plan
 > **Driven by:** casehubio/drafthouse#117 (voice-first drafting mode)
@@ -71,6 +71,6 @@ Alternative implementations pluggable via CDI for external services (Deepgram, G
 ## References
 
 - casehubio/drafthouse#117 — driving use case (voice-first drafting)
-- casehubio/blocks#154 — avatar lip-sync (future TTS consumer)
-- casehubio/blocks#155 — multi-module restructuring
-- casehubio/blocks#157 — speech SPI implementation
+- casehubio/agency#154 — avatar lip-sync (future TTS consumer)
+- casehubio/agency#155 — multi-module restructuring
+- casehubio/agency#157 — speech SPI implementation

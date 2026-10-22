@@ -1,6 +1,6 @@
 # Data Table: Variable Row Heights + Column Resizing
 
-**Issues:** casehubio/blocks-ui#84, casehubio/blocks-ui#85
+**Issues:** casehubio/agency-ui#84, casehubio/agency-ui#85
 **Date:** 2026-07-28
 **Status:** Draft
 **Implementation target:** `@casehubio/pages-table` in casehub-pages
@@ -823,7 +823,7 @@ identical results when `rowHeight` is a number.
 
 ## Scope Exclusions
 
-Each exclusion will be filed as a GitHub issue on casehubio/blocks-ui, linking
+Each exclusion will be filed as a GitHub issue on casehubio/agency-ui, linking
 back to this spec for context.
 
 - **Keyboard-accessible resize (v1)** — resize is pointer-only. Keyboard resize

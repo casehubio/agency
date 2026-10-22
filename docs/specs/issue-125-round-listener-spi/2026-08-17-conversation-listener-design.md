@@ -1,6 +1,6 @@
 # ConversationListener — per-dispatch state callback
 
-**Issue:** casehubio/blocks#125
+**Issue:** casehubio/agency#125
 **Consumer:** casehubio/fsitrading#26 — deliberation convergence progress via WebSocket push
 
 ## Problem

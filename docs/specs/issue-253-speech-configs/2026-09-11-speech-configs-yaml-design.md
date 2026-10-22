@@ -1,6 +1,6 @@
 # Speech Configs — YAML Surface
 
-**Issue:** casehubio/blocks#253
+**Issue:** casehubio/agency#253
 **Date:** 2026-09-11
 **Scope:** 5 config-shaped records from coverage matrix §22–§24 → direct reuse + adapted specs
 
@@ -268,4 +268,4 @@ No discriminator overrides — no sealed interfaces in this issue.
 - `speech-sherpa: io.casehub.agency.speech.sherpa.Audio8Config`
 - GE-20260904-ebed3c — Kokoro v1.0 requires kokoro-lexicon field
 - specs/issue-252-trust-routing-oversight/ — prior spec pattern reference
-- [GitHub #253](https://github.com/casehubio/blocks/issues/253)
+- [GitHub #253](https://github.com/casehubio/agency/issues/253)

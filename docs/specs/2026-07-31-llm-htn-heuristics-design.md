@@ -1,6 +1,6 @@
 # LLM-Generated HTN Heuristics — Design Spec
 
-**Issue:** casehubio/blocks#47
+**Issue:** casehubio/agency#47
 **Date:** 2026-07-31
 **Branch:** issue-47-llm-htn-heuristics
 **Parent epic:** #44 (agentic planning architecture)
@@ -332,7 +332,7 @@ All tests are plain JUnit 5 with Mockito. No CDI container.
   requires a cross-repo engine-api change (`DecompositionMethod` is a record
   in casehub-engine-api). Auto-generated descriptions from strategy tree
   structure are sufficient for this feature's research scope. Tracked as
-  explicit design debt: casehubio/blocks#75
+  explicit design debt: casehubio/agency#75
 - **Global search (A\*/GBFS):** would be a separate `DecompositionStrategy`;
   greedy-with-backtracking captures most value (paper shows GBFS outperforms A\*)
 - **Beam search / parallel exploration:** future extension
@@ -341,4 +341,4 @@ All tests are plain JUnit 5 with Mockito. No CDI container.
 
 - [HTN Planning with LLM-Generated Heuristics](https://arxiv.org/html/2605.07707v1) (May 2026)
 - Research survey: `docs/research/2026-07-09-task-decomposition-and-agent-planning-landscape.md` §3.7, §6.4h
-- Parent epic: casehubio/blocks#44
+- Parent epic: casehubio/agency#44

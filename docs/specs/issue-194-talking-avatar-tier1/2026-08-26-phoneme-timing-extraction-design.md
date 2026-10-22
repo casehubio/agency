@@ -1,6 +1,6 @@
 # Design: Phoneme Timing Extraction from VITS TTS
 
-**Issue:** casehubio/blocks#186 (epic: #194)
+**Issue:** casehubio/agency#186 (epic: #194)
 **Date:** 2026-08-26
 **Branch:** issue-194-talking-avatar-tier1
 

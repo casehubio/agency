@@ -1,6 +1,6 @@
 # CognitiveAttentionMediator — Bridge Neocortex Attention Signals to CognitionCore
 
-**Issue:** casehubio/blocks#304
+**Issue:** casehubio/agency#304
 **Date:** 2026-09-27
 **Status:** Design complete
 

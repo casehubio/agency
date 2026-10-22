@@ -1,6 +1,6 @@
 # Summarisation Gaps — Keyed Grouping, Registration, CloudEvent Config
 
-**Issue:** casehubio/blocks#254
+**Issue:** casehubio/agency#254
 **Date:** 2026-09-11
 **Scope:** 6 gaps in existing summarisation-yaml surface — compiler completions + registration wiring
 
@@ -107,4 +107,4 @@ Consumer calls `start()`/`stop()` on the compiled pipeline.
 - `cloudevents: CloudEventIngestionAdapter.java`
 - `cloudevents: PipelineTickScheduler.java`
 - `summarisation-yaml: SourceDefinition.java`, `PipelineDefinition.java`
-- [GitHub #254](https://github.com/casehubio/blocks/issues/254)
+- [GitHub #254](https://github.com/casehubio/agency/issues/254)

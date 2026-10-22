@@ -1,6 +1,6 @@
 # Drive Architecture — Design Spec
 
-**Issue:** casehubio/blocks#129
+**Issue:** casehubio/agency#129
 **Date:** 2026-08-21
 **Branch:** issue-129-drive-architecture
 **Repos:** blocks (primary), eidos, neocortex

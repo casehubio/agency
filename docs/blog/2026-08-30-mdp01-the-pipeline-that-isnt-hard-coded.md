@@ -4,7 +4,7 @@ title: "The Pipeline That Isn't Hard-Coded"
 date: 2026-08-30
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [speech, tts, onnx, cosyvoice, pipeline-framework]
 ---
 

@@ -5,7 +5,7 @@ date: 2026-08-23
 series: issue-136-autonomous-goal-generation
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks, casehubio/engine]
+projects: [casehubio/agency, casehubio/engine]
 tags: [autonomous-intelligence, goal-formation, compositor-pattern, drive-architecture]
 ---
 

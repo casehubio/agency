@@ -1,6 +1,6 @@
 # Normative Conflict Resolution — Design Spec
 
-**Issue:** casehubio/blocks#107
+**Issue:** casehubio/agency#107
 **Branch:** issue-105-pattern-gaps
 **Date:** 2026-08-14
 

@@ -1,6 +1,6 @@
 # Prompt Optimisation — YAML Surface
 
-**Issue:** casehubio/blocks#250
+**Issue:** casehubio/agency#250
 **Date:** 2026-09-11
 **Scope:** 8 capabilities from coverage matrix §17 → spec records, registries, compiler, deployment processor extension
 

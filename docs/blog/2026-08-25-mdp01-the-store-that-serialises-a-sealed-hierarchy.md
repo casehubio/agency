@@ -4,7 +4,7 @@ title: "The Store That Serialises a Sealed Hierarchy"
 date: 2026-08-25
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [narrative-identity, cbr, social-emergence, drive-modulation]
 series: issue-142-narrative-identity
 ---

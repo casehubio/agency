@@ -1,6 +1,6 @@
 # Structured RoutingFeatureExtractor for Domain-Specific Routing
 
-**Issue:** casehubio/blocks#33
+**Issue:** casehubio/agency#33
 **Parent:** #16 (RAG-enriched routing)
 **Date:** 2026-07-06
 
@@ -149,6 +149,6 @@ component contributes zero for historical cases.
   weight for all features). Adding domain-specific weights requires extending the
   `RoutingFeatureExtractor` SPI (e.g., `extractWeights()`) or adding weight
   configuration to the strategy. This is deferred, not trivially available
-  (casehubio/blocks#37).
+  (casehubio/agency#37).
 - No changes to the `RoutingFeatureExtractor` SPI itself
 - No extractors for devtown or life (can follow the same pattern when needed)

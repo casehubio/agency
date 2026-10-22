@@ -4,7 +4,7 @@ title: "The Agent That Speaks"
 date: 2026-08-26
 entry_type: article
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [speech, ffm, panama, personality, social-cognition, sherpa-onnx, streaming]
 ---
 

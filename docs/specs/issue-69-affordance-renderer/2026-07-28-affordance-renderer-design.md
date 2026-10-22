@@ -1,6 +1,6 @@
 # AffordanceRenderer — Grounded Observation Rendering for LLM Agents
 
-**Issue:** casehubio/blocks#69
+**Issue:** casehubio/agency#69
 **Date:** 2026-07-28
 **Status:** Design
 

@@ -3,7 +3,7 @@
 **Date:** 2026-07-14
 **Issue:** #40
 **Status:** Draft
-**Repo:** casehubio/blocks
+**Repo:** casehubio/agency
 
 ## Problem
 

@@ -3,7 +3,7 @@
 **Date:** 2026-07-25
 **Issue:** #68
 **Status:** Draft
-**Repo:** casehubio/blocks
+**Repo:** casehubio/agency
 **Package:** `io.casehub.agency.perception.observation`
 
 ## Problem

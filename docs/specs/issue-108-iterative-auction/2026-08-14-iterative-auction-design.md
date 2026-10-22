@@ -1,6 +1,6 @@
 # Iterative Auction Protocol — Design Spec
 
-**Issue:** casehubio/blocks#108
+**Issue:** casehubio/agency#108
 **Branch:** issue-105-pattern-gaps
 **Date:** 2026-08-14
 

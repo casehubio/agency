@@ -1,6 +1,6 @@
 # Narrative Summarisation Retrofit — Design Spec
 
-**Issue:** casehubio/blocks#259
+**Issue:** casehubio/agency#259
 **Date:** 2026-09-12
 **Branch:** issue-259-narrative-summ-retrofit
 **Depends on:** #241 (decision narratives — landed)

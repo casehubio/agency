@@ -4,7 +4,7 @@ title: "The Group That Decides to Want"
 date: 2026-08-25
 entry_type: note
 subtype: diary
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [social-emergence, collective-goals, drive-alignment, group-identity, narrative-identity]
 series: issue-142-narrative-identity
 ---

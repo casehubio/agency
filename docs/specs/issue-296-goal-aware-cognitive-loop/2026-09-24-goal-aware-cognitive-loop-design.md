@@ -1,6 +1,6 @@
 # Design: Goal-Aware Cognitive Loop
 
-**Issue:** casehubio/blocks#296
+**Issue:** casehubio/agency#296
 **Date:** 2026-09-24
 **Repos:** blocks (primary), neocortex (supporting changes)
 **Decisions:** [decisions.md](decisions.md)

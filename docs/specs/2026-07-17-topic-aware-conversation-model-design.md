@@ -4,7 +4,7 @@ How the conversation projection becomes a structured workflow visualisation
 surface — topic-grouped, obligation-aware, reaction-decorated — and why
 this is fundamentally different from what everyone else is building.
 
-**Issue:** casehubio/blocks#49
+**Issue:** casehubio/agency#49
 **Related:** casehubio/work#237 (structured progress), casehubio/engine#84 (milestone/stage/goal alignment), blocks#62 (progress integration — deferred)
 
 ---

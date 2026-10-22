@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-10
 **Issue:** casehubio/engine#700
-**Related:** casehubio/engine#101 (LLM supervisor mode), casehubio/blocks#44 (agentic planning epic)
+**Related:** casehubio/engine#101 (LLM supervisor mode), casehubio/agency#44 (agentic planning epic)
 **Status:** Design reasoning. Captures the architectural argument for why
 unification is necessary and what the shared model should look like.
 
@@ -458,7 +458,7 @@ composes with blocks' typed patterns. The Context Bridge adapts between them.
 
 - [Engine#700](https://github.com/casehubio/engine/issues/700) — the tracking issue
 - [Engine#101](https://github.com/casehubio/engine/issues/101) — LLM supervisor mode (overlap)
-- [Blocks#44](https://github.com/casehubio/blocks/issues/44) — agentic planning epic
+- [Blocks#44](https://github.com/casehubio/agency/issues/44) — agentic planning epic
 - [Research landscape](docs/research/2026-07-09-task-decomposition-and-agent-planning-landscape.md) — framework survey
 - [Graph Harness](https://arxiv.org/html/2604.11378v1) — DAG plan model, plan versioning
 - [LLMCompiler](https://arxiv.org/abs/2312.04511) — parallel task execution via DAG

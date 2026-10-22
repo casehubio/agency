@@ -5,7 +5,7 @@ author: mdp
 entry_type: note
 subtype: diary
 series: issue-233-summarisation-yaml-surface
-projects: [casehubio/blocks]
+projects: [casehubio/agency]
 tags: [summarisation, unification, composition, api-design]
 ---
 

@@ -5,7 +5,7 @@ date: 2026-07-25
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-mosaic]
 series: issue-94-blocks-prefix-and-cleanup
 ---
 
@@ -32,4 +32,4 @@ The `<textarea>` and `<select>` in channel-input stayed native. Both already use
 
 The platform convention from casehub-pages#233: `pages-` for pages components, `blocks-` for blocks-ui. Two were already prefixed (`blocks-timeline`, `blocks-confirm-dialog`). The remaining 59 needed the `blocks-` prefix on their `@customElement` decorator, every HTML template reference, every querySelector in tests, and every HTMLElementTagNameMap entry. 136 files changed, and the replacement count was exactly symmetric — 697 insertions, 697 deletions.
 
-The safe replacement pattern: search for `'old-tag'` with surrounding quotes. Import paths like `@casehubio/blocks-ui-old-tag` contain the old tag name as a substring, but never bounded by single quotes at the tag boundary. The quotes act as a natural delimiter that prevents false positives on package names.
+The safe replacement pattern: search for `'old-tag'` with surrounding quotes. Import paths like `@casehubio/mosaic-old-tag` contain the old tag name as a substring, but never bounded by single quotes at the tag boundary. The quotes act as a natural delimiter that prevents false positives on package names.

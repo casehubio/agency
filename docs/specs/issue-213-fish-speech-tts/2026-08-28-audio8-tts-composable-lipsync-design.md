@@ -1,6 +1,6 @@
 # Audio8 TTS Integration + Composable Lip-Sync Pipeline
 
-**Issue:** casehubio/blocks#213
+**Issue:** casehubio/agency#213
 **Date:** 2026-08-28
 **Status:** Draft
 

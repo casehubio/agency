@@ -1,6 +1,6 @@
 # Autonomous Goal Generation — Design Spec
 
-**Issue:** casehubio/blocks#136
+**Issue:** casehubio/agency#136
 **Date:** 2026-08-23
 **Branch:** issue-136-autonomous-goal-generation
 **Repos:** blocks (primary), engine-api, engine runtime, eidos-api
