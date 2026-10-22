@@ -6,23 +6,23 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-summarisation-yaml</artifactId>
-  <name>casehub-blocks-summarisation-yaml</name>
+  <artifactId>casehub-agency-summarisation-yaml</artifactId>
+  <name>casehub-agency-summarisation-yaml</name>
   <description>YAML pipeline surface for summarisation — canonical model, compiler, built-in types</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-summarisation-api</artifactId>
+      <artifactId>casehub-agency-summarisation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-cloudevents</artifactId>
+      <artifactId>casehub-agency-cloudevents</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

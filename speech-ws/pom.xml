@@ -6,18 +6,18 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-speech-ws</artifactId>
-  <name>casehub-blocks-speech-ws</name>
+  <artifactId>casehub-agency-speech-ws</artifactId>
+  <name>casehub-agency-speech-ws</name>
   <description>WebSocket endpoint for real-time avatar speech pipeline</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-speech-api</artifactId>
+      <artifactId>casehub-agency-speech-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

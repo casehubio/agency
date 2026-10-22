@@ -6,18 +6,18 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-agentic-yaml-deployment</artifactId>
-  <name>casehub-blocks-agentic-yaml-deployment</name>
+  <artifactId>casehub-agency-agentic-yaml-deployment</artifactId>
+  <name>casehub-agency-agentic-yaml-deployment</name>
   <description>Quarkus deployment extension for agentic YAML — build-time discovery and validation</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-agentic-yaml</artifactId>
+      <artifactId>casehub-agency-agentic-yaml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

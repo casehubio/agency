@@ -5,18 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-parent</artifactId>
+        <artifactId>casehub-agency-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-engine-adapter-core</artifactId>
-    <name>Case Hub :: Blocks :: Engine Adapter Core</name>
+    <artifactId>casehub-agency-engine-adapter-core</artifactId>
+    <name>Case Hub :: Agency :: Engine Adapter Core</name>
     <description>Framework-neutral engine adapter POJOs — zero CDI, zero Spring</description>
 
     <dependencies>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks</artifactId>
+            <artifactId>casehub-agency</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

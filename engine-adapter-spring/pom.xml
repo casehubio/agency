@@ -6,19 +6,19 @@
 
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-parent</artifactId>
+        <artifactId>casehub-agency-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-engine-adapter-spring</artifactId>
+    <artifactId>casehub-agency-engine-adapter-spring</artifactId>
     <packaging>jar</packaging>
-    <name>Case Hub :: Blocks :: Engine Adapter Spring</name>
+    <name>Case Hub :: Agency :: Engine Adapter Spring</name>
     <description>Spring Boot auto-configuration for engine adapter core beans.</description>
 
     <dependencies>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-engine-adapter-core</artifactId>
+            <artifactId>casehub-agency-engine-adapter-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

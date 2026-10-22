@@ -6,23 +6,23 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-speech-demo</artifactId>
-  <name>casehub-blocks-speech-demo</name>
+  <artifactId>casehub-agency-speech-demo</artifactId>
+  <name>casehub-agency-speech-demo</name>
   <description>Minimal demo for the avatar speech pipeline</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-speech-ws</artifactId>
+      <artifactId>casehub-agency-speech-ws</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-speech-sherpa</artifactId>
+      <artifactId>casehub-agency-speech-sherpa</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

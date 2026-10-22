@@ -6,17 +6,17 @@
 
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-annotations-parent</artifactId>
+        <artifactId>casehub-agency-annotations-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-annotations-deployment</artifactId>
+    <artifactId>casehub-agency-annotations-deployment</artifactId>
     <name>Case Hub :: Blocks Annotations :: Deployment</name>
 
     <dependencies>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-annotations</artifactId>
+            <artifactId>casehub-agency-annotations</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

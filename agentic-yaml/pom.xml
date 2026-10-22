@@ -6,18 +6,18 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-agentic-yaml</artifactId>
-  <name>casehub-blocks-agentic-yaml</name>
+  <artifactId>casehub-agency-agentic-yaml</artifactId>
+  <name>casehub-agency-agentic-yaml</name>
   <description>YAML surface for agentic orchestration patterns — spec records, registries, compiler</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks</artifactId>
+      <artifactId>casehub-agency</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -72,11 +72,11 @@
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-speech-api</artifactId>
+      <artifactId>casehub-agency-speech-api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- casehub-blocks-speech-sherpa: JDK 22+ only — see jdk22+ profile below -->
+    <!-- casehub-agency-speech-sherpa: JDK 22+ only — see jdk22+ profile below -->
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-api</artifactId>
@@ -91,7 +91,7 @@
     <!-- Test -->
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-summarisation-yaml</artifactId>
+      <artifactId>casehub-agency-summarisation-yaml</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -147,7 +147,7 @@
       <dependencies>
         <dependency>
           <groupId>io.casehub</groupId>
-          <artifactId>casehub-blocks-speech-sherpa</artifactId>
+          <artifactId>casehub-agency-speech-sherpa</artifactId>
           <version>${project.version}</version>
           <scope>provided</scope>
         </dependency>

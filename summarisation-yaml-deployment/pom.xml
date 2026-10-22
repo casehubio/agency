@@ -6,18 +6,18 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-summarisation-yaml-deployment</artifactId>
-  <name>casehub-blocks-summarisation-yaml-deployment</name>
+  <artifactId>casehub-agency-summarisation-yaml-deployment</artifactId>
+  <name>casehub-agency-summarisation-yaml-deployment</name>
   <description>Quarkus deployment module for summarisation YAML pipelines</description>
 
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-summarisation-yaml</artifactId>
+      <artifactId>casehub-agency-summarisation-yaml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -6,20 +6,20 @@
 
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-parent</artifactId>
+        <artifactId>casehub-agency-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-spring-integration-test</artifactId>
+    <artifactId>casehub-agency-spring-integration-test</artifactId>
     <packaging>jar</packaging>
-    <name>Case Hub :: Blocks :: Spring Integration Test</name>
+    <name>Case Hub :: Agency :: Spring Integration Test</name>
     <description>E2E verification that all blocks Spring modules compose
         into a working Spring Boot application.</description>
 
     <dependencies>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-spring</artifactId>
+            <artifactId>casehub-agency-spring</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-core</artifactId>
+            <artifactId>casehub-agency-core</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

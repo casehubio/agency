@@ -5,18 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-parent</artifactId>
+        <artifactId>casehub-agency-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-core</artifactId>
-    <name>Case Hub :: Blocks :: Core</name>
-    <description>Framework-neutral blocks POJOs — zero CDI, zero Spring</description>
+    <artifactId>casehub-agency-core</artifactId>
+    <name>Case Hub :: Agency :: Core</name>
+    <description>Framework-neutral agency POJOs — zero CDI, zero Spring</description>
 
     <dependencies>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-summarisation-api</artifactId>
+            <artifactId>casehub-agency-summarisation-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-blocks-speech-api</artifactId>
+            <artifactId>casehub-agency-speech-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

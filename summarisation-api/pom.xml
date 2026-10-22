@@ -6,12 +6,12 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-summarisation-api</artifactId>
-  <name>casehub-blocks-summarisation-api</name>
+  <artifactId>casehub-agency-summarisation-api</artifactId>
+  <name>casehub-agency-summarisation-api</name>
   <description>Pure-Java summarisation types — zero external dependencies</description>
 
   <dependencies>

@@ -10,7 +10,7 @@
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-parent</artifactId>
+  <artifactId>casehub-agency-parent</artifactId>
   <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -18,22 +18,22 @@
     <spring-boot.version>4.1.0</spring-boot.version>
   </properties>
 
-  <name>casehub-blocks-parent</name>
-  <description>Parent POM for CaseHub Blocks modules</description>
-  <url>https://github.com/casehubio/blocks</url>
+  <name>casehub-agency-parent</name>
+  <description>Parent POM for CaseHub Agency modules</description>
+  <url>https://github.com/casehubio/agency</url>
 
   <modules>
     <module>summarisation-api</module>
     <module>cloudevents</module>
     <module>summarisation-yaml</module>
     <module>summarisation-yaml-deployment</module>
-    <module>blocks-core</module>
-    <module>blocks</module>
+    <module>agency-core</module>
+    <module>agency</module>
     <module>agentic-yaml</module>
     <module>agentic-yaml-deployment</module>
     <module>engine-adapter-core</module>
     <module>engine-adapter</module>
-    <module>blocks-spring</module>
+    <module>agency-spring</module>
     <module>engine-adapter-spring</module>
     <module>spring-integration-test</module>
     <module>speech-api</module>
@@ -105,19 +105,19 @@
     <repository>
       <id>github</id>
       <name>casehubio GitHub Packages</name>
-      <url>https://maven.pkg.github.com/casehubio/blocks</url>
+      <url>https://maven.pkg.github.com/casehubio/agency</url>
     </repository>
     <snapshotRepository>
       <id>github</id>
       <name>casehubio GitHub Packages</name>
-      <url>https://maven.pkg.github.com/casehubio/blocks</url>
+      <url>https://maven.pkg.github.com/casehubio/agency</url>
     </snapshotRepository>
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:https://github.com/casehubio/blocks.git</connection>
-    <developerConnection>scm:git:https://github.com/casehubio/blocks.git</developerConnection>
-    <url>https://github.com/casehubio/blocks</url>
+    <connection>scm:git:https://github.com/casehubio/agency.git</connection>
+    <developerConnection>scm:git:https://github.com/casehubio/agency.git</developerConnection>
+    <url>https://github.com/casehubio/agency</url>
   </scm>
 
 

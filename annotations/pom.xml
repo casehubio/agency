@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>io.casehub</groupId>
-        <artifactId>casehub-blocks-parent</artifactId>
+        <artifactId>casehub-agency-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>casehub-blocks-annotations-parent</artifactId>
+    <artifactId>casehub-agency-annotations-parent</artifactId>
     <packaging>pom</packaging>
     <name>Case Hub :: Blocks Annotations</name>
 

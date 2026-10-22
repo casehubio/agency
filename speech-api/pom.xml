@@ -6,12 +6,12 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks-speech-api</artifactId>
-  <name>casehub-blocks-speech-api</name>
+  <artifactId>casehub-agency-speech-api</artifactId>
+  <name>casehub-agency-speech-api</name>
   <description>Speech capability SPIs — provider-agnostic STT and TTS interfaces</description>
 
   <!-- Pure Java — zero foundation dependencies, zero CDI/Quarkus -->

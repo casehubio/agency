@@ -6,28 +6,28 @@
 
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>casehub-blocks</artifactId>
+  <artifactId>casehub-agency</artifactId>
   <packaging>jar</packaging>
 
-  <name>casehub-blocks</name>
-  <description>Reusable building blocks for CaseHub applications</description>
+  <name>casehub-agency</name>
+  <description>Agency framework for CaseHub applications</description>
 
   <dependencies>
     <!-- Core POJOs — business logic lives here -->
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-core</artifactId>
+      <artifactId>casehub-agency-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <!-- Compile — summarisation API (extracted types) -->
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-summarisation-api</artifactId>
+      <artifactId>casehub-agency-summarisation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-speech-api</artifactId>
+      <artifactId>casehub-agency-speech-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
