@@ -262,17 +262,17 @@ public class BlocksBeans {
     @Produces
     @ApplicationScoped
     public MentalModelOrchestrator mentalModelOrchestrator(
-            MentalModelMemory modelMemory, AgentProvider agentProvider,
+            MentalModelMemory modelMemory,
             MentalModelConfig config) {
-        return new MentalModelOrchestrator(modelMemory, agentProvider, config);
+        return new MentalModelOrchestrator(modelMemory, config);
     }
 
     @Produces
     @ApplicationScoped
     public UserModelOrchestrator userModelOrchestrator(
-            UserProfileMemory profileMemory, AgentProvider agentProvider,
+            UserProfileMemory profileMemory,
             UserModelConfig config) {
-        return new UserModelOrchestrator(profileMemory, agentProvider, config);
+        return new UserModelOrchestrator(profileMemory, config);
     }
 
     @Produces
@@ -280,10 +280,10 @@ public class BlocksBeans {
     public StrategyLearningOrchestrator strategyLearningOrchestrator(
             StrategyMemory strategyMemory,
             ReflectionOrchestrator reflectionOrchestrator,
-            AgentProvider agentProvider, StrategyLearningConfig config) {
+            StrategyLearningConfig config) {
         return new StrategyLearningOrchestrator(
                 strategyMemory, reflectionOrchestrator,
-                agentProvider, config);
+                config);
     }
 
     @Produces
@@ -322,10 +322,10 @@ public class BlocksBeans {
     @Produces @ApplicationScoped
     public InnerLifeOrchestrator innerLifeOrchestrator(
             ReflectionOrchestrator reflectionOrchestrator,
-            AgentProvider agentProvider, InnerLifeConfig innerLifeConfig,
+            InnerLifeConfig innerLifeConfig,
             DriveOrchestrator driveOrchestrator) {
         return new InnerLifeOrchestrator(
-                reflectionOrchestrator, agentProvider,
+                reflectionOrchestrator,
                 listFrom(civilityConstraintInstance),
                 innerLifeConfig, driveOrchestrator);
     }
@@ -460,8 +460,8 @@ public class BlocksBeans {
 
     @Produces @ApplicationScoped
     public NarrativeContentSummariser narrativeContentSummariser(
-            AgentProvider agentProvider, NarrativeConfig config) {
-        return new NarrativeContentSummariser(agentProvider, config);
+            NarrativeConfig config) {
+        return new NarrativeContentSummariser(config);
     }
 
     @Produces
