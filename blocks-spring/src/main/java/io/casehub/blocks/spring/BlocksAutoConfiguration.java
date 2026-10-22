@@ -223,25 +223,25 @@ public class BlocksAutoConfiguration {
     @Bean
     public MentalModelOrchestrator mentalModelOrchestrator(
             io.casehub.neocortex.cognition.mentalmodel.MentalModelMemory modelMemory,
-            AgentProvider agentProvider, MentalModelConfig config) {
-        return new MentalModelOrchestrator(modelMemory, agentProvider, config);
+            MentalModelConfig config) {
+        return new MentalModelOrchestrator(modelMemory, config);
     }
 
     @Bean
     public UserModelOrchestrator userModelOrchestrator(
             io.casehub.neocortex.cognition.usermodel.UserProfileMemory profileMemory,
-            AgentProvider agentProvider, UserModelConfig config) {
-        return new UserModelOrchestrator(profileMemory, agentProvider, config);
+            UserModelConfig config) {
+        return new UserModelOrchestrator(profileMemory, config);
     }
 
     @Bean
     public StrategyLearningOrchestrator strategyLearningOrchestrator(
             io.casehub.neocortex.cognition.strategy.StrategyMemory strategyMemory,
             ReflectionOrchestrator reflectionOrchestrator,
-            AgentProvider agentProvider, StrategyLearningConfig config) {
+            StrategyLearningConfig config) {
         return new StrategyLearningOrchestrator(
                 strategyMemory, reflectionOrchestrator,
-                agentProvider, config);
+                config);
     }
 
     @Bean
@@ -283,12 +283,11 @@ public class BlocksAutoConfiguration {
     @Bean
     public InnerLifeOrchestrator innerLifeOrchestrator(
             ReflectionOrchestrator reflectionOrchestrator,
-            AgentProvider agentProvider,
             List<CivilityConstraint> civilityConstraints,
             InnerLifeConfig innerLifeConfig,
             DriveOrchestrator driveOrchestrator) {
         return new InnerLifeOrchestrator(
-                reflectionOrchestrator, agentProvider,
+                reflectionOrchestrator,
                 civilityConstraints, innerLifeConfig, driveOrchestrator);
     }
 
