@@ -4,7 +4,7 @@ date: 2026-07-10
 entry_type: note
 subtype: diary
 tags: [blocks-ui, datasource, architecture, lit]
-project: casehub-agency-ui
+project: casehub-blocks-ui
 issue: "#44"
 ---
 

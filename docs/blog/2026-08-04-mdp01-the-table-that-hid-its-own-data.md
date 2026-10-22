@@ -5,7 +5,7 @@ date: 2026-08-04
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-agency-ui]
+projects: [casehub-blocks-ui]
 tags: [work-item-inbox, pages-table, column-renderers]
 ---
 

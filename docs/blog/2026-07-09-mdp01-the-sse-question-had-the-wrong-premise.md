@@ -5,7 +5,7 @@ date: 2026-07-09
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-agency-ui]
+projects: [casehub-blocks-ui]
 tags: [datasource, sse, architecture, design-review, pages]
 ---
 

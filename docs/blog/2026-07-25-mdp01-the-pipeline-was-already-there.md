@@ -5,7 +5,7 @@ date: 2026-07-25
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-agency-ui]
+projects: [casehub-blocks-ui]
 series: issue-95-align-table-pipeline
 ---
 

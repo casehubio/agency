@@ -2,7 +2,7 @@
 title: "From YAML to Graph in One Session"
 date: 2026-08-03
 author: mdp
-project: casehub-agency-ui
+project: casehub-blocks-ui
 tags: [diagram-editor, graph, yaml, stencils, lit, react-flow]
 ---
 

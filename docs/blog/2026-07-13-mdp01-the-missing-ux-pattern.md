@@ -2,7 +2,7 @@
 title: "The Missing UX Pattern"
 date: 2026-07-13
 projects:
-  - casehub-agency-ui
+  - casehub-blocks-ui
   - casehub-pages
 tags: [design, ux, web-components, accessibility]
 ---
