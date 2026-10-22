@@ -252,15 +252,15 @@ All new code lives in the `speech-sherpa` module alongside existing TTS implemen
 
 | Class | Module | Package |
 |-------|--------|---------|
-| `PhonemeAligner` | speech-api | `io.casehub.blocks.speech` |
-| `LipSyncEnricher` | speech-api | `io.casehub.blocks.speech` |
-| `Audio8TextToSpeech` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `Audio8Tokenizer` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `DualARLoop` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `CodecDecoder` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `VoiceRegistry` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `Audio8Config` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
-| `EspeakPhonemeAligner` | speech-sherpa | `io.casehub.blocks.speech.sherpa` |
+| `PhonemeAligner` | speech-api | `io.casehub.agency.speech` |
+| `LipSyncEnricher` | speech-api | `io.casehub.agency.speech` |
+| `Audio8TextToSpeech` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `Audio8Tokenizer` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `DualARLoop` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `CodecDecoder` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `VoiceRegistry` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `Audio8Config` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
+| `EspeakPhonemeAligner` | speech-sherpa | `io.casehub.agency.speech.sherpa` |
 
 ## References
 

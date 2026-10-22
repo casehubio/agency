@@ -60,7 +60,7 @@
 
 ## D5: Package placement
 
-**Choice:** `io.casehub.blocks.agentic.channel` — alongside ChannelBinding, ChannelConfig, ChannelExecutionStrategy from #20. The observer is part of the channel infrastructure.
+**Choice:** `io.casehub.agency.agentic.channel` — alongside ChannelBinding, ChannelConfig, ChannelExecutionStrategy from #20. The observer is part of the channel infrastructure.
 **Alternatives:**
 - `agentic.model` — alongside EventSource/ChoreographedDriver. Observer implements EventSource but that's not its identity.
 - New `agentic.observation` sub-package — premature for one type.

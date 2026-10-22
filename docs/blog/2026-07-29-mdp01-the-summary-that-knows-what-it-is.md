@@ -4,7 +4,7 @@ subtype: diary
 title: "The summary that knows what it is"
 date: 2026-07-29
 author: mdp
-project: casehub-blocks
+project: casehub-agency
 tags: [summarisation, channel-summary, architecture, qhorus, content-summariser]
 status: draft
 ---

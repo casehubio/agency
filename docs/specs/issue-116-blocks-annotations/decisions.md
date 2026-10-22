@@ -2,7 +2,7 @@
 
 ## D1: LC4j annotation relationship for blocks-annotations
 
-**Choice:** Own all 8 orchestration pattern annotations (`@Supervisor`, `@Sequence`, `@Parallel`, `@Loop`, `@Conditional`, `@Debate`, `@Voting`, `@Htn`) in CaseHub's `io.casehub.blocks.annotations` package. No `langchain4j-agentic` annotation dependency. LC4j agents are integrated as first-class CaseHub workers at runtime, not at the annotation layer.
+**Choice:** Own all 8 orchestration pattern annotations (`@Supervisor`, `@Sequence`, `@Parallel`, `@Loop`, `@Conditional`, `@Debate`, `@Voting`, `@Htn`) in CaseHub's `io.casehub.agency.annotations` package. No `langchain4j-agentic` annotation dependency. LC4j agents are integrated as first-class CaseHub workers at runtime, not at the annotation layer.
 
 **Alternatives:**
 - Adopt LC4j's 5 base annotations (`@SupervisorAgent`, `@SequenceAgent`, `@ParallelAgent`, `@LoopAgent`, `@ConditionalAgent`) and add CaseHub-unique patterns only — requires `langchain4j-agentic` compile dependency, creates semantic divergence (same annotation name, different execution model), build extension coexistence conflict (two processors for the same annotations)
@@ -48,8 +48,8 @@ No LC4j annotation migration is needed. Write in LC4j, deploy in CaseHub, get go
 **Sources:**
 - Engine-annotations D1 decision (same conclusion for engine layer, with less LC4j overlap)
 - `docs/specs/issue-909-engine-annotations/2026-08-16-annotation-driven-programming-model-design.md` §Layer 2
-- `io.casehub.blocks.agentic.pattern.Patterns` — 8 pattern builders
-- `io.casehub.blocks.agentic.model.ExecutionModel` — 5-SPI composition record
+- `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
+- `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
 - Garden: GE-20260608-4c8108 — `AnnotationsImpliesAiServiceBuildItem` bridges LC4j annotations to AiService pipeline (demonstrates runtime integration without annotation adoption)
 - Capability ownership: `casehub-platform-agent-api` bridges (`ChatModelAgentProvider`, `AgentProviderChatModel`)
 
@@ -92,12 +92,12 @@ No LC4j annotation migration is needed. Write in LC4j, deploy in CaseHub, get go
 
 ## D5: Annotation naming — bare pattern names
 
-**Choice:** Bare pattern names without suffix: `@Supervisor`, `@Sequence`, `@Parallel`, `@Loop`, `@Conditional`, `@Debate`, `@Voting`, `@Htn`. Package: `io.casehub.blocks.annotations`.
+**Choice:** Bare pattern names without suffix: `@Supervisor`, `@Sequence`, `@Parallel`, `@Loop`, `@Conditional`, `@Debate`, `@Voting`, `@Htn`. Package: `io.casehub.agency.annotations`.
 **Alternatives:**
 - `@DebateAgent`, `@SupervisorAgent` — matches LC4j naming but creates import confusion when both are on the classpath
 - `@CaseHubDebate`, `@CaseHubSupervisor` — maximum disambiguation, excessive verbosity
 **Rationale:** Consistent with engine Layer 1 convention (`@Worker`, `@Case`, `@Goal` — no suffix). Distinct from LC4j's `@SupervisorAgent` — different package AND different name shape, making accidental import of the wrong one unlikely. Shorter, cleaner API surface.
-**Trade-offs:** `@Supervisor` and `@SupervisorAgent` are similar enough that developers might conflate them. The package difference (`io.casehub.blocks.annotations` vs `dev.langchain4j.agentic.declarative`) and the dual-track strategy (ADR-0004) mitigate this. `@Parallel` and `@Conditional` have collision risk with Spring/JUnit annotations — accepted pre-GA, revisit if developers report friction. LC4j avoids this with the `Agent` suffix (`@ParallelAgent`, `@ConditionalAgent`).
+**Trade-offs:** `@Supervisor` and `@SupervisorAgent` are similar enough that developers might conflate them. The package difference (`io.casehub.agency.annotations` vs `dev.langchain4j.agentic.declarative`) and the dual-track strategy (ADR-0004) mitigate this. `@Parallel` and `@Conditional` have collision risk with Spring/JUnit annotations — accepted pre-GA, revisit if developers report friction. LC4j avoids this with the `Agent` suffix (`@ParallelAgent`, `@ConditionalAgent`).
 **Exploration:** quick
 **Status:** captured
 

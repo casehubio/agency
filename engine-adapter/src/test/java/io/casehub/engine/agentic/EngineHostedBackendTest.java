@@ -18,7 +18,7 @@ package io.casehub.engine.agentic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.casehub.blocks.agentic.model.ExecutionBackend;
+import io.casehub.agency.agentic.model.ExecutionBackend;
 import java.util.ServiceLoader;
 import org.junit.jupiter.api.Test;
 

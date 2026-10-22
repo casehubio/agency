@@ -26,7 +26,7 @@ public interface SubjectResolver {
 }
 ```
 
-**Package:** `io.casehub.blocks.agentic.social`
+**Package:** `io.casehub.agency.agentic.social`
 **Integration:** Per-call parameter to `CognitionCore.tick()`. Replaces `Set<String> activeSubjects`.
 
 ### SPI 2: InteractionMapper
@@ -39,7 +39,7 @@ public interface InteractionMapper {
 }
 ```
 
-**Package:** `io.casehub.blocks.agentic.social`
+**Package:** `io.casehub.agency.agentic.social`
 **Integration:** Adapter-layer SPI consumed by `SocialAvatarCognition`. Transforms domain interactions into `CognitiveImpact`, passed as a per-call parameter to `CognitionCore.recordInteraction()`. CognitionCore never sees `InteractionMapper` directly.
 
 ### SPI 3: NormFilter
@@ -51,7 +51,7 @@ public interface NormFilter {
 }
 ```
 
-**Package:** `io.casehub.blocks.agentic.social.emergence` (alongside `SocialNorm`, `SocialNormDetector`)
+**Package:** `io.casehub.agency.agentic.social.emergence` (alongside `SocialNorm`, `SocialNormDetector`)
 **Integration:** Applied at the prompt assembly layer before `CognitiveObservationSections.normsSection()`. Independent of CognitionCore — norms are consumed at prompt rendering, not cognitive processing.
 
 ### CognitiveImpact record
@@ -114,7 +114,7 @@ When `impact` is null: all-default processing (current behaviour). When non-null
 
 ## AvatarCognition published interface
 
-`AvatarCognition` (in `casehub-blocks-speech-api`) does NOT change. `SocialAvatarCognition` adapts internally:
+`AvatarCognition` (in `casehub-agency-speech-api`) does NOT change. `SocialAvatarCognition` adapts internally:
 
 - Receives `Set<String> activeSubjects` from `AvatarCognition.tick()` → wraps into `SubjectResolver` lambda
 - Receives `(userMessage, response)` from `AvatarCognition.recordInteraction()` → optionally maps via injected `InteractionMapper` to produce `@Nullable CognitiveImpact`

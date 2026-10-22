@@ -5,7 +5,7 @@ date: 2026-07-28
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-agency-ui]
 tags: [casehub-pages, blocks-ui, css-grid, virtual-scroll, data-table, column-resize]
 ---
 

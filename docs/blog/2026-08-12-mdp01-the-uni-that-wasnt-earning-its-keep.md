@@ -5,7 +5,7 @@ author: mdp
 entry_type: note
 subtype: diary
 tags: [virtual-threads, mutiny, reactive, event-driven, choreography]
-projects: [casehub-blocks]
+projects: [casehub-agency]
 status: draft
 ---
 

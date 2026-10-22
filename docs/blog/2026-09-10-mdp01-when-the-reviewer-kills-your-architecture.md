@@ -5,7 +5,7 @@ entry_type: note
 subtype: diary
 author: mdp
 tags: [agentic, yaml, expression-compilation, mvel, design-review]
-projects: [casehub-blocks]
+projects: [casehub-agency]
 series: blocks
 status: draft
 ---

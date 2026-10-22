@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export gotutiyan/gector models to ONNX format for casehub-blocks-speech-sherpa.
+"""Export gotutiyan/gector models to ONNX format for casehub-agency-speech-sherpa.
 
 Usage:
     python export_gector_onnx.py --model gector-deberta-base-5k --output ./gector-base

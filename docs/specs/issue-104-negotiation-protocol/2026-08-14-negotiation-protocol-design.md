@@ -7,11 +7,11 @@
 
 ## Summary
 
-A reusable `NegotiationProjection` and supporting types in `io.casehub.blocks.negotiation` for managing proposal/counter-proposal exchange over qhorus channels. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum) negotiation.
+A reusable `NegotiationProjection` and supporting types in `io.casehub.agency.negotiation` for managing proposal/counter-proposal exchange over qhorus channels. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum) negotiation.
 
 ## Architecture
 
-### Package: `io.casehub.blocks.negotiation`
+### Package: `io.casehub.agency.negotiation`
 
 New top-level package in blocks, peer to `conversation`, `channel`, `agentic`. No inheritance from or coupling to conversation infrastructure — negotiation has a distinct state model and fixed protocol semantics.
 
@@ -165,12 +165,12 @@ C: DONE    (corrId=p2)                                  -> C accepts, AGREED
 
 ## File Inventory
 
-19 production files, 6 test files. All in `io.casehub.blocks.negotiation`.
+19 production files, 6 test files. All in `io.casehub.agency.negotiation`.
 
 ## Dependencies
 
 - `casehub-qhorus-api` (MessageView, MessageType, ChannelProjection) — existing compile dependency
-- `casehub-blocks` agentic.termination (TerminationCondition, TerminationDecision, TerminationContext) — internal blocks reference
+- `casehub-agency` agentic.termination (TerminationCondition, TerminationDecision, TerminationContext) — internal blocks reference
 - `org.jspecify:jspecify` — existing for @Nullable
 
 No new dependencies introduced.

@@ -27,7 +27,7 @@ reads timestamps from persisted state).
 
 ### Upstream change
 
-`TokenJaccardDistance` in `io.casehub.blocks.agentic.social` — both the
+`TokenJaccardDistance` in `io.casehub.agency.agentic.social` — both the
 class AND the `distance()` method changed from package-private to `public`
 (D16). NarrativeSynthesiser needs it for novelty scoring.
 
@@ -368,15 +368,15 @@ public static Map<DriveAxis, Double> compute(NarrativeState narrative) {
 ## Package Structure
 
 ```
-blocks/src/main/java/io/casehub/blocks/agentic/social/narrative/
+blocks/src/main/java/io/casehub/agency/agentic/social/narrative/
 ├── (existing foundation types — NarrativeFragment, NarrativeState, etc.)
 ├── NarrativeOrchestrator.java     (NEW — compositor)
 └── NarrativeSynthesiser.java      (NEW — effectful LLM synthesis)
 
-blocks/src/main/java/io/casehub/blocks/agentic/social/
+blocks/src/main/java/io/casehub/agency/agentic/social/
 └── TokenJaccardDistance.java      (MODIFIED — package-private → public)
 
-blocks/src/main/java/io/casehub/blocks/agentic/social/narrative/
+blocks/src/main/java/io/casehub/agency/agentic/social/narrative/
 └── NarrativeModulation.java       (MODIFIED — add per-axis clamping)
 ```
 

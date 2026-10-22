@@ -5,7 +5,7 @@ date: 2026-07-02
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [consolidation, architecture, scope-criteria]
 ---
 

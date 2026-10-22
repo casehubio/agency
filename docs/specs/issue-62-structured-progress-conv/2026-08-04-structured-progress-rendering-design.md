@@ -69,7 +69,7 @@ Add `casehub-work-progress-api` to blocks' `pom.xml` at provided scope
 ### 2. ProgressRenderer SPI
 
 ```java
-package io.casehub.blocks.conversation;
+package io.casehub.agency.conversation;
 
 import io.casehub.work.progress.ProgressInstance;
 

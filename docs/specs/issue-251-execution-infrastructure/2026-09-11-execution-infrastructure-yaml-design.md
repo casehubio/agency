@@ -222,7 +222,7 @@ public class CoalitionEvaluatorRegistry {
 
 ## Schema Generation
 
-Add to `BlocksSchemaGenerator.buildDiscriminatorOverrides()`:
+Add to `AgencySchemaGenerator.buildDiscriminatorOverrides()`:
 - `ExecutionBackendSpec.class`
 - `EventConcurrencyPolicySpec.class`
 - `ExecutionListenerSpec.class`
@@ -241,13 +241,13 @@ All 6 capabilities in §18 → Done.
 
 ## References
 
-- `blocks/src/main/java/io/casehub/blocks/agentic/model/ExecutionBackend.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/model/EventConcurrencyPolicy.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/listener/EventLogListener.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/listener/LedgerExecutionListener.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/listener/MetricsListener.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/coalition/CoalitionEvaluator.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/coalition/CapabilityCoverageEvaluator.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/intention/JointIntention.java`
-- `blocks/src/main/java/io/casehub/blocks/agentic/intention/ReconsiderationSignal.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/model/ExecutionBackend.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/model/EventConcurrencyPolicy.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/listener/EventLogListener.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/listener/LedgerExecutionListener.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/listener/MetricsListener.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/coalition/CoalitionEvaluator.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/coalition/CapabilityCoverageEvaluator.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/intention/JointIntention.java`
+- `blocks/src/main/java/io/casehub/agency/agentic/intention/ReconsiderationSignal.java`
 - [GitHub #251]

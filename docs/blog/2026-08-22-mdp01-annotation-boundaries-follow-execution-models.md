@@ -78,7 +78,7 @@ True in principle. Three problems in practice.
 
 This isn't "CaseHub vs LC4j." It's recognising that annotation boundaries should follow execution model boundaries — and then maximising integration everywhere else.
 
-**Track 1: CaseHub owns its orchestration annotations.** All eight pattern annotations live in `io.casehub.blocks.annotations`, produce CaseHub's `ExecutionModel<T>`, and compose uniformly with governance meta-annotations like `@OversightGate` and `@TrustRouted`.
+**Track 1: CaseHub owns its orchestration annotations.** All eight pattern annotations live in `io.casehub.agency.annotations`, produce CaseHub's `ExecutionModel<T>`, and compose uniformly with governance meta-annotations like `@OversightGate` and `@TrustRouted`.
 
 **Track 2: LC4j agents are first-class CaseHub workers.** An existing `@SupervisorAgent` LC4j agent is a CDI bean. CaseHub wraps it as a worker. CaseHub handles external orchestration — when to invoke, governance gates, trust-weighted routing, ledger audit. LC4j handles internal orchestration — how the agent does its work. No annotation migration. The LC4j agent gets qhorus channel audit, attestation chains, trust scoring, and oversight gates automatically, because these operate at the worker dispatch boundary, not the annotation layer.
 

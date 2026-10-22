@@ -1,4 +1,4 @@
-# casehub-blocks-annotations Implementation Plan
+# casehub-agency-annotations Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > subagent-driven-development (recommended) or executing-plans to
@@ -6,7 +6,7 @@
 > (test-driven-development) and uses ide-tooling for structural
 > editing. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Focal issue:** #116 — feat: casehub-blocks-annotations module
+**Focal issue:** #116 — feat: casehub-agency-annotations module
 **Issue group:** #116
 
 **Goal:** Annotation-driven programming model for CaseHub orchestration patterns and governance — 8 pattern annotations, 4 governance meta-annotations, Quarkus build extension, 3 example modules.
@@ -46,7 +46,7 @@
 - Modify: `pom.xml` (root — add `annotations` module)
 
 **Interfaces:**
-- Produces: Maven reactor with `casehub-blocks-annotations` (runtime) and `casehub-blocks-annotations-deployment` (deployment) artifacts
+- Produces: Maven reactor with `casehub-agency-annotations` (runtime) and `casehub-agency-annotations-deployment` (deployment) artifacts
 
 - [ ] **Step 1: Create parent aggregator pom**
 
@@ -55,10 +55,10 @@
 <project>
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-parent</artifactId>
+    <artifactId>casehub-agency-parent</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
-  <artifactId>casehub-blocks-annotations-parent</artifactId>
+  <artifactId>casehub-agency-annotations-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>runtime</module>
@@ -74,14 +74,14 @@
 <project>
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-annotations-parent</artifactId>
+    <artifactId>casehub-agency-annotations-parent</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
-  <artifactId>casehub-blocks-annotations</artifactId>
+  <artifactId>casehub-agency-annotations</artifactId>
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks</artifactId>
+      <artifactId>casehub-agency</artifactId>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
@@ -113,14 +113,14 @@
 <project>
   <parent>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-annotations-parent</artifactId>
+    <artifactId>casehub-agency-annotations-parent</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
-  <artifactId>casehub-blocks-annotations-deployment</artifactId>
+  <artifactId>casehub-agency-annotations-deployment</artifactId>
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-blocks-annotations</artifactId>
+      <artifactId>casehub-agency-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -168,19 +168,19 @@ feat(#116): scaffold annotations module — runtime + deployment poms
 ### Task 2: Pattern and role annotation definitions
 
 **Files:**
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Supervisor.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Sequence.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Parallel.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Loop.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Conditional.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Debate.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Voting.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Htn.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Agent.java` (role)
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Debater.java` (role)
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Voter.java` (role)
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Judge.java` (role)
-- Test: `annotations/runtime/src/test/java/io/casehub/blocks/annotations/PatternAnnotationTest.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Supervisor.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Sequence.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Parallel.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Loop.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Conditional.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Debate.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Voting.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Htn.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Agent.java` (role)
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Debater.java` (role)
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Voter.java` (role)
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Judge.java` (role)
+- Test: `annotations/runtime/src/test/java/io/casehub/agency/annotations/PatternAnnotationTest.java`
 
 **Interfaces:**
 - Produces: All 12 annotation types (8 pattern + 4 role) with attributes matching spec §Pattern Annotations and §Role Annotations
@@ -188,7 +188,7 @@ feat(#116): scaffold annotations module — runtime + deployment poms
 - [ ] **Step 1: Write annotation reflection test**
 
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -315,14 +315,14 @@ Create each annotation per spec §Pattern Annotations. Key: attribute defaults m
 
 `Supervisor.java`:
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
-import io.casehub.blocks.agentic.aggregation.PassThrough;
-import io.casehub.blocks.agentic.routing.FirstMatchRouting;
+import io.casehub.agency.agentic.aggregation.PassThrough;
+import io.casehub.agency.agentic.routing.FirstMatchRouting;
 import io.casehub.engine.plan.DecompositionStrategy;
-import io.casehub.blocks.agentic.decomposition.IdentityDecomposition;
-import io.casehub.blocks.agentic.routing.RoutingStrategy;
-import io.casehub.blocks.agentic.aggregation.AggregationStrategy;
+import io.casehub.agency.agentic.decomposition.IdentityDecomposition;
+import io.casehub.agency.agentic.routing.RoutingStrategy;
+import io.casehub.agency.agentic.aggregation.AggregationStrategy;
 
 import java.lang.annotation.*;
 
@@ -339,7 +339,7 @@ public @interface Supervisor {
 
 `Debate.java`:
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
 import java.lang.annotation.*;
 
@@ -353,10 +353,10 @@ public @interface Debate {
 
 `Voting.java`:
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
-import io.casehub.blocks.agentic.aggregation.AggregationStrategy;
-import io.casehub.blocks.agentic.aggregation.MajorityVote;
+import io.casehub.agency.agentic.aggregation.AggregationStrategy;
+import io.casehub.agency.agentic.aggregation.MajorityVote;
 
 import java.lang.annotation.*;
 
@@ -370,9 +370,9 @@ public @interface Voting {
 
 `Htn.java`:
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
-import io.casehub.blocks.agentic.decomposition.StaticDecomposition;
+import io.casehub.agency.agentic.decomposition.StaticDecomposition;
 import io.casehub.engine.plan.DecompositionStrategy;
 
 import java.lang.annotation.*;
@@ -391,7 +391,7 @@ public @interface Htn {
 
 `Agent.java`:
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
 import java.lang.annotation.*;
 
@@ -420,14 +420,14 @@ feat(#116): 8 pattern annotations + 4 role annotations
 ### Task 3: Governance annotations + descriptors
 
 **Files:**
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/OversightGate.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/TrustRouted.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/CbrRouted.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/Attestation.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/runtime/PatternDescriptor.java`
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/runtime/GovernanceDescriptor.java`
-- Test: `annotations/runtime/src/test/java/io/casehub/blocks/annotations/GovernanceAnnotationTest.java`
-- Test: `annotations/runtime/src/test/java/io/casehub/blocks/annotations/runtime/DescriptorTest.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/OversightGate.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/TrustRouted.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/CbrRouted.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/Attestation.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/runtime/PatternDescriptor.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/runtime/GovernanceDescriptor.java`
+- Test: `annotations/runtime/src/test/java/io/casehub/agency/annotations/GovernanceAnnotationTest.java`
+- Test: `annotations/runtime/src/test/java/io/casehub/agency/annotations/runtime/DescriptorTest.java`
 
 **Interfaces:**
 - Produces: 4 governance annotation types, `PatternDescriptor` record, `GovernanceDescriptor` record
@@ -436,7 +436,7 @@ feat(#116): 8 pattern annotations + 4 role annotations
 - [ ] **Step 1: Write governance annotation reflection test**
 
 ```java
-package io.casehub.blocks.annotations;
+package io.casehub.agency.annotations;
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -488,9 +488,9 @@ class GovernanceAnnotationTest {
 - [ ] **Step 2: Write descriptor test**
 
 ```java
-package io.casehub.blocks.annotations.runtime;
+package io.casehub.agency.annotations.runtime;
 
-import io.casehub.blocks.agentic.model.PatternType;
+import io.casehub.agency.agentic.model.PatternType;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.*;
@@ -563,9 +563,9 @@ Expected: FAIL — types don't exist
 - [ ] **Step 5: Create PatternDescriptor and GovernanceDescriptor types**
 
 ```java
-package io.casehub.blocks.annotations.runtime;
+package io.casehub.agency.annotations.runtime;
 
-import io.casehub.blocks.agentic.model.PatternType;
+import io.casehub.agency.agentic.model.PatternType;
 import java.util.*;
 
 public record PatternDescriptor(
@@ -588,10 +588,10 @@ public record PatternDescriptor(
 `label` is the display name for routing and logging — sourced from `@Agent.name()`, `@Debater.role()`, `@Voter.role()`, or the Java parameter name as fallback. `participantRole` determines recorder wiring (e.g., `JUDGE` → `DebateBuilder.judge()`).
 
 ```java
-package io.casehub.blocks.annotations.runtime;
+package io.casehub.agency.annotations.runtime;
 
 import io.casehub.api.spi.ActionRiskClassifier;
-import io.casehub.blocks.attestation.LifecycleAttestationObserver;
+import io.casehub.agency.attestation.LifecycleAttestationObserver;
 import java.util.List;
 
 public sealed interface GovernanceDescriptor {
@@ -642,10 +642,10 @@ feat(#116): 4 governance annotations + PatternDescriptor + GovernanceDescriptor
 ### Task 4: Pattern annotation scanning + validation
 
 **Files:**
-- Create: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/BlocksAnnotationsProcessor.java`
-- Create: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/PatternAnnotationStep.java`
-- Test: `annotations/deployment/src/test/java/io/casehub/blocks/annotations/deployment/PatternValidationTest.java`
-- Test fixture: `annotations/deployment/src/test/java/io/casehub/blocks/annotations/deployment/fixtures/` (annotated test interfaces)
+- Create: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/AgencyAnnotationsProcessor.java`
+- Create: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/PatternAnnotationStep.java`
+- Test: `annotations/deployment/src/test/java/io/casehub/agency/annotations/deployment/PatternValidationTest.java`
+- Test fixture: `annotations/deployment/src/test/java/io/casehub/agency/annotations/deployment/fixtures/` (annotated test interfaces)
 
 **Interfaces:**
 - Consumes: Jandex `CombinedIndexBuildItem`
@@ -654,9 +654,9 @@ feat(#116): 4 governance annotations + PatternDescriptor + GovernanceDescriptor
 - [ ] **Step 1: Write validation test — dual-annotation conflict**
 
 ```java
-package io.casehub.blocks.annotations.deployment;
+package io.casehub.agency.annotations.deployment;
 
-import io.casehub.blocks.annotations.*;
+import io.casehub.agency.annotations.*;
 import org.jboss.jandex.*;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -688,7 +688,7 @@ class PatternValidationTest {
     interface DualPatternBad {
         @Debate(maxRounds = 3)
         @Supervisor
-        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.blocks.agentic.AgentRef a);
+        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a);
     }
 
     @Test
@@ -704,7 +704,7 @@ class PatternValidationTest {
     // Fixture: missing role annotation — should fail
     interface MissingRoleBad {
         @Debate(maxRounds = 3)
-        String review(io.casehub.blocks.agentic.AgentRef bare);
+        String review(io.casehub.agency.agentic.AgentRef bare);
     }
 
     @Test
@@ -721,7 +721,7 @@ class PatternValidationTest {
     interface WorkerAndPatternBad {
         @io.casehub.engine.annotations.Worker(capability = "review")
         @Debate(maxRounds = 3)
-        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.blocks.agentic.AgentRef a);
+        String review(@Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a);
     }
 
     @Test
@@ -738,9 +738,9 @@ class PatternValidationTest {
     interface ValidDebate {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.blocks.agentic.AgentRef critic,
-            @Debater(role = "advocate", systemPrompt = "Defend") io.casehub.blocks.agentic.AgentRef advocate,
-            @Judge(systemPrompt = "Judge") io.casehub.blocks.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
+            @Debater(role = "advocate", systemPrompt = "Defend") io.casehub.agency.agentic.AgentRef advocate,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
             String document);
     }
 
@@ -752,7 +752,7 @@ class PatternValidationTest {
 
         assertThat(descriptors).hasSize(1);
         assertThat(descriptors.get(0).patternType())
-            .isEqualTo(io.casehub.blocks.agentic.model.PatternType.DEBATE);
+            .isEqualTo(io.casehub.agency.agentic.model.PatternType.DEBATE);
         assertThat(descriptors.get(0).participants()).hasSize(3);
     }
 }
@@ -772,20 +772,20 @@ Jandex-based scanner that:
 4. Validates role annotations have exactly one of systemPrompt/agentId
 5. Extracts `PatternDescriptor` from annotation values and parameters
 
-- [ ] **Step 4: Implement BlocksAnnotationsProcessor stub**
+- [ ] **Step 4: Implement AgencyAnnotationsProcessor stub**
 
 ```java
-package io.casehub.blocks.annotations.deployment;
+package io.casehub.agency.annotations.deployment;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class BlocksAnnotationsProcessor {
+class AgencyAnnotationsProcessor {
 
     @BuildStep
     FeatureBuildItem feature() {
-        return new FeatureBuildItem("casehub-blocks-annotations");
+        return new FeatureBuildItem("casehub-agency-annotations");
     }
 }
 ```
@@ -806,9 +806,9 @@ feat(#116): pattern annotation scanning + validation rules
 ### Task 5: Recorder + ExecutionModel CDI bean generation
 
 **Files:**
-- Create: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/runtime/BlocksAnnotationsRecorder.java`
-- Modify: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/BlocksAnnotationsProcessor.java`
-- Test: `annotations/deployment/src/test/java/io/casehub/blocks/annotations/deployment/RecorderWiringTest.java`
+- Create: `annotations/runtime/src/main/java/io/casehub/agency/annotations/runtime/AgencyAnnotationsRecorder.java`
+- Modify: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/AgencyAnnotationsProcessor.java`
+- Test: `annotations/deployment/src/test/java/io/casehub/agency/annotations/deployment/RecorderWiringTest.java`
 
 **Interfaces:**
 - Consumes: `PatternDescriptor` list from PatternAnnotationStep
@@ -819,10 +819,10 @@ feat(#116): pattern annotation scanning + validation rules
 Test that the recorder creates `ExecutionModel` instances matching builder output for each pattern type. Focus on debate (most complex) and supervisor (most attributes).
 
 ```java
-package io.casehub.blocks.annotations.deployment;
+package io.casehub.agency.annotations.deployment;
 
-import io.casehub.blocks.annotations.runtime.*;
-import io.casehub.blocks.agentic.model.*;
+import io.casehub.agency.annotations.runtime.*;
+import io.casehub.agency.agentic.model.*;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.*;
@@ -831,7 +831,7 @@ class RecorderWiringTest {
 
     @Test
     void recorder_builds_debate_model_with_correct_wiring() {
-        var recorder = new BlocksAnnotationsRecorder();
+        var recorder = new AgencyAnnotationsRecorder();
         var attrs = Map.<String, Object>of("maxRounds", 3);
         var participants = List.of(
             new PatternDescriptor.AgentParticipant("critic",
@@ -853,12 +853,12 @@ class RecorderWiringTest {
         assertThat(model.candidateSupplier().get()).hasSize(3);
         // JUDGE participant triggers JudgeConvergence termination
         assertThat(model.termination())
-            .isInstanceOf(io.casehub.blocks.agentic.termination.JudgeConvergence.class);
+            .isInstanceOf(io.casehub.agency.agentic.termination.JudgeConvergence.class);
     }
 
     @Test
     void recorder_builds_debate_without_judge_uses_maxIterations() {
-        var recorder = new BlocksAnnotationsRecorder();
+        var recorder = new AgencyAnnotationsRecorder();
         var attrs = Map.<String, Object>of("maxRounds", 7);
         var participants = List.of(
             new PatternDescriptor.AgentParticipant("critic",
@@ -871,12 +871,12 @@ class RecorderWiringTest {
         var model = recorder.createExecutionModel(desc).get();
 
         assertThat(model.termination())
-            .isInstanceOf(io.casehub.blocks.agentic.termination.MaxIterationsTermination.class);
+            .isInstanceOf(io.casehub.agency.agentic.termination.MaxIterationsTermination.class);
     }
 
     @Test
     void recorder_builds_supervisor_model_with_defaults() {
-        var recorder = new BlocksAnnotationsRecorder();
+        var recorder = new AgencyAnnotationsRecorder();
         var attrs = Map.<String, Object>of("maxIterations", 10);
         var participants = List.of(
             new PatternDescriptor.AgentParticipant("agent1",
@@ -888,7 +888,7 @@ class RecorderWiringTest {
 
         assertThat(model.patternType()).isEqualTo(PatternType.SUPERVISOR);
         assertThat(model.routing())
-            .isInstanceOf(io.casehub.blocks.agentic.routing.FirstMatchRouting.class);
+            .isInstanceOf(io.casehub.agency.agentic.routing.FirstMatchRouting.class);
         assertThat(model.candidateSupplier().get()).hasSize(1);
     }
 
@@ -896,7 +896,7 @@ class RecorderWiringTest {
     void recorder_builds_sequence_with_agents_before_build() {
         // SequenceBuilder sets routing/termination ONLY in agents() —
         // recorder must call agents() before build() to avoid NPE
-        var recorder = new BlocksAnnotationsRecorder();
+        var recorder = new AgencyAnnotationsRecorder();
         var attrs = Map.<String, Object>of();
         var participants = List.of(
             new PatternDescriptor.AgentParticipant("step1",
@@ -918,7 +918,7 @@ class RecorderWiringTest {
     void recorder_creates_ExternalAgent_for_inline_systemPrompt() {
         // Inline agent (systemPrompt specified): recorder creates
         // AgentRef.ExternalAgent wrapping AgentProvider.invoke()
-        var recorder = new BlocksAnnotationsRecorder();
+        var recorder = new AgencyAnnotationsRecorder();
         var attrs = Map.<String, Object>of("maxIterations", 10);
         var participants = List.of(
             new PatternDescriptor.AgentParticipant("triage",
@@ -930,7 +930,7 @@ class RecorderWiringTest {
         var candidates = model.candidateSupplier().get();
 
         assertThat(candidates.get(0).ref())
-            .isInstanceOf(io.casehub.blocks.agentic.AgentRef.ExternalAgent.class);
+            .isInstanceOf(io.casehub.agency.agentic.AgentRef.ExternalAgent.class);
         assertThat(candidates.get(0).ref().name()).isEqualTo("triage");
     }
 }
@@ -941,7 +941,7 @@ class RecorderWiringTest {
 Run: `mvn --batch-mode test -pl annotations/deployment -Dtest=RecorderWiringTest`
 Expected: FAIL
 
-- [ ] **Step 3: Implement BlocksAnnotationsRecorder**
+- [ ] **Step 3: Implement AgencyAnnotationsRecorder**
 
 `@Recorder` class in runtime module. `createExecutionModel(PatternDescriptor)` returns `Supplier<ExecutionModel<Object>>` that constructs via the corresponding `Patterns.*()` builder. Maps `PatternType` → builder, applies attributes, wires participants as `AgentRef` instances.
 
@@ -953,7 +953,7 @@ Expected: FAIL
 
 **SPI default-value detection:** When a developer-specified SPI class equals the annotation's declared default (e.g., `routing = FirstMatchRouting.class` on `@Supervisor`), the recorder uses path §1 (hardcoded builder-equivalent construction) instead of attempting CDI/constructor resolution.
 
-- [ ] **Step 4: Wire recorder into BlocksAnnotationsProcessor**
+- [ ] **Step 4: Wire recorder into AgencyAnnotationsProcessor**
 
 Add `@BuildStep @Record(RUNTIME_INIT) @Consume(EngineAnnotationsCompleteBuildItem.class)` method that:
 1. Calls `PatternAnnotationStep.scan(index)` to get descriptors
@@ -968,7 +968,7 @@ Expected: PASS
 - [ ] **Step 6: Commit**
 
 ```
-feat(#116): BlocksAnnotationsRecorder — ExecutionModel CDI bean generation
+feat(#116): AgencyAnnotationsRecorder — ExecutionModel CDI bean generation
 ```
 
 ---
@@ -978,9 +978,9 @@ feat(#116): BlocksAnnotationsRecorder — ExecutionModel CDI bean generation
 ### Task 6: Governance annotation processing
 
 **Files:**
-- Create: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/GovernanceAnnotationStep.java`
-- Modify: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/BlocksAnnotationsProcessor.java`
-- Test: `annotations/deployment/src/test/java/io/casehub/blocks/annotations/deployment/GovernanceValidationTest.java`
+- Create: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/GovernanceAnnotationStep.java`
+- Modify: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/AgencyAnnotationsProcessor.java`
+- Test: `annotations/deployment/src/test/java/io/casehub/agency/annotations/deployment/GovernanceValidationTest.java`
 
 **Interfaces:**
 - Consumes: Jandex `CombinedIndexBuildItem`, pattern descriptors (for context detection)
@@ -989,10 +989,10 @@ feat(#116): BlocksAnnotationsRecorder — ExecutionModel CDI bean generation
 - [ ] **Step 1: Write governance validation test**
 
 ```java
-package io.casehub.blocks.annotations.deployment;
+package io.casehub.agency.annotations.deployment;
 
-import io.casehub.blocks.annotations.*;
-import io.casehub.blocks.annotations.runtime.GovernanceDescriptor;
+import io.casehub.agency.annotations.*;
+import io.casehub.agency.annotations.runtime.GovernanceDescriptor;
 import org.jboss.jandex.*;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
@@ -1041,8 +1041,8 @@ class GovernanceValidationTest {
         @OversightGate(TestClassifier.class)
         @TrustRouted(threshold = 0.8)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.blocks.agentic.AgentRef critic,
-            @Judge(systemPrompt = "Judge") io.casehub.blocks.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
             String document);
     }
 
@@ -1084,7 +1084,7 @@ Jandex-based scanner that:
 3. Extracts `GovernanceDescriptor` from annotation values
 4. Generates CDI bean configurations for each governance type
 
-- [ ] **Step 4: Wire into BlocksAnnotationsProcessor**
+- [ ] **Step 4: Wire into AgencyAnnotationsProcessor**
 
 Add governance processing to the main `@BuildStep` method.
 
@@ -1099,9 +1099,9 @@ feat(#116): governance annotation processing — @OversightGate, @TrustRouted, @
 ### Task 7: Enhanced @Customize processing
 
 **Files:**
-- Modify: `annotations/deployment/src/main/java/io/casehub/blocks/annotations/deployment/BlocksAnnotationsProcessor.java`
-- Modify: `annotations/runtime/src/main/java/io/casehub/blocks/annotations/runtime/BlocksAnnotationsRecorder.java`
-- Test: `annotations/deployment/src/test/java/io/casehub/blocks/annotations/deployment/CustomizeTest.java`
+- Modify: `annotations/deployment/src/main/java/io/casehub/agency/annotations/deployment/AgencyAnnotationsProcessor.java`
+- Modify: `annotations/runtime/src/main/java/io/casehub/agency/annotations/runtime/AgencyAnnotationsRecorder.java`
+- Test: `annotations/deployment/src/test/java/io/casehub/agency/annotations/deployment/CustomizeTest.java`
 
 **Interfaces:**
 - Consumes: `@Customize` methods targeting pattern builder types (DebateBuilder, SupervisorBuilder, etc.)
@@ -1110,10 +1110,10 @@ feat(#116): governance annotation processing — @OversightGate, @TrustRouted, @
 - [ ] **Step 1: Write @Customize test**
 
 ```java
-package io.casehub.blocks.annotations.deployment;
+package io.casehub.agency.annotations.deployment;
 
-import io.casehub.blocks.annotations.*;
-import io.casehub.blocks.agentic.pattern.DebateBuilder;
+import io.casehub.agency.annotations.*;
+import io.casehub.agency.agentic.pattern.DebateBuilder;
 import io.casehub.engine.annotations.Customize;
 import io.casehub.platform.agent.AgentProvider;
 import org.jboss.jandex.*;
@@ -1138,8 +1138,8 @@ class CustomizeTest {
     interface CustomizedDebate {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.blocks.agentic.AgentRef critic,
-            @Judge(systemPrompt = "Judge") io.casehub.blocks.agentic.AgentRef judge,
+            @Debater(role = "critic", systemPrompt = "Challenge") io.casehub.agency.agentic.AgentRef critic,
+            @Judge(systemPrompt = "Judge") io.casehub.agency.agentic.AgentRef judge,
             String document);
 
         @Customize
@@ -1152,9 +1152,9 @@ class CustomizeTest {
     void detects_customize_method_with_pattern_builder() throws IOException {
         Index index = indexClasses(CustomizedDebate.class, Customize.class,
             Debate.class, Debater.class, Judge.class);
-        // BlocksAnnotationsProcessor should detect the @Customize method,
+        // AgencyAnnotationsProcessor should detect the @Customize method,
         // match DebateBuilder to @Debate, and validate AgentProvider is CDI-resolvable
-        var processor = new BlocksAnnotationsProcessor();
+        var processor = new AgencyAnnotationsProcessor();
         // Validation should not throw — AgentProvider is CDI-managed
         assertThatCode(() -> processor.validateCustomizeMethods(index))
             .doesNotThrowAnyException();
@@ -1164,7 +1164,7 @@ class CustomizeTest {
     interface BadCustomize {
         @Debate(maxRounds = 5)
         String review(
-            @Debater(role = "a", systemPrompt = "p") io.casehub.blocks.agentic.AgentRef a,
+            @Debater(role = "a", systemPrompt = "p") io.casehub.agency.agentic.AgentRef a,
             String doc);
 
         @Customize
@@ -1178,7 +1178,7 @@ class CustomizeTest {
         Index index = indexClasses(BadCustomize.class, Customize.class,
             Debate.class, Debater.class);
 
-        assertThatThrownBy(() -> new BlocksAnnotationsProcessor().validateCustomizeMethods(index))
+        assertThatThrownBy(() -> new AgencyAnnotationsProcessor().validateCustomizeMethods(index))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("not a CDI bean");
     }
@@ -1207,7 +1207,7 @@ feat(#116): enhanced @Customize — CDI parameter resolution for pattern builder
 
 **Files:**
 - Create: `annotations/examples/incident-response-blocks/pom.xml`
-- Create: `annotations/examples/incident-response-blocks/src/main/java/io/casehub/blocks/annotations/examples/incident/` — pattern interfaces with `@Supervisor` + `@Debate` + governance
+- Create: `annotations/examples/incident-response-blocks/src/main/java/io/casehub/agency/annotations/examples/incident/` — pattern interfaces with `@Supervisor` + `@Debate` + governance
 - Test: `annotations/examples/incident-response-blocks/src/test/java/` — integration tests
 
 **Interfaces:**
@@ -1262,11 +1262,11 @@ feat(#116): aircraft-maintenance + wildfire-response examples
 - [2026-08-22-blocks-annotations-design.md] — design spec this plan implements
 - [decisions.md] — 8 architectural decisions (D1–D8)
 - [ADR-0004] — own orchestration annotations, dual-track LC4j strategy
-- [io/casehub/blocks/agentic/pattern/Patterns.java] — 8 pattern builders
-- [io/casehub/blocks/agentic/model/ExecutionModel.java] — 5-SPI composition record
-- [io/casehub/blocks/agentic/pattern/AbstractPatternBuilder.java] — base builder
-- [io/casehub/blocks/agentic/pattern/DebateBuilder.java] — debate builder (maxRounds, judge)
-- [io/casehub/blocks/agentic/pattern/SupervisorBuilder.java] — supervisor builder (defaults: FirstMatchRouting, PassThrough)
+- [io/casehub/agency/agentic/pattern/Patterns.java] — 8 pattern builders
+- [io/casehub/agency/agentic/model/ExecutionModel.java] — 5-SPI composition record
+- [io/casehub/agency/agentic/pattern/AbstractPatternBuilder.java] — base builder
+- [io/casehub/agency/agentic/pattern/DebateBuilder.java] — debate builder (maxRounds, judge)
+- [io/casehub/agency/agentic/pattern/SupervisorBuilder.java] — supervisor builder (defaults: FirstMatchRouting, PassThrough)
 - [GE-20260819-e4a624] — Jandex Indexer API for build extension testing
 - [GE-20260817-48caeb] — setRuntimeInit() for RUNTIME_INIT recorders
 - [GE-20260818-d7915b] — SyntheticBeanBuildItem.supplier() non-recordable objects

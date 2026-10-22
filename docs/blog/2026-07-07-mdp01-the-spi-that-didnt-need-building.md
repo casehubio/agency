@@ -5,11 +5,11 @@ date: 2026-07-07
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [routing, cbr, feature-extraction, design-review]
 ---
 
-# CaseHub Blocks — The SPI That Didn't Need Building
+# CaseHub Agency — The SPI That Didn't Need Building
 
 **Date:** 2026-07-07
 **Type:** phase-update

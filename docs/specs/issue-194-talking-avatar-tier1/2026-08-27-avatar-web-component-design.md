@@ -41,9 +41,9 @@ blocks repo (Java)                          blocks-ui repo (TypeScript)
 ```
 blocks-ui/examples/avatar-demo (Quarkus app)
   ├── blocks-ui/packages/avatar (Lit components, META-INF/resources/)
-  ├── casehub-blocks-speech-ws (WebSocket endpoint, CDI bean)
-  ├── casehub-blocks-speech-sherpa (runtime STT/TTS implementation)
-  └── casehub-blocks-speech-api (SPIs — transitive)
+  ├── casehub-agency-speech-ws (WebSocket endpoint, CDI bean)
+  ├── casehub-agency-speech-sherpa (runtime STT/TTS implementation)
+  └── casehub-agency-speech-api (SPIs — transitive)
 ```
 
 speech-ws depends on speech-api interfaces only. Consumer chooses the runtime implementation (sherpa, cloud, etc.).
@@ -227,7 +227,7 @@ Using gson (already in speech-sherpa) for JSON. No additional dependency.
 
 ```xml
 <dependencies>
-    <dependency>casehub-blocks-speech-api</dependency>           <!-- SPIs -->
+    <dependency>casehub-agency-speech-api</dependency>           <!-- SPIs -->
     <dependency>casehub-platform-agent-api (provided)</dependency> <!-- AgentProvider -->
     <dependency>quarkus-websockets-next</dependency>              <!-- WebSocket -->
     <dependency>com.google.code.gson:gson</dependency>            <!-- JSON -->

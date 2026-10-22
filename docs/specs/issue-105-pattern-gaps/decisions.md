@@ -2,10 +2,10 @@
 
 ## D1: Package placement
 
-**Choice:** New `io.casehub.blocks.negotiation` package
+**Choice:** New `io.casehub.agency.negotiation` package
 **Alternatives:**
-- Inside `io.casehub.blocks.conversation` — shares namespace but negotiation has a distinct state model
-- Sub-package `io.casehub.blocks.conversation.negotiation` — namespaced under conversation but own types
+- Inside `io.casehub.agency.conversation` — shares namespace but negotiation has a distinct state model
+- Sub-package `io.casehub.agency.conversation.negotiation` — namespaced under conversation but own types
 **Rationale:** Negotiation is semantically distinct from deliberation — different state model, different transitions, different terminal conditions. Clean package boundary with references to conversation types where needed.
 **Trade-offs:** Slightly more boilerplate for any shared utilities (imported rather than package-private access).
 **Exploration:** quick

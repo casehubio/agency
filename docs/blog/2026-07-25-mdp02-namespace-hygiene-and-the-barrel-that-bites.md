@@ -5,11 +5,11 @@ date: 2026-07-25
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-agency-ui]
 series: issue-94-blocks-prefix-and-cleanup
 ---
 
-# CaseHub Blocks UI — Namespace Hygiene and the Barrel That Bites
+# CaseHub Agency UI — Namespace Hygiene and the Barrel That Bites
 
 **Date:** 2026-07-25
 **Type:** phase-update

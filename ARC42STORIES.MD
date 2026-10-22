@@ -1,4 +1,4 @@
-# ARC42STORIES — casehub-blocks
+# ARC42STORIES — casehub-agency
 
 ## Layer Taxonomy
 
@@ -37,7 +37,7 @@ Multi-module reactor. The core module depends on casehub-qhorus-api + casehub-wo
 
 ## §5 Building Block View
 
-### Package: `io.casehub.blocks.channel`
+### Package: `io.casehub.agency.channel`
 
 Channel utility blocks — foundational patterns for LLM-mediated channel communication.
 
@@ -55,24 +55,24 @@ Channel utility blocks — foundational patterns for LLM-mediated channel commun
 | `ChannelEventAdapter<E>` | Direction 1 bridge: implements `MessageObserver`, extracts domain events via extractor function, publishes `LevelEvent<E>` to `EventStreamBus`. Null return filters. Extractor exceptions caught and logged. | #40 |
 | `ChannelEventPublisher<E>` | Direction 2 bridge: subscribes to `EventStreamBus<E>`, converts events to `MessageDispatch` via builder function, dispatches via `MessageDispatcher`. Best-effort — never propagates. | #40 |
 
-### Package: `io.casehub.blocks.agentic`
+### Package: `io.casehub.agency.agentic`
 
 Compositional agentic orchestration framework — five SPIs for agent selection, task decomposition, activation, result aggregation, and termination, with execution drivers and pre-composed pattern builders.
 
 | Sub-package | What it contains |
 |-------------|-----------------|
-| `io.casehub.blocks.agentic` | Foundation types: `AgentRef` (sealed, 5 variants), `AgentResult`, `RoutingCandidate`, `FailurePolicy` |
-| `io.casehub.blocks.agentic.routing` | Routing SPI: `RoutingStrategy<T>`, `RoutingDecision` (sealed), `FirstMatchRouting`, `RoundRobinRouting`, `SequentialRouting` |
-| `io.casehub.blocks.agentic.decomposition` | Decomposition SPI: `DecompositionStrategy<T>`, `TaskNode` (sealed), `PrimitiveTask`, `PlannedTask`, `OutputContract`, `Tasks` (DSL factories), `IdentityDecomposition`, `StaticDecomposition`, `ForwardReasoningDecomposition`, `LlmDecomposition`, `HybridDecomposition`, `NoMethodMatchedException` |
-| `io.casehub.blocks.agentic.activation` | Activation SPI: `ActivationRule<T>`, `OnExplicitDispatch`, `MaxIterationsGuard` |
-| `io.casehub.blocks.agentic.aggregation` | Aggregation SPI: `AggregationStrategy<T>`, `AggregationResult` (sealed), `PassThrough`, `CollectAll`, `MajorityVote` |
-| `io.casehub.blocks.agentic.termination` | Termination SPI: `TerminationCondition<T>`, `TerminationDecision` (sealed), `GoalReached`, `MaxIterationsTermination` |
-| `io.casehub.blocks.agentic.model` | Execution model: `ExecutionModel<T>`, `ExecutionDriver<T>`, `OrchestratedDriver`, `ChoreographedDriver`, `ExecutionResult` (sealed), `ExecutionState` (sealed), `ExecutionEventListener` |
-| `io.casehub.blocks.agentic.pattern` | Pattern DSL: `Patterns` entry point, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
+| `io.casehub.agency.agentic` | Foundation types: `AgentRef` (sealed, 5 variants), `AgentResult`, `RoutingCandidate`, `FailurePolicy` |
+| `io.casehub.agency.agentic.routing` | Routing SPI: `RoutingStrategy<T>`, `RoutingDecision` (sealed), `FirstMatchRouting`, `RoundRobinRouting`, `SequentialRouting` |
+| `io.casehub.agency.agentic.decomposition` | Decomposition SPI: `DecompositionStrategy<T>`, `TaskNode` (sealed), `PrimitiveTask`, `PlannedTask`, `OutputContract`, `Tasks` (DSL factories), `IdentityDecomposition`, `StaticDecomposition`, `ForwardReasoningDecomposition`, `LlmDecomposition`, `HybridDecomposition`, `NoMethodMatchedException` |
+| `io.casehub.agency.agentic.activation` | Activation SPI: `ActivationRule<T>`, `OnExplicitDispatch`, `MaxIterationsGuard` |
+| `io.casehub.agency.agentic.aggregation` | Aggregation SPI: `AggregationStrategy<T>`, `AggregationResult` (sealed), `PassThrough`, `CollectAll`, `MajorityVote` |
+| `io.casehub.agency.agentic.termination` | Termination SPI: `TerminationCondition<T>`, `TerminationDecision` (sealed), `GoalReached`, `MaxIterationsTermination` |
+| `io.casehub.agency.agentic.model` | Execution model: `ExecutionModel<T>`, `ExecutionDriver<T>`, `OrchestratedDriver`, `ChoreographedDriver`, `ExecutionResult` (sealed), `ExecutionState` (sealed), `ExecutionEventListener` |
+| `io.casehub.agency.agentic.pattern` | Pattern DSL: `Patterns` entry point, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
 
-**Implementation epic:** casehubio/blocks#595
+**Implementation epic:** casehubio/agency#595
 
-### Package: `io.casehub.blocks.summarisation`
+### Package: `io.casehub.agency.summarisation`
 
 Temporal abstraction framework for summarising high-frequency event streams into progressively higher-level abstractions. Pure Java, zero CDI/Quarkus dependencies.
 
@@ -98,9 +98,9 @@ Two integration patterns:
 - **Pattern B** (direct EventAccumulator): async LLM dispatch, caller manages execution. Used when summarisation requires LLM reasoning and latency tolerance is higher.
 - `KeyedSummarisationRunner` is the grouped counterpart to `SummarisationRunner` — same compositional role, groups by key instead of flat windowing.
 
-**Implementation issues:** casehubio/blocks#27, casehubio/blocks#40, casehubio/qhorus#359
+**Implementation issues:** casehubio/agency#27, casehubio/agency#40, casehubio/qhorus#359
 
-#### Sub-package: `io.casehub.blocks.summarisation.llm`
+#### Sub-package: `io.casehub.agency.summarisation.llm`
 
 LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisation` package to preserve its zero-CDI/Quarkus character.
 
@@ -108,7 +108,7 @@ LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisa
 |-------|-------------|
 | `LlmContentSummariser<T>` | Generic `ContentSummariser<T>` backed by `AgentProvider`. EDIT/APPEND via `SummaryMode`, optional `preamble` for static context. Propagates previous annotations. | qhorus#359 |
 
-#### Sub-package: `io.casehub.blocks.summarisation.observation`
+#### Sub-package: `io.casehub.agency.summarisation.observation`
 
 Terminal consumer of the summarisation pipeline — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunk production. Sits at the end of the pipeline, not in the middle.
 
@@ -122,9 +122,9 @@ Terminal consumer of the summarisation pipeline — tiered, demand-driven render
 | `TieredObservationRenderer<E>` | Standard tiered implementation: verbatim/grouped/summarised by batch size. Configurable thresholds, pluggable header via `withHeaderFormatter`. Two-tier (no summariser) and three-tier constructors. |
 | `ObservationAccumulator<E>` | Thread-safe buffer with demand-driven drain. Own buffer (not `EventAccumulator`). Tracks `lastDrainTimestamp`. At-most-once delivery. |
 
-**Implementation issue:** casehubio/blocks#68
+**Implementation issue:** casehubio/agency#68
 
-#### Sub-package: `io.casehub.blocks.summarisation.observation.affordance`
+#### Sub-package: `io.casehub.agency.summarisation.observation.affordance`
 
 Grounded observation rendering for LLM agents — per-entity affordance chains (identity + action + consequence) and typed section assembly. Parallel producer to the temporal observation pipeline — consumer concatenates both.
 
@@ -138,9 +138,9 @@ Grounded observation rendering for LLM agents — per-entity affordance chains (
 | `WorldObservationProvider` | `@FunctionalInterface` SPI: `List<ObservationSection> worldSections()`. Decouples world-specific perception rendering from observation assembly — each world (manor, SC2, etc.) provides its own implementation. |
 | `CognitiveObservationSections` | Utility class: static factory methods producing `ObservationSection` from platform cognitive types. `goalsSection(List<AgentGoal>)`, `recentActivitySection(PartitionedDrain)`, `pastExperienceSection(List<Memory>)`, `insightsSection(List<Memory>)`, `relationshipNotesSection(String, List<Memory>)`, `motivationalStateSection(DriveProfile)`, `narrativeSection(NarrativeState)`, `beliefsSection(List<Belief<?>>, Set<String>)`, `principlesSection(List<Principle>)`, `trustSection(List<TrustSummary>)`, `normsSection(List<SocialNorm>)`. `Principle` (text + optional category), `TrustLevel` enum (HIGH/MODERATE/LOW/UNKNOWN), `TrustSummary` (subjectName + level + optional reason) — rendering-input records. Reusable across any cognitive agent. |
 
-**Implementation issues:** casehubio/blocks#69, casehubio/blocks#127, casehubio/blocks#128
+**Implementation issues:** casehubio/agency#69, casehubio/agency#127, casehubio/agency#128
 
-### Package: `io.casehub.blocks.routing.agent`
+### Package: `io.casehub.agency.routing.agent`
 
 AI-powered `AgentRoutingStrategy` implementations and `RoutingSignalProvider` implementations for the engine's routing pipeline.
 
@@ -153,14 +153,14 @@ AI-powered `AgentRoutingStrategy` implementations and `RoutingSignalProvider` im
 | `CoordinationSignalProvider` | `RoutingSignalProvider` (id: `"coordination"`). Scores candidates by historical team composition outcomes with adaptation-guided retrieval (AGR). Weights by team re-assembly feasibility. |
 | `CbrOutcomeWeights` / `CbrCaseOutcomeWeights` / `CoordinationOutcomeWeights` | SPIs for configurable outcome weighting — step-level, case-level, and coordination-level respectively. Each has a `@DefaultBean` default. |
 
-**Implementation issues:** casehubio/blocks#30, casehubio/qhorus#361
+**Implementation issues:** casehubio/agency#30, casehubio/qhorus#361
 
 ### Completed packages (originally planned per parent#310)
 
 | Package | Status | Implemented as |
 |---------|--------|----------------|
-| `io.casehub.blocks.conversation` | Done | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection. Plus `conversation.orchestration` sub-package. |
-| `io.casehub.blocks.oversight` | Done | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes. (Originally planned as `blocks.gate`.) |
+| `io.casehub.agency.conversation` | Done | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection. Plus `conversation.orchestration` sub-package. |
+| `io.casehub.agency.oversight` | Done | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes. (Originally planned as `blocks.gate`.) |
 
 ### Module: `blocks-speech-api` — Speech SPIs
 
@@ -189,7 +189,7 @@ Default `SpeechToTextService` and `TextToSpeechService` implementation via sherp
 | `WavReader` / `WavWriter` | 16-bit PCM WAV I/O (pure Java, no javax.sound dependency) |
 | `SherpaConfig` | Configuration record (modelDir, numThreads, provider) |
 
-**Issues:** casehubio/blocks#155 (restructuring — done), casehubio/blocks#157 (implementation)
+**Issues:** casehubio/agency#155 (restructuring — done), casehubio/agency#157 (implementation)
 
 ---
 

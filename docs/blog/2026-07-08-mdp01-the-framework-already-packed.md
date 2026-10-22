@@ -5,11 +5,11 @@ date: 2026-07-08
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [summarisation, extraction, temporal-abstraction, quarkmind]
 ---
 
-The summarisation framework in quarkmind was built with its destination address on the box. Every class sat in `io.casehub.blocks.summarisation` — the package name told you where it was going before anyone filed the extraction issue. Eight files, three test files, a clean API surface. The kind of extraction that should be mechanical.
+The summarisation framework in quarkmind was built with its destination address on the box. Every class sat in `io.casehub.agency.summarisation` — the package name told you where it was going before anyone filed the extraction issue. Eight files, three test files, a clean API surface. The kind of extraction that should be mechanical.
 
 It wasn't entirely mechanical. Reading the source with fresh eyes surfaced two design problems that quarkmind's single-consumer usage had hidden.
 

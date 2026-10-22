@@ -663,7 +663,7 @@ public class LedgerExecutionListener implements ExecutionEventListener {
 
 **#8.2 — invokeAgent null:** Verified as fixed by the engine integration work. `AbstractExecutionDriver.invokeAgent()` correctly passes `context` through `invoker.invoke(agent, context)`. No action.
 
-**#8.6 — FQN imports:** `OrchestratedDriver` line 36 and `ChoreographedDriver` line 43 use `io.casehub.blocks.agentic.AgentResult` inline. Change to regular import statements.
+**#8.6 — FQN imports:** `OrchestratedDriver` line 36 and `ChoreographedDriver` line 43 use `io.casehub.agency.agentic.AgentResult` inline. Change to regular import statements.
 
 ## Type Summary
 

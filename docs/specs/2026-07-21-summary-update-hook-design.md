@@ -102,7 +102,7 @@ enum SummaryMode { APPEND, EDIT }
 
 ## Implementations
 
-Package: `io.casehub.blocks.channel.summary`
+Package: `io.casehub.agency.channel.summary`
 
 ### HeuristicChannelSummariser
 

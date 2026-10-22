@@ -5,7 +5,7 @@ date: 2026-07-05
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [otel, metrics, routing, trust-classification, type-safety]
 series: issue-7-activation-context-metrics-hardening
 ---

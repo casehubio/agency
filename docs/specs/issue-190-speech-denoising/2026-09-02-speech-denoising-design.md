@@ -18,7 +18,7 @@ an optional, runtime-configurable pre-processing step.
 ### 2.1 Offline Denoiser
 
 ```java
-package io.casehub.blocks.speech;
+package io.casehub.agency.speech;
 
 public interface SpeechDenoiser {
     float[] denoise(float[] samples, int sampleRate);
@@ -31,7 +31,7 @@ Used by file-based `SpeechToTextService` implementations.
 ### 2.2 Streaming Denoiser
 
 ```java
-package io.casehub.blocks.speech;
+package io.casehub.agency.speech;
 
 public interface StreamingSpeechDenoiser extends AutoCloseable {
     float[] processChunk(float[] samples, int sampleRate);
@@ -46,7 +46,7 @@ Processes audio chunks incrementally, maintaining internal state across calls.
 ### 2.3 Factory
 
 ```java
-package io.casehub.blocks.speech;
+package io.casehub.agency.speech;
 
 public interface StreamingSpeechDenoiserFactory {
     StreamingSpeechDenoiser create();
@@ -262,8 +262,8 @@ gated on native library availability, matching the existing pattern in
 - GE-20260826-51c700 — sherpa-onnx FFM struct layout must match ALL nested sub-configs
 - GE-20260826-190329 — Oversized zero-filled allocation technique for version-resilient FFM
 - GE-20260803-e363e6 — ONNX Runtime SIGSEGV with concurrent thread pool access
-- `speech-api/src/main/java/io/casehub/blocks/speech/SpeechToTextService.java`
-- `speech-api/src/main/java/io/casehub/blocks/speech/StreamingSpeechToTextService.java`
-- `speech-sherpa/src/main/java/io/casehub/blocks/speech/sherpa/WhisperSpeechToText.java`
-- `speech-sherpa/src/main/java/io/casehub/blocks/speech/sherpa/SherpaOnnxSpeechToText.java`
-- `speech-ws/src/main/java/io/casehub/blocks/speech/ws/SpeechSession.java`
+- `speech-api/src/main/java/io/casehub/agency/speech/SpeechToTextService.java`
+- `speech-api/src/main/java/io/casehub/agency/speech/StreamingSpeechToTextService.java`
+- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/WhisperSpeechToText.java`
+- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/SherpaOnnxSpeechToText.java`
+- `speech-ws/src/main/java/io/casehub/agency/speech/ws/SpeechSession.java`

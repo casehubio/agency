@@ -8,7 +8,7 @@
 
 ## Summary
 
-Two new `AgentRoutingStrategy` implementations in casehub-blocks that provide AI-powered agent selection for the engine's routing pipeline. Both implement the engine-api SPI (landed via engine#634) and are selected by name via `StrategyResolver`.
+Two new `AgentRoutingStrategy` implementations in casehub-agency that provide AI-powered agent selection for the engine's routing pipeline. Both implement the engine-api SPI (landed via engine#634) and are selected by name via `StrategyResolver`.
 
 Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engine-ledger, `SemanticAgentRoutingStrategy` in engine-ai. Blocks adds strategies whose differentiating dependency is LLM reasoning or case-based reasoning — capabilities that have no natural home in existing engine submodules.
 
@@ -18,7 +18,7 @@ Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engi
 
 ### `LlmAgentRoutingStrategy` (id: `"llm"`)
 
-**Package:** `io.casehub.blocks.routing.agent`
+**Package:** `io.casehub.agency.routing.agent`
 
 **Pipeline:**
 1. If `TrustCandidateClassifier` available → classify candidates via `classifier.classify()`:
@@ -47,7 +47,7 @@ Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engi
 
 ### `CbrAgentRoutingStrategy` (id: `"cbr"`)
 
-**Package:** `io.casehub.blocks.routing.agent`
+**Package:** `io.casehub.agency.routing.agent`
 
 **Prerequisite:** `AgentRoutingContext` must carry `tenantId` — required by `CbrQuery` constructor (throws NPE on null). No existing strategy needs tenantId; this is the first consumer. Tracked as engine-api follow-up. CBR strategy is blocked until this lands.
 
@@ -123,19 +123,19 @@ Both strategies are `@ApplicationScoped`. All optional dependencies injected via
 ## Package Structure
 
 ```
-src/main/java/io/casehub/blocks/routing/agent/
+src/main/java/io/casehub/agency/routing/agent/
     LlmAgentRoutingStrategy.java
     CbrAgentRoutingStrategy.java
     LlmRoutingSupport.java          — shared prompt building + response parsing
 
-src/test/java/io/casehub/blocks/routing/agent/
+src/test/java/io/casehub/agency/routing/agent/
     LlmAgentRoutingStrategyTest.java
     CbrAgentRoutingStrategyTest.java
     LlmRoutingSupportTest.java
 ```
 
 Existing packages:
-- `io.casehub.blocks.agentic.routing` — blocks-internal orchestration model (RoutingStrategy<T>, LlmSelectedRouting, etc.)
+- `io.casehub.agency.agentic.routing` — blocks-internal orchestration model (RoutingStrategy<T>, LlmSelectedRouting, etc.)
   - `LlmSelectedRouting` will be refactored to delegate to `LlmRoutingSupport` (shared utility extraction, not parallel code)
 
 ---

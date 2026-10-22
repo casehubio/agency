@@ -5,8 +5,8 @@ author: mdp
 entry_type: note
 subtype: diary
 tags: [summarisation, narrative-identity, refactoring, SPI-design]
-projects: [casehub-blocks]
-series: casehub-blocks
+projects: [casehub-agency]
+series: casehub-agency
 status: draft
 ---
 

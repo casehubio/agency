@@ -114,10 +114,10 @@ Auto-download on first use:
 For true zero-install, publish platform-specific JARs to GitHub Packages:
 
 ```
-casehub-blocks-speech-sherpa-native-osx-arm64.jar
-casehub-blocks-speech-sherpa-native-osx-x64.jar
-casehub-blocks-speech-sherpa-native-linux-x64.jar
-casehub-blocks-speech-sherpa-native-linux-arm64.jar
+casehub-agency-speech-sherpa-native-osx-arm64.jar
+casehub-agency-speech-sherpa-native-osx-x64.jar
+casehub-agency-speech-sherpa-native-linux-x64.jar
+casehub-agency-speech-sherpa-native-linux-arm64.jar
 ```
 
 Each JAR contains:
@@ -130,7 +130,7 @@ Consumer adds the platform-specific dependency:
 ```xml
 <dependency>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-speech-sherpa-native-osx-arm64</artifactId>
+    <artifactId>casehub-agency-speech-sherpa-native-osx-arm64</artifactId>
     <version>${project.version}</version>
     <scope>runtime</scope>
 </dependency>

@@ -10,7 +10,7 @@ Audio capture utility that bridges `javax.sound.sampled.TargetDataLine` to `Reco
 
 ## Module and Package
 
-`speech-sherpa` module, package `io.casehub.blocks.speech.sherpa`.
+`speech-sherpa` module, package `io.casehub.agency.speech.sherpa`.
 
 speech-api is pure SPIs with zero dependencies — a concrete utility doesn't belong there. MicrophoneCapture joins WavReader, WavWriter, and SpeechCli as implementation utilities in speech-sherpa.
 

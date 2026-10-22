@@ -129,7 +129,7 @@ Version managed by Quarkus BOM (1.57.0 as of Quarkus 3.32.2). No version tag nee
 
 ### Class
 
-`io.casehub.blocks.agentic.listener.MetricsListener implements ExecutionEventListener`
+`io.casehub.agency.agentic.listener.MetricsListener implements ExecutionEventListener`
 
 Constructor takes `io.opentelemetry.api.metrics.Meter`. Instruments created at
 construction time.

@@ -23,11 +23,11 @@ import static org.mockito.Mockito.when;
 
 import io.casehub.api.engine.WorkerRuntime;
 import io.casehub.api.model.WorkerContext;
-import io.casehub.blocks.agentic.AgentRef;
-import io.casehub.blocks.agentic.AgentResult;
-import io.casehub.blocks.agentic.model.ExecutionModel;
-import io.casehub.blocks.agentic.model.PatternType;
-import io.casehub.blocks.agentic.pattern.Patterns;
+import io.casehub.agency.agentic.AgentRef;
+import io.casehub.agency.agentic.AgentResult;
+import io.casehub.agency.agentic.model.ExecutionModel;
+import io.casehub.agency.agentic.model.PatternType;
+import io.casehub.agency.agentic.pattern.Patterns;
 import io.casehub.engine.common.internal.executor.ExecutionMetadata;
 import io.casehub.engine.common.internal.executor.HandlerResult;
 import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
@@ -192,7 +192,7 @@ class PatternWorkerFunctionHandlerTest {
                     AgentResult.success(null, Map.of("analysis", "done"))));
 
     var leaf =
-        new io.casehub.blocks.agentic.decomposition.PlannedTask<>(
+        new io.casehub.agency.agentic.decomposition.PlannedTask<>(
             "s1", java.time.Instant.now(), "analyse", agent, null);
     var plan =
         io.casehub.engine.plan.DagPlan.<io.casehub.engine.plan.TaskNode.LeafTask<Object>>singleton(
@@ -205,7 +205,7 @@ class PatternWorkerFunctionHandlerTest {
     var model =
         Patterns.<Object>htn()
             .decompose(decomposition)
-            .agents(new io.casehub.blocks.agentic.RoutingCandidate(agent, null))
+            .agents(new io.casehub.agency.agentic.RoutingCandidate(agent, null))
             .build();
 
     var fn = new PatternWorkerFunction(model, PatternType.HTN, false, null, rootTask);
@@ -231,10 +231,10 @@ class PatternWorkerFunctionHandlerTest {
                     AgentResult.success(null, Map.of("recovered", true))));
 
     var failLeaf =
-        new io.casehub.blocks.agentic.decomposition.PlannedTask<>(
+        new io.casehub.agency.agentic.decomposition.PlannedTask<>(
             "s1", java.time.Instant.now(), "will-fail", failAgent, null);
     var recoveryLeaf =
-        new io.casehub.blocks.agentic.decomposition.PlannedTask<>(
+        new io.casehub.agency.agentic.decomposition.PlannedTask<>(
             "r1", java.time.Instant.now(), "recovery", recoveryAgent, null);
 
     var originalPlan =
@@ -266,22 +266,22 @@ class PatternWorkerFunctionHandlerTest {
 
     var rootTask = new io.casehub.engine.plan.TaskNode.CompoundTask<>("goal", java.util.List.of());
     var failurePolicy =
-        new io.casehub.blocks.agentic.FailurePolicy(
-            io.casehub.blocks.agentic.FailurePolicy.RoutingFailureAction.FAIL,
-            io.casehub.blocks.agentic.FailurePolicy.AggregationFailureAction.FAIL,
-            io.casehub.blocks.agentic.FailurePolicy.defaults().agentRetry(),
-            new io.casehub.blocks.agentic.FailurePolicy.ReplanPolicy(
-                2, io.casehub.blocks.agentic.FailurePolicy.RoutingFailureAction.FAIL));
+        new io.casehub.agency.agentic.FailurePolicy(
+            io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction.FAIL,
+            io.casehub.agency.agentic.FailurePolicy.AggregationFailureAction.FAIL,
+            io.casehub.agency.agentic.FailurePolicy.defaults().agentRetry(),
+            new io.casehub.agency.agentic.FailurePolicy.ReplanPolicy(
+                2, io.casehub.agency.agentic.FailurePolicy.RoutingFailureAction.FAIL));
 
     var model =
         Patterns.<Object>htn()
             .decompose(decomposition)
             .agents(
-                new io.casehub.blocks.agentic.RoutingCandidate(failAgent, null),
-                new io.casehub.blocks.agentic.RoutingCandidate(recoveryAgent, null))
+                new io.casehub.agency.agentic.RoutingCandidate(failAgent, null),
+                new io.casehub.agency.agentic.RoutingCandidate(recoveryAgent, null))
             .build();
     model =
-        new io.casehub.blocks.agentic.model.ExecutionModel<>(
+        new io.casehub.agency.agentic.model.ExecutionModel<>(
             model.routing(),
             model.decomposition(),
             model.activation(),

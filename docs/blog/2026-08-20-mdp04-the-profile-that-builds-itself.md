@@ -13,7 +13,7 @@ subtype: diary
 
 An agent that remembers every interaction but can't tell you who it's talking to has a data problem dressed up as a knowledge problem. CBR stores accumulate cases — "on Tuesday, the user asked about deployment pipelines and seemed frustrated" — but no amount of case retrieval synthesises the conclusion that this person is a DevOps engineer who prefers direct communication and gets impatient with small talk. That synthesis is what the persistent memory literature (arXiv:2510.07925) calls a user profile, and the gap between raw cases and holistic understanding is where personalisation either happens or doesn't.
 
-UserModel is blocks' answer to that gap. It sits in `io.casehub.blocks.agentic.social` alongside PersonalityEvolution and InnerLife — the three form a social cognition triad: how the agent changes, when it speaks, and what it knows about others.
+UserModel is blocks' answer to that gap. It sits in `io.casehub.agency.agentic.social` alongside PersonalityEvolution and InnerLife — the three form a social cognition triad: how the agent changes, when it speaks, and what it knows about others.
 
 ## Who counts as a user
 

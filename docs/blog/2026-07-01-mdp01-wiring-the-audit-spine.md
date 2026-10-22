@@ -5,7 +5,7 @@ date: 2026-07-01
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 ---
 
 The agentic orchestration framework had five SPIs, two drivers, and eight pattern builders — but the data flowing between them was thin. `RoutingContext.task` was the literal string `"task"`. `RoutingDecision.Selected` carried which agents were chosen but not why. The LLM routing prompt couldn't see the accumulated execution state. Debate patterns stored a judge but never invoked it. And nothing was auditable — ExecutionEventListener existed as an interface with no persistent listeners.

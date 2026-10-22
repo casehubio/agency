@@ -5,7 +5,7 @@
 - blocks module — conventional CDI location, but splits attention code across two modules
 **Rationale:** Keeps the attention subsystem self-contained. blocks-core already uses CDI annotations (SocialCognitionDefaultBeans).
 **Trade-offs:** blocks-core gains another CDI bean, but it already has several.
-**Sources:** SocialCognitionDefaultBeans.java, BlocksBeans.java
+**Sources:** SocialCognitionDefaultBeans.java, AgencyBeans.java
 **Exploration:** quick
 **Status:** captured
 

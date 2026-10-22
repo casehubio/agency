@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context and Problem Statement
 
-CaseHub's `casehub-blocks-annotations` module needs annotation equivalents for 8 orchestration patterns (supervisor, sequence, parallel, loop, conditional, debate, voting, HTN). LangChain4j's `langchain4j-agentic` provides declarative annotations for 7 core patterns (`@SupervisorAgent`, `@SequenceAgent`, `@ParallelAgent`, `@ParallelMapperAgent`, `@LoopAgent`, `@ConditionalAgent`, `@PlannerAgent`) and `langchain4j-agentic-patterns` provides runtime `Planner` implementations for advanced patterns: `DebatePlanner`, `VotingPlanner`, `GoalOrientedPlanner` (GOAP), `BlackboardPlanner`, and `P2PPlanner`. The overlap covers ALL of CaseHub's pattern vocabulary — not just the base five. Both systems implement the same patterns with architecturally different execution models. CaseHub must decide whether to adopt LC4j's annotations or define its own — and how to maximise interoperability for the broader LC4j community.
+CaseHub's `casehub-agency-annotations` module needs annotation equivalents for 8 orchestration patterns (supervisor, sequence, parallel, loop, conditional, debate, voting, HTN). LangChain4j's `langchain4j-agentic` provides declarative annotations for 7 core patterns (`@SupervisorAgent`, `@SequenceAgent`, `@ParallelAgent`, `@ParallelMapperAgent`, `@LoopAgent`, `@ConditionalAgent`, `@PlannerAgent`) and `langchain4j-agentic-patterns` provides runtime `Planner` implementations for advanced patterns: `DebatePlanner`, `VotingPlanner`, `GoalOrientedPlanner` (GOAP), `BlackboardPlanner`, and `P2PPlanner`. The overlap covers ALL of CaseHub's pattern vocabulary — not just the base five. Both systems implement the same patterns with architecturally different execution models. CaseHub must decide whether to adopt LC4j's annotations or define its own — and how to maximise interoperability for the broader LC4j community.
 
 ## Decision Drivers
 
@@ -26,7 +26,7 @@ CaseHub's `casehub-blocks-annotations` module needs annotation equivalents for 8
 
 Chosen option: **Option A** — a dual-track strategy:
 
-**Track 1 — CaseHub owns its orchestration annotations.** All 8 pattern annotations live in `io.casehub.blocks.annotations`, produce CaseHub's `ExecutionModel<T>`, and compose uniformly with governance meta-annotations. No `langchain4j-agentic` dependency. CaseHub's execution model is the right abstraction for CaseHub use cases — composable SPIs, governance hooks, event-driven backends.
+**Track 1 — CaseHub owns its orchestration annotations.** All 8 pattern annotations live in `io.casehub.agency.annotations`, produce CaseHub's `ExecutionModel<T>`, and compose uniformly with governance meta-annotations. No `langchain4j-agentic` dependency. CaseHub's execution model is the right abstraction for CaseHub use cases — composable SPIs, governance hooks, event-driven backends.
 
 **Track 2 — Maximise LC4j integration via composition.** LC4j agents are first-class CaseHub workers at runtime. An existing `@SupervisorAgent` LC4j agent is a CDI bean that CaseHub wraps via `@Worker` + `AgentWorkerFunction`. CaseHub handles external orchestration (when to invoke, governance, trust routing, audit). LC4j handles internal orchestration (how the agent does its work). The LC4j agent automatically gets qhorus channel audit, ledger attestation chains, trust scoring, and oversight gates — these operate on the worker dispatch boundary, not the annotation layer. No annotation migration needed. Write in LC4j, deploy in CaseHub, get governance for free.
 
@@ -103,6 +103,6 @@ The analogy: Spring defines `@Transactional` over Hibernate's `SessionFactory`. 
 * Blocks D1 decision — `docs/specs/issue-116-blocks-annotations/decisions.md`
 * Epic: casehubio/blocks#115 (annotation-driven agent programming model)
 * Issue: casehubio/blocks#116 (blocks-annotations module)
-* `io.casehub.blocks.agentic.pattern.Patterns` — 8 pattern builders
-* `io.casehub.blocks.agentic.model.ExecutionModel` — 5-SPI composition record
+* `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
+* `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
 * GE-20260608-4c8108 — `AnnotationsImpliesAiServiceBuildItem` (LC4j runtime integration pattern)

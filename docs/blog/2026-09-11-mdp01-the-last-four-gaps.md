@@ -5,7 +5,7 @@ entry_type: note
 subtype: diary
 author: mdp
 tags: [agentic, yaml, schema-drift, extensibility, descriptor-wiring]
-projects: [casehub-blocks]
+projects: [casehub-agency]
 series: blocks
 status: draft
 ---
@@ -16,7 +16,7 @@ The YAML surface epic started with a coverage matrix — 165 capabilities across
 
 Twelve child issues later, the matrix is complete. The last four were the cleanup tier — the kind of work that doesn't add capabilities but makes the surface trustworthy.
 
-The schema drift problem was the simplest and the most overdue. `BlocksSchemaGenerator` produces JSON Schema from sealed spec records via victools. The schema changes every time a spec record gains a field or a new sealed variant appears. Without a committed baseline, those changes are invisible. The fix is a 43-line test: generate the schema, compare against a 1026-line committed JSON file, fail if they differ. Run with `-Dschema.update` to regenerate. Approval testing for schemas — nothing novel, but the kind of safety net that only matters the first time it catches something.
+The schema drift problem was the simplest and the most overdue. `AgencySchemaGenerator` produces JSON Schema from sealed spec records via victools. The schema changes every time a spec record gains a field or a new sealed variant appears. Without a committed baseline, those changes are invisible. The fix is a 43-line test: generate the schema, compare against a 1026-line committed JSON file, fail if they differ. Run with `-Dschema.update` to regenerate. Approval testing for schemas — nothing novel, but the kind of safety net that only matters the first time it catches something.
 
 The descriptor wiring was more interesting. `PatternCompiler` translates YAML specs into runtime `ExecutionModel` objects. Each agent in a pattern becomes a `RoutingCandidate` — a dispatch reference paired with an optional `AgentDescriptor`. The descriptor feeds LLM-based routing: when a supervisor needs to choose which agent handles a task, the descriptor's briefing and capabilities are what the LLM sees. Until now, every YAML-declared agent got a null descriptor. The spec carried `name`, `description`, and `capabilities` fields, but the compiler threw them away.
 

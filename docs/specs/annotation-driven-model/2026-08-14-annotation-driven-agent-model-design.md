@@ -399,7 +399,7 @@ public interface GovernedReviewCase {
 - The `@Customize` method must be `static` and accept exactly one parameter — the parameter type determines what is customized
 - `CaseDefinition.Builder` — customizes the generated case definition (access to all ~40 fields). `value()` is ignored.
 - `Binding.Builder` — customizes a specific binding. `value()` is **required** and must name the `@Bind`-annotated method whose binding is being customized. The build extension emits a compile error if `value()` is empty or names a method without `@Bind`.
-- Pattern builder (e.g., `DebateBuilder<T>`, `SupervisorBuilder<T>`, `HtnBuilder<T>`) — customizes the generated execution model. The build extension determines the expected builder type from the orchestration annotation on the interface. `value()` is **required** and must name the orchestration method being customized. Provides full access to the pattern builder's SPIs: routing, decomposition, activation, aggregation, termination, listeners, backend. There is no `ExecutionModel.Builder` — each pattern has its own concrete builder in `io.casehub.blocks.agentic.pattern`.
+- Pattern builder (e.g., `DebateBuilder<T>`, `SupervisorBuilder<T>`, `HtnBuilder<T>`) — customizes the generated execution model. The build extension determines the expected builder type from the orchestration annotation on the interface. `value()` is **required** and must name the orchestration method being customized. Provides full access to the pattern builder's SPIs: routing, decomposition, activation, aggregation, termination, listeners, backend. There is no `ExecutionModel.Builder` — each pattern has its own concrete builder in `io.casehub.agency.agentic.pattern`.
 - The build extension calls the customizer after processing all annotations, so annotation-set values are already on the builder
 - Multiple `@Customize` methods are allowed — `@Repeatable` supports customizing multiple bindings or combining case + binding customizers
 
@@ -434,18 +434,18 @@ default WorkerResult orchestrate(WorkerInput input) {
 
 ## Layer 2: CaseHub Domain Annotations
 
-This layer spans multiple modules, following Design Principle 2 — each annotation lives in the module that owns its concept. The blocks build extension in `casehub-blocks-engine-adapter` composes across all modules at build time, but annotations themselves live in their home module's api package.
+This layer spans multiple modules, following Design Principle 2 — each annotation lives in the module that owns its concept. The blocks build extension in `casehub-agency-engine-adapter` composes across all modules at build time, but annotations themselves live in their home module's api package.
 
 | Sub-domain | Module | Annotations |
 |---|---|---|
-| Orchestration patterns | `casehub-blocks` (api) | `@DebateAgent`, `@VotingAgent`, `@HtnAgent`, `@Convergence`, role annotations, `@OversightGate`, `@TrustRouted`, `@CbrRouted`, `@Attestation`, `@OnFailure`, `@Decompose` |
+| Orchestration patterns | `casehub-agency` (api) | `@DebateAgent`, `@VotingAgent`, `@HtnAgent`, `@Convergence`, role annotations, `@OversightGate`, `@TrustRouted`, `@CbrRouted`, `@Attestation`, `@OnFailure`, `@Decompose` |
 | Agent identity | `casehub-eidos-api` | `@Identity`, `@Disposition`, `@AgentGoals`, `@AgentConstraints`, `@Discoverable` |
 | Human-in-the-loop | `casehub-work-api` | `@HumanApproval`, `@RequiresQuorum`, `@Escalate` |
 
 ### Orchestration annotations (blocks patterns)
 
-**Module:** `casehub-blocks` (api package)
-**Processor:** New Quarkus build extension in `casehub-blocks-engine-adapter`
+**Module:** `casehub-agency` (api package)
+**Processor:** New Quarkus build extension in `casehub-agency-engine-adapter`
 **Produces:** `ExecutionModel`, `PatternBuilder` results, interceptor wiring (same types as `Patterns.*()`)
 
 #### CaseHub-specific orchestration patterns
@@ -541,7 +541,7 @@ The build extension validates at build time that only strategy-relevant paramete
 ### Agent identity annotations (eidos integration)
 
 **Module:** `casehub-eidos-api` (annotations follow Design Principle 2 — eidos owns identity concepts)
-**Processor:** Blocks build extension in `casehub-blocks-engine-adapter` (cross-module composition)
+**Processor:** Blocks build extension in `casehub-agency-engine-adapter` (cross-module composition)
 
 CaseHub's eidos module provides a full agent identity and personality system (`AgentDescriptor`, `AgentDisposition`, `AgentGoal`, `AgentConstraint`). No competing framework has anything equivalent. These annotations make eidos identity declarative.
 
@@ -665,7 +665,7 @@ This is a massive differentiator — no other framework allows declarative agent
 ### Human-in-the-loop annotations (work integration)
 
 **Module:** `casehub-work-api` (annotations follow Design Principle 2 — work owns human task concepts)
-**Processor:** Blocks build extension in `casehub-blocks-engine-adapter` (cross-module composition)
+**Processor:** Blocks build extension in `casehub-agency-engine-adapter` (cross-module composition)
 
 CaseHub's work module provides enterprise-grade HIL infrastructure — 11-state WorkItem lifecycle, AI-powered routing, quorum patterns, workflow suspension, templates. LC4j's `@HumanInTheLoop` reads from console. These annotations bridge the work module into the annotation model.
 
@@ -807,7 +807,7 @@ public @interface OnFailure {
 
 Composable failure policy for any orchestration annotation. Maps directly to `FailurePolicy` record fields. Without `@OnFailure`, `FailurePolicy.defaults()` applies (3 retries, fixed 1s backoff, FAIL on exhaustion).
 
-**Type mapping:** `RoutingFailureAction` (`FAIL`, `RETRY_BROADER`, `ESCALATE`), `AggregationFailureAction` (`FAIL`, `ESCALATE`, `RETRY_DIFFERENT`), `BackoffStrategy` (`FIXED`, `EXPONENTIAL`, `EXPONENTIAL_WITH_JITTER`), `AgentFailureAction` (`FAIL`, `ESCALATE`, `SKIP`) — all existing enums nested in `io.casehub.blocks.agentic.FailurePolicy`.
+**Type mapping:** `RoutingFailureAction` (`FAIL`, `RETRY_BROADER`, `ESCALATE`), `AggregationFailureAction` (`FAIL`, `ESCALATE`, `RETRY_DIFFERENT`), `BackoffStrategy` (`FIXED`, `EXPONENTIAL`, `EXPONENTIAL_WITH_JITTER`), `AgentFailureAction` (`FAIL`, `ESCALATE`, `SKIP`) — all existing enums nested in `io.casehub.agency.agentic.FailurePolicy`.
 
 **Build extension mapping to `FailurePolicy`:** The build extension applies conditional logic when constructing `FailurePolicy` from `@OnFailure`:
 - `maxReplans == 0` → `replanPolicy = null` (no replanning — uses `FailurePolicy` 3-arg constructor)
@@ -838,7 +838,7 @@ Overrides the default decomposition strategy for any orchestration annotation.
 ### Dynamic composition annotations
 
 **Module:** `casehub-eidos-api` (`@Discoverable` — eidos owns agent discovery as an extension of agent identity)
-**Module:** `casehub-blocks` (api) (`@DiscoverFrom`, `@Route` — blocks owns orchestration composition)
+**Module:** `casehub-agency` (api) (`@DiscoverFrom`, `@Route` — blocks owns orchestration composition)
 
 #### `@Discoverable`
 ```java
@@ -907,7 +907,7 @@ public interface ComplianceReview {
 
 This is ~25 lines for a governed multi-agent debate with oversight, trust routing, attestation, failure policy, and judge-driven convergence. The `@Judge` parameter creates `JudgeConvergence` termination automatically — no explicit `@Convergence` needed. The builder equivalent is 60+ lines.
 
-**`AgentRef` parameter wiring:** The build extension resolves `@Debater`/`@Judge`-annotated `AgentRef` parameters into agent instances at build time. For each annotated parameter, the extension generates an `AgentRef.WorkerAgent` wrapping an LC4j-generated AI service configured with the annotation's `systemPrompt` and the interface's `@ChatModelSupplier`. The `role` attribute maps to the agent's identity within the debate pattern. CDI injection provides the resolved `AgentRef` instances at runtime. `AgentRef` is a sealed interface (`io.casehub.blocks.agentic.AgentRef`) with 5 variants: `WorkerAgent`, `ChannelAgent`, `HumanAgent`, `ExternalAgent`, `ComposedAgent`.
+**`AgentRef` parameter wiring:** The build extension resolves `@Debater`/`@Judge`-annotated `AgentRef` parameters into agent instances at build time. For each annotated parameter, the extension generates an `AgentRef.WorkerAgent` wrapping an LC4j-generated AI service configured with the annotation's `systemPrompt` and the interface's `@ChatModelSupplier`. The `role` attribute maps to the agent's identity within the debate pattern. CDI injection provides the resolved `AgentRef` instances at runtime. `AgentRef` is a sealed interface (`io.casehub.agency.agentic.AgentRef`) with 5 variants: `WorkerAgent`, `ChannelAgent`, `HumanAgent`, `ExternalAgent`, `ComposedAgent`.
 
 ### Example: composing governance onto LC4j annotations
 
@@ -992,7 +992,7 @@ The LC4j `@SupervisorAgent` defines the orchestration pattern. CaseHub's `@Overs
    - Interceptor bindings for governance annotations
 6. **Compose** with LC4j — governance annotations on LC4j `@SupervisorAgent` etc. wrap the LC4j-generated bean with blocks interceptors
 
-**Module ownership vs processing:** Annotations live in their owning module's API (Design Principle 2). The blocks build extension in `casehub-blocks-engine-adapter` processes annotations from multiple modules because it handles cross-cutting composition. This follows the same pattern as LC4j's Quarkus extension: annotations in `langchain4j-agentic`, processing in `quarkus-langchain4j`.
+**Module ownership vs processing:** Annotations live in their owning module's API (Design Principle 2). The blocks build extension in `casehub-agency-engine-adapter` processes annotations from multiple modules because it handles cross-cutting composition. This follows the same pattern as LC4j's Quarkus extension: annotations in `langchain4j-agentic`, processing in `quarkus-langchain4j`.
 
 ### `ExecutionModel<T>` type parameter inference
 
@@ -1084,10 +1084,10 @@ Changes to contribute upstream that benefit both CaseHub and the broader ecosyst
 **Scope:** Implement `@DebateAgent`, `@VotingAgent`, `@HtnAgent` plus role annotations. Implement `@OversightGate`, `@TrustRouted`, `@CbrRouted`, `@Attestation` as composable meta-annotations. Implement eidos identity annotations (`@Identity`, `@Disposition`, `@AgentGoals`, `@AgentConstraints`) in `casehub-eidos-api` and work annotations (`@HumanApproval`, `@RequiresQuorum`, `@Escalate`) in `casehub-work-api`.
 
 **Deliverables:**
-- Blocks annotations in `casehub-blocks` (api package)
+- Blocks annotations in `casehub-agency` (api package)
 - Eidos annotations in `casehub-eidos-api`
 - Work annotations in `casehub-work-api`
-- Quarkus build extension in `casehub-blocks-engine-adapter` (processes all three)
+- Quarkus build extension in `casehub-agency-engine-adapter` (processes all three)
 - Build-time validation for governance annotations
 - 3 examples (simple debate, governed supervisor, CBR-routed HTN)
 
@@ -1104,13 +1104,13 @@ Changes to contribute upstream that benefit both CaseHub and the broader ecosyst
 
 **Upstream migration path:** When LC4j accepts an upstream candidate (e.g., `@DebateAgent`), the migration follows three stages:
 
-1. **Deprecate** — CaseHub's `io.casehub.blocks.agentic.DebateAgent` is marked `@Deprecated` with a `forRemoval = true` and `since` pointing to the LC4j version that includes the upstream equivalent. The build extension emits a compile-time warning for all usages.
+1. **Deprecate** — CaseHub's `io.casehub.agency.agentic.DebateAgent` is marked `@Deprecated` with a `forRemoval = true` and `since` pointing to the LC4j version that includes the upstream equivalent. The build extension emits a compile-time warning for all usages.
 
 2. **Bridge** — CaseHub's build extension recognises BOTH the CaseHub annotation and the LC4j annotation for one release cycle. CaseHub-specific attributes that LC4j does not adopt (e.g., `@Convergence` if LC4j ships a simpler convergence model) become composable annotations that work alongside the LC4j annotation:
    ```java
    // Before: CaseHub-only
-   @io.casehub.blocks.agentic.DebateAgent(maxRounds = 5)
-   @io.casehub.blocks.conversation.Convergence(strategy = ConvergenceStrategy.STRUCTURAL, threshold = 0.85)
+   @io.casehub.agency.agentic.DebateAgent(maxRounds = 5)
+   @io.casehub.agency.conversation.Convergence(strategy = ConvergenceStrategy.STRUCTURAL, threshold = 0.85)
 
    // After: LC4j base + CaseHub extension
    @dev.langchain4j.agentic.DebateAgent(maxRounds = 5)
@@ -1484,7 +1484,7 @@ The annotation model handles the 80% case — declaring agents, wiring orchestra
 - **`@QuarkusTest` with `@RegisterExtension`:** Build extensions run at build time, not runtime. Tests use `@RegisterExtension` to drive the build extension and then verify the generated CDI beans are available and correctly wired.
 - **Three-extension composition:** LC4j + engine + blocks extensions processing the same interface. Tests must validate extension ordering and non-interference — each extension processes its own annotations without corrupting the others' output.
 - **Negative compilation tests:** Invalid annotation combinations (e.g., `@Bind` referencing unknown capability, `@TrustRouted(minimumScore = 1.5)`) must produce compile-time errors. Use `@ShouldFail` test annotations or Quarkus's `@QuarkusIntegrationTest` failure mode.
-- **Cross-module annotation composition:** Eidos annotations (`@Identity`) from `casehub-eidos-api` + blocks annotations (`@OversightGate`) from `casehub-blocks` on the same interface — verify the blocks build extension correctly scans annotations from multiple source modules.
+- **Cross-module annotation composition:** Eidos annotations (`@Identity`) from `casehub-eidos-api` + blocks annotations (`@OversightGate`) from `casehub-agency` on the same interface — verify the blocks build extension correctly scans annotations from multiple source modules.
 
 ### Drift-protection tests (annotation ↔ builder parity)
 

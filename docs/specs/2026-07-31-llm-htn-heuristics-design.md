@@ -276,7 +276,7 @@ public static <T> HeuristicDecomposition<T> heuristic(DecompositionHeuristic<T> 
 
 ## File Inventory
 
-All files in `io.casehub.blocks.agentic.decomposition`:
+All files in `io.casehub.agency.agentic.decomposition`:
 
 | File | Type |
 |------|------|

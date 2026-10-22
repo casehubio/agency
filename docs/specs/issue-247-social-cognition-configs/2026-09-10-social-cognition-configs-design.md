@@ -154,7 +154,7 @@ public class CognitionRecorder {
 
 ## Dependencies
 
-`agentic-yaml` already depends on `casehub-blocks` (which contains all config records). New provided deps needed:
+`agentic-yaml` already depends on `casehub-agency` (which contains all config records). New provided deps needed:
 - `casehub-neocortex-memory-api` — for `MoodBaseline`, `MemoryDomain` (deserialized directly)
 
 ## Testing

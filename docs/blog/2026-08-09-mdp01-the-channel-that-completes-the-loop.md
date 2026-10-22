@@ -2,7 +2,7 @@
 title: "The channel that completes the loop"
 date: 2026-08-09
 author: mdp
-projects: [casehub-blocks]
+projects: [casehub-agency]
 entry_type: note
 subtype: diary
 tags: [agentic, channels, execution-backend, conversation-orchestrator, pattern-builders]

@@ -5,7 +5,7 @@ date: 2026-08-02
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [agentic, decomposition, htn, llm-planning]
 ---
 

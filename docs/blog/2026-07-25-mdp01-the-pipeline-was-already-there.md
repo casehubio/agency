@@ -5,11 +5,11 @@ date: 2026-07-25
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks-ui]
+projects: [casehub-agency-ui]
 series: issue-95-align-table-pipeline
 ---
 
-# CaseHub Blocks UI — The Pipeline Was Already There
+# CaseHub Agency UI — The Pipeline Was Already There
 
 **Date:** 2026-07-25
 **Type:** phase-update

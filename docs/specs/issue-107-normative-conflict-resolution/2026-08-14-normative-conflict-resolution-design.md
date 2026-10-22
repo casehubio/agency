@@ -6,11 +6,11 @@
 
 ## Summary
 
-A generic `ConflictResolutionStrategy<T>` SPI in `io.casehub.blocks.normative` for resolving conflicts between competing norm decisions. Four resolution strategies (priority, specificity, recency, most-restrictive) plus an escalation strategy. Speculative — no consumer yet; engine integration requires a separate change to `ChainedActionRiskClassifier` in engine-api.
+A generic `ConflictResolutionStrategy<T>` SPI in `io.casehub.agency.normative` for resolving conflicts between competing norm decisions. Four resolution strategies (priority, specificity, recency, most-restrictive) plus an escalation strategy. Speculative — no consumer yet; engine integration requires a separate change to `ChainedActionRiskClassifier` in engine-api.
 
 ## Architecture
 
-### Package: `io.casehub.blocks.normative`
+### Package: `io.casehub.agency.normative`
 
 New top-level package in blocks. Generic — not coupled to oversight or any specific decision type. The primary expected consumer is the oversight pipeline (composing `NormDecision<RiskDecision>`), but the SPI works for any decision type where multiple sources can produce conflicting outcomes.
 
@@ -132,7 +132,7 @@ public static boolean hasConflict(List<NormDecision<RiskDecision>> decisions) {
 
 ## File Inventory
 
-10 production files, 5 test files. All in `io.casehub.blocks.normative`.
+10 production files, 5 test files. All in `io.casehub.agency.normative`.
 
 ## Scope Exclusions
 

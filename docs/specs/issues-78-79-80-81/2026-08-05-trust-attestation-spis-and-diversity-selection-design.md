@@ -12,11 +12,11 @@ Four enhancements on a single branch: three trust SPIs extracted from domain rep
 
 ## 1. Attestation Package (#79)
 
-**Package:** `io.casehub.blocks.attestation`
+**Package:** `io.casehub.agency.attestation`
 
 ### 1.1 Existing Types (commit + modify)
 
-**`AttestationIntent`** — existing untracked record in `src/main/java/io/casehub/blocks/attestation/`. Add one field:
+**`AttestationIntent`** — existing untracked record in `src/main/java/io/casehub/agency/attestation/`. Add one field:
 
 - `@Nullable UUID causedByEntryId` — source event entry ID for idempotent writes. Nullable because not all attestation sources have a causal entry. Idempotency semantics (no-op vs upsert on duplicate `causedByEntryId`) are implementation-defined by each `AttestationIntentWriter`.
 
@@ -74,7 +74,7 @@ public record AttestationContext(
 
 ## 2. Trust SPIs (#80, #81)
 
-**Package:** `io.casehub.blocks.trust`
+**Package:** `io.casehub.agency.trust`
 
 Separate from `blocks.attestation` — these SPIs have no compile-time dependency on attestation types. They orbit the trust lifecycle but their inputs and outputs are self-contained.
 
@@ -216,12 +216,12 @@ public class VouchService {
 
 ## 3. FewShotOptimiser Diversity (#78)
 
-**Package:** `io.casehub.blocks.prompt` (SPI) + `io.casehub.blocks.prompt.optimiser` (implementations)
+**Package:** `io.casehub.agency.prompt` (SPI) + `io.casehub.agency.prompt.optimiser` (implementations)
 
 ### 3.1 DiversityStrategy SPI
 
 ```java
-package io.casehub.blocks.prompt;
+package io.casehub.agency.prompt;
 
 @FunctionalInterface
 public interface DiversityStrategy {
@@ -239,7 +239,7 @@ public interface DiversityStrategy {
 ### 3.2 TopNDiversityStrategy (identity implementation)
 
 ```java
-package io.casehub.blocks.prompt.optimiser;
+package io.casehub.agency.prompt.optimiser;
 
 public class TopNDiversityStrategy implements DiversityStrategy {
     @Override
@@ -256,7 +256,7 @@ Pure relevance selection — returns the first `maxExamples` candidates from the
 Outcome coverage + token-level Jaccard MMR:
 
 ```java
-package io.casehub.blocks.prompt.optimiser;
+package io.casehub.agency.prompt.optimiser;
 
 public class OutcomeAwareDiversityStrategy implements DiversityStrategy {
 

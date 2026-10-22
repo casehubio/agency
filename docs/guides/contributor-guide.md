@@ -1,6 +1,6 @@
-# casehub-blocks -- Contributor Guide
+# casehub-agency -- Contributor Guide
 
-> Internals, architecture, and extension points for platform builders working on casehub-blocks itself.
+> Internals, architecture, and extension points for platform builders working on casehub-agency itself.
 
 **GitHub:** [casehubio/blocks](https://github.com/casehubio/blocks)
 
@@ -8,30 +8,30 @@
 
 ## Module Structure
 
-Single module -- `casehub-blocks` is a flat library, not a multi-module reactor. Single artifact: `casehub-blocks`.
+Single module -- `casehub-agency` is a flat library, not a multi-module reactor. Single artifact: `casehub-agency`.
 
 | Path | Contents |
 |------|----------|
-| `src/main/java/io/casehub/blocks/channel/` | Channel utility blocks -- message meta, context tracking, bounded projection, agent dispatch |
-| `src/main/java/io/casehub/blocks/channel/summary/` | Channel summary integration -- `ContentSummariser<Message>` wiring + `SummaryUpdateHook` adapter |
-| `src/main/java/io/casehub/blocks/conversation/` | Structured conversation protocol -- projections, fold state, rendering, epistemic common ground, convergence detection (27 types) |
-| `src/main/java/io/casehub/blocks/agentic/` | Compositional agentic orchestration -- five SPIs, execution drivers, pattern builders (ten sub-packages) |
-| `src/main/java/io/casehub/blocks/agentic/activation/` | Activation SPI: `ActivationRule`, `ActivationContext`, `Activation` factory, implementations |
-| `src/main/java/io/casehub/blocks/agentic/aggregation/` | Aggregation SPI: `AggregationStrategy`, `AggregationContext`, `AggregationResult`, `Aggregation` factory, implementations |
-| `src/main/java/io/casehub/blocks/agentic/decomposition/` | Decomposition: `Decomposition`/`Tasks` factories, strategies, heuristics, task types (21 files) |
-| `src/main/java/io/casehub/blocks/agentic/listener/` | Accountability listeners: `EventLogListener`, `LedgerExecutionListener`, `MetricsListener`, `OrchestrationEventType` |
-| `src/main/java/io/casehub/blocks/agentic/model/` | Execution model: drivers, invokers, backends, state machine (11 files) |
-| `src/main/java/io/casehub/blocks/agentic/pattern/` | Pattern DSL: `Patterns` entry point, 8 builders + `AbstractPatternBuilder` base class |
-| `src/main/java/io/casehub/blocks/agentic/plan/` | `ExecutionPlan<T>` -- DAG record with cycle validation |
-| `src/main/java/io/casehub/blocks/agentic/routing/` | Routing SPI: `RoutingStrategy`, `RoutingDecision`, `Routing` factory, 4 implementations + `StageGate`/`StageAwareCandidateSupplier` |
-| `src/main/java/io/casehub/blocks/agentic/termination/` | Termination SPI: `TerminationCondition`, `TerminationDecision`, `Termination` factory, 4 implementations |
-| `src/main/java/io/casehub/blocks/routing/` | Trust routing audit types -- compliance records for routing decisions |
-| `src/main/java/io/casehub/blocks/routing/agent/` | AI-powered AgentRoutingStrategy implementations -- LLM-reasoned and CBR-evidence agent selection (15 files) |
-| `src/main/java/io/casehub/blocks/summarisation/` | Temporal abstraction framework + content summarisation SPI -- event levels, windowed accumulation, pluggable summarisation (14 files) |
-| `src/main/java/io/casehub/blocks/summarisation/llm/` | LLM-backed `ContentSummariser<T>` -- generic synthesis via `AgentProvider` |
-| `src/main/java/io/casehub/blocks/summarisation/observation/` | Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts (4 files) |
-| `src/main/java/io/casehub/blocks/summarisation/observation/affordance/` | Affordance grounding -- per-entity observation rendering for LLM agents (5 files) |
-| `src/main/java/io/casehub/blocks/agentic/social/prompt/` | Social cognition speech integration -- SocialAvatarCognition, SocialPromptAssembler, ProactiveSpeechSupport, AttentionPromptSection, 10 PromptSection implementations |
+| `src/main/java/io/casehub/agency/channel/` | Channel utility blocks -- message meta, context tracking, bounded projection, agent dispatch |
+| `src/main/java/io/casehub/agency/channel/summary/` | Channel summary integration -- `ContentSummariser<Message>` wiring + `SummaryUpdateHook` adapter |
+| `src/main/java/io/casehub/agency/conversation/` | Structured conversation protocol -- projections, fold state, rendering, epistemic common ground, convergence detection (27 types) |
+| `src/main/java/io/casehub/agency/agentic/` | Compositional agentic orchestration -- five SPIs, execution drivers, pattern builders (ten sub-packages) |
+| `src/main/java/io/casehub/agency/agentic/activation/` | Activation SPI: `ActivationRule`, `ActivationContext`, `Activation` factory, implementations |
+| `src/main/java/io/casehub/agency/agentic/aggregation/` | Aggregation SPI: `AggregationStrategy`, `AggregationContext`, `AggregationResult`, `Aggregation` factory, implementations |
+| `src/main/java/io/casehub/agency/agentic/decomposition/` | Decomposition: `Decomposition`/`Tasks` factories, strategies, heuristics, task types (21 files) |
+| `src/main/java/io/casehub/agency/agentic/listener/` | Accountability listeners: `EventLogListener`, `LedgerExecutionListener`, `MetricsListener`, `OrchestrationEventType` |
+| `src/main/java/io/casehub/agency/agentic/model/` | Execution model: drivers, invokers, backends, state machine (11 files) |
+| `src/main/java/io/casehub/agency/agentic/pattern/` | Pattern DSL: `Patterns` entry point, 8 builders + `AbstractPatternBuilder` base class |
+| `src/main/java/io/casehub/agency/agentic/plan/` | `ExecutionPlan<T>` -- DAG record with cycle validation |
+| `src/main/java/io/casehub/agency/agentic/routing/` | Routing SPI: `RoutingStrategy`, `RoutingDecision`, `Routing` factory, 4 implementations + `StageGate`/`StageAwareCandidateSupplier` |
+| `src/main/java/io/casehub/agency/agentic/termination/` | Termination SPI: `TerminationCondition`, `TerminationDecision`, `Termination` factory, 4 implementations |
+| `src/main/java/io/casehub/agency/routing/` | Trust routing audit types -- compliance records for routing decisions |
+| `src/main/java/io/casehub/agency/routing/agent/` | AI-powered AgentRoutingStrategy implementations -- LLM-reasoned and CBR-evidence agent selection (15 files) |
+| `src/main/java/io/casehub/agency/summarisation/` | Temporal abstraction framework + content summarisation SPI -- event levels, windowed accumulation, pluggable summarisation (14 files) |
+| `src/main/java/io/casehub/agency/summarisation/llm/` | LLM-backed `ContentSummariser<T>` -- generic synthesis via `AgentProvider` |
+| `src/main/java/io/casehub/agency/summarisation/observation/` | Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts (4 files) |
+| `src/main/java/io/casehub/agency/summarisation/observation/affordance/` | Affordance grounding -- per-entity observation rendering for LLM agents (5 files) |
+| `src/main/java/io/casehub/agency/agentic/social/prompt/` | Social cognition speech integration -- SocialAvatarCognition, SocialPromptAssembler, ProactiveSpeechSupport, AttentionPromptSection, 10 PromptSection implementations |
 
 Tests mirror source layout under `src/test/java/`. Integration test examples exist in:
 - `summarisation/examples/clinical/` -- L1-L4 clinical pipeline (vital readings -> care phases -> narratives)
@@ -295,7 +295,7 @@ The prompt sub-package (`agentic.social.prompt`) wires all social cognition orch
 
 **PromptSection lifecycle:** Sections are plain classes (not CDI beans) constructed by `CognitionCore.promptSections()`. Each implements `@Nullable contribute(PromptContext)` -- the context carries `agentId`, `tenantId`, and `@Nullable subjectId` (resolved per-turn by `SpeechSession` via speaker identification). Subject-scoped sections (`MentalModelPromptSection`, `UserModelPromptSection`) return null when `subjectId` is null (no identified speaker).
 
-**Attention-aware section gating:** `CognitionCore.promptSections()` uses `isEnabled(configFlag, relevanceSet)` instead of raw config flags for section inclusion. When an `AttentionBriefing` is present and contains signals relevant to a domain, that domain's section is force-included even when its config flag is `false`. The mapping from signal categories to cognitive domains lives in `AttentionRelevance` (package-private, `io.casehub.blocks.agentic.social`):
+**Attention-aware section gating:** `CognitionCore.promptSections()` uses `isEnabled(configFlag, relevanceSet)` instead of raw config flags for section inclusion. When an `AttentionBriefing` is present and contains signals relevant to a domain, that domain's section is force-included even when its config flag is `false`. The mapping from signal categories to cognitive domains lives in `AttentionRelevance` (package-private, `io.casehub.agency.agentic.social`):
 
 - `GOALS` ← URGENCY_SPIKE, GOAL_RECOGNIZED, DECAY_DETECTED, BLOCKER_RESOLVED, PRIORITY_SHIFT
 - `DRIVES` ← DRIVE_SHIFT

@@ -233,9 +233,9 @@ Refs casehubio/blocks#64"
 **Repo:** `/Users/mdproctor/claude/casehub/blocks`
 
 **Files:**
-- Create: `src/main/java/io/casehub/blocks/channel/summary/HeuristicChannelSummariser.java`
-- Create: `src/main/java/io/casehub/blocks/channel/summary/SummaryMode.java`
-- Test: `src/test/java/io/casehub/blocks/channel/summary/HeuristicChannelSummariserTest.java`
+- Create: `src/main/java/io/casehub/agency/channel/summary/HeuristicChannelSummariser.java`
+- Create: `src/main/java/io/casehub/agency/channel/summary/SummaryMode.java`
+- Test: `src/test/java/io/casehub/agency/channel/summary/HeuristicChannelSummariserTest.java`
 
 **Interfaces:**
 - Consumes: `SummaryUpdateHook` from qhorus-api, `SummaryUpdateContext` with `recentMessages()`
@@ -246,7 +246,7 @@ Refs casehubio/blocks#64"
 Use `ide_create_file`:
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 public enum SummaryMode {
     APPEND,
@@ -259,7 +259,7 @@ public enum SummaryMode {
 Use `ide_create_file`:
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
 import org.junit.jupiter.api.Test;
@@ -295,7 +295,7 @@ Expected: FAIL — class does not exist.
 Use `ide_create_file`:
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
 import io.casehub.qhorus.api.spi.SummaryUpdateHook;
@@ -379,7 +379,7 @@ void nullCurrentSummary_producesFreshSummary() {
 ```
 
 Where `TestMessages` is the existing test helper. Check if
-`io.casehub.blocks.channel.TestMessages` exists and has a `message()`
+`io.casehub.agency.channel.TestMessages` exists and has a `message()`
 factory. If not, create a local helper method:
 
 ```java
@@ -461,9 +461,9 @@ Expected: all pass
 
 ```bash
 git -C /Users/mdproctor/claude/casehub/blocks add \
-  src/main/java/io/casehub/blocks/channel/summary/SummaryMode.java \
-  src/main/java/io/casehub/blocks/channel/summary/HeuristicChannelSummariser.java \
-  src/test/java/io/casehub/blocks/channel/summary/HeuristicChannelSummariserTest.java
+  src/main/java/io/casehub/agency/channel/summary/SummaryMode.java \
+  src/main/java/io/casehub/agency/channel/summary/HeuristicChannelSummariser.java \
+  src/test/java/io/casehub/agency/channel/summary/HeuristicChannelSummariserTest.java
 git -C /Users/mdproctor/claude/casehub/blocks commit -m "feat(#64): HeuristicChannelSummariser — @DefaultBean summary hook
 
 Append-only structural summariser: participant names, message count,
@@ -479,8 +479,8 @@ Refs casehubio/blocks#64"
 **Repo:** `/Users/mdproctor/claude/casehub/blocks`
 
 **Files:**
-- Create: `src/main/java/io/casehub/blocks/channel/summary/LlmChannelSummariser.java`
-- Test: `src/test/java/io/casehub/blocks/channel/summary/LlmChannelSummariserTest.java`
+- Create: `src/main/java/io/casehub/agency/channel/summary/LlmChannelSummariser.java`
+- Test: `src/test/java/io/casehub/agency/channel/summary/LlmChannelSummariserTest.java`
 
 **Interfaces:**
 - Consumes: `SummaryUpdateHook` from qhorus-api, `AgentProvider` + `AgentSessionConfig` + `AgentEvent` from platform-agent-api, `SummaryMode` from Task 2
@@ -491,7 +491,7 @@ Refs casehubio/blocks#64"
 Use `ide_create_file`:
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.qhorus.api.spi.SummaryUpdateContext;
@@ -532,7 +532,7 @@ Expected: FAIL — class does not exist.
 Use `ide_create_file`:
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
@@ -781,8 +781,8 @@ Expected: all pass
 
 ```bash
 git -C /Users/mdproctor/claude/casehub/blocks add \
-  src/main/java/io/casehub/blocks/channel/summary/LlmChannelSummariser.java \
-  src/test/java/io/casehub/blocks/channel/summary/LlmChannelSummariserTest.java
+  src/main/java/io/casehub/agency/channel/summary/LlmChannelSummariser.java \
+  src/test/java/io/casehub/agency/channel/summary/LlmChannelSummariserTest.java
 git -C /Users/mdproctor/claude/casehub/blocks commit -m "feat(#64): LlmChannelSummariser — @Alternative LLM-powered summary hook
 
 Edit-mode by default — rewrites surrounding context when new messages
@@ -804,11 +804,11 @@ Refs casehubio/blocks#64"
 
 - [ ] **Step 1: Update CLAUDE.md package table**
 
-Add the new package to the `## Package: io.casehub.blocks.channel` section
+Add the new package to the `## Package: io.casehub.agency.channel` section
 or create a new section:
 
 ```markdown
-## Package: `io.casehub.blocks.channel.summary`
+## Package: `io.casehub.agency.channel.summary`
 
 | Class | What it does |
 |-------|-------------|

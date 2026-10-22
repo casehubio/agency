@@ -39,11 +39,11 @@
 
 ## D4: Package locations — split by integration layer
 
-**Choice:** SubjectResolver, InteractionMapper, and CognitiveImpact in `io.casehub.blocks.agentic.social` alongside CognitionCore. NormFilter in `io.casehub.blocks.agentic.social.emergence` alongside SocialNorm and SocialNormDetector.
+**Choice:** SubjectResolver, InteractionMapper, and CognitiveImpact in `io.casehub.agency.agentic.social` alongside CognitionCore. NormFilter in `io.casehub.agency.agentic.social.emergence` alongside SocialNorm and SocialNormDetector.
 **Alternatives:**
-- All four types in `io.casehub.blocks.agentic.social` (original D4) — contradicts D1's boundary analysis: NormFilter has no CognitionCore integration point, yet sits next to CognitionCore
+- All four types in `io.casehub.agency.agentic.social` (original D4) — contradicts D1's boundary analysis: NormFilter has no CognitionCore integration point, yet sits next to CognitionCore
 - NormFilter in `summarisation.observation.affordance` — near its integration point (CognitiveObservationSections) but foreign package for social norm domain types
-- New sub-package `io.casehub.blocks.agentic.social.context` — over-organizes 3 types
+- New sub-package `io.casehub.agency.agentic.social.context` — over-organizes 3 types
 **Rationale:** D1 established that NormFilter's integration point is at prompt assembly, not CognitionCore. Placing NormFilter in `agentic.social.emergence` co-locates it with the `SocialNorm` domain type it filters, while keeping SubjectResolver and InteractionMapper near CognitionCore where they integrate. This respects both domain ownership (NormFilter filters SocialNorm) and the boundary analysis (NormFilter is not a CognitionCore SPI).
 **Trade-offs:** SPIs split across two packages — but this accurately reflects the two distinct integration layers.
 **Exploration:** quick
@@ -51,13 +51,13 @@
 
 ## D5: AvatarCognition published interface unchanged
 
-**Choice:** `AvatarCognition`'s published interface (in `casehub-blocks-speech-api`) does not change. SocialAvatarCognition adapts between the stable published SPI and the new CognitionCore parameters internally.
+**Choice:** `AvatarCognition`'s published interface (in `casehub-agency-speech-api`) does not change. SocialAvatarCognition adapts between the stable published SPI and the new CognitionCore parameters internally.
 **Alternatives:**
 - Evolve `AvatarCognition.tick()` to remove `Set<String> activeSubjects` — breaking change in a published cross-module SPI, forces all AvatarCognition callers to adapt
 - Add SubjectResolver to `AvatarCognition.tick()` — leaks CognitionCore implementation detail into the speech API module
 - Add new AvatarCognition methods alongside existing ones — same backward-compat shim problem as original D3, but at a published SPI boundary where it would actually matter
-**Rationale:** AvatarCognition is a published SPI in `casehub-blocks-speech-api` with cross-module consumers. SubjectResolver and InteractionMapper are internal CognitionCore concerns. SocialAvatarCognition bridges the gap: receives `Set<String> activeSubjects` from AvatarCognition callers and wraps into a SubjectResolver; receives `(userMessage, response)` and optionally maps via InteractionMapper to produce `@Nullable CognitiveImpact`. If a custom SubjectResolver is configured (CDI bean), it takes precedence over the caller-provided set.
+**Rationale:** AvatarCognition is a published SPI in `casehub-agency-speech-api` with cross-module consumers. SubjectResolver and InteractionMapper are internal CognitionCore concerns. SocialAvatarCognition bridges the gap: receives `Set<String> activeSubjects` from AvatarCognition callers and wraps into a SubjectResolver; receives `(userMessage, response)` and optionally maps via InteractionMapper to produce `@Nullable CognitiveImpact`. If a custom SubjectResolver is configured (CDI bean), it takes precedence over the caller-provided set.
 **Trade-offs:** Game integrations wanting custom SubjectResolver or InteractionMapper configure them as CDI beans injected into SocialAvatarCognition or CognitionCore — not through AvatarCognition. This is correct: game-specific cognitive customization belongs at the cognition layer, not the speech layer.
-**Sources:** AvatarCognition.class (published SPI in casehub-blocks-speech-api — tick takes Set<String>, recordInteraction takes raw strings), SocialAvatarCognition.java (adapter between AvatarCognition and CognitionCore)
+**Sources:** AvatarCognition.class (published SPI in casehub-agency-speech-api — tick takes Set<String>, recordInteraction takes raw strings), SocialAvatarCognition.java (adapter between AvatarCognition and CognitionCore)
 **Exploration:** implicit decision surfaced in review (R1-14, R1-15)
 **Status:** captured

@@ -4,7 +4,7 @@
 **Issue:** #68
 **Status:** Draft
 **Repo:** casehubio/blocks
-**Package:** `io.casehub.blocks.summarisation.observation`
+**Package:** `io.casehub.agency.summarisation.observation`
 
 ## Problem
 
@@ -411,8 +411,8 @@ levels. They compose without conflict.
 ## Dependencies
 
 No new compile dependencies. Uses existing:
-- `LevelEvent<E>`, `EventLevel` from `io.casehub.blocks.summarisation`
-- `Summariser<E, String>` from `io.casehub.blocks.summarisation` (optional,
+- `LevelEvent<E>`, `EventLevel` from `io.casehub.agency.summarisation`
+- `Summariser<E, String>` from `io.casehub.agency.summarisation` (optional,
   for three-tier rendering)
 
 Test dependencies: JUnit 5, AssertJ (existing).
@@ -437,8 +437,8 @@ All plain JUnit 5 + AssertJ. No CDI, no Quarkus. Zero-dependency tests.
 
 ## Documentation Updates
 
-- Update blocks ARC42STORIES.MD §5: add `io.casehub.blocks.summarisation.observation`
-  sub-package entry under the existing `io.casehub.blocks.summarisation` section,
+- Update blocks ARC42STORIES.MD §5: add `io.casehub.agency.summarisation.observation`
+  sub-package entry under the existing `io.casehub.agency.summarisation` section,
   listing all 7 types with their roles
 - Update blocks CLAUDE.md with observation sub-package documentation
 

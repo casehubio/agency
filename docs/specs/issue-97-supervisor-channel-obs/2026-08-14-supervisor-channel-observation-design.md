@@ -24,7 +24,7 @@ A composable observation type that maintains a projected view of channel communi
 4. **Termination factory** — provides convenience methods to create `TerminationCondition` instances that read from the projected state
 
 ```java
-package io.casehub.blocks.agentic.channel;
+package io.casehub.agency.agentic.channel;
 
 public class ChannelObserver<S> implements MessageObserver, EventSource {
 

@@ -85,7 +85,7 @@ framework primitives. Each type is independently useful and testable.
 
 ### New types (4 source files)
 
-#### 1. `KeyedAccumulator<K, E>` — `io.casehub.blocks.summarisation`
+#### 1. `KeyedAccumulator<K, E>` — `io.casehub.agency.summarisation`
 
 Groups events by a key, emits each group independently when a completion
 predicate fires or a staleness timeout expires.
@@ -158,7 +158,7 @@ var accumulator = new KeyedAccumulator<String, ChannelEvent>(
 );
 ```
 
-#### 2. `KeyedSummarisationRunner<K, IN, OUT>` — `io.casehub.blocks.summarisation`
+#### 2. `KeyedSummarisationRunner<K, IN, OUT>` — `io.casehub.agency.summarisation`
 
 Wires `KeyedAccumulator` → `Summariser` → output bus. Parallel to
 `SummarisationRunner` for keyed accumulation.
@@ -201,7 +201,7 @@ would add an `Accumulator<E>` interface where
 simple runners is more honest than one polymorphic runner that fights
 different return shapes.
 
-#### 3. `ChannelEventAdapter<E>` — `io.casehub.blocks.channel`
+#### 3. `ChannelEventAdapter<E>` — `io.casehub.agency.channel`
 
 Direction 1. Implements `MessageObserver`, extracts domain events,
 publishes to an `EventStreamBus`.
@@ -250,7 +250,7 @@ public class ChannelEventAdapter<E> implements MessageObserver {
   already supports this — returning channel names means the observer
   only receives events for those channels.
 
-#### 4. `ChannelEventPublisher<E>` — `io.casehub.blocks.channel`
+#### 4. `ChannelEventPublisher<E>` — `io.casehub.agency.channel`
 
 Direction 2. Subscribes to an `EventStreamBus`, converts events to
 `MessageDispatch`, dispatches via `MessageDispatcher`. Best-effort.
@@ -488,7 +488,7 @@ uses `MessageDispatcher` and `MessageDispatch` — also `casehub-qhorus-api`.
 ### Integration example test
 
 ```
-src/test/java/io/casehub/blocks/channel/examples/summarisation/
+src/test/java/io/casehub/agency/channel/examples/summarisation/
     ChannelSummarisationPipelineTest.java
 ```
 

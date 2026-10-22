@@ -15,8 +15,8 @@
  */
 package io.casehub.engine.agentic;
 
-import io.casehub.blocks.agentic.model.ExecutionModel;
-import io.casehub.blocks.agentic.model.PatternType;
+import io.casehub.agency.agentic.model.ExecutionModel;
+import io.casehub.agency.agentic.model.PatternType;
 import io.casehub.engine.agentic.judgment.PatternJudgmentConfig;
 import io.casehub.engine.plan.PlanningConstraints;
 import io.casehub.engine.plan.TaskNode;

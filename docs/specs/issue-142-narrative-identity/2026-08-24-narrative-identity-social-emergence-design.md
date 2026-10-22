@@ -142,7 +142,7 @@ Three mechanisms, matching InnerLifeConfig.ContentQualityGate:
 
 ## Type System
 
-### Package: `io.casehub.blocks.agentic.social.narrative`
+### Package: `io.casehub.agency.agentic.social.narrative`
 
 #### NarrativeFragment (sealed interface)
 
@@ -520,7 +520,7 @@ public interface ReflectionQueryStore {
 `NoOpReflectionQueryStore` @DefaultBean returns empty lists. Consumers that enable
 reflection persistence provide a real implementation.
 
-### Package: `io.casehub.blocks.agentic.social.emergence`
+### Package: `io.casehub.agency.agentic.social.emergence`
 
 #### SocialNorm (record)
 
@@ -808,7 +808,7 @@ lives in blocks. Implementation deferred to #145 (NarrativeFeedback).
 ## Package Structure
 
 ```
-blocks/src/main/java/io/casehub/blocks/agentic/social/narrative/
+blocks/src/main/java/io/casehub/agency/agentic/social/narrative/
 ├── NarrativeFragment.java          (sealed interface)
 ├── IndividualEpisode.java          (record)
 ├── GroupEpisode.java               (record)
@@ -825,11 +825,11 @@ blocks/src/main/java/io/casehub/blocks/agentic/social/narrative/
 ├── NarrativeSynthesiser.java       (effectful — LLM synthesis)
 └── NarrativeOrchestrator.java      (compositor — tick + accessor)
 
-blocks/src/main/java/io/casehub/blocks/memory/
+blocks/src/main/java/io/casehub/agency/memory/
 ├── ReflectionQueryStore.java       (NEW SPI — alongside ReflectionStore)
 └── NoOpReflectionQueryStore.java   (NEW @DefaultBean)
 
-blocks/src/main/java/io/casehub/blocks/agentic/social/emergence/
+blocks/src/main/java/io/casehub/agency/agentic/social/emergence/
 ├── SocialNorm.java                 (record)
 ├── NormStrength.java               (enum)
 ├── NormObservation.java            (record)

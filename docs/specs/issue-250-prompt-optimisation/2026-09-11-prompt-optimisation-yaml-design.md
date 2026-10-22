@@ -36,8 +36,8 @@ pipelines:
       id: routing-prompt
       description: "LLM-based agent routing"
       baseSystemPrompt: "Evaluate which agent best fits the task..."
-      inputType: io.casehub.blocks.routing.RoutingContext
-      outputType: io.casehub.blocks.routing.RoutingDecision
+      inputType: io.casehub.agency.routing.RoutingContext
+      outputType: io.casehub.agency.routing.RoutingDecision
 
     optimiser:
       type: few-shot
@@ -102,7 +102,7 @@ All fields except `signature` are optional — defaults are applied at compilati
 ### PromptOptimiserSpec (named type registry)
 
 ```java
-package io.casehub.blocks.agentic.yaml.spec;
+package io.casehub.agency.agentic.yaml.spec;
 
 @JsonTypeInfo(use = Id.NAME, property = "type")
 @JsonSubTypes({
@@ -439,7 +439,7 @@ definition into `CompiledPromptOptimisation`.
 
 ## Schema Generation
 
-Extend `BlocksSchemaGenerator` to include:
+Extend `AgencySchemaGenerator` to include:
 - `PromptOptimisationDefinition` (root)
 - `PromptOptimisationPipelineSpec`
 - `PromptOptimiserSpec` (sealed hierarchy)
@@ -496,20 +496,20 @@ After implementation, update `docs/yaml-coverage.md` §17:
 
 ## References
 
-- `blocks/src/main/java/io/casehub/blocks/prompt/OptimiserConfig.java` — reused directly
-- `blocks/src/main/java/io/casehub/blocks/prompt/SafetyConfig.java` — reused directly
-- `blocks/src/main/java/io/casehub/blocks/prompt/FewShotExample.java` — reused directly
-- `blocks/src/main/java/io/casehub/blocks/prompt/PromptSignature.java` — adapted (Class<?> → String)
-- `blocks/src/main/java/io/casehub/blocks/prompt/PromptOptimiser.java` — interface, id-based
-- `blocks/src/main/java/io/casehub/blocks/prompt/optimiser/FewShotOptimiser.java` — constructor takes DiversityStrategy
-- `blocks/src/main/java/io/casehub/blocks/prompt/optimiser/InstructionOptimiser.java` — constructor takes AgentProvider
-- `blocks/src/main/java/io/casehub/blocks/prompt/DiversityStrategy.java` — functional interface
-- `blocks/src/main/java/io/casehub/blocks/prompt/optimiser/TopNDiversityStrategy.java` — no-arg
-- `blocks/src/main/java/io/casehub/blocks/prompt/optimiser/OutcomeAwareDiversityStrategy.java` — takes diversityWeight
-- `blocks/src/main/java/io/casehub/blocks/memory/ConfidenceScorer.java` — functional interface
-- `blocks/src/main/java/io/casehub/blocks/memory/ArousalScorer.java` — no-arg
-- `blocks/src/main/java/io/casehub/blocks/memory/SurpriseScorer.java` — no-arg
-- `blocks/src/main/java/io/casehub/blocks/memory/CompositeConfidenceScorer.java` — takes List<WeightedScorer>
+- `blocks/src/main/java/io/casehub/agency/prompt/OptimiserConfig.java` — reused directly
+- `blocks/src/main/java/io/casehub/agency/prompt/SafetyConfig.java` — reused directly
+- `blocks/src/main/java/io/casehub/agency/prompt/FewShotExample.java` — reused directly
+- `blocks/src/main/java/io/casehub/agency/prompt/PromptSignature.java` — adapted (Class<?> → String)
+- `blocks/src/main/java/io/casehub/agency/prompt/PromptOptimiser.java` — interface, id-based
+- `blocks/src/main/java/io/casehub/agency/prompt/optimiser/FewShotOptimiser.java` — constructor takes DiversityStrategy
+- `blocks/src/main/java/io/casehub/agency/prompt/optimiser/InstructionOptimiser.java` — constructor takes AgentProvider
+- `blocks/src/main/java/io/casehub/agency/prompt/DiversityStrategy.java` — functional interface
+- `blocks/src/main/java/io/casehub/agency/prompt/optimiser/TopNDiversityStrategy.java` — no-arg
+- `blocks/src/main/java/io/casehub/agency/prompt/optimiser/OutcomeAwareDiversityStrategy.java` — takes diversityWeight
+- `blocks/src/main/java/io/casehub/agency/memory/ConfidenceScorer.java` — functional interface
+- `blocks/src/main/java/io/casehub/agency/memory/ArousalScorer.java` — no-arg
+- `blocks/src/main/java/io/casehub/agency/memory/SurpriseScorer.java` — no-arg
+- `blocks/src/main/java/io/casehub/agency/memory/CompositeConfidenceScorer.java` — takes List<WeightedScorer>
 - `agentic-yaml/pom.xml` — neocortex-memory-api already provided scope
 - `agentic-yaml-deployment/src/main/java/.../AgenticYamlProcessor.java` — per-domain @BuildStep pattern
 - `GE-20260909-865486` — victools SealedHierarchyModule discriminator mismatch gotcha

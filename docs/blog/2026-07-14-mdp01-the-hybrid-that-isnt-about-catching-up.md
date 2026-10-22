@@ -5,7 +5,7 @@ date: 2026-07-14
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [decomposition, htn, hybrid, langchain4j]
 ---
 

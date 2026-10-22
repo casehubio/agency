@@ -17,7 +17,7 @@
 - speech-sherpa only — no SPI, concrete class only. Simpler but couples consumers to sherpa-onnx
 **Rationale:** Follows the existing pattern exactly. `SpeechToTextService` and `StreamingSpeechToTextService` are SPIs in `speech-api` with implementations in `speech-sherpa`. The denoiser should follow the same layering.
 **Trade-offs:** Slightly more code (interface + impl vs just impl). Worth it for consistency and future flexibility.
-**Sources:** speech-api/src/main/java/io/casehub/blocks/speech/SpeechToTextService.java, speech-api/src/main/java/io/casehub/blocks/speech/StreamingSpeechToTextService.java
+**Sources:** speech-api/src/main/java/io/casehub/agency/speech/SpeechToTextService.java, speech-api/src/main/java/io/casehub/agency/speech/StreamingSpeechToTextService.java
 **Exploration:** quick
 **Status:** captured
 

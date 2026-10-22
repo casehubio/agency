@@ -5,7 +5,7 @@ date: 2026-07-26
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [agentic, execution-model, planning, engine]
 ---
 

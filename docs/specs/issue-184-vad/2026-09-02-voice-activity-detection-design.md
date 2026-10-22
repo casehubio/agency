@@ -18,7 +18,7 @@ engine.
 ### 2.1 VoiceActivityFilter
 
 ```java
-package io.casehub.blocks.speech;
+package io.casehub.agency.speech;
 
 public interface VoiceActivityFilter extends AutoCloseable {
     float[] filterChunk(float[] samples, int sampleRate);
@@ -37,7 +37,7 @@ native resources.
 ### 2.2 Factory
 
 ```java
-package io.casehub.blocks.speech;
+package io.casehub.agency.speech;
 
 public interface VoiceActivityFilterFactory {
     VoiceActivityFilter create();
@@ -212,8 +212,8 @@ availability.
 - [Silero VAD repo](https://github.com/snakers4/silero-vad) — model source, MIT license
 - GE-20260826-51c700 — sherpa-onnx FFM struct layout gotcha
 - GE-20260826-190329 — oversized zero-filled allocation technique
-- `speech-api/src/main/java/io/casehub/blocks/speech/StreamingSpeechDenoiser.java` — pattern reference
-- `speech-sherpa/src/main/java/io/casehub/blocks/speech/sherpa/WhisperSpeechToText.java` — integration point
-- `speech-sherpa/src/main/java/io/casehub/blocks/speech/sherpa/SherpaOnnxStreamingSpeechToText.java` — integration point
-- `speech-ws/src/main/java/io/casehub/blocks/speech/ws/SpeechSession.java` — unchanged by this spec
+- `speech-api/src/main/java/io/casehub/agency/speech/StreamingSpeechDenoiser.java` — pattern reference
+- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/WhisperSpeechToText.java` — integration point
+- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/SherpaOnnxStreamingSpeechToText.java` — integration point
+- `speech-ws/src/main/java/io/casehub/agency/speech/ws/SpeechSession.java` — unchanged by this spec
 - 2026-09-02-speech-denoising-design.md — denoiser spec (establishes the pattern)

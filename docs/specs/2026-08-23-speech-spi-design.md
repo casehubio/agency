@@ -11,7 +11,7 @@ CaseHub applications need speech capabilities (audio-to-text, text-to-audio) as 
 
 ## 2. Module Structure
 
-Adding speech SPIs requires restructuring casehub-blocks from a single module into a multi-module reactor (blocks#155):
+Adding speech SPIs requires restructuring casehub-agency from a single module into a multi-module reactor (blocks#155):
 
 | Module | Contents | Dependencies |
 |--------|----------|-------------|

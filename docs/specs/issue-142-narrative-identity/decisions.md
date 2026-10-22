@@ -33,7 +33,7 @@
 - Hybrid — compositor for reflections, record() for narrative-specific events
 **Rationale:** LLM synthesis (producing episodes and themes from reflections) is non-deterministic and expensive — it cannot live in a compositor tick(). Splitting into synthesiser + compositor preserves ADR-0001's guarantees while supporting the LLM requirement. The synthesiser is called by the consumer's scheduler; the compositor reads pre-synthesised state from NarrativeStore.
 **Trade-offs:** Two components instead of one. The synthesiser needs its own scheduling and the consumer must call it before ticking the orchestrator. This is the same pattern as MemoryHygieneScheduler calling ReflectionOrchestrator before ticking MemoryHygieneOrchestrator.
-**Note:** NarrativeSynthesiser reads stored reflections via the `ReflectionQueryStore` SPI (`findSince`, `countSince`), which exists at `io.casehub.blocks.memory.ReflectionQueryStore` with a `NoOpReflectionQueryStore` `@DefaultBean`.
+**Note:** NarrativeSynthesiser reads stored reflections via the `ReflectionQueryStore` SPI (`findSince`, `countSince`), which exists at `io.casehub.agency.memory.ReflectionQueryStore` with a `NoOpReflectionQueryStore` `@DefaultBean`.
 **Sources:** ADR-0001-drive-compositor-pattern.md; MemoryHygieneScheduler.java; MemoryHygieneOrchestrator.java; ReflectionQueryStore.java; decision review R1-02, R1-03, R1-07, R1-11
 **Exploration:** quick → revised after decision review
 **Status:** revised

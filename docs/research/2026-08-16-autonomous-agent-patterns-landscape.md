@@ -11,7 +11,7 @@ The answer, after exhaustive audit: almost all of them. The platform has relatio
 
 ## 2. Named Patterns
 
-Six composition patterns identified. Each wires together existing CaseHub capabilities into a reusable agent behaviour. These belong in casehub-blocks as pattern classes alongside the existing `Patterns.sequence()` / `Patterns.debate()` / `Patterns.supervisor()` family.
+Six composition patterns identified. Each wires together existing CaseHub capabilities into a reusable agent behaviour. These belong in casehub-agency as pattern classes alongside the existing `Patterns.sequence()` / `Patterns.debate()` / `Patterns.supervisor()` family.
 
 ### 2.1 Inner Life
 
@@ -300,7 +300,7 @@ This section documents every existing CaseHub capability that the patterns above
 **Evaluation:**
 - 10+ judges: BehavioralJudge, BriefingCoherenceJudge, DispositionPresenceJudge, FunctionActivationJudge, MbtiAlignmentJudge, PairContrastJudge, PersonalityEvolutionJudge, ProximityJudge, TraitExpressionJudge, VocabularyExpressivenessJudge
 
-### 3.3 Conversation & Social (casehub-blocks)
+### 3.3 Conversation & Social (casehub-agency)
 
 **Agentic patterns:**
 - Sequence, Parallel, Loop, Voting, Debate, Supervisor, Conditional, HTN

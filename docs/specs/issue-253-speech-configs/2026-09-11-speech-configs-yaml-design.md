@@ -27,13 +27,13 @@ Add to `agentic-yaml/pom.xml`:
 ```xml
 <dependency>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-speech-api</artifactId>
+    <artifactId>casehub-agency-speech-api</artifactId>
     <version>${project.version}</version>
     <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>io.casehub</groupId>
-    <artifactId>casehub-blocks-speech-sherpa</artifactId>
+    <artifactId>casehub-agency-speech-sherpa</artifactId>
     <version>${project.version}</version>
     <scope>provided</scope>
 </dependency>
@@ -260,12 +260,12 @@ No discriminator overrides — no sealed interfaces in this issue.
 
 ## References
 
-- `speech-api: io.casehub.blocks.speech.TranscriptionOptions`
-- `speech-api: io.casehub.blocks.speech.SynthesisOptions`
-- `speech-api: io.casehub.blocks.speech.CleanupConfig` — omitted (contains TextFilter SPIs)
-- `speech-sherpa: io.casehub.blocks.speech.sherpa.SherpaConfig`
-- `speech-sherpa: io.casehub.blocks.speech.sherpa.KokoroConfig`
-- `speech-sherpa: io.casehub.blocks.speech.sherpa.Audio8Config`
+- `speech-api: io.casehub.agency.speech.TranscriptionOptions`
+- `speech-api: io.casehub.agency.speech.SynthesisOptions`
+- `speech-api: io.casehub.agency.speech.CleanupConfig` — omitted (contains TextFilter SPIs)
+- `speech-sherpa: io.casehub.agency.speech.sherpa.SherpaConfig`
+- `speech-sherpa: io.casehub.agency.speech.sherpa.KokoroConfig`
+- `speech-sherpa: io.casehub.agency.speech.sherpa.Audio8Config`
 - GE-20260904-ebed3c — Kokoro v1.0 requires kokoro-lexicon field
 - specs/issue-252-trust-routing-oversight/ — prior spec pattern reference
 - [GitHub #253](https://github.com/casehubio/blocks/issues/253)

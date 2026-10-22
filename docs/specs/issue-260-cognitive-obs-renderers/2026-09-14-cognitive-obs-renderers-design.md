@@ -9,7 +9,7 @@ Add four factory methods to `CognitiveObservationSections` for rendering cogniti
 
 ## New Types
 
-Two new records and one enum, all in `io.casehub.blocks.summarisation.observation.affordance`:
+Two new records and one enum, all in `io.casehub.agency.summarisation.observation.affordance`:
 
 ### `TrustLevel` enum
 

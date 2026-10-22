@@ -28,7 +28,7 @@
 **Choice:** All specs in agentic-yaml/spec/, registries in agentic-yaml/registry/
 **Alternatives:**
 - New engine-adapter-yaml module — unnecessary, no new dependencies needed
-**Rationale:** agentic-yaml already depends on casehub-blocks → engine-api transitively. No new module or dependency changes required.
+**Rationale:** agentic-yaml already depends on casehub-agency → engine-api transitively. No new module or dependency changes required.
 **Trade-offs:** None — follows established pattern
 **Sources:** agentic-yaml/pom.xml, existing spec/registry layout
 **Exploration:** quick

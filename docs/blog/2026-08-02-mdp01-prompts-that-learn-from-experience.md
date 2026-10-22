@@ -5,7 +5,7 @@ date: 2026-08-02
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [prompt-optimisation, dspy, cbr, routing, decomposition]
 series: issue-48-dspy-prompt-optimisation
 ---
@@ -38,7 +38,7 @@ A `PromptVariant` is a versioned bundle: curated examples, an optional instructi
 
 ## When You Can Use It
 
-The framework is in blocks and ready to deploy. No cross-repo changes are needed for the core functionality — the prompt optimisation types, the batch orchestrator, the store, the selector, the optimisers, the runtime sections all live in `io.casehub.blocks.prompt`.
+The framework is in blocks and ready to deploy. No cross-repo changes are needed for the core functionality — the prompt optimisation types, the batch orchestrator, the store, the selector, the optimisers, the runtime sections all live in `io.casehub.agency.prompt`.
 
 For **manual enrichment** — curating your own examples and storing them in `InMemoryPromptVariantStore` — you can start today. The `OptimisedFewShotSection` and `VariantAwareSystemPromptCustomiser` will serve them at routing time without any A/B machinery.
 

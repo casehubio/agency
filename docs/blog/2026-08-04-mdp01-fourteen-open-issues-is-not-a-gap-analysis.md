@@ -5,7 +5,7 @@ date: 2026-08-04
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [langchain4j, agentic, gap-analysis]
 ---
 

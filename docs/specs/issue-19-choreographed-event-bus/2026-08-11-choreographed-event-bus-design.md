@@ -18,7 +18,7 @@ The actual gap is narrow: ChoreographedDriver needs a mechanism to wait for exte
 Typed event record carrying source identification and optional payload. Enables the concurrency policy to make intelligent decisions (coalesce by source, window by timestamp).
 
 ```java
-package io.casehub.blocks.agentic.model;
+package io.casehub.agency.agentic.model;
 
 public record DriverEvent(
     String source,
@@ -48,7 +48,7 @@ public record DriverEvent(
 Lightweight SPI for declarative event composition. Not coupled to Mutiny — the driver consumes events via a BlockingQueue internally. EventSource provides subscription and cancellation semantics.
 
 ```java
-package io.casehub.blocks.agentic.model;
+package io.casehub.agency.agentic.model;
 
 @FunctionalInterface
 public interface EventSource {
@@ -96,7 +96,7 @@ public interface EventSource {
 Controls how events are consumed from the internal queue between iterations. The policy answers: "given a queue with pending events, what should the driver process?"
 
 ```java
-package io.casehub.blocks.agentic.model;
+package io.casehub.agency.agentic.model;
 
 public interface EventConcurrencyPolicy {
 
@@ -171,7 +171,7 @@ The driver adds an event source and concurrency policy. AbstractExecutionDriver,
 - **Event-driven mode** (EventSource provided): waits for events between iterations. The presence of an EventSource is the activation signal.
 
 ```java
-package io.casehub.blocks.agentic.model;
+package io.casehub.agency.agentic.model;
 
 public class ChoreographedDriver<T> extends AbstractExecutionDriver<T> {
 

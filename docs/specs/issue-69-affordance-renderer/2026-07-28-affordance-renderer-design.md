@@ -21,7 +21,7 @@ Wacky Manor Phase 2.5 — garden entry GE-20260728-f7ad43.
 
 ## Solution
 
-Add an `AffordanceRenderer` to `casehub-blocks` that assembles structured
+Add an `AffordanceRenderer` to `casehub-agency` that assembles structured
 observations for LLM agents. The core value is per-entity affordance grounding
 (the validated three-link chain). The framework value is typed section assembly
 for complete observations.
@@ -62,7 +62,7 @@ factory methods.
 
 ## Package
 
-`io.casehub.blocks.summarisation.observation.affordance`
+`io.casehub.agency.summarisation.observation.affordance`
 
 Sub-package co-locates the section model (`ObservationSection` and variants) with
 its consumer (`AffordanceRenderer`). The parent `observation` package is
@@ -405,8 +405,8 @@ framework prescribing one).
 ## Documentation Updates
 
 - Update blocks ARC42STORIES.MD §5: add
-  `io.casehub.blocks.summarisation.observation.affordance` sub-package entry
-  under the existing `io.casehub.blocks.summarisation.observation` section,
+  `io.casehub.agency.summarisation.observation.affordance` sub-package entry
+  under the existing `io.casehub.agency.summarisation.observation` section,
   listing all 5 types (`ObservableEntity`, `Affordance`, `ObservationSection`,
   `ActionDescriptor`, `AffordanceRenderer`) with their roles
 - Update blocks CLAUDE.md with affordance sub-package documentation

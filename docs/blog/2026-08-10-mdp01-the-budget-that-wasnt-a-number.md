@@ -4,7 +4,7 @@ title: "The Budget That Wasn't a Number"
 date: 2026-08-10
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [agentic, decomposition, planning-constraints, static-decomposition]
 ---
 

@@ -404,10 +404,10 @@ a tick parameter — no eidos changes needed.
 
 ## Package Structure
 
-All new types live in `io.casehub.blocks.agentic.social.drive`:
+All new types live in `io.casehub.agency.agentic.social.drive`:
 
 ```
-blocks/src/main/java/io/casehub/blocks/agentic/social/drive/
+blocks/src/main/java/io/casehub/agency/agentic/social/drive/
 ├── DriveAxis.java
 ├── DriveIntensity.java
 ├── DriveSource.java
@@ -423,7 +423,7 @@ blocks/src/main/java/io/casehub/blocks/agentic/social/drive/
 ├── AffiliationDrive.java
 └── AutonomyDrive.java
 
-blocks/src/test/java/io/casehub/blocks/agentic/social/drive/
+blocks/src/test/java/io/casehub/agency/agentic/social/drive/
 ├── DriveOrchestratorTest.java
 ├── DriveComposerTest.java
 ├── CuriosityDriveTest.java

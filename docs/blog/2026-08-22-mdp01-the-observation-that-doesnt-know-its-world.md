@@ -4,7 +4,7 @@ title: "The Observation That Doesn't Know Its World"
 date: 2026-08-22
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [observation, spi, affordance, multi-agent, decoupling]
 ---
 

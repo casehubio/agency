@@ -11,26 +11,26 @@ Three new Maven modules that layer a declarative YAML pipeline surface over a un
 ## Module Architecture
 
 ```
-casehub-blocks-summarisation-api  (zero external deps, pure Java)
+casehub-agency-summarisation-api  (zero external deps, pure Java)
         ↑
-        ├── casehub-blocks  (existing — retains ContentSummariser + observation)
-        ├── casehub-blocks-cloudevents  (api + cloudevents-api)
-        └── casehub-blocks-summarisation-yaml  (api + cloudevents + platform-api)
-                └── casehub-blocks-summarisation-yaml-deployment  (Quarkus build extension)
+        ├── casehub-agency  (existing — retains ContentSummariser + observation)
+        ├── casehub-agency-cloudevents  (api + cloudevents-api)
+        └── casehub-agency-summarisation-yaml  (api + cloudevents + platform-api)
+                └── casehub-agency-summarisation-yaml-deployment  (Quarkus build extension)
 ```
 
 | Module | Artifact ID | Dependencies | Contents |
 |---|---|---|---|
-| `summarisation-api/` | `casehub-blocks-summarisation-api` | jspecify only | 10 extracted types + LevelEvent with tenancyId + StatefulSummariser + ContentSummariser<T,R> + VerbatimContentSummariser |
-| `cloudevents/` | `casehub-blocks-cloudevents` | summarisation-api, cloudevents-api | Ingestion adapter, emitter, EventSink SPI, tick scheduler |
-| `summarisation-yaml/` | `casehub-blocks-summarisation-yaml` | summarisation-api, cloudevents, platform-api (provided) | Canonical model, PipelineCompiler, SummariserRegistry, 5 built-in types |
-| `summarisation-yaml-deployment/` | `casehub-blocks-summarisation-yaml-deployment` | summarisation-yaml, quarkus-core-deployment | Jandex scan, YAML validation, recorder, CDI bean registration |
+| `summarisation-api/` | `casehub-agency-summarisation-api` | jspecify only | 10 extracted types + LevelEvent with tenancyId + StatefulSummariser + ContentSummariser<T,R> + VerbatimContentSummariser |
+| `cloudevents/` | `casehub-agency-cloudevents` | summarisation-api, cloudevents-api | Ingestion adapter, emitter, EventSink SPI, tick scheduler |
+| `summarisation-yaml/` | `casehub-agency-summarisation-yaml` | summarisation-api, cloudevents, platform-api (provided) | Canonical model, PipelineCompiler, SummariserRegistry, 5 built-in types |
+| `summarisation-yaml-deployment/` | `casehub-agency-summarisation-yaml-deployment` | summarisation-yaml, quarkus-core-deployment | Jandex scan, YAML validation, recorder, CDI bean registration |
 
 ## Module 1: Summarisation API (#231)
 
 ### Extracted Types
 
-All move from `blocks/blocks/src/main/java/io/casehub/blocks/summarisation/` to `summarisation-api/` in the same package (`io.casehub.blocks.summarisation`). Split package — acceptable without JPMS.
+All move from `blocks/blocks/src/main/java/io/casehub/agency/summarisation/` to `summarisation-api/` in the same package (`io.casehub.agency.summarisation`). Split package — acceptable without JPMS.
 
 | Type | Kind | Changes |
 |---|---|---|
@@ -115,7 +115,7 @@ interface ContentSummariser<T, R> {
 
 1. **LevelEvent** — 3-arg → 4-arg canonical constructor. All callers pass tenancyId explicitly (null for single-tenant). No convenience factory — compiler-enforced decision at every call site (D1).
 2. **KeyedAccumulator / KeyedSummarisationRunner** — key extractor takes `LevelEvent<E>` not `E`. Existing callers add `.payload()`: `e -> e.transactionId()` becomes `event -> event.payload().transactionId()` (D12).
-3. **`casehub-blocks` gains compile dependency on `casehub-blocks-summarisation-api`** — types remaining in blocks (`ChannelEventAdapter`, `ChannelEventPublisher`) reference extracted types (`Summariser`, `LevelEvent`, `EventLevel`, `EventStreamBus`). A new `<dependency>` entry in `blocks/pom.xml` is required.
+3. **`casehub-agency` gains compile dependency on `casehub-agency-summarisation-api`** — types remaining in blocks (`ChannelEventAdapter`, `ChannelEventPublisher`) reference extracted types (`Summariser`, `LevelEvent`, `EventLevel`, `EventStreamBus`). A new `<dependency>` entry in `blocks/pom.xml` is required.
 4. **ContentSummariser<T> → ContentSummariser<T, R>** — generified result type (D14). Migration: add second type parameter. `ContentSummariser<Message>` → `ContentSummariser<Message, SummaryResult>`. ~10 consumer files, mechanical via `ide_refactor_rename` / find-replace.
 5. **SummarisationRunner** — enhanced with state management for `StatefulSummariser`. Backward compatible for stateless `Summariser` implementations.
 
@@ -424,10 +424,10 @@ JQ (`field-extract`) requires `JsonNode` — Tier 1 only. For Tier 1 (`E = Map<S
 
 ## References
 
-- `blocks/blocks/src/main/java/io/casehub/blocks/summarisation/LevelEvent.java` — current 3-arg record
-- `blocks/blocks/src/main/java/io/casehub/blocks/summarisation/SummarisationRunner.java` — runner implementation
-- `blocks/blocks/src/main/java/io/casehub/blocks/summarisation/KeyedAccumulator.java` — key extractor signature
-- `blocks/blocks/src/test/java/io/casehub/blocks/summarisation/examples/logistics/LogisticsPipelineTest.java` — pipeline wiring pattern
+- `blocks/blocks/src/main/java/io/casehub/agency/summarisation/LevelEvent.java` — current 3-arg record
+- `blocks/blocks/src/main/java/io/casehub/agency/summarisation/SummarisationRunner.java` — runner implementation
+- `blocks/blocks/src/main/java/io/casehub/agency/summarisation/KeyedAccumulator.java` — key extractor signature
+- `blocks/blocks/src/test/java/io/casehub/agency/summarisation/examples/logistics/LogisticsPipelineTest.java` — pipeline wiring pattern
 - `io.casehub.platform.api.expression.ExpressionEngine` — platform expression SPI (javap analysis)
 - `io.casehub.platform.api.expression.CompiledExpression` — generic `R eval(C)` contract
 - casehubio/casehub-desiredstate#74 — RAS integration scope

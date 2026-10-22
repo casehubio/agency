@@ -4,7 +4,7 @@ date: 2026-08-14
 author: mdp
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [agentic, channel-observation, composition, event-source, termination]
 status: draft
 ---

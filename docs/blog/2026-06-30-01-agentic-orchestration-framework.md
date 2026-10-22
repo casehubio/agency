@@ -2,7 +2,7 @@
 title: "Compositional Orchestration — Why CaseHub Doesn't Need a Planner Interface"
 date: 2026-06-30
 type: phase-update
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [agentic, orchestration, langchain4j, architecture]
 ---
 

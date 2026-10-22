@@ -15,7 +15,7 @@ The goal: `SherpaOnnxSpeechToText.withDefaults()` just works, downloading what i
 
 ### 2.1 Provisioner Class
 
-A single package-private `Provisioner` class in `io.casehub.blocks.speech.sherpa` with two entry points:
+A single package-private `Provisioner` class in `io.casehub.agency.speech.sherpa` with two entry points:
 
 ```java
 final class Provisioner {

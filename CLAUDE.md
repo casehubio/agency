@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-**Name:** casehub-blocks
+**Name:** casehub-agency
 
-# CaseHub Blocks
+# CaseHub Agency
 
 ## Project Type
 
@@ -10,7 +10,7 @@ type: java
 
 ## Repository Role
 
-Reusable building blocks for CaseHub applications — composed from qhorus, engine, and work primitives. Foundation-adjacent library (sits between foundation and application tier). Single module, single artifact: `casehub-blocks`.
+Reusable building blocks for CaseHub applications — composed from qhorus, engine, and work primitives. Foundation-adjacent library (sits between foundation and application tier). Single module, single artifact: `casehub-agency`.
 
 **Peer repos (each has its own Claude session — do not commit to these):**
 platform, eidos, ledger, connectors, iot, work, worker, qhorus, pages, engine, claudony, openclaw, neural-text, devtown, aml, clinical, drafthouse, life, quarkmind, flow, soc, fsitrading, ras, ops, workers, desiredstate
@@ -45,92 +45,92 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 
 | Path | Contents |
 |------|----------|
-| `summarisation-api/src/main/java/io/casehub/blocks/summarisation/` | Unified summarisation SPI — `Summariser<IN,OUT>`, `StatefulSummariser<IN,OUT,S>` (framework-managed state per partition), `ContentSummariser<T,R>` (with `asSummariser()` bridge to `StatefulSummariser`), `LevelEvent<E>` (with `@Nullable String tenancyId`), `EventStreamBus<E>`, `EventAccumulator<E>` (with `peekBuffer()`), `WindowPolicy`, `EmissionPolicy<IN,S>` (state-aware emission gating with `anyOf`/`allOf` composition), `StateStore<S>` (opt-in persistent state — `load`/`store` with write-through cache in runners), `OutputProcessor<OUT,S>` (post-summarisation output processing), `SummarisationRunner<IN,OUT>` (state-aware, builder API with `emissionPolicy()`/`stateStore()`/`stateKeyResolver()`/`outputProcessor()`), `KeyedAccumulator<K,E>` (key extractor: `Function<LevelEvent<E>, K>`), `KeyedSummarisationRunner<K,IN,OUT>` (per-key `StatefulSummariser` state + `evictState(K)`, builder API with `stateStore()`/`outputProcessor()`), `Compactor<E>`, `VerbatimContentSummariser<T>`, `Tickable` (common `tick()`/`flush()` interface for both runner types) |
-| `summarisation-api/src/test/java/io/casehub/blocks/summarisation/` | Tests for summarisation SPI |
-| `cloudevents/src/main/java/io/casehub/blocks/summarisation/cloudevents/` | CloudEvent bridge — `EventSink<T>` (`@FunctionalInterface`), `CloudEventIngestionAdapter<E>` (type-prefix filter, tenancyId extraction, optional `Function<E,E>` payload normalizer for mixed-type pipelines), `CloudEventEmitter<E>` (wraps `LevelEvent` as CloudEvent), `PipelineTickScheduler` (ScheduledExecutorService tick loop) |
-| `cloudevents/src/test/java/io/casehub/blocks/summarisation/cloudevents/` | Tests for CloudEvent bridge |
-| `summarisation-yaml/src/main/java/io/casehub/blocks/summarisation/yaml/` | YAML pipeline surface — `PipelineDefinition`, `PipelineCompiler` (windowed + keyed grouping via `ExpressionEngine`), `CompiledPipeline<IN>` (polymorphic `Tickable` runners), `SummariserRegistry`, `PipelineValidator`, `ExpressionEngine`-backed expression evaluation, Jackson YAML deserialization |
-| `summarisation-yaml/src/main/java/io/casehub/blocks/summarisation/yaml/builtin/` | Built-in summariser types — `ThresholdClassifySummariser` (per-event MVEL3 predicates), `PhaseDetectSummariser` (stateful state machine with structured predicates), `CountSummariser`, `FieldExtractSummariser`, `BatchContext`/`BatchContextView` |
-| `summarisation-yaml/src/test/java/io/casehub/blocks/summarisation/yaml/` | Tests for YAML surface |
-| `summarisation-yaml-deployment/src/main/java/io/casehub/blocks/summarisation/yaml/deployment/` | Quarkus deployment module — `SummarisationYamlProcessor` (YAML discovery, validation), `SummarisationRecorder` (runtime bean registration) |
-| `agentic-yaml/src/main/java/io/casehub/blocks/agentic/yaml/` | YAML surface for agentic orchestration — `PatternSpec` (8 topologies, each with optional `name`, `description`, `task`), `RoutingSpec`, `TerminationSpec`, `AggregationSpec`, `ActivationSpec`, `DecompositionSpec`, `AgentRefSpec` sealed record hierarchies, `BranchSpec` (condition + agent + optional `description`), `AgentRefSpec` variants now include optional `model` (LLM model identifier), `TaskNodeSpec` (Primitive with optional `description`, Compound with subtasks), `PatternCompiler` (spec → `ExecutionModel`), strategy registries, `BlocksSchemaGenerator` (victools schema from spec records), `JudgmentSpec`, `NegotiationSpec`, `ConversationSpec`, `ConflictResolutionSpec` |
-| `agentic-yaml/src/test/java/io/casehub/blocks/agentic/yaml/` | Tests for YAML agentic surface |
-| `agentic-yaml-deployment/src/main/java/io/casehub/blocks/agentic/yaml/deployment/` | Quarkus deployment module — `AgenticYamlProcessor` (YAML discovery, validation), `AgenticRecorder` (runtime compiler registration) |
+| `summarisation-api/src/main/java/io/casehub/agency/summarisation/` | Unified summarisation SPI — `Summariser<IN,OUT>`, `StatefulSummariser<IN,OUT,S>` (framework-managed state per partition), `ContentSummariser<T,R>` (with `asSummariser()` bridge to `StatefulSummariser`), `LevelEvent<E>` (with `@Nullable String tenancyId`), `EventStreamBus<E>`, `EventAccumulator<E>` (with `peekBuffer()`), `WindowPolicy`, `EmissionPolicy<IN,S>` (state-aware emission gating with `anyOf`/`allOf` composition), `StateStore<S>` (opt-in persistent state — `load`/`store` with write-through cache in runners), `OutputProcessor<OUT,S>` (post-summarisation output processing), `SummarisationRunner<IN,OUT>` (state-aware, builder API with `emissionPolicy()`/`stateStore()`/`stateKeyResolver()`/`outputProcessor()`), `KeyedAccumulator<K,E>` (key extractor: `Function<LevelEvent<E>, K>`), `KeyedSummarisationRunner<K,IN,OUT>` (per-key `StatefulSummariser` state + `evictState(K)`, builder API with `stateStore()`/`outputProcessor()`), `Compactor<E>`, `VerbatimContentSummariser<T>`, `Tickable` (common `tick()`/`flush()` interface for both runner types) |
+| `summarisation-api/src/test/java/io/casehub/agency/summarisation/` | Tests for summarisation SPI |
+| `cloudevents/src/main/java/io/casehub/agency/summarisation/cloudevents/` | CloudEvent bridge — `EventSink<T>` (`@FunctionalInterface`), `CloudEventIngestionAdapter<E>` (type-prefix filter, tenancyId extraction, optional `Function<E,E>` payload normalizer for mixed-type pipelines), `CloudEventEmitter<E>` (wraps `LevelEvent` as CloudEvent), `PipelineTickScheduler` (ScheduledExecutorService tick loop) |
+| `cloudevents/src/test/java/io/casehub/agency/summarisation/cloudevents/` | Tests for CloudEvent bridge |
+| `summarisation-yaml/src/main/java/io/casehub/agency/summarisation/yaml/` | YAML pipeline surface — `PipelineDefinition`, `PipelineCompiler` (windowed + keyed grouping via `ExpressionEngine`), `CompiledPipeline<IN>` (polymorphic `Tickable` runners), `SummariserRegistry`, `PipelineValidator`, `ExpressionEngine`-backed expression evaluation, Jackson YAML deserialization |
+| `summarisation-yaml/src/main/java/io/casehub/agency/summarisation/yaml/builtin/` | Built-in summariser types — `ThresholdClassifySummariser` (per-event MVEL3 predicates), `PhaseDetectSummariser` (stateful state machine with structured predicates), `CountSummariser`, `FieldExtractSummariser`, `BatchContext`/`BatchContextView` |
+| `summarisation-yaml/src/test/java/io/casehub/agency/summarisation/yaml/` | Tests for YAML surface |
+| `summarisation-yaml-deployment/src/main/java/io/casehub/agency/summarisation/yaml/deployment/` | Quarkus deployment module — `SummarisationYamlProcessor` (YAML discovery, validation), `SummarisationRecorder` (runtime bean registration) |
+| `agentic-yaml/src/main/java/io/casehub/agency/agentic/yaml/` | YAML surface for agentic orchestration — `PatternSpec` (8 topologies, each with optional `name`, `description`, `task`), `RoutingSpec`, `TerminationSpec`, `AggregationSpec`, `ActivationSpec`, `DecompositionSpec`, `AgentRefSpec` sealed record hierarchies, `BranchSpec` (condition + agent + optional `description`), `AgentRefSpec` variants now include optional `model` (LLM model identifier), `TaskNodeSpec` (Primitive with optional `description`, Compound with subtasks), `PatternCompiler` (spec → `ExecutionModel`), strategy registries, `AgencySchemaGenerator` (victools schema from spec records), `JudgmentSpec`, `NegotiationSpec`, `ConversationSpec`, `ConflictResolutionSpec` |
+| `agentic-yaml/src/test/java/io/casehub/agency/agentic/yaml/` | Tests for YAML agentic surface |
+| `agentic-yaml-deployment/src/main/java/io/casehub/agency/agentic/yaml/deployment/` | Quarkus deployment module — `AgenticYamlProcessor` (YAML discovery, validation), `AgenticRecorder` (runtime compiler registration) |
 | `docs/summarisation/CAPABILITY-MATRIX.md` | Summarisation capability matrix — maps 29 capabilities across 11 examples |
-| `src/main/java/io/casehub/blocks/agent/` | Shared LLM invocation utility — `StructuredAgentInvoker` (static: `invokeText()`, `invoke(Class<T>)`, `invokeRaw()` with sealed `InvocationResult<T>` and `InvocationMetadata`; markdown fence stripping, JSON extraction, `InvocationComplete` capture). `stripFences()` and `extractJson()` also available standalone. |
-| `src/test/java/io/casehub/blocks/agent/` | Tests for agent utility |
-| `src/main/java/io/casehub/blocks/attestation/` | Attestation write-path types — `AttestationIntent`, `AttestationIntentWriter` (+ `NoOpAttestationIntentWriter` `@DefaultBean`), `LifecycleAttestationObserver<E>` SPI, `AttestationContext` |
-| `src/test/java/io/casehub/blocks/attestation/` | Tests for attestation types |
-| `src/main/java/io/casehub/blocks/trust/` | Trust-lifecycle SPIs — `IntakeClassifier<S>`, `VouchService` with pluggable `VouchConstraint` chain |
-| `src/test/java/io/casehub/blocks/trust/` | Tests for trust SPIs |
-| `src/main/java/io/casehub/blocks/channel/` | Channel utility blocks — message meta, context tracking, bounded projection |
-| `src/test/java/io/casehub/blocks/channel/` | Tests for channel blocks |
-| `src/main/java/io/casehub/blocks/channel/summary/` | Channel summary integration — `ContentSummariser<Message, SummaryResult>` implementations, `SummaryUpdateHook` adapter, `NoOpThreadSummaryStore` `@DefaultBean` |
-| `src/test/java/io/casehub/blocks/channel/summary/` | Tests for channel summary integration |
-| `src/main/java/io/casehub/blocks/agentic/` | Compositional agentic orchestration — six SPIs (routing, decomposition, activation, aggregation, judgment, termination), execution drivers, pattern builders |
-| `src/test/java/io/casehub/blocks/agentic/` | Tests for agentic orchestration blocks |
-| `src/main/java/io/casehub/blocks/agentic/judgment/` | Judgment orchestration — `JudgmentPhase<T>` SPI (from engine#994), `JudgmentPolicy<T>` composition root (implements `JudgmentPhase`), `JudgmentTrigger<T>` (conditional yielding: `AlwaysYield`, `NeverYield`, `IterationBased`, `ConfidenceThreshold`), `CallerStrategy` sealed hierarchy (Single/FanOut/EscalationChain), `CallerRef`, `AgreementPolicy` with `ConsensusAgreement`, `JudgmentDispatcher` with `DirectJudgmentDispatcher`, `CompositeVerifier` (chains engine-api `JudgmentVerifier` with most-restrictive-wins policy), `NoOpVerifier`, `RetryPolicy`/`ExhaustionPolicy`/`VerifierFailurePolicy`, `JudgmentResponse`, `AgreementResult` |
-| `src/test/java/io/casehub/blocks/agentic/judgment/` | Tests for judgment orchestration |
-| `src/main/java/io/casehub/blocks/agentic/channel/` | Inter-agent channel setup + supervisor observation — `ChannelBinding`, `ChannelConfig`, `ChannelExecutionStrategy` (Conversation/FanIn/Barrier), `ChannelObserver<S>` (projection-based observation + EventSource) |
-| `src/test/java/io/casehub/blocks/agentic/channel/` | Tests for agentic channel blocks |
-| `src/main/java/io/casehub/blocks/agentic/aggregation/` | Aggregation strategies including `AuctionAggregation` — English/Dutch iterative auction via `AggregationStrategy<AuctionState>` with `BidExtractor` SPI |
-| `src/test/java/io/casehub/blocks/agentic/aggregation/` | Tests for aggregation strategies |
-| `src/main/java/io/casehub/blocks/agentic/coalition/` | Coalition formation — `CoalitionProposal`, `CoalitionEvaluator` SPI, `CapabilityCoverageEvaluator`, capability-based team assembly scoring |
-| `src/test/java/io/casehub/blocks/agentic/coalition/` | Tests for coalition formation |
-| `src/main/java/io/casehub/blocks/agentic/intention/` | Joint intentions — `JointIntention` lifecycle (form/activate/reconsider/drop/fulfill), `IntentionMonitor` SPI, `ReconsiderationSignal` |
-| `src/test/java/io/casehub/blocks/agentic/intention/` | Tests for joint intentions |
-| `src/main/java/io/casehub/blocks/agentic/belief/` | Formal belief revision — AGM-style `BeliefSet<T>` with expand/contract/revise, `ConsistencyChecker<T>` SPI, entrenchment ordering |
-| `src/test/java/io/casehub/blocks/agentic/belief/` | Tests for belief revision |
-| `src/main/java/io/casehub/blocks/agentic/cognition/` | Cognition integration — `CognitionAvatarAdapter` (thin `AvatarCognition` bridge delegating to neocortex `CognitionCore`, maps speech lifecycle to cognitive tick/record/evaluate), `MemoryHygieneSpiAdapter` (bridges blocks `MemoryHygieneOrchestrator` to neocortex SPI). All cognitive types, orchestrators, prompt sections, and config records now provided by `casehub-neocortex-cognition` module. |
-| `src/test/java/io/casehub/blocks/agentic/cognition/` | Tests for cognition integration |
-| `src/main/java/io/casehub/blocks/agentic/personality/` | Personality evolution — signal-driven orchestrator composing eidos JPAF pipeline. `TraitPressureSource<E>` SPI, `PersonalityEvolutionOrchestrator` (tick/record), `EvolutionTick` sealed outcomes, default pressure sources (BehavioralSignal, RelationshipEvent, GoalOutcomeCounts) |
-| `src/test/java/io/casehub/blocks/agentic/personality/` | Tests for personality evolution |
-| `src/main/java/io/casehub/blocks/memory/` | Memory hygiene — `MemoryHygieneOrchestrator` (tick: importance scoring → eviction → consolidation; implements neocortex `io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator` SPI), `MemoryHygieneScheduler` (maintain: tick + reflection + peer-linking + integrity), `ConfidenceScorer` SPI with `ArousalScorer`/`SurpriseScorer`/`CompositeConfidenceScorer`, `RetentionScore`/`RetentionConfig` (composite eviction scoring), `DefaultIntegrityChecker` (structural + semantic escalation), `ReflectionStore` (reflection persistence SPI), `ReflectionQueryStore` SPI extending `io.casehub.neocortex.memory.ReflectionQueryStore` with `NoOpReflectionQueryStore` `@DefaultBean`, `HygieneTick`/`MaintenanceTick` sealed outcomes, `HygieneEvent` observability. Note: `ReflectionEntry` and `KnowledgeGapSummary` types moved to neocortex `memory-api`. |
-| `src/test/java/io/casehub/blocks/memory/` | Tests for memory hygiene |
-| `src/main/java/io/casehub/blocks/conversation/` | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection |
-| `src/test/java/io/casehub/blocks/conversation/` | Tests for conversation blocks |
-| `src/main/java/io/casehub/blocks/conversation/orchestration/` | Conversation orchestrator — TurnPolicy SPI, termination conditions, PromptAssembler, ConversationOrchestrator composition root, ConversationListener per-dispatch callback |
-| `src/test/java/io/casehub/blocks/conversation/orchestration/` | Tests for conversation orchestrator |
-| `src/main/java/io/casehub/blocks/normative/` | Normative conflict resolution — `ConflictResolutionStrategy<T>` SPI, `NormDecision<T>`, `NormResolution<T>`, five resolution strategies (priority, specificity, recency, most-restrictive, escalation) |
-| `src/test/java/io/casehub/blocks/normative/` | Tests for normative conflict resolution |
-| `src/main/java/io/casehub/blocks/negotiation/` | Negotiation channel protocol — `NegotiationProjection`, `NegotiationFold`, `AcceptancePolicy` SPI (unanimous, majority, threshold), `NegotiationRenderer`, termination conditions (`MaxRoundsTermination`, `DeadlineTermination`, `AcceptedTermination`, `TerminalOutcomeTermination`, `NegotiationCompositeTermination`) |
-| `src/test/java/io/casehub/blocks/negotiation/` | Tests for negotiation protocol |
-| `src/main/java/io/casehub/blocks/oversight/` | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes |
-| `src/test/java/io/casehub/blocks/oversight/` | Tests for oversight blocks |
-| `src/main/java/io/casehub/blocks/routing/` | Trust routing utilities — shared preference keys, policy resolver, compliance records |
-| `src/test/java/io/casehub/blocks/routing/` | Tests for routing utilities |
-| `src/main/java/io/casehub/blocks/routing/agent/` | AI-powered AgentRoutingStrategy implementations — LLM-reasoned and CBR-evidence agent selection, composable prompt enrichment pipeline, feature extraction SPI, outcome recording |
-| `src/test/java/io/casehub/blocks/routing/agent/` | Tests for AI routing strategies |
-| `src/main/java/io/casehub/blocks/rag/` | RAG retrieval worker factory — `RagRetrievalWorkerFactory` (static: `create()` with `QueryExtractionStrategy` + `CaseContextRetriever` + `List<CorpusRef>` → `Worker`). Provided dependency on `casehub-neocortex-rag-api`. |
-| `src/test/java/io/casehub/blocks/rag/` | Tests for RAG retrieval worker factory |
-| `src/main/java/io/casehub/blocks/prompt/` | DSPy-inspired prompt optimisation — core model, SPIs (`PromptOptimiser`, `PromptQualityMetric`, `PromptVariantStore`, `SystemPromptCustomiser`, `DiversityStrategy`), batch orchestration, A/B variant selection |
-| `src/test/java/io/casehub/blocks/prompt/` | Tests for prompt optimisation framework |
-| `src/main/java/io/casehub/blocks/prompt/optimiser/` | `PromptOptimiser` implementations — `FewShotOptimiser` (data-driven, diversity-aware via `DiversityStrategy`), `InstructionOptimiser` (LLM meta-prompting), `TopNDiversityStrategy` (identity), `OutcomeAwareDiversityStrategy` (MMR + Jaccard) |
-| `src/test/java/io/casehub/blocks/prompt/optimiser/` | Tests for prompt optimisers |
-| `src/main/java/io/casehub/blocks/prompt/runtime/` | CDI runtime beans — `OptimisedFewShotSection`, `VariantAwareSystemPromptCustomiser`, `WeightedOutcomeMetric`, `InMemoryPromptVariantStore` |
-| `src/test/java/io/casehub/blocks/prompt/runtime/` | Tests for prompt runtime beans |
-| `src/main/java/io/casehub/blocks/summarisation/` | Summarisation extensions (depends on summarisation-api) — `TieredContentSummariser<T>`, `SummaryMode`, observation package. Core types live in `summarisation-api/`. |
-| `src/test/java/io/casehub/blocks/summarisation/` | Tests for summarisation extensions |
-| `src/main/java/io/casehub/blocks/summarisation/llm/` | LLM-backed `ContentSummariser<T, SummaryResult>` — generic synthesis via `AgentProvider` |
-| `src/test/java/io/casehub/blocks/summarisation/llm/` | Tests for LLM content summariser |
-| `src/main/java/io/casehub/blocks/summarisation/observation/` | Observation accumulator — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunks |
-| `src/test/java/io/casehub/blocks/summarisation/observation/` | Tests for observation accumulator |
-| `src/main/java/io/casehub/blocks/summarisation/observation/affordance/` | Affordance grounding + observation filtering — per-entity rendering, `AnnotatedSection` (capability-tagged sections with resolution alternatives), `ObservationFilter` SPI, `ObservationPipeline` (ordered filter composition), `PerceptionFilter` (visibility gating + resolution fallback), `ResolutionTier` |
-| `src/test/java/io/casehub/blocks/summarisation/observation/affordance/` | Tests for affordance rendering and observation filtering |
-| `src/test/java/io/casehub/blocks/summarisation/examples/clinical/` | Clinical temporal abstraction example (L1-L4 pipeline) |
-| `src/test/java/io/casehub/blocks/summarisation/examples/logistics/` | Logistics hub monitoring example (L1-L4 pipeline) |
-| `src/main/java/io/casehub/blocks/summarisation/narrative/` | Decision narrative pipeline — `DecisionSignal` sealed hierarchy (6 signal types including `ModelSelection`), `StepDecisionSummary`/`SignalDigest` (L1→L2 intermediate), `DecisionNarrative` (output), `DecisionSignalSummariser` (L1 heuristic), `DecisionNarrativeSummariser` (L2 LLM-backed `ContentSummariser` with template fallback), `NarrativeSignalStrategy` SPI, `AbstractNarrativeSignalStrategy` (base class), `DecisionNarrativePipeline` (factory wiring L1→L2) |
-| `src/test/java/io/casehub/blocks/summarisation/narrative/` | Tests for decision narrative pipeline |
-| `src/test/java/io/casehub/blocks/summarisation/examples/decision/` | Fsitrading-inspired decision narrative pipeline example (two-level: `TradingSignalSummariser` L1 + `TradeNarrativeSummariser` L2) |
-| `speech-api/src/main/java/io/casehub/blocks/speech/` | Speech pipeline SPIs — `SpeechPromptAssembler` (`@FunctionalInterface` SPI: prompt assembly for speech sessions), `AssembledPrompt` (system + user prompt record with optional model override), `ConversationTurn` (role + content record), `PromptContext` (agentId, tenantId, subjectId per-turn context), `PromptSection` (`@FunctionalInterface` SPI: contributes nullable text sections to prompts), `AvatarCognition` (composition root SPI: wraps assembler, initialize, tick, evaluateProactive, recordInteraction), `PhonemeAligner` (`@FunctionalInterface` SPI), `LipSyncEnricher` (decorator for phoneme timing enrichment) |
-| `speech-api/src/test/java/io/casehub/blocks/speech/` | Tests for LipSyncEnricher |
-| `speech-sherpa/src/main/java/io/casehub/blocks/speech/sherpa/` | sherpa-onnx FFM/Panama implementation — `SherpaOnnxSpeechToText` (+ `withDefaults()` zero-install factory), `SherpaOnnxTextToSpeech` (+ `withDefaults()` zero-install factory), `VitsTextToSpeech` (direct onnxruntime + espeak-ng for TTS with exact phoneme timing), `Audio8TextToSpeech` (DualAR autoregressive TTS via ORT with streaming + voice cloning, `withDefaults()` zero-install factories, `synthesiseStreaming()` with windowed overlap-subtract codec decoding, `registerVoice()`/`releaseVoice()` for zero-shot cloning), `Audio8Tokenizer` (GPT-2 byte-level BPE tokenizer from HuggingFace `tokenizer.json`), `Audio8Config` (model variant configuration — threads, temperature, top-k), `DualARLoop` (autoregressive slow AR + fast AR inference with KV-cache and Mamba SSM state, `iterateFrames()` for streaming), `CodecDecoder` (codec token matrix → PCM waveform via ORT), `VoiceRegistry` (voice registration/release lifecycle with transient codec encoder), `RuntimeManifest` (model metadata + streaming params from JSON — `codecHopLength`, `streamContextFrames`, `streamGuardFrames`), `EspeakPhonemeAligner` (`PhonemeAligner` impl — espeak-ng phonemization with proportional duration mapping, `withDefaults()` zero-config factory), `SherpaLibrary` (native binding via FFM SymbolLookup, 3-tier loading: system path → local cache → auto-download), `OnnxRuntimeLibrary` (onnxruntime C API FFM vtable bindings, singleton env shared across sessions), `EspeakLibrary` (espeak-ng C API FFM bindings), `SherpaLayouts` (C struct layouts for sherpa-onnx 1.10.x), `Provisioner` (auto-download native lib + model with SHA-256 verification, `FileLock` concurrency, `tar xf` extraction; `ensureGectorModel()` for GECToR ONNX bundles; `ensureAudio8Model()` for Audio8 DualAR models from HuggingFace), `ModelPatcher` (ONNX model duration output patching via protobuf), `VitsConfig` (Piper model config parsing + phoneme tokenization), `SentencePieceTokenizer` (pure Java Viterbi unigram segmentation — reads .model protobuf via CodedInputStream, trie-based vocab lookup), `GectorFilter` (`TextFilter` impl, destructiveness 3 — composes WordTokenizer + SentencePieceTokenizer + ORT + GectorTagApplier for iterative grammar correction), `GectorConfig` (tag vocabulary + verb dictionary + model path resolution from model directory), `GectorTagApplier` (stateless tag application — $KEEP/$DELETE/$APPEND/$REPLACE/morphological transforms), `WordTokenizer` (spaCy-compatible word pre-tokenization with contraction splitting), `WavReader`/`WavWriter` (PCM audio I/O), `SherpaConfig`, `SherpaException` |
-| `speech-sherpa/src/test/java/io/casehub/blocks/speech/sherpa/` | Tests for sherpa-onnx implementation |
-| `speech-ws/src/main/java/io/casehub/blocks/speech/ws/` | Avatar WebSocket endpoint — `SpeechWebSocket` (Quarkus WebSocket at `/ws/avatar`), `SpeechSession` (per-connection business logic), `VisemeMapping` (IPA→Oculus viseme with per-viseme weights and minimum duration enforcement), `PromptAssembler` SPI with `DefaultPromptAssembler`, `AvatarConfig` |
-| `speech-ws/src/main/java/io/casehub/blocks/speech/ws/protocol/` | WebSocket protocol DTOs — `AvatarMessage` sealed hierarchy (Start, Stop, Partial, Transcript, Response, Phonemes, Error), `VisemeFrame` (viseme + timing + weight), `ConversationTurn`, `MessageCodec` (gson JSON encode/decode) |
-| `speech-ws/src/test/java/io/casehub/blocks/speech/ws/` | Tests for avatar WebSocket (88 tests) |
+| `src/main/java/io/casehub/agency/agent/` | Shared LLM invocation utility — `StructuredAgentInvoker` (static: `invokeText()`, `invoke(Class<T>)`, `invokeRaw()` with sealed `InvocationResult<T>` and `InvocationMetadata`; markdown fence stripping, JSON extraction, `InvocationComplete` capture). `stripFences()` and `extractJson()` also available standalone. |
+| `src/test/java/io/casehub/agency/agent/` | Tests for agent utility |
+| `src/main/java/io/casehub/agency/attestation/` | Attestation write-path types — `AttestationIntent`, `AttestationIntentWriter` (+ `NoOpAttestationIntentWriter` `@DefaultBean`), `LifecycleAttestationObserver<E>` SPI, `AttestationContext` |
+| `src/test/java/io/casehub/agency/attestation/` | Tests for attestation types |
+| `src/main/java/io/casehub/agency/trust/` | Trust-lifecycle SPIs — `IntakeClassifier<S>`, `VouchService` with pluggable `VouchConstraint` chain |
+| `src/test/java/io/casehub/agency/trust/` | Tests for trust SPIs |
+| `src/main/java/io/casehub/agency/channel/` | Channel utility blocks — message meta, context tracking, bounded projection |
+| `src/test/java/io/casehub/agency/channel/` | Tests for channel blocks |
+| `src/main/java/io/casehub/agency/channel/summary/` | Channel summary integration — `ContentSummariser<Message, SummaryResult>` implementations, `SummaryUpdateHook` adapter, `NoOpThreadSummaryStore` `@DefaultBean` |
+| `src/test/java/io/casehub/agency/channel/summary/` | Tests for channel summary integration |
+| `src/main/java/io/casehub/agency/agentic/` | Compositional agentic orchestration — six SPIs (routing, decomposition, activation, aggregation, judgment, termination), execution drivers, pattern builders |
+| `src/test/java/io/casehub/agency/agentic/` | Tests for agentic orchestration blocks |
+| `src/main/java/io/casehub/agency/agentic/judgment/` | Judgment orchestration — `JudgmentPhase<T>` SPI (from engine#994), `JudgmentPolicy<T>` composition root (implements `JudgmentPhase`), `JudgmentTrigger<T>` (conditional yielding: `AlwaysYield`, `NeverYield`, `IterationBased`, `ConfidenceThreshold`), `CallerStrategy` sealed hierarchy (Single/FanOut/EscalationChain), `CallerRef`, `AgreementPolicy` with `ConsensusAgreement`, `JudgmentDispatcher` with `DirectJudgmentDispatcher`, `CompositeVerifier` (chains engine-api `JudgmentVerifier` with most-restrictive-wins policy), `NoOpVerifier`, `RetryPolicy`/`ExhaustionPolicy`/`VerifierFailurePolicy`, `JudgmentResponse`, `AgreementResult` |
+| `src/test/java/io/casehub/agency/agentic/judgment/` | Tests for judgment orchestration |
+| `src/main/java/io/casehub/agency/agentic/channel/` | Inter-agent channel setup + supervisor observation — `ChannelBinding`, `ChannelConfig`, `ChannelExecutionStrategy` (Conversation/FanIn/Barrier), `ChannelObserver<S>` (projection-based observation + EventSource) |
+| `src/test/java/io/casehub/agency/agentic/channel/` | Tests for agentic channel blocks |
+| `src/main/java/io/casehub/agency/agentic/aggregation/` | Aggregation strategies including `AuctionAggregation` — English/Dutch iterative auction via `AggregationStrategy<AuctionState>` with `BidExtractor` SPI |
+| `src/test/java/io/casehub/agency/agentic/aggregation/` | Tests for aggregation strategies |
+| `src/main/java/io/casehub/agency/agentic/coalition/` | Coalition formation — `CoalitionProposal`, `CoalitionEvaluator` SPI, `CapabilityCoverageEvaluator`, capability-based team assembly scoring |
+| `src/test/java/io/casehub/agency/agentic/coalition/` | Tests for coalition formation |
+| `src/main/java/io/casehub/agency/agentic/intention/` | Joint intentions — `JointIntention` lifecycle (form/activate/reconsider/drop/fulfill), `IntentionMonitor` SPI, `ReconsiderationSignal` |
+| `src/test/java/io/casehub/agency/agentic/intention/` | Tests for joint intentions |
+| `src/main/java/io/casehub/agency/agentic/belief/` | Formal belief revision — AGM-style `BeliefSet<T>` with expand/contract/revise, `ConsistencyChecker<T>` SPI, entrenchment ordering |
+| `src/test/java/io/casehub/agency/agentic/belief/` | Tests for belief revision |
+| `src/main/java/io/casehub/agency/agentic/cognition/` | Cognition integration — `CognitionAvatarAdapter` (thin `AvatarCognition` bridge delegating to neocortex `CognitionCore`, maps speech lifecycle to cognitive tick/record/evaluate), `MemoryHygieneSpiAdapter` (bridges blocks `MemoryHygieneOrchestrator` to neocortex SPI). All cognitive types, orchestrators, prompt sections, and config records now provided by `casehub-neocortex-cognition` module. |
+| `src/test/java/io/casehub/agency/agentic/cognition/` | Tests for cognition integration |
+| `src/main/java/io/casehub/agency/agentic/personality/` | Personality evolution — signal-driven orchestrator composing eidos JPAF pipeline. `TraitPressureSource<E>` SPI, `PersonalityEvolutionOrchestrator` (tick/record), `EvolutionTick` sealed outcomes, default pressure sources (BehavioralSignal, RelationshipEvent, GoalOutcomeCounts) |
+| `src/test/java/io/casehub/agency/agentic/personality/` | Tests for personality evolution |
+| `src/main/java/io/casehub/agency/memory/` | Memory hygiene — `MemoryHygieneOrchestrator` (tick: importance scoring → eviction → consolidation; implements neocortex `io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator` SPI), `MemoryHygieneScheduler` (maintain: tick + reflection + peer-linking + integrity), `ConfidenceScorer` SPI with `ArousalScorer`/`SurpriseScorer`/`CompositeConfidenceScorer`, `RetentionScore`/`RetentionConfig` (composite eviction scoring), `DefaultIntegrityChecker` (structural + semantic escalation), `ReflectionStore` (reflection persistence SPI), `ReflectionQueryStore` SPI extending `io.casehub.neocortex.memory.ReflectionQueryStore` with `NoOpReflectionQueryStore` `@DefaultBean`, `HygieneTick`/`MaintenanceTick` sealed outcomes, `HygieneEvent` observability. Note: `ReflectionEntry` and `KnowledgeGapSummary` types moved to neocortex `memory-api`. |
+| `src/test/java/io/casehub/agency/memory/` | Tests for memory hygiene |
+| `src/main/java/io/casehub/agency/conversation/` | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection |
+| `src/test/java/io/casehub/agency/conversation/` | Tests for conversation blocks |
+| `src/main/java/io/casehub/agency/conversation/orchestration/` | Conversation orchestrator — TurnPolicy SPI, termination conditions, PromptAssembler, ConversationOrchestrator composition root, ConversationListener per-dispatch callback |
+| `src/test/java/io/casehub/agency/conversation/orchestration/` | Tests for conversation orchestrator |
+| `src/main/java/io/casehub/agency/normative/` | Normative conflict resolution — `ConflictResolutionStrategy<T>` SPI, `NormDecision<T>`, `NormResolution<T>`, five resolution strategies (priority, specificity, recency, most-restrictive, escalation) |
+| `src/test/java/io/casehub/agency/normative/` | Tests for normative conflict resolution |
+| `src/main/java/io/casehub/agency/negotiation/` | Negotiation channel protocol — `NegotiationProjection`, `NegotiationFold`, `AcceptancePolicy` SPI (unanimous, majority, threshold), `NegotiationRenderer`, termination conditions (`MaxRoundsTermination`, `DeadlineTermination`, `AcceptedTermination`, `TerminalOutcomeTermination`, `NegotiationCompositeTermination`) |
+| `src/test/java/io/casehub/agency/negotiation/` | Tests for negotiation protocol |
+| `src/main/java/io/casehub/agency/oversight/` | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes |
+| `src/test/java/io/casehub/agency/oversight/` | Tests for oversight blocks |
+| `src/main/java/io/casehub/agency/routing/` | Trust routing utilities — shared preference keys, policy resolver, compliance records |
+| `src/test/java/io/casehub/agency/routing/` | Tests for routing utilities |
+| `src/main/java/io/casehub/agency/routing/agent/` | AI-powered AgentRoutingStrategy implementations — LLM-reasoned and CBR-evidence agent selection, composable prompt enrichment pipeline, feature extraction SPI, outcome recording |
+| `src/test/java/io/casehub/agency/routing/agent/` | Tests for AI routing strategies |
+| `src/main/java/io/casehub/agency/rag/` | RAG retrieval worker factory — `RagRetrievalWorkerFactory` (static: `create()` with `QueryExtractionStrategy` + `CaseContextRetriever` + `List<CorpusRef>` → `Worker`). Provided dependency on `casehub-neocortex-rag-api`. |
+| `src/test/java/io/casehub/agency/rag/` | Tests for RAG retrieval worker factory |
+| `src/main/java/io/casehub/agency/prompt/` | DSPy-inspired prompt optimisation — core model, SPIs (`PromptOptimiser`, `PromptQualityMetric`, `PromptVariantStore`, `SystemPromptCustomiser`, `DiversityStrategy`), batch orchestration, A/B variant selection |
+| `src/test/java/io/casehub/agency/prompt/` | Tests for prompt optimisation framework |
+| `src/main/java/io/casehub/agency/prompt/optimiser/` | `PromptOptimiser` implementations — `FewShotOptimiser` (data-driven, diversity-aware via `DiversityStrategy`), `InstructionOptimiser` (LLM meta-prompting), `TopNDiversityStrategy` (identity), `OutcomeAwareDiversityStrategy` (MMR + Jaccard) |
+| `src/test/java/io/casehub/agency/prompt/optimiser/` | Tests for prompt optimisers |
+| `src/main/java/io/casehub/agency/prompt/runtime/` | CDI runtime beans — `OptimisedFewShotSection`, `VariantAwareSystemPromptCustomiser`, `WeightedOutcomeMetric`, `InMemoryPromptVariantStore` |
+| `src/test/java/io/casehub/agency/prompt/runtime/` | Tests for prompt runtime beans |
+| `src/main/java/io/casehub/agency/summarisation/` | Summarisation extensions (depends on summarisation-api) — `TieredContentSummariser<T>`, `SummaryMode`, observation package. Core types live in `summarisation-api/`. |
+| `src/test/java/io/casehub/agency/summarisation/` | Tests for summarisation extensions |
+| `src/main/java/io/casehub/agency/summarisation/llm/` | LLM-backed `ContentSummariser<T, SummaryResult>` — generic synthesis via `AgentProvider` |
+| `src/test/java/io/casehub/agency/summarisation/llm/` | Tests for LLM content summariser |
+| `src/main/java/io/casehub/agency/summarisation/observation/` | Observation accumulator — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunks |
+| `src/test/java/io/casehub/agency/summarisation/observation/` | Tests for observation accumulator |
+| `src/main/java/io/casehub/agency/summarisation/observation/affordance/` | Affordance grounding + observation filtering — per-entity rendering, `AnnotatedSection` (capability-tagged sections with resolution alternatives), `ObservationFilter` SPI, `ObservationPipeline` (ordered filter composition), `PerceptionFilter` (visibility gating + resolution fallback), `ResolutionTier` |
+| `src/test/java/io/casehub/agency/summarisation/observation/affordance/` | Tests for affordance rendering and observation filtering |
+| `src/test/java/io/casehub/agency/summarisation/examples/clinical/` | Clinical temporal abstraction example (L1-L4 pipeline) |
+| `src/test/java/io/casehub/agency/summarisation/examples/logistics/` | Logistics hub monitoring example (L1-L4 pipeline) |
+| `src/main/java/io/casehub/agency/summarisation/narrative/` | Decision narrative pipeline — `DecisionSignal` sealed hierarchy (6 signal types including `ModelSelection`), `StepDecisionSummary`/`SignalDigest` (L1→L2 intermediate), `DecisionNarrative` (output), `DecisionSignalSummariser` (L1 heuristic), `DecisionNarrativeSummariser` (L2 LLM-backed `ContentSummariser` with template fallback), `NarrativeSignalStrategy` SPI, `AbstractNarrativeSignalStrategy` (base class), `DecisionNarrativePipeline` (factory wiring L1→L2) |
+| `src/test/java/io/casehub/agency/summarisation/narrative/` | Tests for decision narrative pipeline |
+| `src/test/java/io/casehub/agency/summarisation/examples/decision/` | Fsitrading-inspired decision narrative pipeline example (two-level: `TradingSignalSummariser` L1 + `TradeNarrativeSummariser` L2) |
+| `speech-api/src/main/java/io/casehub/agency/speech/` | Speech pipeline SPIs — `SpeechPromptAssembler` (`@FunctionalInterface` SPI: prompt assembly for speech sessions), `AssembledPrompt` (system + user prompt record with optional model override), `ConversationTurn` (role + content record), `PromptContext` (agentId, tenantId, subjectId per-turn context), `PromptSection` (`@FunctionalInterface` SPI: contributes nullable text sections to prompts), `AvatarCognition` (composition root SPI: wraps assembler, initialize, tick, evaluateProactive, recordInteraction), `PhonemeAligner` (`@FunctionalInterface` SPI), `LipSyncEnricher` (decorator for phoneme timing enrichment) |
+| `speech-api/src/test/java/io/casehub/agency/speech/` | Tests for LipSyncEnricher |
+| `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/` | sherpa-onnx FFM/Panama implementation — `SherpaOnnxSpeechToText` (+ `withDefaults()` zero-install factory), `SherpaOnnxTextToSpeech` (+ `withDefaults()` zero-install factory), `VitsTextToSpeech` (direct onnxruntime + espeak-ng for TTS with exact phoneme timing), `Audio8TextToSpeech` (DualAR autoregressive TTS via ORT with streaming + voice cloning, `withDefaults()` zero-install factories, `synthesiseStreaming()` with windowed overlap-subtract codec decoding, `registerVoice()`/`releaseVoice()` for zero-shot cloning), `Audio8Tokenizer` (GPT-2 byte-level BPE tokenizer from HuggingFace `tokenizer.json`), `Audio8Config` (model variant configuration — threads, temperature, top-k), `DualARLoop` (autoregressive slow AR + fast AR inference with KV-cache and Mamba SSM state, `iterateFrames()` for streaming), `CodecDecoder` (codec token matrix → PCM waveform via ORT), `VoiceRegistry` (voice registration/release lifecycle with transient codec encoder), `RuntimeManifest` (model metadata + streaming params from JSON — `codecHopLength`, `streamContextFrames`, `streamGuardFrames`), `EspeakPhonemeAligner` (`PhonemeAligner` impl — espeak-ng phonemization with proportional duration mapping, `withDefaults()` zero-config factory), `SherpaLibrary` (native binding via FFM SymbolLookup, 3-tier loading: system path → local cache → auto-download), `OnnxRuntimeLibrary` (onnxruntime C API FFM vtable bindings, singleton env shared across sessions), `EspeakLibrary` (espeak-ng C API FFM bindings), `SherpaLayouts` (C struct layouts for sherpa-onnx 1.10.x), `Provisioner` (auto-download native lib + model with SHA-256 verification, `FileLock` concurrency, `tar xf` extraction; `ensureGectorModel()` for GECToR ONNX bundles; `ensureAudio8Model()` for Audio8 DualAR models from HuggingFace), `ModelPatcher` (ONNX model duration output patching via protobuf), `VitsConfig` (Piper model config parsing + phoneme tokenization), `SentencePieceTokenizer` (pure Java Viterbi unigram segmentation — reads .model protobuf via CodedInputStream, trie-based vocab lookup), `GectorFilter` (`TextFilter` impl, destructiveness 3 — composes WordTokenizer + SentencePieceTokenizer + ORT + GectorTagApplier for iterative grammar correction), `GectorConfig` (tag vocabulary + verb dictionary + model path resolution from model directory), `GectorTagApplier` (stateless tag application — $KEEP/$DELETE/$APPEND/$REPLACE/morphological transforms), `WordTokenizer` (spaCy-compatible word pre-tokenization with contraction splitting), `WavReader`/`WavWriter` (PCM audio I/O), `SherpaConfig`, `SherpaException` |
+| `speech-sherpa/src/test/java/io/casehub/agency/speech/sherpa/` | Tests for sherpa-onnx implementation |
+| `speech-ws/src/main/java/io/casehub/agency/speech/ws/` | Avatar WebSocket endpoint — `SpeechWebSocket` (Quarkus WebSocket at `/ws/avatar`), `SpeechSession` (per-connection business logic), `VisemeMapping` (IPA→Oculus viseme with per-viseme weights and minimum duration enforcement), `PromptAssembler` SPI with `DefaultPromptAssembler`, `AvatarConfig` |
+| `speech-ws/src/main/java/io/casehub/agency/speech/ws/protocol/` | WebSocket protocol DTOs — `AvatarMessage` sealed hierarchy (Start, Stop, Partial, Transcript, Response, Phonemes, Error), `VisemeFrame` (viseme + timing + weight), `ConversationTurn`, `MessageCodec` (gson JSON encode/decode) |
+| `speech-ws/src/test/java/io/casehub/agency/speech/ws/` | Tests for avatar WebSocket (88 tests) |
 
-## Package: `io.casehub.blocks.agent`
+## Package: `io.casehub.agency.agent`
 
 Shared LLM invocation utility — eliminates the 17-site `AgentProvider.invoke()` → collect TextDelta → parse JSON boilerplate. Not CDI-managed — stateless static methods, caller passes `AgentProvider`.
 
@@ -141,7 +141,7 @@ Shared LLM invocation utility — eliminates the 17-site `AgentProvider.invoke()
 | `InvocationMetadata` | Record: `inputTokens`, `outputTokens`, `thinkingTokens`, `cacheReadTokens`, `cacheWriteTokens`, `totalCostUsd`, `durationMs`, `apiDurationMs`. Captured from `AgentEvent.InvocationComplete`. `EMPTY` sentinel for missing completion events. |
 | `KeyedLock` | Per-key tick locking utility. `withLock(String key, Supplier<T>)` and `withLock(String key, Runnable)` — acquires a per-key `ReentrantLock`, executes, releases. `stateKey(agentId, tenantId)` composite key helper. Replaces 16 identical lock/try/finally sites across 13 orchestrator classes. |
 
-## Package: `io.casehub.blocks.attestation`
+## Package: `io.casehub.agency.attestation`
 
 Attestation write-path types and lifecycle observer SPI. `AttestationIntent` captures the full attestation payload; `AttestationIntentWriter` is the persistence SPI; `LifecycleAttestationObserver<E>` maps domain lifecycle events to attestation intents.
 
@@ -153,7 +153,7 @@ Attestation write-path types and lifecycle observer SPI. `AttestationIntent` cap
 | `LifecycleAttestationObserver<E>` | `@FunctionalInterface` SPI: `List<AttestationIntent> observe(E event, AttestationContext)`. Domain repos implement per event type. Returns non-null (empty list for irrelevant events). |
 | `AttestationContext` | Record: tenancyId, caseId, capabilityTag — ambient context for observers |
 
-## Package: `io.casehub.blocks.trust`
+## Package: `io.casehub.agency.trust`
 
 Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classification and vouch orchestration.
 
@@ -168,7 +168,7 @@ Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classif
 | `VouchResult` | Sealed: `Accepted(UUID attestationEntryId)`, `Rejected(List<String> reasons)` |
 | `VouchService` | Orchestrator: runs all constraints (all-must-pass), writes ENDORSED attestation via `AttestationIntentWriter`. Not CDI-managed — consumer constructs with domain-specific constraints. |
 
-## Package: `io.casehub.blocks.channel`
+## Package: `io.casehub.agency.channel`
 
 | Class | What it does |
 |-------|-------------|
@@ -184,9 +184,9 @@ Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classif
 | `ChannelEventAdapter<E>` | Direction 1 bridge: implements `MessageObserver`, extracts domain events via a `Function<MessageReceivedEvent, E>`, publishes `LevelEvent<E>` to an `EventStreamBus`. Null return from extractor filters. Extractor exceptions caught and logged. |
 | `ChannelEventPublisher<E>` | Direction 2 bridge: subscribes to `EventStreamBus<E>`, converts events to `MessageDispatch` via a builder function, dispatches via `MessageDispatcher`. Best-effort — catches + logs, never propagates. |
 
-## Package: `io.casehub.blocks.channel.summary`
+## Package: `io.casehub.agency.channel.summary`
 
-Channel and thread summary integration — Message-specific `ContentSummariser<Message, SummaryResult>` implementations, the `SummaryUpdateHook` adapter for channel summaries, and the push-based `ThreadSummaryObserver` for per-thread summaries. `ContentSummariser` is now in `casehub-blocks-summarisation-api` with generified `<T, R>` — consumers bind `SummaryResult` as `R`.
+Channel and thread summary integration — Message-specific `ContentSummariser<Message, SummaryResult>` implementations, the `SummaryUpdateHook` adapter for channel summaries, and the push-based `ThreadSummaryObserver` for per-thread summaries. `ContentSummariser` is now in `casehub-agency-summarisation-api` with generified `<T, R>` — consumers bind `SummaryResult` as `R`.
 
 | Class | What it does |
 |-------|-------------|
@@ -195,7 +195,7 @@ Channel and thread summary integration — Message-specific `ContentSummariser<M
 | `NoOpThreadSummaryStore` | `@DefaultBean` `@ApplicationScoped` no-op `ThreadSummaryStore` — `save()` returns input, queries return empty. Consumers override with qhorus persistence. |
 | `ThreadSummaryObserver` | `@ApplicationScoped` push-based observer — detects DONE/FAILURE messages with correlationId, fetches thread messages via `CrossTenantMessageStore`, delegates to `ContentSummariser<Message, SummaryResult>`, writes to `ThreadSummaryStore`. Per-correlationId concurrency guard. Async via `ManagedExecutor`. |
 
-## Package: `io.casehub.blocks.conversation`
+## Package: `io.casehub.agency.conversation`
 
 Structured conversation protocol — reusable infrastructure for multi-agent deliberation channels. Extracted from drafthouse via casehubio/drafthouse#79, #80, #81, #83.
 
@@ -231,7 +231,7 @@ Structured conversation protocol — reusable infrastructure for multi-agent del
 | `ProgressRenderer` | `@FunctionalInterface` SPI: `String render(ProgressInstance)`. Pluggable progress-to-text rendering for LLM agent prompts. |
 | `DefaultProgressRenderer` | Built-in `ProgressRenderer`: percentage (`"Label: N%"`), count (`"Label: N of M"`), step (`"a ✓ → b ⏳ → c ○"`), fallback to status name. Null-safe. |
 
-## Package: `io.casehub.blocks.conversation.orchestration`
+## Package: `io.casehub.agency.conversation.orchestration`
 
 Autonomous multi-agent conversation orchestrator — composes `ConversationProjection`, `PartitionedObservationService`, pluggable turn policies, and `TerminationCondition` into a self-driving conversation loop.
 
@@ -254,7 +254,7 @@ Autonomous multi-agent conversation orchestrator — composes `ConversationProje
 | `ContestedEscalation` | `TerminationCondition<ConversationState>` — Escalate when DISPUTED points exceed threshold. |
 | `CompositeTermination` | `TerminationCondition<ConversationState>` — evaluates conditions in order; first non-Continue wins. |
 
-## Package: `io.casehub.blocks.normative`
+## Package: `io.casehub.agency.normative`
 
 Generic normative conflict resolution — resolves conflicts between competing norm decisions from multiple sources. Speculative build (no consumer yet). Primary expected consumer: oversight pipeline composing `NormDecision<RiskDecision>`.
 
@@ -271,7 +271,7 @@ Generic normative conflict resolution — resolves conflicts between competing n
 | `MostRestrictiveResolution` | Typed to `RiskDecision` — GateRequired beats Autonomous. Backward-compatible with ChainedActionRiskClassifier behavior. |
 | `EscalationResolution<T>` | Always escalates to a designated decision when any conflict exists. |
 
-## Package: `io.casehub.blocks.negotiation`
+## Package: `io.casehub.agency.negotiation`
 
 Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` for proposal/counter-proposal exchange. Supports bilateral (two-party alternating) and mediator-coordinated multilateral (N-party with configurable quorum). Uses PROPOSE MessageType (qhorus#395) for commissive speech acts. Party set required upfront for AcceptancePolicy correctness.
 
@@ -297,7 +297,7 @@ Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` 
 | `NegotiationCompositeTermination` | First-non-Continue-wins composition of termination conditions |
 | `NegotiationProtocol` | Constants for negotiation outcome strings |
 
-## Package: `io.casehub.blocks.oversight`
+## Package: `io.casehub.agency.oversight`
 
 Oversight gate lifecycle and risk classification — SPIs for gating worker actions pending human approval. Extracted from engine-api via casehubio/engine (3cdb1f90) and casehubio/openclaw (37a7044).
 
@@ -313,7 +313,7 @@ Oversight gate lifecycle and risk classification — SPIs for gating worker acti
 | `ReactiveOversightGateService` | Reactive SPI: `openGate()` → `Uni<GateOutcome>`, `fulfill()` → `Uni<Void>`. |
 | `GateOutcome` | Sealed interface (Autonomous, GatePending). GatePending carries gateId + reason. |
 
-## Package: `io.casehub.blocks.agentic`
+## Package: `io.casehub.agency.agentic`
 
 Compositional agentic orchestration framework — eight sub-packages implementing five SPIs for routing, decomposition, activation, aggregation, and termination, plus execution drivers and pre-composed pattern builders.
 
@@ -333,7 +333,7 @@ Compositional agentic orchestration framework — eight sub-packages implementin
 | `agentic.listener` | Accountability listeners: `OrchestrationEventType`, `EventLogListener` (operational audit via EventSink), `LedgerExecutionListener` (compliance audit via LedgerSink), `MetricsListener` (OTel metrics via Meter) |
 | `agentic.pattern` | Pattern DSL: `Patterns` entry point, `AbstractPatternBuilder`, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
 
-## Package: `io.casehub.blocks.agentic.social.drive`
+## Package: `io.casehub.agency.agentic.social.drive`
 
 Drive Architecture — intrinsic motivation system that reads existing social cognition orchestrator outputs and synthesises motivational signals along four axes. Follows a *compositor pattern*: `tick()` without `record()`, since drives consume derived state rather than accumulating raw signals. Personality modulation via `AgentDescriptor.disposition()` (eidos); mood modulation via `MoodOrchestrator.currentMood()`.
 
@@ -352,7 +352,7 @@ Drive Architecture — intrinsic motivation system that reads existing social co
 | `AffiliationDrive` | `DriveSource` — reads `UserModelOrchestrator.activeProfiles()`, caches as `lastProfiles()`. Intensity from neglected relationships (low familiarity or stale interaction). |
 | `AutonomyDrive` | `DriveSource` — reads `MentalModelOrchestrator.activeSnapshots()`, caches as `lastSnapshots()`. Intensity from high-confidence intention count across subjects. |
 
-## Package: `io.casehub.blocks.agentic.social.goal`
+## Package: `io.casehub.agency.agentic.social.goal`
 
 Autonomous goal proposal — Layer 2 of the autonomous intelligence stack. Translates intrinsic drive signals (from Drive Architecture, #129) into concrete `AgentGoal` proposals via per-axis heuristic mappers. Follows the *compositor pattern* (ADR-0001): `tick()` evaluates and caches, `currentProposals()` returns cached state, no side effects. The scheduler calls `GoalFormationService` (engine-api) separately to register proposals.
 
@@ -371,7 +371,7 @@ Autonomous goal proposal — Layer 2 of the autonomous intelligence stack. Trans
 | `DriveGoalFormationContext` | Record: agentId, tenantId, axis, intensity, trigger, existingGoals, remainingCapacity. |
 | `LlmDriveGoalFormationStrategy` | `DriveGoalFormationStrategy` implementation via `AgentProvider`. Drive-specific prompt framing (motivational drive analyst). Graceful degradation on LLM failure. |
 
-## Package: `io.casehub.blocks.routing`
+## Package: `io.casehub.agency.routing`
 
 Shared trust routing utilities — eliminates duplicated preference-to-policy boilerplate across domain repos.
 
@@ -385,7 +385,7 @@ Shared trust routing utilities — eliminates duplicated preference-to-policy bo
 | `TrustRoutingRequirement` | Compliance evidence wrapper: requirementId, citation, mechanism, status, decisions. |
 | `RequirementStatus` | Enum: CLOSED, PARTIAL, BREACHED, GAP. |
 
-## Package: `io.casehub.blocks.rag`
+## Package: `io.casehub.agency.rag`
 
 Reusable RAG retrieval worker factory — eliminates per-domain boilerplate for producing engine `Worker` instances that extract queries, retrieve chunks from neocortex corpora, and return mapped results. Provided dependency on `casehub-neocortex-rag-api`.
 
@@ -393,7 +393,7 @@ Reusable RAG retrieval worker factory — eliminates per-domain boilerplate for 
 |-------|-------------|
 | `RagRetrievalWorkerFactory` | Static factory: `create(name, capabilityName, CaseContextRetriever, QueryExtractionStrategy, List<CorpusRef>, maxResults) → Worker`. Default overload with maxResults=10. Worker function calls `CaseContextRetriever.retrieve()`, maps chunks via `toMap()`, returns `WorkerResult` with `retrievedChunks` + `summary`. |
 
-## Package: `io.casehub.blocks.routing.agent`
+## Package: `io.casehub.agency.routing.agent`
 
 AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipeline, plus composable prompt enrichment and outcome recording infrastructure. Strategies are selected by name via `StrategyResolver` (engine#634). Optional trust classification via `Instance<T>` — activates when engine-ledger is on the consumer's classpath.
 
@@ -416,7 +416,7 @@ AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipel
 | `ModelPreferenceSignalProvider` | `RoutingSignalProvider` (id: `"model-preference"`). Scores candidates by `(workerId, modelId)` compound key from historical experiences. Reads `modelId` from `ExperiencePlanStep.parameters()`. Similarity-weighted success rates using `CbrOutcomeWeights`. Activates when engine records model data (engine#1096). |
 | `DispositionProfile` | Record: `Map<DispositionAxis, String> desired` + `Map<DispositionAxis, Double> weights`. Compact value type for desired agent personality traits. |
 
-## Package: `io.casehub.blocks.prompt`
+## Package: `io.casehub.agency.prompt`
 
 DSPy-inspired prompt optimisation framework — offline batch cycle that auto-improves LLM routing and decomposition prompts based on CBR outcome feedback. Few-shot example curation, instruction refinement, deterministic A/B testing with circuit breaker safety rails. Pure Java core; CDI runtime beans in sub-packages.
 
@@ -440,7 +440,7 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `VariantSelector` | Deterministic A/B split via `(hash & 0x7FFFFFFF) % 100`. Per-capability circuit breaker trips after consecutive experiment failures. |
 | `PromptOptimisationBatch` | Batch orchestrator — gate check, score variants, run optimisers, build candidate, promotion decision (consecutive wins required), concurrency guard (per-signature lock). |
 
-### Sub-package: `io.casehub.blocks.prompt.optimiser`
+### Sub-package: `io.casehub.agency.prompt.optimiser`
 
 | Class | What it does |
 |-------|-------------|
@@ -449,7 +449,7 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `TopNDiversityStrategy` | `DiversityStrategy` identity implementation — returns first N candidates from pre-sorted shortlist. Used as default. |
 | `OutcomeAwareDiversityStrategy` | `DiversityStrategy` with outcome-category seeding + token-level Jaccard MMR. Constructor takes `diversityWeight` [0,1]. Skips seeding at 0.0 (pure relevance). Case-insensitive outcome grouping. |
 
-### Sub-package: `io.casehub.blocks.prompt.runtime`
+### Sub-package: `io.casehub.agency.prompt.runtime`
 
 | Class | What it does |
 |-------|-------------|
@@ -458,11 +458,11 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `WeightedOutcomeMetric` | `PromptQualityMetric` `@DefaultBean` — maps outcome strings to weights (SUCCESS=1.0, GATE_EXPIRED=0.5, GATE_REJECTED=0.25, DECLINED=0.0, FAILURE=0.0). Unknown outcomes default to 0.0. |
 | `InMemoryPromptVariantStore` | `PromptVariantStore` `@DefaultBean` — in-memory with atomic write semantics (write-fsync-rename). |
 
-## Package: `io.casehub.blocks.summarisation`
+## Package: `io.casehub.agency.summarisation`
 
-Unified summarisation framework. Core types live in `casehub-blocks-summarisation-api` (zero external deps). Extensions in `casehub-blocks` depend on qhorus-api/platform-agent-api.
+Unified summarisation framework. Core types live in `casehub-agency-summarisation-api` (zero external deps). Extensions in `casehub-agency` depend on qhorus-api/platform-agent-api.
 
-**Core types (in `casehub-blocks-summarisation-api`):**
+**Core types (in `casehub-agency-summarisation-api`):**
 
 | Class | What it does |
 |-------|-------------|
@@ -483,7 +483,7 @@ Unified summarisation framework. Core types live in `casehub-blocks-summarisatio
 | `KeyedSummarisationRunner<K, IN, OUT>` | Wires `KeyedAccumulator` → optional compactor → `Summariser` → output bus. Same key extractor signature as `KeyedAccumulator`. Per-group failure recovery. Detects `StatefulSummariser` via `instanceof` — manages per-key state in `ConcurrentHashMap<K, Object>`. `evictState(K)` for explicit state cleanup. Implements `Tickable`. Builder API: `.stateStore()` (write-through with `K.toString()` partition key), `.outputProcessor()`, `.compactor()`, `.onFailure()`. |
 | `VerbatimContentSummariser<T>` | Renders each item as a bullet list via `Function<T, String>`. Implements `ContentSummariser<T, String>`. Pure Java. |
 
-**Extension types (in `casehub-blocks`):**
+**Extension types (in `casehub-agency`):**
 
 | Class | What it does |
 |-------|-------------|
@@ -492,7 +492,7 @@ Unified summarisation framework. Core types live in `casehub-blocks-summarisatio
 
 Two integration patterns: **Pattern A** (SummarisationRunner pipeline — sync heuristics, microsecond latency) and **Pattern B** (direct EventAccumulator — async LLM dispatch, caller manages). `KeyedSummarisationRunner` is the grouped counterpart to `SummarisationRunner` — same compositional role, groups by key instead of flat windowing. See spec for details.
 
-## Sub-package: `io.casehub.blocks.summarisation.observation`
+## Sub-package: `io.casehub.agency.summarisation.observation`
 
 Terminal consumer of the summarisation pipeline — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunk production.
 
@@ -506,7 +506,7 @@ Terminal consumer of the summarisation pipeline — tiered, demand-driven render
 | `TieredObservationRenderer<E>` | Standard implementation: routes to verbatim (≤ threshold), grouped (≤ threshold), or summarised (via `Summariser<E, String>`) based on batch size. Configurable header via `withHeaderFormatter`. Two-tier and three-tier constructors. |
 | `ObservationAccumulator<E>` | Thread-safe buffer with demand-driven drain. Own buffer (not `EventAccumulator`). Tracks `lastDrainTimestamp`. Empty drain → `ObservationResult.empty()`. At-most-once delivery on renderer failure. |
 
-## Sub-package: `io.casehub.blocks.summarisation.observation.affordance`
+## Sub-package: `io.casehub.agency.summarisation.observation.affordance`
 
 Grounded observation rendering for LLM agents. Per-entity affordance chains (identity + action + consequence) and typed section assembly. Parallel producer to the temporal observation pipeline — consumer concatenates both.
 
@@ -525,7 +525,7 @@ Grounded observation rendering for LLM agents. Per-entity affordance chains (ide
 | `ObservationPipeline` | Ordered filter stage composition — applies `ObservationFilter` chain, unwraps `AnnotatedSection` to base `ObservationSection` |
 | `PerceptionFilter` | Built-in `ObservationFilter` combining visibility gating (tag matching) + resolution fallback (tier degradation when tags partially match) |
 
-## Sub-package: `io.casehub.blocks.summarisation.llm`
+## Sub-package: `io.casehub.agency.summarisation.llm`
 
 LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisation` package because it depends on `AgentProvider` (platform-agent-api) and Mutiny.
 
@@ -533,7 +533,7 @@ LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisa
 |-------|-------------|
 | `LlmContentSummariser<T>` | Generic `ContentSummariser<T, R>` backed by `AgentProvider`. EDIT/APPEND modes via `SummaryMode`. Optional `preamble` for static context (e.g., channel name). Propagates previous annotations. |
 
-## Sub-package: `io.casehub.blocks.summarisation.narrative`
+## Sub-package: `io.casehub.agency.summarisation.narrative`
 
 Decision narrative pipeline — transforms platform decision signals into human-readable explanations via a two-level summarisation pipeline. Architecturally separate from identity narratives (`NarrativeFragment`/`NarrativeOrchestrator` in social cognition). Shares only the underlying summarisation primitives (`KeyedSummarisationRunner`, `EventStreamBus`, `ContentSummariser`).
 
@@ -554,9 +554,9 @@ Decision narrative pipeline — transforms platform decision signals into human-
 | `AbstractNarrativeSignalStrategy` | Base class: `emit(DecisionSignal)` publishes to `EventStreamBus`, `onCaseClose(String)` evicts L2 state |
 | `DecisionNarrativePipeline` | `@ApplicationScoped` factory: wires L1 (`KeyedSummarisationRunner` by caseId:stepName) → L2 (`KeyedSummarisationRunner` by caseId with stateful `ContentSummariser`). `tick(long)`, `evictCaseState(String)`. |
 
-## Package: `io.casehub.blocks.speech.sherpa`
+## Package: `io.casehub.agency.speech.sherpa`
 
-sherpa-onnx speech implementation via Java FFM/Panama (JDK 22+). Provides `SpeechToTextService` and `TextToSpeechService` implementations backed by sherpa-onnx native library. Zero foundation dependencies — only depends on `casehub-blocks-speech-api`.
+sherpa-onnx speech implementation via Java FFM/Panama (JDK 22+). Provides `SpeechToTextService` and `TextToSpeechService` implementations backed by sherpa-onnx native library. Zero foundation dependencies — only depends on `casehub-agency-speech-api`.
 
 | Class | What it does |
 |-------|-------------|
@@ -600,33 +600,33 @@ sherpa-onnx speech implementation via Java FFM/Panama (JDK 22+). Provides `Speec
 
 **No Jandex index.** blocks does not include a Jandex index — its CDI beans are not auto-discovered by Quarkus. Consumers that need blocks' CDI beans (routing strategies, channel summarisers) must opt in:
 ```properties
-quarkus.index-dependency.casehub-blocks.group-id=io.casehub
-quarkus.index-dependency.casehub-blocks.artifact-id=casehub-blocks
+quarkus.index-dependency.casehub-agency.group-id=io.casehub
+quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
 ```
 Consumers that only use blocks' pure types (records, sealed interfaces, plain classes) need no configuration.
 
 **cloudevents module:**
-**Compile:** `casehub-blocks-summarisation-api`, `io.cloudevents:cloudevents-api`, `io.cloudevents:cloudevents-core`
+**Compile:** `casehub-agency-summarisation-api`, `io.cloudevents:cloudevents-api`, `io.cloudevents:cloudevents-core`
 **Test:** JUnit 5, AssertJ, Mockito
 
 **summarisation-yaml module:**
-**Compile:** `casehub-blocks-summarisation-api`, `casehub-blocks-cloudevents`, `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml`
+**Compile:** `casehub-agency-summarisation-api`, `casehub-agency-cloudevents`, `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml`
 **Provided:** `casehub-platform-api` (ExpressionEngine SPI), `io.quarkus:quarkus-core` (recorder annotation)
 **Test:** JUnit 5, AssertJ, `casehub-platform-expression` (MvelExpressionEngine)
 
 **agentic-yaml module:**
-**Compile:** `casehub-blocks`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`, `casehub-platform-schema-generator`
+**Compile:** `casehub-agency`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`, `casehub-platform-schema-generator`
 **Provided:** `casehub-platform-api` (ExpressionEngine SPI), `io.quarkus:quarkus-core`
 **Test:** JUnit 5, AssertJ, `casehub-platform-expression` (MvelExpressionEngine)
 
 **speech-sherpa module:**
-**Compile:** `casehub-blocks-speech-api`, `org.jspecify:jspecify`, `com.google.code.gson:gson`, `com.google.protobuf:protobuf-java`
+**Compile:** `casehub-agency-speech-api`, `org.jspecify:jspecify`, `com.google.code.gson:gson`, `com.google.protobuf:protobuf-java`
 **Runtime:** sherpa-onnx native library (`sherpa-onnx-c-api`) — must be on `java.library.path`; `libonnxruntime` (bundled with sherpa-onnx); `libespeak-ng` (optional, for `VitsTextToSpeech` phoneme timing)
 **Compiler target:** Java 22 (stable FFM/Panama API)
 **Test:** JUnit 5, AssertJ
 
 **speech-ws module:**
-**Compile:** `casehub-blocks-speech-api`, `com.google.code.gson:gson`, `org.jspecify:jspecify`
+**Compile:** `casehub-agency-speech-api`, `com.google.code.gson:gson`, `org.jspecify:jspecify`
 **Provided:** `casehub-platform-agent-api`, `quarkus-websockets-next`
 **Compiler target:** Java 17
 **Test:** JUnit 5, AssertJ, Mockito

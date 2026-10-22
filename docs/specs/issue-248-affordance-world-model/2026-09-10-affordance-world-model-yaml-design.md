@@ -84,7 +84,7 @@ renderer:
 
 ### Package
 
-`io.casehub.blocks.agentic.yaml.spec.world` — parallel to `.spec.cognition`.
+`io.casehub.agency.agentic.yaml.spec.world` — parallel to `.spec.cognition`.
 
 ### Root Definition
 
@@ -385,7 +385,7 @@ public class WorldRecorder {
 
 ## Dependencies
 
-`agentic-yaml` already depends on `casehub-blocks` (which contains all runtime affordance
+`agentic-yaml` already depends on `casehub-agency` (which contains all runtime affordance
 types). No new compile dependencies needed — all runtime types are already reachable.
 
 ## Testing

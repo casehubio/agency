@@ -1,7 +1,7 @@
 ---
 title: "Sparklines and the Mixin Question"
 date: 2026-07-10
-project: casehub-blocks-ui
+project: casehub-agency-ui
 branch: issue-45-trust-score-trend-sparkline
 issue: 45
 type: diary

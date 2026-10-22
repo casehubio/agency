@@ -40,7 +40,7 @@ present, write-through cache: reads check cache first, fall back to
 `StateStore.load()`, always write to both cache and store.
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.jspecify.annotations.Nullable;
 
@@ -86,7 +86,7 @@ emission decisions (e.g., novelty checks that compare new input against
 existing state).
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.jspecify.annotations.Nullable;
 import java.util.List;
@@ -177,7 +177,7 @@ before publishing to the output bus. Receives the summariser outputs and
 the current state. Returns a (possibly modified) list of outputs.
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.jspecify.annotations.Nullable;
 import java.util.List;
@@ -319,7 +319,7 @@ the pipeline factory's tick cycle, queries `ReflectionQueryStore` for
 new reflections, publishes each as `LevelEvent<ReflectionEntry>`.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 public class ReflectionEventAdapter {
 
@@ -370,7 +370,7 @@ Implements `EmissionPolicy<ReflectionEntry, NarrativeState>`. Maps the
 three `NarrativeSynthesisGate` checks to the emission policy contract.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 public class NarrativeEmissionPolicy
         implements EmissionPolicy<ReflectionEntry, NarrativeState> {
@@ -425,7 +425,7 @@ only the LLM synthesis logic from the current `NarrativeSynthesiser`.
 `@ApplicationScoped` for CDI-injected `AgentProvider`.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 @ApplicationScoped
 public class NarrativeContentSummariser
@@ -487,7 +487,7 @@ episode and theme pruning — the same logic currently in
 `NarrativeSynthesiser.pruneEpisodes()` and `pruneThemes()`.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 public class NarrativeOutputProcessor
         implements OutputProcessor<NarrativeState, NarrativeState> {
@@ -534,7 +534,7 @@ public class NarrativeOutputProcessor
 Adapter wrapping `NarrativeMemory` as `StateStore<NarrativeState>`.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 public class CbrStateStore implements StateStore<NarrativeState> {
 
@@ -604,7 +604,7 @@ public Builder<IN, OUT> stateKeyResolver(
 `DecisionNarrativePipeline`.
 
 ```java
-package io.casehub.blocks.agentic.social.narrative;
+package io.casehub.agency.agentic.social.narrative;
 
 @ApplicationScoped
 public class NarrativePipeline {
@@ -688,7 +688,7 @@ before.
 ### New files in summarisation-api
 
 ```
-summarisation-api/src/main/java/io/casehub/blocks/summarisation/
+summarisation-api/src/main/java/io/casehub/agency/summarisation/
 ├── EmissionPolicy.java           (new — @FunctionalInterface SPI)
 ├── StateStore.java               (new — interface SPI)
 ├── OutputProcessor.java          (new — @FunctionalInterface SPI)
@@ -702,7 +702,7 @@ summarisation-api/src/main/java/io/casehub/blocks/summarisation/
 ### New files in blocks
 
 ```
-blocks/src/main/java/io/casehub/blocks/agentic/social/narrative/
+blocks/src/main/java/io/casehub/agency/agentic/social/narrative/
 ├── NarrativeContentSummariser.java  (new — ContentSummariser impl)
 ├── NarrativeEmissionPolicy.java     (new — EmissionPolicy impl)
 ├── NarrativeOutputProcessor.java    (new — OutputProcessor impl)

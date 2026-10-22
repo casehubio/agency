@@ -15,9 +15,9 @@
  */
 package io.casehub.engine.agentic;
 
-import io.casehub.blocks.agentic.model.ExecutionBackend;
-import io.casehub.blocks.agentic.model.ExecutionModel;
-import io.casehub.blocks.agentic.model.ExecutionResult;
+import io.casehub.agency.agentic.model.ExecutionBackend;
+import io.casehub.agency.agentic.model.ExecutionModel;
+import io.casehub.agency.agentic.model.ExecutionResult;
 import io.smallrye.mutiny.Uni;
 
 public class EngineHostedBackend<T> implements ExecutionBackend<T> {

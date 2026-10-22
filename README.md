@@ -1,4 +1,4 @@
-# casehub-blocks
+# casehub-agency
 
 [![Build](https://github.com/casehubio/blocks/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/casehubio/blocks/actions/workflows/publish.yml)
 
@@ -11,7 +11,7 @@ A library of pre-composed interaction patterns that sit between the foundation m
 ## Dependencies
 
 ```
-casehub-blocks
+casehub-agency
 ├── casehub-qhorus-api    (channels, commitments, speech acts)
 ├── casehub-work-api      (work items, task lifecycle)
 └── casehub-engine-api    (cases, plans, routing)
@@ -25,7 +25,7 @@ mvn install
 
 ## Adding a New Block
 
-1. Create a package under `io.casehub.blocks.<name>`
+1. Create a package under `io.casehub.agency.<name>`
 2. Compose from qhorus, engine, and work SPIs — blocks never depend on runtime implementations
 3. Add tests using `casehub-qhorus-testing` and `casehub-engine-testing` for in-memory stores
 4. The Jandex plugin indexes all CDI beans automatically

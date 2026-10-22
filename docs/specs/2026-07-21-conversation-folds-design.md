@@ -566,7 +566,7 @@ Both default false — existing consumers see no change.
 
 ## 7. Package Structure
 
-All new types in `io.casehub.blocks.conversation`:
+All new types in `io.casehub.agency.conversation`:
 
 ```
 conversation/
@@ -593,7 +593,7 @@ conversation/
   └── ConvergenceContext.java        (NEW)
 ```
 
-Additionally, in `io.casehub.blocks.agentic.termination`:
+Additionally, in `io.casehub.agency.agentic.termination`:
 
 ```
 termination/

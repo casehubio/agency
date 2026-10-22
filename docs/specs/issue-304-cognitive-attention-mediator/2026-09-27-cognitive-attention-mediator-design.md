@@ -27,7 +27,7 @@ Neocortex consolidation phases
 
 ### 2.2 Module Placement
 
-All new classes live in `blocks-core` (`io.casehub.blocks.agentic.social` package), alongside CognitionCore. CDI wiring in `blocks` module (`BlocksBeans`).
+All new classes live in `blocks-core` (`io.casehub.agency.agentic.social` package), alongside CognitionCore. CDI wiring in `blocks` module (`AgencyBeans`).
 
 The types consumed — `AttentionBriefing`, `AttentionSignal`, `CognitiveAttentionRequired`, `SignalCategory` — all live in neocortex's `mindmap-api`, which blocks already depends on.
 
@@ -205,10 +205,10 @@ public class AttentionPromptSection implements PromptSection {
 
 ### 3.6 CDI Wiring
 
-**BlocksBeans** — produce `CognitiveAttentionMediator` and inject into `SocialAvatarCognition`:
+**AgencyBeans** — produce `CognitiveAttentionMediator` and inject into `SocialAvatarCognition`:
 
 ```java
-// BlocksBeans already has Instance<...> fields for optional deps.
+// AgencyBeans already has Instance<...> fields for optional deps.
 // Add:
 @jakarta.inject.Inject Instance<CognitiveAttentionMediator> attentionMediatorInstance;
 
@@ -258,14 +258,14 @@ public SocialAvatarCognition(...,
 |-------|------|------|
 | #305 | TopN expansion for attention-aware sections | When first section adds topN truncation |
 | #306 | Runtime-customizable attention override policy | Follow-up: extract AttentionRelevance to SPI |
-| #297 | Spring coverage: BlocksAutoConfiguration mediator wiring | Part of Spring expansion audit |
+| #297 | Spring coverage: AgencyAutoConfiguration mediator wiring | Part of Spring expansion audit |
 
 ## References
 
 - neocortex spec §7: `/Users/mdproctor/claude/casehub/slots/203/neocortex/docs/specs/issue-381-progressive-attention-model/2026-09-25-progressive-attention-model-design.md` (lines 474-584)
-- CognitionCore.java: `blocks-core/src/main/java/io/casehub/blocks/agentic/social/CognitionCore.java`
-- CognitionConfig.java: `blocks-core/src/main/java/io/casehub/blocks/agentic/social/CognitionConfig.java`
-- SocialAvatarCognition.java: `blocks-core/src/main/java/io/casehub/blocks/agentic/social/prompt/SocialAvatarCognition.java`
-- BlocksBeans.java: `blocks/src/main/java/io/casehub/blocks/BlocksBeans.java` (lines 304-316)
+- CognitionCore.java: `blocks-core/src/main/java/io/casehub/agency/agentic/social/CognitionCore.java`
+- CognitionConfig.java: `blocks-core/src/main/java/io/casehub/agency/agentic/social/CognitionConfig.java`
+- SocialAvatarCognition.java: `blocks-core/src/main/java/io/casehub/agency/agentic/social/prompt/SocialAvatarCognition.java`
+- AgencyBeans.java: `blocks/src/main/java/io/casehub/agency/AgencyBeans.java` (lines 304-316)
 - AttentionBriefing.java: `mindmap-api/src/main/java/io/casehub/neocortex/mindmap/AttentionBriefing.java`
 - SignalCategory.java: `mindmap-api/src/main/java/io/casehub/neocortex/mindmap/SignalCategory.java`

@@ -140,7 +140,7 @@ no repo references `TaskNode` or its variants directly.
 
 ### Class: `LlmDecomposition<T>`
 
-**Package:** `io.casehub.blocks.agentic.decomposition`
+**Package:** `io.casehub.agency.agentic.decomposition`
 **Implements:** `DecompositionStrategy<T>`
 **Dependencies:** `AgentProvider`, `Function<T, String> stateRenderer`
 
@@ -178,7 +178,7 @@ Order matters — steps execute sequentially.
 #### AgentCardSupport extraction
 
 `LlmSelectedRouting.buildAgentCard()` (private) and `candidateName()` (package-private)
-are extracted into `AgentCardSupport` in `io.casehub.blocks.agentic` — accessible to
+are extracted into `AgentCardSupport` in `io.casehub.agency.agentic` — accessible to
 both `routing` and `decomposition` sub-packages. `LlmSelectedRouting` is refactored
 to delegate to `AgentCardSupport`. This avoids duplicating card-building and name-resolution
 logic, and prepares for `HybridDecomposition` (#45) which will need the same utilities.

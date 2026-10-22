@@ -5,7 +5,7 @@ date: 2026-07-12
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [orchestration, unification, shared-types]
 series: issue-52-shared-orchestration-types
 ---

@@ -157,7 +157,7 @@ record ChannelSummaryResult(String channelName, String content,
 The shared algorithm abstraction. Both hook and pipeline can use it via thin adapters.
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 @FunctionalInterface
 public interface ContentSummariser<T> {
@@ -178,7 +178,7 @@ Design choices:
 Moved from `blocks.channel.summary` to `blocks.summarisation` — it's a general summarisation concept:
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public enum SummaryMode {
     APPEND,
@@ -191,7 +191,7 @@ public enum SummaryMode {
 Renders each item individually as a bullet list. Preserves both text and annotations from `previous` when present — appends verbatim items after the accumulated text and propagates all previous annotations, overlaying its own (`tier`, `itemCount`). This makes it safe as a tier in `TieredContentSummariser` for running-summary contexts: small batches append verbatim items and carry forward accumulated metadata rather than destroying state.
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public class VerbatimContentSummariser<T> implements ContentSummariser<T> {
     private final Function<T, String> renderer;
@@ -229,7 +229,7 @@ Lives in `blocks.summarisation.llm` — separate from the pure-Java `blocks.summ
 An optional `preamble` provides static context for the LLM prompt (e.g., `"Channel: design-review"`). This replaces the channel-name context that the old `LlmChannelSummariser.buildUserPrompt()` included directly from `SummaryUpdateContext`. Since `LlmContentSummariser<T>` is generic, per-invocation context like channel name must be provided at construction time.
 
 ```java
-package io.casehub.blocks.summarisation.llm;
+package io.casehub.agency.summarisation.llm;
 
 public class LlmContentSummariser<T> implements ContentSummariser<T> {
     private static final System.Logger LOG =
@@ -305,7 +305,7 @@ public class LlmContentSummariser<T> implements ContentSummariser<T> {
 Dispatches to delegates based on batch size thresholds. Composes other `ContentSummariser<T>` instances.
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public class TieredContentSummariser<T> implements ContentSummariser<T> {
     private final ContentSummariser<T> small;
@@ -352,7 +352,7 @@ public class TieredContentSummariser<T> implements ContentSummariser<T> {
 Allows `ContentSummariser<T>` algorithms to be used in a `SummarisationRunner` pipeline:
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public class ContentSummariserToSummariser<T> implements Summariser<T, String> {
     private final ContentSummariser<T> delegate;
@@ -381,7 +381,7 @@ public class ContentSummariserToSummariser<T> implements Summariser<T, String> {
 `ContentSummariser<Message>` that extracts structural metadata from qhorus messages. Always APPEND mode — appends a delta section to the previous summary text.
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 @DefaultBean
 @ApplicationScoped
@@ -454,7 +454,7 @@ public class HeuristicMessageSummariser implements ContentSummariser<Message> {
 The single `SummaryUpdateHook` implementation. Delegates to an injected `ContentSummariser<Message>`.
 
 ```java
-package io.casehub.blocks.channel.summary;
+package io.casehub.agency.channel.summary;
 
 @ApplicationScoped
 public class ChannelSummariser implements SummaryUpdateHook {

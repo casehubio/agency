@@ -204,7 +204,7 @@ through to the stateless path. No behaviour change for existing code.
 
 ## DecisionSignal sealed hierarchy
 
-Package: `io.casehub.blocks.summarisation.narrative`
+Package: `io.casehub.agency.summarisation.narrative`
 
 ```java
 public sealed interface DecisionSignal
@@ -734,7 +734,7 @@ can adjust `completionTest` (e.g., `group.size() >= 3` or time-based gating).
 
 ## YAML example — trading decision pipeline
 
-Self-contained test in `blocks/src/test/java/io/casehub/blocks/summarisation/
+Self-contained test in `blocks/src/test/java/io/casehub/agency/summarisation/
 examples/decision/DecisionNarrativePipelineTest.java`.
 
 Defines a local `TradingSignal` sealed hierarchy (no dependency on production
@@ -766,7 +766,7 @@ through and asserts:
 ## Package structure
 
 ```
-summarisation-api/src/main/java/io/casehub/blocks/summarisation/narrative/
+summarisation-api/src/main/java/io/casehub/agency/summarisation/narrative/
 ├── DecisionSignal.java          (sealed interface)
 ├── RoutingDecision.java         (record)
 ├── CbrRetrieval.java            (record)
@@ -780,22 +780,22 @@ summarisation-api/src/main/java/io/casehub/blocks/summarisation/narrative/
 ├── DecisionNarrativeSummariser.java (L2 LLM-backed)
 └── DecisionNarrativePipeline.java   (factory/wiring + CDI lifecycle)
 
-blocks/src/main/java/io/casehub/blocks/summarisation/narrative/
+blocks/src/main/java/io/casehub/agency/summarisation/narrative/
 ├── NarrativeSignalStrategy.java     (SPI — extends StepOutcomeObserver + CaseOutcomeObserver)
 └── AbstractNarrativeSignalStrategy.java (base class)
 
-blocks/src/test/java/io/casehub/blocks/summarisation/narrative/
+blocks/src/test/java/io/casehub/agency/summarisation/narrative/
 ├── DecisionSignalSummariserTest.java
 ├── DecisionNarrativeSummariserTest.java
 ├── DecisionNarrativePipelineTest.java
 
-blocks/src/test/java/io/casehub/blocks/summarisation/examples/decision/
+blocks/src/test/java/io/casehub/agency/summarisation/examples/decision/
 └── DecisionNarrativePipelineTest.java  (fsitrading-inspired example)
 
-summarisation-api/src/main/java/io/casehub/blocks/summarisation/
+summarisation-api/src/main/java/io/casehub/agency/summarisation/
 └── KeyedSummarisationRunner.java       (enhanced — StatefulSummariser + eviction)
 
-summarisation-api/src/test/java/io/casehub/blocks/summarisation/
+summarisation-api/src/test/java/io/casehub/agency/summarisation/
 └── KeyedSummarisationRunnerStatefulTest.java
 ```
 

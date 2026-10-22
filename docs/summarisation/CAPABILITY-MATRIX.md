@@ -6,11 +6,11 @@ Maps every summarisation capability to the example that demonstrates it and the 
 
 | Module | Artifact | What it provides |
 |--------|----------|------------------|
-| `summarisation-api` | `casehub-blocks-summarisation-api` | Unified SPI: `Summariser`, `StatefulSummariser`, `ContentSummariser<T,R>`, pipeline infrastructure |
-| `cloudevents` | `casehub-blocks-cloudevents` | CloudEvent bridge: ingestion, emission, tick scheduling |
-| `summarisation-yaml` | `casehub-blocks-summarisation-yaml` | YAML surface: canonical model, PipelineCompiler, 5 built-in types, validation |
-| `summarisation-yaml-deployment` | `casehub-blocks-summarisation-yaml-deployment` | Quarkus build extension: YAML discovery, Jandex scan, recorder |
-| `blocks` (existing) | `casehub-blocks` | Extensions: `TieredContentSummariser`, `LlmContentSummariser`, observation pipeline |
+| `summarisation-api` | `casehub-agency-summarisation-api` | Unified SPI: `Summariser`, `StatefulSummariser`, `ContentSummariser<T,R>`, pipeline infrastructure |
+| `cloudevents` | `casehub-agency-cloudevents` | CloudEvent bridge: ingestion, emission, tick scheduling |
+| `summarisation-yaml` | `casehub-agency-summarisation-yaml` | YAML surface: canonical model, PipelineCompiler, 5 built-in types, validation |
+| `summarisation-yaml-deployment` | `casehub-agency-summarisation-yaml-deployment` | Quarkus build extension: YAML discovery, Jandex scan, recorder |
+| `blocks` (existing) | `casehub-agency` | Extensions: `TieredContentSummariser`, `LlmContentSummariser`, observation pipeline |
 
 ## Examples
 

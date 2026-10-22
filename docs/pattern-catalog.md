@@ -11,7 +11,7 @@ Last updated: 2026-08-14
 
 The patterns in this catalog emerge from combining these independently composable primitives.
 
-### Five Agentic SPIs (casehub-blocks)
+### Five Agentic SPIs (casehub-agency)
 
 | SPI | Implementations |
 |-----|----------------|
@@ -33,7 +33,7 @@ APPEND, COLLECT, BARRIER, EPHEMERAL, LAST_WRITE
 
 OPEN → ACKNOWLEDGED → FULFILLED / FAILED / DECLINED / DELEGATED / EXPIRED
 
-### Conversation Protocol (casehub-blocks)
+### Conversation Protocol (casehub-agency)
 
 Entry types: RAISE, AGREE, COUNTER, DISPUTE, QUALIFY, FLAG_HUMAN, DECLINED, MEMO, SUB_TASK_REQUEST, SUB_TASK_FINDING, SUB_TASK_ERROR, RESTART_CONTEXT
 
@@ -45,7 +45,7 @@ Convergence states: PROGRESSING, CONVERGING, CONSENSUS, DEADLOCK, DIMINISHING_RE
 
 Workload, Trust, Experience, Personality/Disposition, Semantic (embedding), LLM, CBR, PlanComposition, Predecessor, Coordination
 
-### Agent Types (5, casehub-blocks)
+### Agent Types (5, casehub-agency)
 
 WorkerAgent, ChannelAgent, HumanAgent, ExternalAgent, ComposedAgent (nested ExecutionModel — recursive composition)
 

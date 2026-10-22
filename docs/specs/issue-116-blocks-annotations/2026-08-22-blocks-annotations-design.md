@@ -1,8 +1,8 @@
-# casehub-blocks-annotations Design
+# casehub-agency-annotations Design
 
 **Date:** 2026-08-22
 **Status:** Draft
-**Scope:** `casehub-blocks-annotations` module — annotation-driven orchestration patterns and governance meta-annotations
+**Scope:** `casehub-agency-annotations` module — annotation-driven orchestration patterns and governance meta-annotations
 **Issue:** casehubio/blocks#116
 **Epic:** casehubio/blocks#115 (annotation-driven agent programming model)
 
@@ -44,7 +44,7 @@ blocks/
     runtime/                      # annotation definitions + runtime types
       pom.xml
       src/main/java/
-        io/casehub/blocks/annotations/
+        io/casehub/agency/annotations/
           # Pattern annotations
           Supervisor.java
           Sequence.java
@@ -64,22 +64,22 @@ blocks/
           TrustRouted.java
           CbrRouted.java
           Attestation.java
-        io/casehub/blocks/annotations/runtime/
+        io/casehub/agency/annotations/runtime/
           # Descriptors (build-time → runtime bridge)
           PatternDescriptor.java
           GovernanceDescriptor.java
-          BlocksAnnotationsRecorder.java
+          AgencyAnnotationsRecorder.java
     deployment/                   # Quarkus build extension
       pom.xml
       src/main/java/
-        io/casehub/blocks/annotations/deployment/
-          BlocksAnnotationsProcessor.java
+        io/casehub/agency/annotations/deployment/
+          AgencyAnnotationsProcessor.java
           PatternAnnotationStep.java
           GovernanceAnnotationStep.java
 ```
 
 **Dependencies:**
-- `runtime/` depends on: `casehub-blocks` (for `ExecutionModel`, pattern types), `casehub-engine-api` (for `DecompositionStrategy`, `ActionRiskClassifier`), `casehub-engine-annotations-runtime` (for `@Customize` in standalone pattern usage — D3 dual-use)
+- `runtime/` depends on: `casehub-agency` (for `ExecutionModel`, pattern types), `casehub-engine-api` (for `DecompositionStrategy`, `ActionRiskClassifier`), `casehub-engine-annotations-runtime` (for `@Customize` in standalone pattern usage — D3 dual-use)
 - `deployment/` depends on: `runtime/`, `quarkus-arc-deployment`, `casehub-engine-annotations-deployment` (for build step ordering via `@Consume`), `casehub-eidos-annotations-deployment` (optional — for `agentId` resolution via eidos build items)
 
 ---
@@ -306,7 +306,7 @@ The blocks build extension runs AFTER the engine build extension via Quarkus bui
 1. **Engine `EngineAnnotationsProcessor`** — generates `CaseDefinition`, `Worker`, `Capability`, `Binding` beans from `@Case`/`@Worker`/`@Bind`
 2. **Eidos build extension** — generates `AgentDescriptor` beans from `@Identity`/`@Disposition`
 3. **Work build extension** — generates `WorkItem` config from `@HumanApproval`
-4. **Blocks `BlocksAnnotationsProcessor`** — generates `ExecutionModel` beans from pattern annotations, layers governance onto engine-generated and blocks-generated beans
+4. **Blocks `AgencyAnnotationsProcessor`** — generates `ExecutionModel` beans from pattern annotations, layers governance onto engine-generated and blocks-generated beans
 
 Ordering enforced via `@Consume` on custom build items produced by the engine extension.
 
@@ -578,10 +578,10 @@ The annotation model handles the 80% case. The builders handle the 20% that need
 - ADR-0004: `docs/adr/0004-own-orchestration-annotations.md`
 - Engine-annotations spec: `casehub-engine/docs/specs/issue-909-engine-annotations/2026-08-16-annotation-driven-programming-model-design.md`
 - Engine-annotations decisions: `casehub-engine/docs/specs/issue-909-engine-annotations/decisions.md`
-- `io.casehub.blocks.agentic.pattern.Patterns` — 8 pattern builders
-- `io.casehub.blocks.agentic.model.ExecutionModel` — 5-SPI composition record
-- `io.casehub.blocks.agentic.pattern.AbstractPatternBuilder` — base builder with SPI setters
-- `io.casehub.blocks.agentic.pattern.DebateBuilder` — debate-specific builder
+- `io.casehub.agency.agentic.pattern.Patterns` — 8 pattern builders
+- `io.casehub.agency.agentic.model.ExecutionModel` — 5-SPI composition record
+- `io.casehub.agency.agentic.pattern.AbstractPatternBuilder` — base builder with SPI setters
+- `io.casehub.agency.agentic.pattern.DebateBuilder` — debate-specific builder
 - GE-20260818-d7915b — SyntheticBeanBuildItem.supplier() non-recordable objects
 - GE-20260817-48caeb — setRuntimeInit() required for RUNTIME_INIT recorders
 - GE-20260614-efee3b — SyntheticBeanBuildItem without addInjectionPoint

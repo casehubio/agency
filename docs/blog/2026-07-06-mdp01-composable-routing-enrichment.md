@@ -5,7 +5,7 @@ date: 2026-07-06
 type: phase-update
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [routing, cbr, llm, spi]
 series: issue-016-rag-enriched-routing
 ---

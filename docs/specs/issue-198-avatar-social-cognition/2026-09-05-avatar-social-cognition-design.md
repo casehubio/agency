@@ -81,11 +81,11 @@ public interface AvatarCognition {
 
 `initialize()` is called at session open to hydrate orchestrator state before the first user turn. `tick()` is called by the proactive tick loop on each interval to process accumulated signals across all orchestrators. `activeSubjects` is the set of speaker IDs identified during the current session — needed for subject-scoped orchestrators (UserModel, MentalModel) which require per-subject ticking. `wrapAssembler()` takes a `Supplier<String>` for the current speaker's subjectId, which is resolved per-turn by SpeechSession and threaded through `PromptContext` to sections that need it.
 
-All types move to package `io.casehub.blocks.speech` (from `io.casehub.blocks.speech.ws` and `io.casehub.blocks.speech.ws.protocol`). speech-ws retains `DefaultPromptAssembler` (re-imports from speech-api).
+All types move to package `io.casehub.agency.speech` (from `io.casehub.agency.speech.ws` and `io.casehub.agency.speech.ws.protocol`). speech-ws retains `DefaultPromptAssembler` (re-imports from speech-api).
 
 ### Layer 2: blocks (integration)
 
-blocks gains `speech-api` as a compile dependency. New package: `io.casehub.blocks.agentic.social.prompt`.
+blocks gains `speech-api` as a compile dependency. New package: `io.casehub.agency.agentic.social.prompt`.
 
 #### SocialPromptAssembler
 
@@ -221,7 +221,7 @@ public class SocialAvatarCognition implements AvatarCognition {
 }
 ```
 
-Consumers activate by indexing blocks: `quarkus.index-dependency.casehub-blocks.group-id=io.casehub`.
+Consumers activate by indexing blocks: `quarkus.index-dependency.casehub-agency.group-id=io.casehub`.
 
 #### 8 PromptSection implementations
 
@@ -442,12 +442,12 @@ blocks         speech-ws
 - **blocks**: new compile dep on speech-api. Provides SocialAvatarCognition implementing AvatarCognition.
 - **speech-ws**: re-imports types from speech-api. Injects `Instance<AvatarCognition>` — resolved only when a consumer's classpath includes blocks with Jandex indexing enabled. No direct dependency on blocks.
 
-Consumer activation: add blocks as a compile dep + `quarkus.index-dependency.casehub-blocks.group-id=io.casehub` in `application.properties`.
+Consumer activation: add blocks as a compile dep + `quarkus.index-dependency.casehub-agency.group-id=io.casehub` in `application.properties`.
 
 ## Backward compatibility
 
 - speech-ws continues to work without blocks or eidos on the classpath. `DefaultPromptAssembler` is the fallback. No social cognition, no proactive speech.
-- Existing consumers of `PromptAssembler` from speech-ws update imports from `io.casehub.blocks.speech.ws.PromptAssembler` to `io.casehub.blocks.speech.SpeechPromptAssembler`. The rename disambiguates from the unrelated `io.casehub.blocks.conversation.orchestration.PromptAssembler` (which stays as-is).
+- Existing consumers of `PromptAssembler` from speech-ws update imports from `io.casehub.agency.speech.ws.PromptAssembler` to `io.casehub.agency.speech.SpeechPromptAssembler`. The rename disambiguates from the unrelated `io.casehub.agency.conversation.orchestration.PromptAssembler` (which stays as-is).
 - `AssembledPrompt` and `ConversationTurn` move packages similarly.
 
 ## Testing

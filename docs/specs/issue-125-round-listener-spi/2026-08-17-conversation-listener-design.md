@@ -12,7 +12,7 @@
 ### New type: `ConversationListener`
 
 ```java
-package io.casehub.blocks.conversation.orchestration;
+package io.casehub.agency.conversation.orchestration;
 
 @FunctionalInterface
 public interface ConversationListener {
@@ -21,7 +21,7 @@ public interface ConversationListener {
 }
 ```
 
-A `@FunctionalInterface` with a single `onDispatch` method. Lambda-friendly — consumers wire with a one-liner. Lives in `io.casehub.blocks.conversation.orchestration` alongside the orchestrator and other SPIs.
+A `@FunctionalInterface` with a single `onDispatch` method. Lambda-friendly — consumers wire with a one-liner. Lives in `io.casehub.agency.conversation.orchestration` alongside the orchestrator and other SPIs.
 
 ### Callback granularity
 

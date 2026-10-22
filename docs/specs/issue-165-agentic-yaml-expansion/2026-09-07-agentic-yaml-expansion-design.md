@@ -189,7 +189,7 @@ Note: `ConvergencePolicy` is a `@FunctionalInterface` with zero concrete impleme
 
 Note: `EpistemicRule` is a `@FunctionalInterface` with factory methods in `EpistemicRules` (not named classes). The registry maps string names to these factory method invocations with config parameters (e.g., `explicit-acknowledgement` → `EpistemicRules.explicitAcknowledgement(minParticipants)`).
 
-Note: Two `LlmDecomposition` classes exist — `io.casehub.blocks.agentic.decomposition.LlmDecomposition` (blocks) and `io.casehub.engine.planning.decomposition.LlmDecompositionStrategy` (engine). The `llm` registry name resolves the blocks variant. Engine strategies (`portfolio`, `explicit-htn`) are available as optional registrations when the engine planning module is on the classpath.
+Note: Two `LlmDecomposition` classes exist — `io.casehub.agency.agentic.decomposition.LlmDecomposition` (blocks) and `io.casehub.engine.planning.decomposition.LlmDecompositionStrategy` (engine). The `llm` registry name resolves the blocks variant. Engine strategies (`portfolio`, `explicit-htn`) are available as optional registrations when the engine planning module is on the classpath.
 
 ### Layer 3: Compilers
 
@@ -260,7 +260,7 @@ The platform `MvelExpressionEngine` (from `casehub-platform-expression`) handles
 victools reflects on spec records (Layer 1) to generate JSON/YAML schema.
 
 ```java
-public class BlocksSchemaGenerator {
+public class AgencySchemaGenerator {
     // Reuses platform casehub-schema-generator modules:
     // - io.casehub.schema.generator.module.EnumInliningModule
     // - io.casehub.schema.generator.module.SealedHierarchyModule
@@ -384,16 +384,16 @@ conversation:
 New code lives in a new `agentic-yaml` Maven module (parallel to `summarisation-yaml`):
 
 ```
-casehub-blocks-agentic-yaml/
-  src/main/java/io/casehub/blocks/agentic/yaml/
+casehub-agency-agentic-yaml/
+  src/main/java/io/casehub/agency/agentic/yaml/
     spec/           ← Layer 1: spec records (PatternSpec, RoutingSpec, etc.)
     registry/       ← Layer 2: strategy registries
     compiler/       ← Layer 3: PatternCompiler
     expression/     ← Layer 4: ExpressionEngine integration
-    schema/         ← Layer 5: BlocksSchemaGenerator + SchemaModules
+    schema/         ← Layer 5: AgencySchemaGenerator + SchemaModules
     
-casehub-blocks-agentic-yaml-deployment/
-  src/main/java/io/casehub/blocks/agentic/yaml/deployment/
+casehub-agency-agentic-yaml-deployment/
+  src/main/java/io/casehub/agency/agentic/yaml/deployment/
     AgenticYamlProcessor.java     ← Quarkus build extension
     AgenticRecorder.java          ← runtime bean registration
 ```
@@ -401,12 +401,12 @@ casehub-blocks-agentic-yaml-deployment/
 ## Dependencies
 
 **agentic-yaml module:**
-- Compile: `casehub-blocks` (spec records reference blocks types — AgentRef, FailurePolicy, PatternType), `jackson-dataformat-yaml`
+- Compile: `casehub-agency` (spec records reference blocks types — AgentRef, FailurePolicy, PatternType), `jackson-dataformat-yaml`
 - Provided: `casehub-platform-api` (`io.casehub.platform.api.expression.ExpressionEngine` SPI), `quarkus-core` (recorder)
 - Test: JUnit 5, AssertJ, `casehub-platform-expression` (MvelExpressionEngine)
 
 **agentic-yaml-deployment module:**
-- Compile: `casehub-blocks-agentic-yaml`, `quarkus-core-deployment`
+- Compile: `casehub-agency-agentic-yaml`, `quarkus-core-deployment`
 
 **Schema generation:**
 - Compile: `casehub-schema-generator` (platform — `io.casehub.schema.generator.module.EnumInliningModule`, `SealedHierarchyModule`, `UnevaluatedPropertiesModule`)

@@ -9,7 +9,7 @@
 
 quarkmind built a generic temporal abstraction framework for summarising
 high-frequency event streams into progressively higher-level abstractions.
-The framework lives in quarkmind under `io.casehub.blocks.summarisation`,
+The framework lives in quarkmind under `io.casehub.agency.summarisation`,
 explicitly packaged for migration to blocks. It is pure Java — zero CDI,
 zero Quarkus dependencies — and has been validated by 3 summarisers and
 3 window policies across quarkmind's SC2 domain.
@@ -62,7 +62,7 @@ layers.
 ### Package
 
 ```
-io.casehub.blocks.summarisation
+io.casehub.agency.summarisation
 ```
 
 Follows the existing blocks pattern (`blocks.channel`, `blocks.conversation`,
@@ -267,7 +267,7 @@ Two domain examples prove the framework is genuinely portable. Both live
 in the test source root under an `examples` package:
 
 ```
-src/test/java/io/casehub/blocks/summarisation/examples/
+src/test/java/io/casehub/agency/summarisation/examples/
     clinical/    — clinical temporal abstraction
     logistics/   — logistics hub monitoring
 ```
@@ -385,13 +385,13 @@ with tests run between.
 
 ### Phase 2: Extract to blocks (on issue-27 branch)
 
-6. Create `io.casehub.blocks.summarisation` package in blocks
+6. Create `io.casehub.agency.summarisation` package in blocks
 7. Copy 7 source files + 3 test files from quarkmind
 8. Run blocks tests to validate — commit
 
 ### Phase 3: Wire quarkmind to blocks (on quarkmind main)
 
-9. Add `casehub-blocks` as a compile dependency in quarkmind's `pom.xml`
+9. Add `casehub-agency` as a compile dependency in quarkmind's `pom.xml`
 10. Remove the 7 source files + 3 test files from quarkmind
 11. Run quarkmind's full test suite to validate the dependency switch — commit
 
@@ -404,8 +404,8 @@ with tests run between.
 ### Phase 5: Documentation
 
 15. Update blocks CLAUDE.md with new package documentation
-16. Update blocks ARC42STORIES.MD §5 with `io.casehub.blocks.summarisation` package entry
-17. Update quarkmind ARC42STORIES.MD to note `casehub-blocks` dependency for generic framework types
+16. Update blocks ARC42STORIES.MD §5 with `io.casehub.agency.summarisation` package entry
+17. Update quarkmind ARC42STORIES.MD to note `casehub-agency` dependency for generic framework types
 18. Update #38 issue as complete
 
 ## Related issues
@@ -443,6 +443,6 @@ with tests run between.
 - [ ] `EventAccumulator` is thread-safe (synchronized public methods)
 - [ ] CLAUDE.md updated with summarisation package documentation
 - [ ] Blocks ARC42STORIES.MD §5 updated with summarisation package entry
-- [ ] Quarkmind ARC42STORIES.MD updated to note `casehub-blocks` dependency
+- [ ] Quarkmind ARC42STORIES.MD updated to note `casehub-agency` dependency
 - [ ] Issue #27 body updated to reflect `EventConsumer` removal (8→7 files)
 - [ ] Zero new compile dependencies added to blocks

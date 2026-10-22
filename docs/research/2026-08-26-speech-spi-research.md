@@ -30,7 +30,7 @@
 ### Module Structure
 
 ```
-casehub-blocks-parent (pom)
+casehub-agency-parent (pom)
   ├── blocks                    — core blocks (existing)
   ├── engine-adapter            — engine integration
   ├── speech-api                — pure Java SPIs (zero dependencies)
@@ -615,9 +615,9 @@ extract to cache directory. Fallback: casehubio-hosted mirror.
 Publish platform-specific JARs to GitHub Packages:
 
 ```
-casehub-blocks-speech-sherpa-native-osx-arm64.jar     (~31MB)
-casehub-blocks-speech-sherpa-native-linux-x64.jar     (~31MB)
-casehub-blocks-speech-sherpa-native-win-x64.jar       (~31MB)
+casehub-agency-speech-sherpa-native-osx-arm64.jar     (~31MB)
+casehub-agency-speech-sherpa-native-linux-x64.jar     (~31MB)
+casehub-agency-speech-sherpa-native-win-x64.jar       (~31MB)
 ```
 
 Each JAR contains the `.dylib`/`.so`/`.dll` files under `META-INF/native/{platform}/`.
@@ -842,17 +842,17 @@ CP=speech-sherpa/target/classes:speech-api/target/classes
 
 # Offline transcription
 java --enable-native-access=ALL-UNNAMED -cp $CP \
-  io.casehub.blocks.speech.sherpa.SpeechCli transcribe \
+  io.casehub.agency.speech.sherpa.SpeechCli transcribe \
   /tmp/sherpa-onnx-whisper-tiny /tmp/sherpa-onnx-whisper-tiny/test_wavs/0.wav
 
 # TTS
 java --enable-native-access=ALL-UNNAMED -cp $CP \
-  io.casehub.blocks.speech.sherpa.SpeechCli synthesise \
+  io.casehub.agency.speech.sherpa.SpeechCli synthesise \
   /tmp/vits-piper-en_US-amy-low "Hello from CaseHub" output.wav
 
 # Streaming
 java --enable-native-access=ALL-UNNAMED -cp $CP \
-  io.casehub.blocks.speech.sherpa.SpeechCli stream \
+  io.casehub.agency.speech.sherpa.SpeechCli stream \
   /tmp/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17 \
   /tmp/sherpa-onnx-whisper-tiny/test_wavs/1.wav
 ```

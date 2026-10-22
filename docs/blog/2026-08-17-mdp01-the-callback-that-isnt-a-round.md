@@ -4,7 +4,7 @@ title: "The Callback That Isn't a Round"
 date: 2026-08-17
 entry_type: note
 subtype: diary
-projects: [casehub-blocks]
+projects: [casehub-agency]
 tags: [conversation, orchestration, spi, design]
 ---
 

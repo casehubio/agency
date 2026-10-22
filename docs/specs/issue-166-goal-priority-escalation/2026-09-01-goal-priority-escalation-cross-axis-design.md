@@ -83,7 +83,7 @@ When present, `currentNarrative(agentId, tenantId)` provides the NarrativeState 
 
 ## Type System
 
-### Package: `io.casehub.blocks.agentic.social.goal`
+### Package: `io.casehub.agency.agentic.social.goal`
 
 #### GoalEscalationPolicy (SPI)
 

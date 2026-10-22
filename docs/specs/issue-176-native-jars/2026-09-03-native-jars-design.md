@@ -135,7 +135,7 @@ the platform ID varying:
           <phase>generate-resources</phase>
           <goals><goal>java</goal></goals>
           <configuration>
-            <mainClass>io.casehub.blocks.speech.sherpa.NativePackager</mainClass>
+            <mainClass>io.casehub.agency.speech.sherpa.NativePackager</mainClass>
             <arguments>
               <argument>osx-arm64</argument>
             </arguments>
