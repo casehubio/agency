@@ -326,7 +326,7 @@ public class BlocksAutoConfiguration {
                 goalProposalOrchestrator.orElse(null),
                 hygieneAdapter,
                 innerLifeOrchestrator.orElse(null),
-                null, io.casehub.neocortex.cognition.core.CognitionConfig.all(),
+                io.casehub.neocortex.cognition.core.CognitionConfig.all(),
                 mindMapStore.orElse(null), null,
                 attentionMediator.orElse(null),
                 engagementRecorder.map(r -> (java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent>) r::record).orElse(null),
@@ -398,8 +398,8 @@ public class BlocksAutoConfiguration {
 
     @Bean
     public NarrativeContentSummariser narrativeContentSummariser(
-            AgentProvider agentProvider, NarrativeConfig config) {
-        return new NarrativeContentSummariser(agentProvider, config);
+            NarrativeConfig config) {
+        return new NarrativeContentSummariser(config);
     }
 
     @Bean
