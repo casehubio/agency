@@ -57,71 +57,67 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agentic-yaml/src/test/java/io/casehub/agency/agentic/yaml/` | Tests for YAML agentic surface |
 | `agentic-yaml-deployment/src/main/java/io/casehub/agency/agentic/yaml/deployment/` | Quarkus deployment module — `AgenticYamlProcessor` (YAML discovery, validation), `AgenticRecorder` (runtime compiler registration) |
 | `docs/summarisation/CAPABILITY-MATRIX.md` | Summarisation capability matrix — maps 29 capabilities across 11 examples |
-| `src/main/java/io/casehub/agency/agent/` | Shared LLM invocation utility — `StructuredAgentInvoker` (static: `invokeText()`, `invoke(Class<T>)`, `invokeRaw()` with sealed `InvocationResult<T>` and `InvocationMetadata`; markdown fence stripping, JSON extraction, `InvocationComplete` capture). `stripFences()` and `extractJson()` also available standalone. |
-| `src/test/java/io/casehub/agency/agent/` | Tests for agent utility |
-| `src/main/java/io/casehub/agency/attestation/` | Attestation write-path types — `AttestationIntent`, `AttestationIntentWriter` (+ `NoOpAttestationIntentWriter` `@DefaultBean`), `LifecycleAttestationObserver<E>` SPI, `AttestationContext` |
-| `src/test/java/io/casehub/agency/attestation/` | Tests for attestation types |
-| `src/main/java/io/casehub/agency/trust/` | Trust-lifecycle SPIs — `IntakeClassifier<S>`, `VouchService` with pluggable `VouchConstraint` chain |
-| `src/test/java/io/casehub/agency/trust/` | Tests for trust SPIs |
-| `src/main/java/io/casehub/agency/channel/` | Channel utility blocks — message meta, context tracking, bounded projection |
-| `src/test/java/io/casehub/agency/channel/` | Tests for channel blocks |
-| `src/main/java/io/casehub/agency/channel/summary/` | Channel summary integration — `ContentSummariser<Message, SummaryResult>` implementations, `SummaryUpdateHook` adapter, `NoOpThreadSummaryStore` `@DefaultBean` |
-| `src/test/java/io/casehub/agency/channel/summary/` | Tests for channel summary integration |
-| `src/main/java/io/casehub/agency/agentic/` | Compositional agentic orchestration — six SPIs (routing, decomposition, activation, aggregation, judgment, termination), execution drivers, pattern builders |
-| `src/test/java/io/casehub/agency/agentic/` | Tests for agentic orchestration blocks |
-| `src/main/java/io/casehub/agency/agentic/judgment/` | Judgment orchestration — `JudgmentPhase<T>` SPI (from engine#994), `JudgmentPolicy<T>` composition root (implements `JudgmentPhase`), `JudgmentTrigger<T>` (conditional yielding: `AlwaysYield`, `NeverYield`, `IterationBased`, `ConfidenceThreshold`), `CallerStrategy` sealed hierarchy (Single/FanOut/EscalationChain), `CallerRef`, `AgreementPolicy` with `ConsensusAgreement`, `JudgmentDispatcher` with `DirectJudgmentDispatcher`, `CompositeVerifier` (chains engine-api `JudgmentVerifier` with most-restrictive-wins policy), `NoOpVerifier`, `RetryPolicy`/`ExhaustionPolicy`/`VerifierFailurePolicy`, `JudgmentResponse`, `AgreementResult` |
-| `src/test/java/io/casehub/agency/agentic/judgment/` | Tests for judgment orchestration |
-| `src/main/java/io/casehub/agency/agentic/channel/` | Inter-agent channel setup + supervisor observation — `ChannelBinding`, `ChannelConfig`, `ChannelExecutionStrategy` (Conversation/FanIn/Barrier), `ChannelObserver<S>` (projection-based observation + EventSource) |
-| `src/test/java/io/casehub/agency/agentic/channel/` | Tests for agentic channel blocks |
-| `src/main/java/io/casehub/agency/agentic/aggregation/` | Aggregation strategies including `AuctionAggregation` — English/Dutch iterative auction via `AggregationStrategy<AuctionState>` with `BidExtractor` SPI |
-| `src/test/java/io/casehub/agency/agentic/aggregation/` | Tests for aggregation strategies |
-| `src/main/java/io/casehub/agency/agentic/coalition/` | Coalition formation — `CoalitionProposal`, `CoalitionEvaluator` SPI, `CapabilityCoverageEvaluator`, capability-based team assembly scoring |
-| `src/test/java/io/casehub/agency/agentic/coalition/` | Tests for coalition formation |
-| `src/main/java/io/casehub/agency/agentic/intention/` | Joint intentions — `JointIntention` lifecycle (form/activate/reconsider/drop/fulfill), `IntentionMonitor` SPI, `ReconsiderationSignal` |
-| `src/test/java/io/casehub/agency/agentic/intention/` | Tests for joint intentions |
-| `src/main/java/io/casehub/agency/agentic/belief/` | Formal belief revision — AGM-style `BeliefSet<T>` with expand/contract/revise, `ConsistencyChecker<T>` SPI, entrenchment ordering |
-| `src/test/java/io/casehub/agency/agentic/belief/` | Tests for belief revision |
-| `src/main/java/io/casehub/agency/agentic/cognition/` | Cognition integration — `CognitionAvatarAdapter` (thin `AvatarCognition` bridge delegating to neocortex `CognitionCore`, maps speech lifecycle to cognitive tick/record/evaluate), `MemoryHygieneSpiAdapter` (bridges blocks `MemoryHygieneOrchestrator` to neocortex SPI). All cognitive types, orchestrators, prompt sections, and config records now provided by `casehub-neocortex-cognition` module. |
-| `src/test/java/io/casehub/agency/agentic/cognition/` | Tests for cognition integration |
-| `src/main/java/io/casehub/agency/agentic/personality/` | Personality evolution — signal-driven orchestrator composing eidos JPAF pipeline. `TraitPressureSource<E>` SPI, `PersonalityEvolutionOrchestrator` (tick/record), `EvolutionTick` sealed outcomes, default pressure sources (BehavioralSignal, RelationshipEvent, GoalOutcomeCounts) |
-| `src/test/java/io/casehub/agency/agentic/personality/` | Tests for personality evolution |
-| `src/main/java/io/casehub/agency/memory/` | Memory hygiene — `MemoryHygieneOrchestrator` (tick: importance scoring → eviction → consolidation; implements neocortex `io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator` SPI), `MemoryHygieneScheduler` (maintain: tick + reflection + peer-linking + integrity), `ConfidenceScorer` SPI with `ArousalScorer`/`SurpriseScorer`/`CompositeConfidenceScorer`, `RetentionScore`/`RetentionConfig` (composite eviction scoring), `DefaultIntegrityChecker` (structural + semantic escalation), `ReflectionStore` (reflection persistence SPI), `ReflectionQueryStore` SPI extending `io.casehub.neocortex.memory.ReflectionQueryStore` with `NoOpReflectionQueryStore` `@DefaultBean`, `HygieneTick`/`MaintenanceTick` sealed outcomes, `HygieneEvent` observability. Note: `ReflectionEntry` and `KnowledgeGapSummary` types moved to neocortex `memory-api`. |
-| `src/test/java/io/casehub/agency/memory/` | Tests for memory hygiene |
-| `src/main/java/io/casehub/agency/conversation/` | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection |
-| `src/test/java/io/casehub/agency/conversation/` | Tests for conversation blocks |
-| `src/main/java/io/casehub/agency/conversation/orchestration/` | Conversation orchestrator — TurnPolicy SPI, termination conditions, PromptAssembler, ConversationOrchestrator composition root, ConversationListener per-dispatch callback |
-| `src/test/java/io/casehub/agency/conversation/orchestration/` | Tests for conversation orchestrator |
-| `src/main/java/io/casehub/agency/normative/` | Normative conflict resolution — `ConflictResolutionStrategy<T>` SPI, `NormDecision<T>`, `NormResolution<T>`, five resolution strategies (priority, specificity, recency, most-restrictive, escalation) |
-| `src/test/java/io/casehub/agency/normative/` | Tests for normative conflict resolution |
-| `src/main/java/io/casehub/agency/negotiation/` | Negotiation channel protocol — `NegotiationProjection`, `NegotiationFold`, `AcceptancePolicy` SPI (unanimous, majority, threshold), `NegotiationRenderer`, termination conditions (`MaxRoundsTermination`, `DeadlineTermination`, `AcceptedTermination`, `TerminalOutcomeTermination`, `NegotiationCompositeTermination`) |
-| `src/test/java/io/casehub/agency/negotiation/` | Tests for negotiation protocol |
-| `src/main/java/io/casehub/agency/oversight/` | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes |
-| `src/test/java/io/casehub/agency/oversight/` | Tests for oversight blocks |
-| `src/main/java/io/casehub/agency/routing/` | Trust routing utilities — shared preference keys, policy resolver, compliance records |
-| `src/test/java/io/casehub/agency/routing/` | Tests for routing utilities |
-| `src/main/java/io/casehub/agency/routing/agent/` | AI-powered AgentRoutingStrategy implementations — LLM-reasoned and CBR-evidence agent selection, composable prompt enrichment pipeline, feature extraction SPI, outcome recording |
-| `src/test/java/io/casehub/agency/routing/agent/` | Tests for AI routing strategies |
-| `src/main/java/io/casehub/agency/rag/` | RAG retrieval worker factory — `RagRetrievalWorkerFactory` (static: `create()` with `QueryExtractionStrategy` + `CaseContextRetriever` + `List<CorpusRef>` → `Worker`). Provided dependency on `casehub-neocortex-rag-api`. |
-| `src/test/java/io/casehub/agency/rag/` | Tests for RAG retrieval worker factory |
-| `src/main/java/io/casehub/agency/prompt/` | DSPy-inspired prompt optimisation — core model, SPIs (`PromptOptimiser`, `PromptQualityMetric`, `PromptVariantStore`, `SystemPromptCustomiser`, `DiversityStrategy`), batch orchestration, A/B variant selection |
-| `src/test/java/io/casehub/agency/prompt/` | Tests for prompt optimisation framework |
-| `src/main/java/io/casehub/agency/prompt/optimiser/` | `PromptOptimiser` implementations — `FewShotOptimiser` (data-driven, diversity-aware via `DiversityStrategy`), `InstructionOptimiser` (LLM meta-prompting), `TopNDiversityStrategy` (identity), `OutcomeAwareDiversityStrategy` (MMR + Jaccard) |
-| `src/test/java/io/casehub/agency/prompt/optimiser/` | Tests for prompt optimisers |
-| `src/main/java/io/casehub/agency/prompt/runtime/` | CDI runtime beans — `OptimisedFewShotSection`, `VariantAwareSystemPromptCustomiser`, `WeightedOutcomeMetric`, `InMemoryPromptVariantStore` |
-| `src/test/java/io/casehub/agency/prompt/runtime/` | Tests for prompt runtime beans |
-| `src/main/java/io/casehub/agency/summarisation/` | Summarisation extensions (depends on summarisation-api) — `TieredContentSummariser<T>`, `SummaryMode`, observation package. Core types live in `summarisation-api/`. |
-| `src/test/java/io/casehub/agency/summarisation/` | Tests for summarisation extensions |
-| `src/main/java/io/casehub/agency/summarisation/llm/` | LLM-backed `ContentSummariser<T, SummaryResult>` — generic synthesis via `AgentProvider` |
-| `src/test/java/io/casehub/agency/summarisation/llm/` | Tests for LLM content summariser |
-| `src/main/java/io/casehub/agency/summarisation/observation/` | Observation accumulator — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunks |
-| `src/test/java/io/casehub/agency/summarisation/observation/` | Tests for observation accumulator |
-| `src/main/java/io/casehub/agency/summarisation/observation/affordance/` | Affordance grounding + observation filtering — per-entity rendering, `AnnotatedSection` (capability-tagged sections with resolution alternatives), `ObservationFilter` SPI, `ObservationPipeline` (ordered filter composition), `PerceptionFilter` (visibility gating + resolution fallback), `ResolutionTier` |
-| `src/test/java/io/casehub/agency/summarisation/observation/affordance/` | Tests for affordance rendering and observation filtering |
-| `src/test/java/io/casehub/agency/summarisation/examples/clinical/` | Clinical temporal abstraction example (L1-L4 pipeline) |
-| `src/test/java/io/casehub/agency/summarisation/examples/logistics/` | Logistics hub monitoring example (L1-L4 pipeline) |
-| `src/main/java/io/casehub/agency/summarisation/narrative/` | Decision narrative pipeline — `DecisionSignal` sealed hierarchy (6 signal types including `ModelSelection`), `StepDecisionSummary`/`SignalDigest` (L1→L2 intermediate), `DecisionNarrative` (output), `DecisionSignalSummariser` (L1 heuristic), `DecisionNarrativeSummariser` (L2 LLM-backed `ContentSummariser` with template fallback), `NarrativeSignalStrategy` SPI, `AbstractNarrativeSignalStrategy` (base class), `DecisionNarrativePipeline` (factory wiring L1→L2) |
-| `src/test/java/io/casehub/agency/summarisation/narrative/` | Tests for decision narrative pipeline |
-| `src/test/java/io/casehub/agency/summarisation/examples/decision/` | Fsitrading-inspired decision narrative pipeline example (two-level: `TradingSignalSummariser` L1 + `TradeNarrativeSummariser` L2) |
+| `agency-core/src/main/java/io/casehub/agency/core/invoke/` | Shared LLM invocation utility — `StructuredAgentInvoker` (static: `invokeText()`, `invoke(Class<T>)`, `invokeRaw()` with sealed `InvocationResult<T>` and `InvocationMetadata`; markdown fence stripping, JSON extraction, `InvocationComplete` capture). `stripFences()` and `extractJson()` also available standalone. |
+| `agency/src/test/java/io/casehub/agency/core/invoke/` | Tests for agent utility |
+| `agency-core/src/main/java/io/casehub/agency/governance/attestation/` | Attestation write-path types — `AttestationIntent`, `AttestationIntentWriter` (+ `NoOpAttestationIntentWriter` `@DefaultBean`), `LifecycleAttestationObserver<E>` SPI, `AttestationContext` |
+| `agency/src/test/java/io/casehub/agency/governance/attestation/` | Tests for attestation types |
+| `agency-core/src/main/java/io/casehub/agency/governance/trust/` | Trust-lifecycle SPIs — `IntakeClassifier<S>`, `VouchService` with pluggable `VouchConstraint` chain |
+| `agency/src/test/java/io/casehub/agency/governance/trust/` | Tests for trust SPIs |
+| `agency-core/src/main/java/io/casehub/agency/communication/dispatch/` | Channel dispatch utilities — message meta, context tracking, bounded projection |
+| `agency/src/test/java/io/casehub/agency/communication/dispatch/` | Tests for channel dispatch utilities |
+| `agency-core/src/main/java/io/casehub/agency/communication/channel/summary/` | Channel summary integration — `ContentSummariser<Message, SummaryResult>` implementations, `SummaryUpdateHook` adapter, `NoOpThreadSummaryStore` `@DefaultBean` |
+| `agency/src/test/java/io/casehub/agency/communication/channel/summary/` | Tests for channel summary integration |
+| `agency-core/src/main/java/io/casehub/agency/core/` | Compositional agentic orchestration — six SPIs (routing, decomposition, activation, aggregation, judgment, termination), execution drivers, pattern builders |
+| `agency/src/test/java/io/casehub/agency/core/` | Tests for orchestration framework |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/judgment/` | Judgment orchestration — `JudgmentPhase<T>` SPI (from engine#994), `JudgmentPolicy<T>` composition root (implements `JudgmentPhase`), `JudgmentTrigger<T>` (conditional yielding: `AlwaysYield`, `NeverYield`, `IterationBased`, `ConfidenceThreshold`), `CallerStrategy` sealed hierarchy (Single/FanOut/EscalationChain), `CallerRef`, `AgreementPolicy` with `ConsensusAgreement`, `JudgmentDispatcher` with `DirectJudgmentDispatcher`, `CompositeVerifier` (chains engine-api `JudgmentVerifier` with most-restrictive-wins policy), `NoOpVerifier`, `RetryPolicy`/`ExhaustionPolicy`/`VerifierFailurePolicy`, `JudgmentResponse`, `AgreementResult` |
+| `agency/src/test/java/io/casehub/agency/deliberation/judgment/` | Tests for judgment orchestration |
+| `agency-core/src/main/java/io/casehub/agency/communication/channel/` | Inter-agent channel setup + supervisor observation — `ChannelBinding`, `ChannelConfig`, `ChannelExecutionStrategy` (Conversation/FanIn/Barrier), `ChannelObserver<S>` (projection-based observation + EventSource) |
+| `agency/src/test/java/io/casehub/agency/communication/channel/` | Tests for channel infrastructure |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/aggregation/` | Aggregation strategies including `AuctionAggregation` — English/Dutch iterative auction via `AggregationStrategy<AuctionState>` with `BidExtractor` SPI |
+| `agency/src/test/java/io/casehub/agency/orchestration/aggregation/` | Tests for aggregation strategies |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/coalition/` | Coalition formation — `CoalitionProposal`, `CoalitionEvaluator` SPI, `CapabilityCoverageEvaluator`, capability-based team assembly scoring |
+| `agency/src/test/java/io/casehub/agency/deliberation/coalition/` | Tests for coalition formation |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/intention/` | Joint intentions — `JointIntention` lifecycle (form/activate/reconsider/drop/fulfill), `IntentionMonitor` SPI, `ReconsiderationSignal` |
+| `agency/src/test/java/io/casehub/agency/deliberation/intention/` | Tests for joint intentions |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/belief/` | Formal belief revision — AGM-style `BeliefSet<T>` with expand/contract/revise, `ConsistencyChecker<T>` SPI, entrenchment ordering |
+| `agency/src/test/java/io/casehub/agency/deliberation/belief/` | Tests for belief revision |
+| `agency-core/src/main/java/io/casehub/agency/social/cognition/` | Cognition integration — `CognitionAvatarAdapter` (thin `AvatarCognition` bridge delegating to neocortex `CognitionCore`, maps speech lifecycle to cognitive tick/record/evaluate), `MemoryHygieneSpiAdapter` (bridges agency `MemoryHygieneOrchestrator` to neocortex SPI). All cognitive types, orchestrators, prompt sections, and config records now provided by `casehub-neocortex-cognition` module. |
+| `agency/src/test/java/io/casehub/agency/social/cognition/` | Tests for cognition integration |
+| `agency-core/src/main/java/io/casehub/agency/social/memory/` | Memory hygiene — `MemoryHygieneOrchestrator` (tick: importance scoring → eviction → consolidation; implements neocortex `io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator` SPI), `MemoryHygieneScheduler` (maintain: tick + reflection + peer-linking + integrity), `ConfidenceScorer` SPI with `ArousalScorer`/`SurpriseScorer`/`CompositeConfidenceScorer`, `RetentionScore`/`RetentionConfig` (composite eviction scoring), `DefaultIntegrityChecker` (structural + semantic escalation), `ReflectionStore` (reflection persistence SPI), `ReflectionQueryStore` SPI extending `io.casehub.neocortex.memory.ReflectionQueryStore` with `NoOpReflectionQueryStore` `@DefaultBean`, `HygieneTick`/`MaintenanceTick` sealed outcomes, `HygieneEvent` observability. Note: `ReflectionEntry` and `KnowledgeGapSummary` types moved to neocortex `memory-api`. |
+| `agency/src/test/java/io/casehub/agency/social/memory/` | Tests for memory hygiene |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/` | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection |
+| `agency/src/test/java/io/casehub/agency/deliberation/conversation/` | Tests for conversation protocol |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/orchestration/` | Conversation orchestrator — TurnPolicy SPI, termination conditions, PromptAssembler, ConversationOrchestrator composition root, ConversationListener per-dispatch callback |
+| `agency/src/test/java/io/casehub/agency/deliberation/conversation/orchestration/` | Tests for conversation orchestrator |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/normative/` | Normative conflict resolution — `ConflictResolutionStrategy<T>` SPI, `NormDecision<T>`, `NormResolution<T>`, five resolution strategies (priority, specificity, recency, most-restrictive, escalation) |
+| `agency/src/test/java/io/casehub/agency/deliberation/normative/` | Tests for normative conflict resolution |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/` | Negotiation channel protocol — `NegotiationProjection`, `NegotiationFold`, `AcceptancePolicy` SPI (unanimous, majority, threshold), `NegotiationRenderer`, termination conditions (`MaxRoundsTermination`, `DeadlineTermination`, `AcceptedTermination`, `TerminalOutcomeTermination`, `NegotiationCompositeTermination`) |
+| `agency/src/test/java/io/casehub/agency/deliberation/negotiation/` | Tests for negotiation protocol |
+| `agency-core/src/main/java/io/casehub/agency/governance/routing/` | Trust routing utilities — shared preference keys, policy resolver, compliance records |
+| `agency/src/test/java/io/casehub/agency/governance/routing/` | Tests for routing utilities |
+| `agency-core/src/main/java/io/casehub/agency/governance/routing/agent/` | AI-powered AgentRoutingStrategy implementations — LLM-reasoned and CBR-evidence agent selection, composable prompt enrichment pipeline, feature extraction SPI, outcome recording |
+| `agency/src/test/java/io/casehub/agency/governance/routing/agent/` | Tests for AI routing strategies |
+| `agency-core/src/main/java/io/casehub/agency/perception/rag/` | RAG retrieval worker factory — `RagRetrievalWorkerFactory` (static: `create()` with `QueryExtractionStrategy` + `CaseContextRetriever` + `List<CorpusRef>` → `Worker`). Provided dependency on `casehub-neocortex-rag-api`. |
+| `agency/src/test/java/io/casehub/agency/perception/rag/` | Tests for RAG retrieval worker factory |
+| `agency-core/src/main/java/io/casehub/agency/optimisation/prompt/` | DSPy-inspired prompt optimisation — core model, SPIs (`PromptOptimiser`, `PromptQualityMetric`, `PromptVariantStore`, `SystemPromptCustomiser`, `DiversityStrategy`), batch orchestration, A/B variant selection |
+| `agency/src/test/java/io/casehub/agency/optimisation/prompt/` | Tests for prompt optimisation framework |
+| `agency-core/src/main/java/io/casehub/agency/optimisation/prompt/optimiser/` | `PromptOptimiser` implementations — `FewShotOptimiser` (data-driven, diversity-aware via `DiversityStrategy`), `InstructionOptimiser` (LLM meta-prompting), `TopNDiversityStrategy` (identity), `OutcomeAwareDiversityStrategy` (MMR + Jaccard) |
+| `agency/src/test/java/io/casehub/agency/optimisation/prompt/optimiser/` | Tests for prompt optimisers |
+| `agency-core/src/main/java/io/casehub/agency/optimisation/prompt/runtime/` | CDI runtime beans — `OptimisedFewShotSection`, `VariantAwareSystemPromptCustomiser`, `WeightedOutcomeMetric`, `InMemoryPromptVariantStore` |
+| `agency/src/test/java/io/casehub/agency/optimisation/prompt/runtime/` | Tests for prompt runtime beans |
+| `agency-core/src/main/java/io/casehub/agency/summarisation/` | Summarisation extensions (depends on summarisation-api) — `TieredContentSummariser<T>`, `SummaryMode`, observation package. Core types live in `summarisation-api/`. |
+| `agency/src/test/java/io/casehub/agency/summarisation/` | Tests for summarisation extensions |
+| `agency-core/src/main/java/io/casehub/agency/perception/llm/` | LLM-backed `ContentSummariser<T, SummaryResult>` — generic synthesis via `AgentProvider` |
+| `agency/src/test/java/io/casehub/agency/perception/llm/` | Tests for LLM content summariser |
+| `agency-core/src/main/java/io/casehub/agency/perception/observation/` | Observation accumulator — tiered, demand-driven rendering for LLM agent prompts with RAG-able chunks |
+| `agency/src/test/java/io/casehub/agency/perception/observation/` | Tests for observation accumulator |
+| `agency-core/src/main/java/io/casehub/agency/perception/observation/affordance/` | Affordance grounding + observation filtering — per-entity rendering, `AnnotatedSection` (capability-tagged sections with resolution alternatives), `ObservationFilter` SPI, `ObservationPipeline` (ordered filter composition), `PerceptionFilter` (visibility gating + resolution fallback), `ResolutionTier` |
+| `agency/src/test/java/io/casehub/agency/perception/observation/affordance/` | Tests for affordance rendering and observation filtering |
+| `agency/src/test/java/io/casehub/agency/summarisation/examples/clinical/` | Clinical temporal abstraction example (L1-L4 pipeline) |
+| `agency/src/test/java/io/casehub/agency/summarisation/examples/logistics/` | Logistics hub monitoring example (L1-L4 pipeline) |
+| `agency-core/src/main/java/io/casehub/agency/perception/narrative/` | Decision narrative pipeline — `DecisionSignal` sealed hierarchy (6 signal types including `ModelSelection`), `StepDecisionSummary`/`SignalDigest` (L1→L2 intermediate), `DecisionNarrative` (output), `DecisionSignalSummariser` (L1 heuristic), `DecisionNarrativeSummariser` (L2 LLM-backed `ContentSummariser` with template fallback), `NarrativeSignalStrategy` SPI, `AbstractNarrativeSignalStrategy` (base class), `DecisionNarrativePipeline` (factory wiring L1→L2) |
+| `agency/src/test/java/io/casehub/agency/perception/narrative/` | Tests for decision narrative pipeline |
+| `agency/src/test/java/io/casehub/agency/summarisation/examples/decision/` | Fsitrading-inspired decision narrative pipeline example (two-level: `TradingSignalSummariser` L1 + `TradeNarrativeSummariser` L2) |
 | `speech-api/src/main/java/io/casehub/agency/speech/` | Speech pipeline SPIs — `SpeechPromptAssembler` (`@FunctionalInterface` SPI: prompt assembly for speech sessions), `AssembledPrompt` (system + user prompt record with optional model override), `ConversationTurn` (role + content record), `PromptContext` (agentId, tenantId, subjectId per-turn context), `PromptSection` (`@FunctionalInterface` SPI: contributes nullable text sections to prompts), `AvatarCognition` (composition root SPI: wraps assembler, initialize, tick, evaluateProactive, recordInteraction), `PhonemeAligner` (`@FunctionalInterface` SPI), `LipSyncEnricher` (decorator for phoneme timing enrichment) |
 | `speech-api/src/test/java/io/casehub/agency/speech/` | Tests for LipSyncEnricher |
 | `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/` | sherpa-onnx FFM/Panama implementation — `SherpaOnnxSpeechToText` (+ `withDefaults()` zero-install factory), `SherpaOnnxTextToSpeech` (+ `withDefaults()` zero-install factory), `VitsTextToSpeech` (direct onnxruntime + espeak-ng for TTS with exact phoneme timing), `Audio8TextToSpeech` (DualAR autoregressive TTS via ORT with streaming + voice cloning, `withDefaults()` zero-install factories, `synthesiseStreaming()` with windowed overlap-subtract codec decoding, `registerVoice()`/`releaseVoice()` for zero-shot cloning), `Audio8Tokenizer` (GPT-2 byte-level BPE tokenizer from HuggingFace `tokenizer.json`), `Audio8Config` (model variant configuration — threads, temperature, top-k), `DualARLoop` (autoregressive slow AR + fast AR inference with KV-cache and Mamba SSM state, `iterateFrames()` for streaming), `CodecDecoder` (codec token matrix → PCM waveform via ORT), `VoiceRegistry` (voice registration/release lifecycle with transient codec encoder), `RuntimeManifest` (model metadata + streaming params from JSON — `codecHopLength`, `streamContextFrames`, `streamGuardFrames`), `EspeakPhonemeAligner` (`PhonemeAligner` impl — espeak-ng phonemization with proportional duration mapping, `withDefaults()` zero-config factory), `SherpaLibrary` (native binding via FFM SymbolLookup, 3-tier loading: system path → local cache → auto-download), `OnnxRuntimeLibrary` (onnxruntime C API FFM vtable bindings, singleton env shared across sessions), `EspeakLibrary` (espeak-ng C API FFM bindings), `SherpaLayouts` (C struct layouts for sherpa-onnx 1.10.x), `Provisioner` (auto-download native lib + model with SHA-256 verification, `FileLock` concurrency, `tar xf` extraction; `ensureGectorModel()` for GECToR ONNX bundles; `ensureAudio8Model()` for Audio8 DualAR models from HuggingFace), `ModelPatcher` (ONNX model duration output patching via protobuf), `VitsConfig` (Piper model config parsing + phoneme tokenization), `SentencePieceTokenizer` (pure Java Viterbi unigram segmentation — reads .model protobuf via CodedInputStream, trie-based vocab lookup), `GectorFilter` (`TextFilter` impl, destructiveness 3 — composes WordTokenizer + SentencePieceTokenizer + ORT + GectorTagApplier for iterative grammar correction), `GectorConfig` (tag vocabulary + verb dictionary + model path resolution from model directory), `GectorTagApplier` (stateless tag application — $KEEP/$DELETE/$APPEND/$REPLACE/morphological transforms), `WordTokenizer` (spaCy-compatible word pre-tokenization with contraction splitting), `WavReader`/`WavWriter` (PCM audio I/O), `SherpaConfig`, `SherpaException` |
@@ -297,79 +293,25 @@ Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` 
 | `NegotiationCompositeTermination` | First-non-Continue-wins composition of termination conditions |
 | `NegotiationProtocol` | Constants for negotiation outcome strings |
 
-## Package: `io.casehub.agency.oversight`
-
-Oversight gate lifecycle and risk classification — SPIs for gating worker actions pending human approval. Extracted from engine-api via casehubio/engine (3cdb1f90) and casehubio/openclaw (37a7044).
-
-| Class | What it does |
-|-------|-------------|
-| `ActionRiskClassifier` | Blocking SPI: classifies a worker's `PlannedAction` → `RiskDecision`. Annotate implementations with `@RiskClassifier @ApplicationScoped`. |
-| `ReactiveActionRiskClassifier` | Reactive SPI: primary interface called by the engine. Consumers implement `ActionRiskClassifier` instead — the chain bridges blocking to reactive. |
-| `RiskDecision` | Sealed interface (Autonomous, GateRequired). GateRequired carries reason, reversible flag, candidateGroups, expiresIn, scope. |
-| `ClassificationContext` | Record: workerId, caseId, tenancyId, caseDefinitionName, capabilityName, bindingName. |
-| `RiskClassifier` | CDI `@Qualifier` for `ActionRiskClassifier` implementations — prevents circular injection with the chain. |
-| `ChainedReactiveActionRiskClassifier` | `@ApplicationScoped` CDI bean: discovers all `@RiskClassifier`-qualified classifiers, chains them, returns most-restrictive `RiskDecision`. Fail-safe: GateRequired on any exception. |
-| `OversightGateService` | Blocking SPI: `openGate()` → `GateOutcome`, `fulfill()`. |
-| `ReactiveOversightGateService` | Reactive SPI: `openGate()` → `Uni<GateOutcome>`, `fulfill()` → `Uni<Void>`. |
-| `GateOutcome` | Sealed interface (Autonomous, GatePending). GatePending carries gateId + reason. |
-
 ## Package: `io.casehub.agency.core`
 
 Compositional agentic orchestration framework — eight sub-packages implementing five SPIs for routing, decomposition, activation, aggregation, and termination, plus execution drivers and pre-composed pattern builders.
 
 | Sub-package | What it contains |
 |-------------|-----------------|
-| `agentic` | Foundation types: `AgentRef` (sealed: WorkerAgent, ChannelAgent, HumanAgent, ExternalAgent, ComposedAgent; extends `ExecutorRef` — each variant implements `name()`/`description()`), `AgentResult`, `RoutingCandidate`, `FailurePolicy`, `AgentCardSupport` (shared card-building via `ExecutorRef`; no more pattern matching). **Uni policy:** SPIs return direct types (not Uni) — virtual threads make blocking free. Only `AgentInvoker.invoke()` (concurrent dispatch) and API boundaries (`execute()`, `converse()`) keep Uni. |
-| `agentic.routing` | Routing SPI: `RoutingStrategy<T>` (`RoutingDecision route(RoutingContext<T>)` — direct return, no Uni), `RoutingDecision` (sealed: Selected, Unresolvable, Escalate), `FirstMatchRouting`, `RoundRobinRouting`, `SequentialRouting`, `LlmSelectedRouting` |
-| `agentic.decomposition` | Decomposition SPI: `DecompositionStrategy<T>`, `TaskNode` (sealed: LeafTask \| CompoundTask; LeafTask non-sealed: PrimitiveTask, PlannedTask; both carry `id`, `createdAt`, `status()` → PENDING, `executor()`, optional `OutputContract`), `DecompositionMethod`, `DecompositionContext`, `AgenticDecompositionContext` (blocks' `DecompositionContext<T>` impl — carries `agents`, `planningConstraints`; overrides `constraints()`; nullable fields default safely in compact constructor), `IdentityDecomposition`, `StaticDecomposition` (first-match guard evaluation; pre-filters methods whose `estimatedCost`/`estimatedDuration` exceed `context.constraints()` before guard evaluation), `ForwardReasoningDecomposition` (SHOP-style forward reasoning — applies `PrimitiveTask.effect()` to projected state during planning), `LlmDecomposition` (recursive multi-level planning via `maxDepth` — default 1 = flat; subtask entries become `CompoundTask` nodes recursively decomposed; depth-aware prompts; hierarchical context enrichment), `HybridDecomposition` (static→LLM fallback with `staticFailureHint`; `maxDepth` pass-through constructors), `CapabilityDependencyDecomposition` (GOAP backward-chaining), `HeuristicDecomposition` (ranked method selection via pluggable `DecompositionHeuristic<T>` with backtracking on `NoMethodMatchedException`; context-carried decomposer propagates heuristic through `SequenceStrategy` children), `DecompositionHeuristic<T>` (`@FunctionalInterface` SPI — batch-native async method scoring, higher-score-is-better), `ScoredMethod<T>` (record: method + score), `StructuralCostHeuristic` (zero-LLM tree-walking cost estimation), `LlmDecompositionHeuristic` (online LLM method evaluation via `AgentProvider`), `CompositeHeuristic` (weighted normalized combination of multiple heuristics with completeness contract validation), `Tasks` (DSL: `primitive()`, `planned()`, `compound()`, `decompose()` factories), `OutputContract` (`@FunctionalInterface` — `nonNull()`, `type()`, `of()`, composable via `and()`), `NoMethodMatchedException` (carries `methodCount`) |
-| `agentic.activation` | Activation SPI: `ActivationRule<T>`, `ActivationContext`, `OnExplicitDispatch`, `MaxIterationsGuard` |
-| `agentic.aggregation` | Aggregation SPI: `AggregationStrategy<T>`, `AggregationResult` (sealed: Resolved, Partial, Deadlocked), `PassThrough`, `CollectAll`, `MajorityVote`, `AuctionAggregation` (English/Dutch iterative auction — `Bid`, `AuctionState`, `AuctionOutcome`, `BidExtractor` SPI, `AuctionType`) |
-| `agentic.channel` | Inter-agent channel infrastructure + supervisor observation: `ChannelBinding` (channelId + semantic), `ChannelConfig` (channelManager, dispatcher, semantic, protocols), `ChannelExecutionStrategy<T>` (sealed: Conversation, FanIn, Barrier), `ConversationChannelAdapter`, `DefaultConversationProjection`, `ChannelObserver<S>` (implements `MessageObserver` + `EventSource`; folds channel messages through `ChannelProjection<S>` via AtomicReference; `terminateWhen()`, `asTermination()` factory methods; builder for multi-channel observation), `ChannelTeardownListener` |
-| `agentic.coalition` | Coalition formation: `CoalitionProposal`, `CoalitionEvaluator` SPI, `CoalitionScore`, `CoalitionContext`, `CapabilityCoverageEvaluator` |
-| `agentic.intention` | Joint intentions (Bratman): `JointIntention` (form/activate/reconsider/drop/fulfill lifecycle), `IntentionMonitor` SPI, `ReconsiderationSignal`, `ReconsiderationReason`, `IntentionStatus` |
-| `agentic.belief` | Formal belief revision (AGM): `BeliefSet<T>` (expand/contract/revise), `Belief<T>` (with entrenchment ordering), `ConsistencyChecker<T>` SPI |
-| `agentic.termination` | Termination SPI: `TerminationCondition<T>` (composable via `or()`/`and()` with priority: Escalate > Failed > Complete > Continue), `TerminationDecision` (sealed: Continue, Complete, Failed, Escalate), `GoalReached`, `MaxIterationsTermination`, `JudgeConvergence`, `ConvergenceTermination` (bridges `ConvergencePolicy` → `TerminationCondition`) |
-| `agentic.model` | Execution model: `ExecutionModel<T>` (carries `PatternType`), `ExecutionDriver<T>`, `AbstractExecutionDriver`, `OrchestratedDriver`, `ChoreographedDriver` (two modes: legacy continuous-loop, event-driven via `EventSource` + `EventConcurrencyPolicy` + `BlockingQueue<DriverEvent>`; `signal()` for direct push; `cancel()` posts cancellation event to break `queue.take()`), `DriverEvent` (typed event record: source, timestamp, payload), `EventSource` (`@FunctionalInterface` SPI for event delivery with `Cancellation`, `merge()`, `ticker()` factories), `EventConcurrencyPolicy` (pluggable policy: `serialize()`, `coalesce()`, `coalesceBySource()`, composable via `.then()`), `AgentInvoker<T>` (handles ExternalAgent + ComposedAgent; `withFallback()` for composition), `ExecutionBackend<T>` (pluggable execution — `reactive()` default via `CancellableBackend`; `choreographed(policy, sources...)` for event-driven; `cancel()` default method for external cancellation), `PatternType` (SEQUENCE/PARALLEL/LOOP/CONDITIONAL workflow-shaped; SUPERVISOR/DEBATE/VOTING/HTN custom-driver), `ExecutionResult` (sealed: Completed, Failed, Escalated, Cancelled), `ExecutionState` (sealed: Idle, Running, WaitingForAgent, WaitingForEvent, Complete, Faulted, Cancelled), `ExecutionEventListener` |
-| `agentic.listener` | Accountability listeners: `OrchestrationEventType`, `EventLogListener` (operational audit via EventSink), `LedgerExecutionListener` (compliance audit via LedgerSink), `MetricsListener` (OTel metrics via Meter) |
-| `agentic.pattern` | Pattern DSL: `Patterns` entry point, `AbstractPatternBuilder`, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
-
-## Package: `io.casehub.agency.core.social.drive`
-
-Drive Architecture — intrinsic motivation system that reads existing social cognition orchestrator outputs and synthesises motivational signals along four axes. Follows a *compositor pattern*: `tick()` without `record()`, since drives consume derived state rather than accumulating raw signals. Personality modulation via `AgentDescriptor.disposition()` (eidos); mood modulation via `MoodOrchestrator.currentMood()`.
-
-| Class | What it does |
-|-------|-------------|
-| `DriveAxis` | Enum: CURIOSITY, COMPETENCE, AFFILIATION, AUTONOMY |
-| `DriveIntensity` | Record: per-axis intensity [0,1] with human-readable trigger provenance |
-| `DriveSource` | `@FunctionalInterface` SPI: `DriveIntensity evaluate(agentId, tenantId)`. Four implementations. |
-| `DriveProfile` | Record: composite motivational state — per-axis intensities, weighted composite, dominant drive, timestamp |
-| `DriveTick` | Sealed: `NoChange(reason)`, `Updated(previous, current, changed)` |
-| `DriveConfig` | Record: per-axis weights, change threshold, modulation parameters, intensity bounds. `defaults()` factory. |
-| `DriveOrchestrator` | `@ApplicationScoped` compositor lifecycle: `tick(agentId, tenantId, AgentDescriptor)` evaluates all sources, delegates to `DriveComposer`, caches `DriveProfile`. `currentDrives()` returns cached state. `curiosityDrive()`/`competenceDrive()`/`affiliationDrive()`/`autonomyDrive()` expose concrete sources (null when lambda fallback). Per-agent `ReentrantLock`. CDI constructor takes `Instance<MemoryHygieneOrchestrator>` (optional), `Instance<NarrativeOrchestrator>` (optional — narrative modulation via `NarrativeModulation.compute()`), source orchestrators, `DriveComposer`, `DriveConfig`. Drive sources constructed internally. Wired into `InnerLifeOrchestrator.doTick()` for lifecycle tick. |
-| `DriveComposer` | Modulation + composition algebra: mood modulation (PAD axes), personality modulation (disposition weight per axis), weighted composition, intensity clamping. Stateless. |
-| `CuriosityDrive` | `DriveSource` — reads `MemoryHygieneOrchestrator.knowledgeGaps()`, caches as `lastGaps()`. Intensity from low-retention memory count + consolidation group diversity. |
-| `CompetenceDrive` | `DriveSource` — reads `StrategyLearningOrchestrator.engagementTrend()`, caches as `lastTrend()`. Intensity from declining dimension ratio. |
-| `AffiliationDrive` | `DriveSource` — reads `UserModelOrchestrator.activeProfiles()`, caches as `lastProfiles()`. Intensity from neglected relationships (low familiarity or stale interaction). |
-| `AutonomyDrive` | `DriveSource` — reads `MentalModelOrchestrator.activeSnapshots()`, caches as `lastSnapshots()`. Intensity from high-confidence intention count across subjects. |
-
-## Package: `io.casehub.agency.core.social.goal`
-
-Autonomous goal proposal — Layer 2 of the autonomous intelligence stack. Translates intrinsic drive signals (from Drive Architecture, #129) into concrete `AgentGoal` proposals via per-axis heuristic mappers. Follows the *compositor pattern* (ADR-0001): `tick()` evaluates and caches, `currentProposals()` returns cached state, no side effects. The scheduler calls `GoalFormationService` (engine-api) separately to register proposals.
-
-| Class | What it does |
-|-------|-------------|
-| `DriveGoalMapper` | `@FunctionalInterface` SPI: `@Nullable DriveGoalProposal evaluate(agentId, tenantId, DriveIntensity)`. Per-axis goal mapping. |
-| `DriveGoalProposal` | Record: axis, goalName, goalDescription, formationReason, driveIntensity. Blocks-internal type. |
-| `GoalProposalTick` | Sealed: `NoChange(reason)`, `Proposed(newProposals, abandonedGoalNames)` |
-| `GoalProposalConfig` | Record: proposalThreshold, relevanceThreshold, maxDriveGoals, staleAfter, cooldown, failureAbandonmentThreshold. `defaults()` factory. |
-| `GoalProposalOrchestrator` | `@ApplicationScoped` compositor: `tick(agentId, tenantId, AgentDescriptor)` evaluates mappers, ranks by intensity, checks capacity and cooldown. `currentProposals()` returns cached state. Per-agent `ReentrantLock`. |
-| `CuriosityGoalMapper` | Reads `CuriosityDrive.lastGaps()`. Proposes "explore-knowledge-gaps". |
-| `CompetenceGoalMapper` | Reads `CompetenceDrive.lastTrend()`. Proposes "improve-{dimension}" for most declining. |
-| `AffiliationGoalMapper` | Reads `AffiliationDrive.lastProfiles()`. Proposes "reconnect-{subjectId}" for most neglected. |
-| `AutonomyGoalMapper` | Reads `AutonomyDrive.lastSnapshots()`. Proposes "reassess-{subjectId}" for most misaligned. |
-| `DriveGoalFormationStrategy` | `@FunctionalInterface` SPI: `@Nullable DriveGoalProposal propose(DriveGoalFormationContext)`. LLM-based alternative to heuristic mappers. |
-| `DriveGoalFormationContext` | Record: agentId, tenantId, axis, intensity, trigger, existingGoals, remainingCapacity. |
-| `LlmDriveGoalFormationStrategy` | `DriveGoalFormationStrategy` implementation via `AgentProvider`. Drive-specific prompt framing (motivational drive analyst). Graceful degradation on LLM failure. |
+| `core` | Foundation types: `AgentRef` (sealed: WorkerAgent, ChannelAgent, HumanAgent, ExternalAgent, ComposedAgent; extends `ExecutorRef` — each variant implements `name()`/`description()`), `AgentResult`, `RoutingCandidate`, `FailurePolicy`, `AgentCardSupport` (shared card-building via `ExecutorRef`; no more pattern matching). **Uni policy:** SPIs return direct types (not Uni) — virtual threads make blocking free. Only `AgentInvoker.invoke()` (concurrent dispatch) and API boundaries (`execute()`, `converse()`) keep Uni. |
+| `orchestration.routing` | Routing SPI: `RoutingStrategy<T>` (`RoutingDecision route(RoutingContext<T>)` — direct return, no Uni), `RoutingDecision` (sealed: Selected, Unresolvable, Escalate), `FirstMatchRouting`, `RoundRobinRouting`, `SequentialRouting`, `LlmSelectedRouting` |
+| `orchestration.decomposition` | Decomposition SPI: `DecompositionStrategy<T>`, `TaskNode` (sealed: LeafTask \| CompoundTask; LeafTask non-sealed: PrimitiveTask, PlannedTask; both carry `id`, `createdAt`, `status()` → PENDING, `executor()`, optional `OutputContract`), `DecompositionMethod`, `DecompositionContext`, `AgenticDecompositionContext` (agency's `DecompositionContext<T>` impl — carries `agents`, `planningConstraints`; overrides `constraints()`; nullable fields default safely in compact constructor), `IdentityDecomposition`, `StaticDecomposition` (first-match guard evaluation; pre-filters methods whose `estimatedCost`/`estimatedDuration` exceed `context.constraints()` before guard evaluation), `ForwardReasoningDecomposition` (SHOP-style forward reasoning — applies `PrimitiveTask.effect()` to projected state during planning), `LlmDecomposition` (recursive multi-level planning via `maxDepth` — default 1 = flat; subtask entries become `CompoundTask` nodes recursively decomposed; depth-aware prompts; hierarchical context enrichment), `HybridDecomposition` (static→LLM fallback with `staticFailureHint`; `maxDepth` pass-through constructors), `CapabilityDependencyDecomposition` (GOAP backward-chaining), `HeuristicDecomposition` (ranked method selection via pluggable `DecompositionHeuristic<T>` with backtracking on `NoMethodMatchedException`; context-carried decomposer propagates heuristic through `SequenceStrategy` children), `DecompositionHeuristic<T>` (`@FunctionalInterface` SPI — batch-native async method scoring, higher-score-is-better), `ScoredMethod<T>` (record: method + score), `StructuralCostHeuristic` (zero-LLM tree-walking cost estimation), `LlmDecompositionHeuristic` (online LLM method evaluation via `AgentProvider`), `CompositeHeuristic` (weighted normalized combination of multiple heuristics with completeness contract validation), `Tasks` (DSL: `primitive()`, `planned()`, `compound()`, `decompose()` factories), `OutputContract` (`@FunctionalInterface` — `nonNull()`, `type()`, `of()`, composable via `and()`), `NoMethodMatchedException` (carries `methodCount`) |
+| `orchestration.activation` | Activation SPI: `ActivationRule<T>`, `ActivationContext`, `OnExplicitDispatch`, `MaxIterationsGuard` |
+| `orchestration.aggregation` | Aggregation SPI: `AggregationStrategy<T>`, `AggregationResult` (sealed: Resolved, Partial, Deadlocked), `PassThrough`, `CollectAll`, `MajorityVote`, `AuctionAggregation` (English/Dutch iterative auction — `Bid`, `AuctionState`, `AuctionOutcome`, `BidExtractor` SPI, `AuctionType`) |
+| `communication.channel` | Inter-agent channel infrastructure + supervisor observation: `ChannelBinding` (channelId + semantic), `ChannelConfig` (channelManager, dispatcher, semantic, protocols), `ChannelExecutionStrategy<T>` (sealed: Conversation, FanIn, Barrier), `ConversationChannelAdapter`, `DefaultConversationProjection`, `ChannelObserver<S>` (implements `MessageObserver` + `EventSource`; folds channel messages through `ChannelProjection<S>` via AtomicReference; `terminateWhen()`, `asTermination()` factory methods; builder for multi-channel observation), `ChannelTeardownListener` |
+| `deliberation.coalition` | Coalition formation: `CoalitionProposal`, `CoalitionEvaluator` SPI, `CoalitionScore`, `CoalitionContext`, `CapabilityCoverageEvaluator` |
+| `deliberation.intention` | Joint intentions (Bratman): `JointIntention` (form/activate/reconsider/drop/fulfill lifecycle), `IntentionMonitor` SPI, `ReconsiderationSignal`, `ReconsiderationReason`, `IntentionStatus` |
+| `deliberation.belief` | Formal belief revision (AGM): `BeliefSet<T>` (expand/contract/revise), `Belief<T>` (with entrenchment ordering), `ConsistencyChecker<T>` SPI |
+| `orchestration.termination` | Termination SPI: `TerminationCondition<T>` (composable via `or()`/`and()` with priority: Escalate > Failed > Complete > Continue), `TerminationDecision` (sealed: Continue, Complete, Failed, Escalate), `GoalReached`, `MaxIterationsTermination`, `JudgeConvergence`, `ConvergenceTermination` (bridges `ConvergencePolicy` → `TerminationCondition`) |
+| `orchestration.execution` | Execution model: `ExecutionModel<T>` (carries `PatternType`), `ExecutionDriver<T>`, `AbstractExecutionDriver`, `OrchestratedDriver`, `ChoreographedDriver` (two modes: legacy continuous-loop, event-driven via `EventSource` + `EventConcurrencyPolicy` + `BlockingQueue<DriverEvent>`; `signal()` for direct push; `cancel()` posts cancellation event to break `queue.take()`), `DriverEvent` (typed event record: source, timestamp, payload), `EventSource` (`@FunctionalInterface` SPI for event delivery with `Cancellation`, `merge()`, `ticker()` factories), `EventConcurrencyPolicy` (pluggable policy: `serialize()`, `coalesce()`, `coalesceBySource()`, composable via `.then()`), `AgentInvoker<T>` (handles ExternalAgent + ComposedAgent; `withFallback()` for composition), `ExecutionBackend<T>` (pluggable execution — `reactive()` default via `CancellableBackend`; `choreographed(policy, sources...)` for event-driven; `cancel()` default method for external cancellation), `PatternType` (SEQUENCE/PARALLEL/LOOP/CONDITIONAL workflow-shaped; SUPERVISOR/DEBATE/VOTING/HTN custom-driver), `ExecutionResult` (sealed: Completed, Failed, Escalated, Cancelled), `ExecutionState` (sealed: Idle, Running, WaitingForAgent, WaitingForEvent, Complete, Faulted, Cancelled), `ExecutionEventListener` |
+| `orchestration.listener` | Accountability listeners: `OrchestrationEventType`, `EventLogListener` (operational audit via EventSink), `LedgerExecutionListener` (compliance audit via LedgerSink), `MetricsListener` (OTel metrics via Meter) |
+| `orchestration.pattern` | Pattern DSL: `Patterns` entry point, `AbstractPatternBuilder`, 8 builders (Supervisor, Sequence, Loop, Parallel, Voting, Debate, Conditional, HTN) |
 
 ## Package: `io.casehub.agency.governance.routing`
 
@@ -527,7 +469,7 @@ Grounded observation rendering for LLM agents. Per-entity affordance chains (ide
 
 ## Sub-package: `io.casehub.agency.perception.llm`
 
-LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisation` package because it depends on `AgentProvider` (platform-agent-api) and Mutiny.
+LLM-backed content summarisation. Separated from the pure-Java `agency.summarisation` package because it depends on `AgentProvider` (platform-agent-api) and Mutiny.
 
 | Class | What it does |
 |-------|-------------|
@@ -598,12 +540,12 @@ sherpa-onnx speech implementation via Java FFM/Panama (JDK 22+). Provides `Speec
 **Provided:** `io.smallrye.reactive:mutiny`, `casehub-platform-agent-api`, `casehub-platform-api`, `casehub-engine-ledger`, `casehub-ledger-api`, `casehub-neocortex-memory-api`, `casehub-neocortex-rag-api`, `casehub-work-progress-api`, `io.opentelemetry:opentelemetry-api`
 **Test:** `casehub-qhorus`, `casehub-qhorus-testing`, `casehub-engine`, `casehub-engine-testing`, `assertj`, `mockito`, `awaitility`, `io.opentelemetry:opentelemetry-sdk-testing`
 
-**No Jandex index.** blocks does not include a Jandex index — its CDI beans are not auto-discovered by Quarkus. Consumers that need blocks' CDI beans (routing strategies, channel summarisers) must opt in:
+**No Jandex index.** agency does not include a Jandex index — its CDI beans are not auto-discovered by Quarkus. Consumers that need agency's CDI beans (routing strategies, channel summarisers) must opt in:
 ```properties
 quarkus.index-dependency.casehub-agency.group-id=io.casehub
 quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
 ```
-Consumers that only use blocks' pure types (records, sealed interfaces, plain classes) need no configuration.
+Consumers that only use agency's pure types (records, sealed interfaces, plain classes) need no configuration.
 
 **cloudevents module:**
 **Compile:** `casehub-agency-summarisation-api`, `io.cloudevents:cloudevents-api`, `io.cloudevents:cloudevents-core`
@@ -635,7 +577,7 @@ Consumers that only use blocks' pure types (records, sealed interfaces, plain cl
 
 | Repo | What it uses |
 |------|-------------|
-| casehub-drafthouse | Channel + conversation blocks — DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, ReviewChannelProjection uses `ConversationFold`/`ConversationState`, `ChannelAgentDispatcher` subclass with debate-specific error dispatch, `BoundedProjectionDecorator` for round bounding, `ContextTracker` for LLM window tracking |
+| casehub-drafthouse | Channel + conversation — DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, ReviewChannelProjection uses `ConversationFold`/`ConversationState`, `ChannelAgentDispatcher` subclass with debate-specific error dispatch, `BoundedProjectionDecorator` for round bounding, `ContextTracker` for LLM window tracking |
 | casehub-engine | Oversight: `GateOutcome`, `OversightGateService`, `ReactiveOversightGateService` (NoOp impls), `ReactiveActionRiskClassifier`, `RiskDecision`, `ClassificationContext` (handler + health check) |
 | casehub-openclaw | Oversight: `ActionRiskClassifier`, `RiskClassifier`, `RiskDecision`, `ClassificationContext`, `GateOutcome` (concrete OversightGateService impl) |
 | casehub-aml | Routing: `TrustRoutingPolicyKeys`, `TrustRoutingPolicyResolver`, `DoublePreference`, `IntPreference`. Oversight: `ActionRiskClassifier`, `RiskClassifier`, `RiskDecision`, `ClassificationContext` |
@@ -646,46 +588,46 @@ Consumers that only use blocks' pure types (records, sealed interfaces, plain cl
 | casehub-iot | Oversight: `ActionRiskClassifier`, `RiskClassifier`, `RiskDecision`, `ClassificationContext` |
 | casehub-quarkmind | Summarisation: `SummarisationRunner`, `EventStreamBus`, `EventAccumulator`, `WindowPolicy`, `Summariser`, `EventLevel`, `LevelEvent` — SC2 game event hierarchy (L2→L3→L4 pipeline via `SummarisationLifecycle`, `GamePhaseSummariser`, `GameArcSummariser`) |
 
-## Blocks Scope Criteria
+## Agency Scope Criteria
 
-A pattern belongs in blocks if it meets at least one of these criteria:
+A pattern belongs in agency if it meets at least one of these criteria:
 1. **Needs an LLM in the loop** — the pattern involves LLM invocation, prompt construction, or LLM-driven decision-making
 2. **Uses classical AI** — classical planning, Bayesian reasoning, CEP (complex event processing), or similar
 3. **Requires integration with foundational platform parts** — the pattern composes across qhorus, engine, work, or eidos APIs in a way that would otherwise be duplicated by every consumer
 
-**What does NOT belong in blocks:**
+**What does NOT belong in agency:**
 - Small isolated utilities (backoff computation, rate limiters, CloudEvent adapters) → stay in platform or engine
 - Pure SPI unifications (e.g. ProvisionerConfigRegistry) → stay in the API module that owns the provisioning lifecycle (engine-api)
 - Domain-specific logic that happens to be duplicated but doesn't involve AI or foundational integration
 
-**The test:** if removing the LLM/AI/integration aspect leaves a generic utility, it belongs in platform. If removing the domain-specific aspect leaves a reusable AI-integration pattern, it belongs in blocks.
+**The test:** if removing the LLM/AI/integration aspect leaves a generic utility, it belongs in platform. If removing the domain-specific aspect leaves a reusable AI-integration pattern, it belongs in agency.
 
 ## Trust Routing Architecture
 
-The trust routing system spans four layers — blocks owns policy configuration AND AI-powered routing strategies.
+The trust routing system spans four layers — agency owns policy configuration AND AI-powered routing strategies.
 
 | Layer | Owner | What it does |
 |-------|-------|-------------|
 | Score computation | **ledger** | `TrustScoreRoutingPublisher` computes trust scores from ledger entries and publishes them. The `trust-score-routing` package owns all score payloads and events. |
-| Policy configuration | **blocks** (routing package) + **engine-api** (`TrustRoutingPolicyProvider` SPI) | `TrustRoutingPolicyKeys` + `TrustRoutingPolicyResolver` provide the shared preference-to-policy loading. Domain repos implement `TrustRoutingPolicyProvider` using these utilities. |
+| Policy configuration | **agency** (routing package) + **engine-api** (`TrustRoutingPolicyProvider` SPI) | `TrustRoutingPolicyKeys` + `TrustRoutingPolicyResolver` provide the shared preference-to-policy loading. Domain repos implement `TrustRoutingPolicyProvider` using these utilities. |
 | Classical strategy execution | **engine** | `TrustWeightedAgentStrategy` (engine-ledger) applies trust scores. `SemanticAgentRoutingStrategy` (engine-ai) adds embedding-based re-ranking. Strategies stay where their differentiating dependency lives. |
-| AI-powered strategy execution | **blocks** (routing.agent package) | `LlmAgentRoutingStrategy` (LLM reasoning) and `CbrAgentRoutingStrategy` (case-based evidence). Both optionally compose with trust classification via `Instance<TrustCandidateClassifier>`. |
+| AI-powered strategy execution | **agency** (routing.agent package) | `LlmAgentRoutingStrategy` (LLM reasoning) and `CbrAgentRoutingStrategy` (case-based evidence). Both optionally compose with trust classification via `Instance<TrustCandidateClassifier>`. |
 
 Domain repos (aml, devtown, clinical, life, ops) implement `TrustRoutingPolicyProvider` from engine-api — they configure policy parameters, not compute scores or execute routing.
 
 ## Consolidation Epic
 
-Epic #28 tracks extraction of shared patterns from domain repos into blocks. Each child issue covers a distinct pattern duplicated across 2+ repos.
+Epic #28 tracks extraction of shared patterns from domain repos into agency. Each child issue covers a distinct pattern duplicated across 2+ repos.
 
 | # | Title | Scale | Complexity | Ready? | Destination | Migrates from | Downstream consumers |
 |---|-------|-------|------------|--------|-------------|---------------|---------------------|
-| #17 | Trust routing YAML | M | Med | **Done** | blocks | aml, devtown, clinical, life, ops, soc | aml, devtown, clinical, life, ops, soc, fsitrading |
-| #22 | Debate channel infrastructure | L | High | **Done** | blocks | drafthouse | drafthouse, devtown, clinical, aml, claudony |
-| #23 | Oversight gate lifecycle + risk classification | L | High | **Done** | blocks | openclaw, engine-api | openclaw, aml, soc, life, devtown, clinical, iot, claudony |
+| #17 | Trust routing YAML | M | Med | **Done** | agency | aml, devtown, clinical, life, ops, soc | aml, devtown, clinical, life, ops, soc, fsitrading |
+| #22 | Debate channel infrastructure | L | High | **Done** | agency | drafthouse | drafthouse, devtown, clinical, aml, claudony |
+| #23 | Oversight gate lifecycle + risk classification | L | High | **Done** | agency | openclaw, engine-api | openclaw, aml, soc, life, devtown, clinical, iot, claudony |
 | #24 | Universal pluggable routing strategy | L | High | **Moved → engine#634** | engine | engine, work | engine, work, qhorus, eidos |
-| #30 | AI routing strategy impls (trust, LLM, CBR) | M | Med | **Done** | blocks | — | engine, domain repos |
+| #30 | AI routing strategy impls (trust, LLM, CBR) | M | Med | **Done** | agency | — | engine, domain repos |
 | #25 | Worker data coordination (DataExchange/DataChannel) | L | High | **Moved → engine#633** | engine | engine | engine, workers, desiredstate |
-| #27 | Layered event summarisation | M | Med | **Done** | blocks | quarkmind | quarkmind, iot, aml, clinical |
+| #27 | Layered event summarisation | M | Med | **Done** | agency | quarkmind | quarkmind, iot, aml, clinical |
 
 ## Cross-Repo Scanning
 
@@ -699,8 +641,8 @@ This opens all 26 repos in a single IntelliJ window with full cross-project code
 
 When implementing consolidation work (epic #28), commits to peer repos (aml, devtown, life, etc.) on main are expected and approved. This is an exception to the normal "do not commit to peer repos" rule — consolidation by definition spans repos. Always:
 - Verify all affected repos are on main before starting
-- Install blocks to local Maven repo before compiling consumers (`mvn install -DskipTests`)
-- Commit each repo separately with meaningful messages tagged with the blocks issue (`Refs casehubio/agency#N`)
+- Install agency to local Maven repo before compiling consumers (`mvn install -DskipTests`)
+- Commit each repo separately with meaningful messages tagged with the agency issue (`Refs casehubio/agency#N`)
 - Push all repos after all commits succeed
 
 ## Extraction Plan

@@ -12,26 +12,26 @@ Single module -- `casehub-agency` is a flat library, not a multi-module reactor.
 
 | Path | Contents |
 |------|----------|
-| `src/main/java/io/casehub/agency/channel/` | Channel utility blocks -- message meta, context tracking, bounded projection, agent dispatch |
-| `src/main/java/io/casehub/agency/channel/summary/` | Channel summary integration -- `ContentSummariser<Message>` wiring + `SummaryUpdateHook` adapter |
-| `src/main/java/io/casehub/agency/conversation/` | Structured conversation protocol -- projections, fold state, rendering, epistemic common ground, convergence detection (27 types) |
-| `src/main/java/io/casehub/agency/agentic/` | Compositional agentic orchestration -- five SPIs, execution drivers, pattern builders (ten sub-packages) |
-| `src/main/java/io/casehub/agency/agentic/activation/` | Activation SPI: `ActivationRule`, `ActivationContext`, `Activation` factory, implementations |
-| `src/main/java/io/casehub/agency/agentic/aggregation/` | Aggregation SPI: `AggregationStrategy`, `AggregationContext`, `AggregationResult`, `Aggregation` factory, implementations |
-| `src/main/java/io/casehub/agency/agentic/decomposition/` | Decomposition: `Decomposition`/`Tasks` factories, strategies, heuristics, task types (21 files) |
-| `src/main/java/io/casehub/agency/agentic/listener/` | Accountability listeners: `EventLogListener`, `LedgerExecutionListener`, `MetricsListener`, `OrchestrationEventType` |
-| `src/main/java/io/casehub/agency/agentic/model/` | Execution model: drivers, invokers, backends, state machine (11 files) |
-| `src/main/java/io/casehub/agency/agentic/pattern/` | Pattern DSL: `Patterns` entry point, 8 builders + `AbstractPatternBuilder` base class |
-| `src/main/java/io/casehub/agency/agentic/plan/` | `ExecutionPlan<T>` -- DAG record with cycle validation |
-| `src/main/java/io/casehub/agency/agentic/routing/` | Routing SPI: `RoutingStrategy`, `RoutingDecision`, `Routing` factory, 4 implementations + `StageGate`/`StageAwareCandidateSupplier` |
-| `src/main/java/io/casehub/agency/agentic/termination/` | Termination SPI: `TerminationCondition`, `TerminationDecision`, `Termination` factory, 4 implementations |
-| `src/main/java/io/casehub/agency/routing/` | Trust routing audit types -- compliance records for routing decisions |
-| `src/main/java/io/casehub/agency/routing/agent/` | AI-powered AgentRoutingStrategy implementations -- LLM-reasoned and CBR-evidence agent selection (15 files) |
-| `src/main/java/io/casehub/agency/summarisation/` | Temporal abstraction framework + content summarisation SPI -- event levels, windowed accumulation, pluggable summarisation (14 files) |
-| `src/main/java/io/casehub/agency/summarisation/llm/` | LLM-backed `ContentSummariser<T>` -- generic synthesis via `AgentProvider` |
-| `src/main/java/io/casehub/agency/summarisation/observation/` | Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts (4 files) |
-| `src/main/java/io/casehub/agency/summarisation/observation/affordance/` | Affordance grounding -- per-entity observation rendering for LLM agents (5 files) |
-| `src/main/java/io/casehub/agency/agentic/social/prompt/` | Social cognition speech integration -- SocialAvatarCognition, SocialPromptAssembler, ProactiveSpeechSupport, AttentionPromptSection, 10 PromptSection implementations |
+| `agency-core/src/main/java/io/casehub/agency/communication/dispatch/` | Channel dispatch utilities -- message meta, context tracking, bounded projection, agent dispatch |
+| `agency-core/src/main/java/io/casehub/agency/communication/channel/summary/` | Channel summary integration -- `ContentSummariser<Message>` wiring + `SummaryUpdateHook` adapter |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/` | Structured conversation protocol -- projections, fold state, rendering, epistemic common ground, convergence detection (27 types) |
+| `agency-core/src/main/java/io/casehub/agency/core/` | Compositional agentic orchestration -- five SPIs, execution drivers, pattern builders (ten sub-packages) |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/activation/` | Activation SPI: `ActivationRule`, `ActivationContext`, `Activation` factory, implementations |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/aggregation/` | Aggregation SPI: `AggregationStrategy`, `AggregationContext`, `AggregationResult`, `Aggregation` factory, implementations |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/decomposition/` | Decomposition: `Decomposition`/`Tasks` factories, strategies, heuristics, task types (21 files) |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/listener/` | Accountability listeners: `EventLogListener`, `LedgerExecutionListener`, `MetricsListener`, `OrchestrationEventType` |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/execution/` | Execution model: drivers, invokers, backends, state machine (11 files) |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/pattern/` | Pattern DSL: `Patterns` entry point, 8 builders + `AbstractPatternBuilder` base class |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/plan/` | `ExecutionPlan<T>` -- DAG record with cycle validation |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/routing/` | Routing SPI: `RoutingStrategy`, `RoutingDecision`, `Routing` factory, 4 implementations + `StageGate`/`StageAwareCandidateSupplier` |
+| `agency-core/src/main/java/io/casehub/agency/orchestration/termination/` | Termination SPI: `TerminationCondition`, `TerminationDecision`, `Termination` factory, 4 implementations |
+| `agency-core/src/main/java/io/casehub/agency/governance/routing/` | Trust routing audit types -- compliance records for routing decisions |
+| `agency-core/src/main/java/io/casehub/agency/governance/routing/agent/` | AI-powered AgentRoutingStrategy implementations -- LLM-reasoned and CBR-evidence agent selection (15 files) |
+| `agency-core/src/main/java/io/casehub/agency/summarisation/` | Temporal abstraction framework + content summarisation SPI -- event levels, windowed accumulation, pluggable summarisation (14 files) |
+| `agency-core/src/main/java/io/casehub/agency/perception/llm/` | LLM-backed `ContentSummariser<T>` -- generic synthesis via `AgentProvider` |
+| `agency-core/src/main/java/io/casehub/agency/perception/observation/` | Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts (4 files) |
+| `agency-core/src/main/java/io/casehub/agency/perception/observation/affordance/` | Affordance grounding -- per-entity observation rendering for LLM agents (5 files) |
+| `agency-core/src/main/java/io/casehub/agency/social/cognition/` | Social cognition speech integration -- SocialAvatarCognition, SocialPromptAssembler, ProactiveSpeechSupport, AttentionPromptSection, 10 PromptSection implementations |
 
 Tests mirror source layout under `src/test/java/`. Integration test examples exist in:
 - `summarisation/examples/clinical/` -- L1-L4 clinical pipeline (vital readings -> care phases -> narratives)
@@ -217,7 +217,7 @@ Terminal consumer of the summarisation pipeline -- tiered, demand-driven renderi
 
 ### Drive Architecture (Compositor Pattern)
 
-The drive sub-package (`agentic.social.drive`) follows a *compositor pattern* that deliberately breaks the universal `record()` + `tick()` contract used by all six social cognition orchestrators. Drives consume derived state from other orchestrators rather than accumulating raw signals, so `record()` has nothing to accumulate.
+The drive sub-package (`social.drive`) follows a *compositor pattern* that deliberately breaks the universal `record()` + `tick()` contract used by all six social cognition orchestrators. Drives consume derived state from other orchestrators rather than accumulating raw signals, so `record()` has nothing to accumulate.
 
 **Lifecycle:** `DriveOrchestrator.tick(agentId, tenantId, AgentDescriptor)` evaluates four `DriveSource` implementations, delegates modulation and composition to `DriveComposer`, and caches the resulting `DriveProfile`. `currentDrives(agentId, tenantId)` returns the cached state. Per-agent `ReentrantLock` guards `tick()` -- same concurrency model as other orchestrators.
 
@@ -232,14 +232,14 @@ The drive sub-package (`agentic.social.drive`) follows a *compositor pattern* th
 **Observation rendering:** `CognitiveObservationSections.motivationalStateSection(DriveProfile)` renders the drive profile as an `ObservationSection.ItemList`. Per-axis items show intensity (1dp) and trigger provenance. Axes below 0.05 intensity are filtered. Downstream apps include this section in their `WorldObservationProvider` implementation.
 
 **Upstream API additions for drive sources:**
-- `MemoryHygieneOrchestrator.knowledgeGaps()` → `KnowledgeGapSummary` (in `blocks.memory`)
-- `StrategyLearningOrchestrator.engagementTrend()` → `EngagementTrend` (in `blocks.agentic.social`)
+- `MemoryHygieneOrchestrator.knowledgeGaps()` → `KnowledgeGapSummary` (in `social.memory`)
+- `StrategyLearningOrchestrator.engagementTrend()` → `EngagementTrend` (in `social.cognition`)
 - `UserModelOrchestrator.activeProfiles()` → cross-subject profile aggregation
 - `MentalModelOrchestrator.activeSnapshots()` → cross-subject mental model aggregation
 
 ### Goal Proposal (Compositor Pattern)
 
-The goal sub-package (`agentic.social.goal`) is Layer 2 of the autonomous intelligence stack. It translates drive signals into concrete `AgentGoal` proposals that the engine's existing goal lifecycle can decompose and execute.
+The goal sub-package (`social.goal`) is Layer 2 of the autonomous intelligence stack. It translates drive signals into concrete `AgentGoal` proposals that the engine's existing goal lifecycle can decompose and execute.
 
 **Compositor guarantee:** `GoalProposalOrchestrator.tick()` evaluates mappers, caches proposals, and returns the result -- no side effects. The scheduler reads `currentProposals()` (or the tick result) and calls `GoalFormationService.propose()` (engine-api) to register goals. This enables inspection of proposals before registration and aligns with the engine's `autoApprove` governance.
 
@@ -287,11 +287,11 @@ Layer 3b -- collective behaviors emerging from multi-agent interaction.
 
 ### Social Cognition Speech Integration
 
-The prompt sub-package (`agentic.social.prompt`) wires all social cognition orchestrators into the speech pipeline. Three-layer architecture: speech-api defines the SPIs, blocks provides the integration, speech-ws consumes via `Instance<>`.
+The prompt sub-package (`social.cognition`) wires all social cognition orchestrators into the speech pipeline. Three-layer architecture: speech-api defines the SPIs, agency provides the integration, speech-ws consumes via `Instance<>`.
 
 **AvatarCognition SPI** (speech-api): composition root with five methods -- `wrapAssembler()` decorates a base `SpeechPromptAssembler` with social context, `initialize()` hydrates orchestrator state at session open, `tick()` processes accumulated signals across all orchestrators, `evaluateProactive()` checks for proactive initiation, `recordInteraction()` dispatches per-turn signals.
 
-**SocialAvatarCognition** (`@ApplicationScoped`): the blocks-side implementation. Injects direct orchestrators (Mood, Drives, MentalModel, UserModel, Strategy) and optional orchestrators via `Instance<>` (Narrative, Goals, InnerLife, AgentRegistry, CognitiveAttentionMediator). Constructs `CognitionCore` with all dependencies. `buildSections()` delegates to `CognitionCore.promptSections()`. Exception isolation: a failing section is logged and skipped, not propagated.
+**SocialAvatarCognition** (`@ApplicationScoped`): the agency-side implementation. Injects direct orchestrators (Mood, Drives, MentalModel, UserModel, Strategy) and optional orchestrators via `Instance<>` (Narrative, Goals, InnerLife, AgentRegistry, CognitiveAttentionMediator). Constructs `CognitionCore` with all dependencies. `buildSections()` delegates to `CognitionCore.promptSections()`. Exception isolation: a failing section is logged and skipped, not propagated.
 
 **PromptSection lifecycle:** Sections are plain classes (not CDI beans) constructed by `CognitionCore.promptSections()`. Each implements `@Nullable contribute(PromptContext)` -- the context carries `agentId`, `tenantId`, and `@Nullable subjectId` (resolved per-turn by `SpeechSession` via speaker identification). Subject-scoped sections (`MentalModelPromptSection`, `UserModelPromptSection`) return null when `subjectId` is null (no identified speaker).
 
@@ -311,37 +311,37 @@ When adding a new `SignalCategory` in neocortex, add it to the appropriate `Atte
 
 ## Trust Routing Architecture
 
-The trust routing system spans four layers -- blocks owns AI-powered routing strategies and compliance audit types.
+The trust routing system spans four layers -- agency owns AI-powered routing strategies and compliance audit types.
 
 | Layer | Owner | What it does |
 |-------|-------|-------------|
 | Score computation | **ledger** | `TrustScoreRoutingPublisher` computes trust scores from ledger entries and publishes them. |
 | Policy configuration | **engine-api** | `TrustRoutingPolicyProvider` SPI + `TrustRoutingPolicyKeys` + `TrustRoutingPolicyResolver`. Domain repos implement the provider. |
 | Classical strategy execution | **engine** | `TrustWeightedAgentStrategy` (engine-ledger) applies trust scores. `SemanticAgentRoutingStrategy` (engine-ai) adds embedding-based re-ranking. |
-| AI-powered strategy execution | **blocks** (routing.agent) | `LlmAgentRoutingStrategy` (LLM reasoning), `CbrAgentRoutingStrategy` (case-based evidence). Both optionally compose with trust classification via `Instance<TrustCandidateClassifier>`. |
-| Compliance audit types | **blocks** (routing) | `RoutingDecisionRecord`, `TrustRoutingRequirement`, `RequirementStatus` -- audit trail records. |
+| AI-powered strategy execution | **agency** (routing.agent) | `LlmAgentRoutingStrategy` (LLM reasoning), `CbrAgentRoutingStrategy` (case-based evidence). Both optionally compose with trust classification via `Instance<TrustCandidateClassifier>`. |
+| Compliance audit types | **agency** (routing) | `RoutingDecisionRecord`, `TrustRoutingRequirement`, `RequirementStatus` -- audit trail records. |
 
 Domain repos (aml, devtown, clinical, life, ops) implement `TrustRoutingPolicyProvider` from engine-api -- they configure policy parameters, not compute scores or execute routing.
 
 ## Consolidation Epic
 
-Epic #28 tracks extraction of shared patterns from domain repos into blocks.
+Epic #28 tracks extraction of shared patterns from domain repos into agency.
 
 | # | Title | Status | Destination |
 |---|-------|--------|-------------|
-| #17 | Trust routing YAML | Done | blocks |
-| #22 | Debate channel infrastructure | Done | blocks |
+| #17 | Trust routing YAML | Done | agency |
+| #22 | Debate channel infrastructure | Done | agency |
 | #23 | Oversight gate lifecycle + risk classification | Done | engine-api / openclaw |
 | #24 | Universal pluggable routing strategy | Moved -> engine#634 | engine |
-| #30 | AI routing strategy impls (trust, LLM, CBR) | Done | blocks |
+| #30 | AI routing strategy impls (trust, LLM, CBR) | Done | agency |
 | #25 | Worker data coordination (DataExchange/DataChannel) | Moved -> engine#633 | engine |
-| #27 | Layered event summarisation | Done | blocks |
+| #27 | Layered event summarisation | Done | agency |
 
 ## Depended On By
 
 | Repo | What it uses |
 |------|-------------|
-| casehub-drafthouse | Channel + conversation blocks -- DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, `ChannelAgentDispatcher`, `BoundedProjectionDecorator`, `ContextTracker` |
+| casehub-drafthouse | Channel + conversation -- DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, `ChannelAgentDispatcher`, `BoundedProjectionDecorator`, `ContextTracker` |
 | casehub-engine | `ExecutionModel`, `ExecutionDriver`, `ExecutionResult`, `AgentRef`, `RoutingCandidate`, agentic SPIs |
 | casehub-quarkmind | Summarisation: `SummarisationRunner`, `EventStreamBus`, `EventAccumulator`, `WindowPolicy`, `Summariser`, `EventLevel`, `LevelEvent` |
 

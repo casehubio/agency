@@ -15,19 +15,19 @@ Includes a full agentic orchestration framework with DAG-based execution plans, 
 
 ## Scope Criteria
 
-A pattern belongs in blocks if it meets at least one of these criteria:
+A pattern belongs in agency if it meets at least one of these criteria:
 
 1. **Needs an LLM in the loop** -- the pattern involves LLM invocation, prompt construction, or LLM-driven decision-making
 2. **Uses classical AI** -- classical planning, Bayesian reasoning, CEP (complex event processing), or similar
-3. **Requires integration across foundational platform parts that the consuming module does not already depend on** -- the pattern composes across qhorus, engine, work, or eidos APIs in combinations that would otherwise force every consumer to take on new cross-module dependencies. If all dependencies are already available in the consuming module's API tier, the type belongs in that API module, not blocks.
+3. **Requires integration across foundational platform parts that the consuming module does not already depend on** -- the pattern composes across qhorus, engine, work, or eidos APIs in combinations that would otherwise force every consumer to take on new cross-module dependencies. If all dependencies are already available in the consuming module's API tier, the type belongs in that API module, not agency.
 
-**The test:** if removing the LLM/AI/integration aspect leaves a generic utility, it belongs in platform. If removing the domain-specific aspect leaves a reusable AI-integration pattern, it belongs in blocks.
+**The test:** if removing the LLM/AI/integration aspect leaves a generic utility, it belongs in platform. If removing the domain-specific aspect leaves a reusable AI-integration pattern, it belongs in agency.
 
 ## Packages
 
 ### `io.casehub.agency.communication.dispatch`
 
-Channel utility blocks -- message metadata encoding, context tracking, bounded projection, and agent dispatch coordination.
+Channel dispatch utilities -- message metadata encoding, context tracking, bounded projection, and agent dispatch coordination.
 
 | Class | Type | What it does |
 |-------|------|-------------|
@@ -415,7 +415,7 @@ AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipel
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `LlmAgentRoutingStrategy` | class (@ApplicationScoped) | Strategy id: `"llm"`. LLM reasoning about which candidate best fits the task. Composable prompt enrichment via `RoutingPromptAssembler` with configurable char budget (`casehub.blocks.routing.llm.prompt-budget-chars`, default: unlimited). Trust filtering via `RoutingSupport.applyTrustFilter()`. |
+| `LlmAgentRoutingStrategy` | class (@ApplicationScoped) | Strategy id: `"llm"`. LLM reasoning about which candidate best fits the task. Composable prompt enrichment via `RoutingPromptAssembler` with configurable char budget (`casehub.agency.routing.llm.prompt-budget-chars`, default: unlimited). Trust filtering via `RoutingSupport.applyTrustFilter()`. |
 | `CbrAgentRoutingStrategy` | class (@ApplicationScoped) | Strategy id: `"cbr"`. Case-based evidence with similarity-weighted scoring via `ExperienceAnalyser.workerSuccessRates()`. Falls back to `AgentGraphQuery.topAgentsByOutcome()`, then `TrustCandidateClassifier.decide`. |
 | `PlanCompositionAnalyser` | class (@ApplicationScoped) | `RoutingSignalProvider` (id: `"plan-composition"`). Scores candidates based on case-level outcomes in multi-step plans (planTrace.size() >= 2). |
 | `PredecessorAnalyser` | class (@ApplicationScoped) | `RoutingSignalProvider` (id: `"predecessor"`). Scores candidates based on immediate predecessor context in historical plan traces. |
@@ -432,7 +432,7 @@ AI-powered `AgentRoutingStrategy` implementations for the engine's routing pipel
 
 ### `io.casehub.agency.perception.rag`
 
-Reusable RAG retrieval worker factory -- produces engine `Worker` instances that extract queries via `QueryExtractionStrategy`, retrieve chunks from neocortex corpora via `CaseContextRetriever`, and return mapped results. Requires `casehub-neocortex-rag-api` on the consumer's classpath (provided scope in blocks).
+Reusable RAG retrieval worker factory -- produces engine `Worker` instances that extract queries via `QueryExtractionStrategy`, retrieve chunks from neocortex corpora via `CaseContextRetriever`, and return mapped results. Requires `casehub-neocortex-rag-api` on the consumer's classpath (provided scope in agency).
 
 | Class | Type | What it does |
 |-------|------|-------------|
@@ -497,7 +497,7 @@ Affordance grounding -- per-entity observation rendering for LLM agents.
 | `ObservationPipeline` | class | Ordered `ObservationFilter` composition. `apply(sections, agentTags)` runs all stages, then unwraps `AnnotatedSection` to base `ObservationSection`. |
 | `PerceptionFilter` | class | Built-in `ObservationFilter`: visibility gating (drop sections whose `requiredTags` don't intersect `agentTags`) + resolution fallback (degrade to lower `ResolutionTier` on partial match). |
 
-### `io.casehub.agency.core.yaml` (module: `blocks-agentic-yaml`)
+### `io.casehub.agency.core.yaml` (module: `casehub-agency-agentic-yaml`)
 
 YAML surface for agentic orchestration patterns — makes all 8 pattern topologies YAML-expressible via typed spec records, strategy registries, and a pattern compiler.
 
@@ -555,7 +555,7 @@ Decision narrative pipeline -- transforms platform decision signals into human-r
 | `AbstractNarrativeSignalStrategy` | abstract class | Base class: `emit(DecisionSignal)` publishes to `EventStreamBus`, `onCaseClose(caseId)` evicts pipeline state. |
 | `DecisionNarrativePipeline` | @ApplicationScoped | Factory: wires L1→L2 via `EventStreamBus`. `signalBus()`, `narrativeBus()`, `tick(now)`, `evictCaseState(caseId)`. |
 
-### `io.casehub.agency.speech` (module: `blocks-speech-api`)
+### `io.casehub.agency.speech` (module: `casehub-agency-speech-api`)
 
 Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly, and avatar cognition. Zero foundation dependencies.
 
@@ -573,7 +573,7 @@ Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly
 | `PromptSection` | @FunctionalInterface | `@Nullable contribute(PromptContext)`. Reads orchestrator cached state, returns formatted text section or null. |
 | `AvatarCognition` | interface | Composition root — `wrapAssembler()`, `initialize()`, `tick()`, `evaluateProactive()`, `recordInteraction()`. speech-ws injects via `Instance<AvatarCognition>`. |
 
-### `io.casehub.agency.core.social.prompt` (module: `blocks`)
+### `io.casehub.agency.core.social.prompt` (module: `casehub-agency`)
 
 Social cognition speech integration — wires all social cognition orchestrators + attention mediator into the speech pipeline via the `AvatarCognition` SPI.
 
@@ -594,7 +594,7 @@ Social cognition speech integration — wires all social cognition orchestrators
 
 **Quick start — avatar cognition:**
 ```java
-// Consumer adds blocks as compile dep + Jandex indexing:
+// Consumer adds agency as compile dep + Jandex indexing:
 // quarkus.index-dependency.casehub-agency.group-id=io.casehub
 // quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
 //
@@ -606,9 +606,9 @@ Social cognition speech integration — wires all social cognition orchestrators
 // speech-ws injects Instance<AvatarCognition> and wraps the base assembler.
 ```
 
-### `io.casehub.agency.speech.sherpa` (module: `blocks-speech-sherpa`)
+### `io.casehub.agency.speech.sherpa` (module: `casehub-agency-speech-sherpa`)
 
-Default speech implementation via sherpa-onnx FFM/Panama (JDK 22+). Optional — consumers that only need the SPI depend on `blocks-speech-api`.
+Default speech implementation via sherpa-onnx FFM/Panama (JDK 22+). Optional — consumers that only need the SPI depend on `casehub-agency-speech-api`.
 
 | Class | Type | What it does |
 |-------|------|-------------|
@@ -645,16 +645,16 @@ TranscriptionResult result = stt.transcribe(audioFile, TranscriptionOptions.defa
 
 ## Configuration
 
-No runtime configuration -- blocks is a pure library, not a Quarkus extension. All configuration happens via code (SPI implementations, CDI beans).
+No runtime configuration -- agency is a pure library, not a Quarkus extension. All configuration happens via code (SPI implementations, CDI beans).
 
-**CDI indexing:** blocks does not include a Jandex index. Consumers that need blocks' CDI beans (routing strategies, channel summarisers) must opt in:
+**CDI indexing:** agency does not include a Jandex index. Consumers that need agency's CDI beans (routing strategies, channel summarisers) must opt in:
 ```properties
 quarkus.index-dependency.casehub-agency.group-id=io.casehub
 quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
 ```
-Consumers that only use blocks' pure types (records, sealed interfaces, plain classes) need no configuration.
+Consumers that only use agency's pure types (records, sealed interfaces, plain classes) need no configuration.
 
-**Social cognition config defaults:** All social cognition config types (`DriveConfig`, `MoodConfig`, `PersonalityEvolutionConfig`, `InnerLifeConfig`, `MentalModelConfig`, `UserModelConfig`, `StrategyLearningConfig`, `NarrativeConfig`, `GoalProposalConfig`, `GoalEscalationConfig`, `NormDetectionConfig`) and `EventStreamBus<DecisionSignal>` have `@DefaultBean` producers via `SocialCognitionDefaultBeans`. Consumers with blocks on their classpath get safe defaults automatically — no config required to use social cognition features. Override any config by providing your own `@ApplicationScoped` bean for that type.
+**Social cognition config defaults:** All social cognition config types (`DriveConfig`, `MoodConfig`, `PersonalityEvolutionConfig`, `InnerLifeConfig`, `MentalModelConfig`, `UserModelConfig`, `StrategyLearningConfig`, `NarrativeConfig`, `GoalProposalConfig`, `GoalEscalationConfig`, `NormDetectionConfig`) and `EventStreamBus<DecisionSignal>` have `@DefaultBean` producers via `SocialCognitionDefaultBeans`. Consumers with agency on their classpath get safe defaults automatically — no config required to use social cognition features. Override any config by providing your own `@ApplicationScoped` bean for that type.
 
 **Situational context SPIs:** Three `@FunctionalInterface` SPIs let consumers adapt CognitionCore to their domain:
 - `SubjectResolver` — determines which subjects are contextually relevant (replaces `Set<String> activeSubjects` parameter on `CognitionCore.tick()`)
