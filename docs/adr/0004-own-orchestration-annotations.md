@@ -88,7 +88,7 @@ The analogy: Spring defines `@Transactional` over Hibernate's `SessionFactory`. 
 * ❌ Build extension coexistence conflict (two processors for `@SupervisorAgent`)
 * ❌ Attribute surface mismatch — LC4j attributes cannot express CaseHub's 5-SPI composition
 * ❌ Semantic divergence — same `@SupervisorAgent`, different behavior in CaseHub vs vanilla LC4j
-* ❌ Requires `langchain4j-agentic` compile dependency on blocks-annotations
+* ❌ Requires `langchain4j-agentic` compile dependency on agency-annotations
 
 ### Option C — Adapter layer bridging LC4j to CaseHub
 
@@ -100,9 +100,9 @@ The analogy: Spring defines `@Transactional` over Hibernate's `SessionFactory`. 
 ## Links
 
 * Engine-annotations D1 decision — `docs/specs/issue-909-engine-annotations/decisions.md`
-* Blocks D1 decision — `docs/specs/issue-116-blocks-annotations/decisions.md`
+* Blocks D1 decision — `docs/specs/issue-116-agency-annotations/decisions.md`
 * Epic: casehubio/agency#115 (annotation-driven agent programming model)
-* Issue: casehubio/agency#116 (blocks-annotations module)
+* Issue: casehubio/agency#116 (agency-annotations module)
 * `io.casehub.agency.orchestration.pattern.Patterns` — 8 pattern builders
 * `io.casehub.agency.orchestration.execution.ExecutionModel` — 5-SPI composition record
 * GE-20260608-4c8108 — `AnnotationsImpliesAiServiceBuildItem` (LC4j runtime integration pattern)

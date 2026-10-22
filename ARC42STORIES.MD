@@ -31,7 +31,7 @@ Not infrastructure, not a framework, not a tool library. Blocks are composed wor
 
 ## §4 Solution Strategy
 
-Multi-module reactor. The core module depends on casehub-qhorus-api + casehub-work-api + casehub-engine-api. Speech SPI module (blocks-speech-api) has zero foundation dependencies. Implementation modules (blocks-speech-sherpa) are optional.
+Multi-module reactor. The core module depends on casehub-qhorus-api + casehub-work-api + casehub-engine-api. Speech SPI module (agency-speech-api) has zero foundation dependencies. Implementation modules (agency-speech-sherpa) are optional.
 
 ---
 
@@ -162,7 +162,7 @@ AI-powered `AgentRoutingStrategy` implementations and `RoutingSignalProvider` im
 | `io.casehub.agency.conversation` | Done | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection. Plus `conversation.orchestration` sub-package. |
 | `io.casehub.agency.oversight` | Done | Oversight gate lifecycle + risk classification — SPIs, classifier chaining, gate outcomes. (Originally planned as `blocks.gate`.) |
 
-### Module: `blocks-speech-api` — Speech SPIs
+### Module: `agency-speech-api` — Speech SPIs
 
 Speech capability SPIs — provider-agnostic interfaces for speech-to-text and text-to-speech conversion. Zero foundation dependencies — pure Java interfaces.
 
@@ -176,7 +176,7 @@ Speech capability SPIs — provider-agnostic interfaces for speech-to-text and t
 | `PhonemeTiming` | Record: phoneme with start/end millisecond offsets |
 | `SynthesisOptions` | Record: voice, language, audio format, phoneme inclusion flag |
 
-### Module: `blocks-speech-sherpa` — sherpa-onnx FFM Implementation
+### Module: `agency-speech-sherpa` — sherpa-onnx FFM Implementation
 
 Default `SpeechToTextService` and `TextToSpeechService` implementation via sherpa-onnx native library using Java FFM/Panama (JDK 22+). Whisper for STT, VITS/Piper for TTS. Apple Silicon Metal acceleration via provider config.
 
