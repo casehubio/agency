@@ -102,7 +102,7 @@ Two integration patterns:
 
 #### Sub-package: `io.casehub.agency.summarisation.llm`
 
-LLM-backed content summarisation. Separated from the pure-Java `blocks.summarisation` package to preserve its zero-CDI/Quarkus character.
+LLM-backed content summarisation. Separated from the pure-Java `agency.summarisation` package to preserve its zero-CDI/Quarkus character.
 
 | Block | What it does |
 |-------|-------------|
