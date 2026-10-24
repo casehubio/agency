@@ -42,5 +42,5 @@ public sealed interface AgentRefSpec {
     record Composed(String name, @Nullable String description,
                     @Nullable List<String> capabilities,
                     @Nullable String model,
-                    PatternSpec pattern) implements AgentRefSpec {}
+                    PatternDefinition pattern) implements AgentRefSpec {}
 }

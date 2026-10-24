@@ -7,7 +7,6 @@ import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
 import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
 import io.casehub.agency.core.yaml.compiler.PatternCompiler;
 import io.casehub.agency.core.yaml.compiler.WorldCompiler;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.agency.summarisation.yaml.PipelineCompiler;
@@ -131,8 +130,8 @@ abstract class ExampleTestBase {
         return registry;
     }
 
-    protected PatternSpec loadPattern(String scenario) throws IOException {
-        return load(scenario, "pattern.yaml", PatternSpec.class);
+    protected io.casehub.agency.core.yaml.spec.PatternDefinition loadPattern(String scenario) throws IOException {
+        return load(scenario, "pattern.yaml", io.casehub.agency.core.yaml.spec.PatternDefinition.class);
     }
 
     protected CognitionDefinition loadCognition(String scenario) throws IOException {

@@ -37,7 +37,7 @@ public class AgencySchemaGenerator {
                 io.casehub.agency.core.yaml.spec.ActivationSpec.class,
                 io.casehub.agency.core.yaml.spec.DecompositionSpec.class,
                 io.casehub.agency.core.yaml.spec.AgentRefSpec.class,
-                io.casehub.agency.core.yaml.spec.PatternSpec.class,
+                io.casehub.agency.core.yaml.spec.PatternDefinition.class,
                 io.casehub.agency.core.yaml.spec.AcceptancePolicySpec.class,
                 io.casehub.agency.core.yaml.spec.TurnPolicySpec.class,
                 io.casehub.agency.core.yaml.spec.EpistemicRuleSpec.class,

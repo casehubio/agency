@@ -2,7 +2,6 @@ package io.casehub.agency.core.yaml.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ class SchemaDriftTest {
     @Test
     void patternSpecSchemaMatchesBaseline() throws IOException {
         var generator = new AgencySchemaGenerator();
-        var schema = generator.generate(PatternSpec.class);
+        var schema = generator.generate(io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         var mapper = new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);

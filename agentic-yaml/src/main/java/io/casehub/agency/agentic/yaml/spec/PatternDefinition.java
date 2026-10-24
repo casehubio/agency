@@ -11,16 +11,16 @@ import java.util.List;
 
 @JsonTypeInfo(use = Id.NAME, property = "type")
 @JsonSubTypes({
-        @Type(value = PatternSpec.Supervisor.class, name = "supervisor"),
-        @Type(value = PatternSpec.Debate.class, name = "debate"),
-        @Type(value = PatternSpec.Loop.class, name = "loop"),
-        @Type(value = PatternSpec.Parallel.class, name = "parallel"),
-        @Type(value = PatternSpec.Voting.class, name = "voting"),
-        @Type(value = PatternSpec.Conditional.class, name = "conditional"),
-        @Type(value = PatternSpec.Sequence.class, name = "sequence"),
-        @Type(value = PatternSpec.Htn.class, name = "htn")
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Supervisor.class, name = "supervisor"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Debate.class, name = "debate"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Loop.class, name = "loop"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Parallel.class, name = "parallel"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Voting.class, name = "voting"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional.class, name = "conditional"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence.class, name = "sequence"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Htn.class, name = "htn")
 })
-public sealed interface PatternSpec {
+public sealed interface PatternDefinition {
 
     @Nullable String name();
     @Nullable String description();
@@ -48,7 +48,7 @@ public sealed interface PatternSpec {
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Debate(
             @Nullable String name,
@@ -65,7 +65,7 @@ public sealed interface PatternSpec {
             @Nullable GovernanceSpec governance,
             @Nullable AgentRefSpec judge,
             int maxRounds
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Loop(
             @Nullable String name,
@@ -82,7 +82,7 @@ public sealed interface PatternSpec {
             @Nullable GovernanceSpec governance,
             int maxIterations,
             @Nullable String exitCondition
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Parallel(
             @Nullable String name,
@@ -97,7 +97,7 @@ public sealed interface PatternSpec {
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Voting(
             @Nullable String name,
@@ -112,7 +112,7 @@ public sealed interface PatternSpec {
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Conditional(
             @Nullable String name,
@@ -128,7 +128,7 @@ public sealed interface PatternSpec {
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
             List<BranchSpec> branches
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Sequence(
             @Nullable String name,
@@ -143,7 +143,7 @@ public sealed interface PatternSpec {
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Htn(
             @Nullable String name,
@@ -159,5 +159,5 @@ public sealed interface PatternSpec {
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
             TaskNodeSpec rootTask
-    ) implements PatternSpec {}
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 }

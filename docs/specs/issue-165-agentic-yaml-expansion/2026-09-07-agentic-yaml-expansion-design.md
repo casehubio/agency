@@ -31,7 +31,7 @@ Each spec area gets its own record hierarchy:
 
 | Area | Root Spec | Subtypes / Nested Specs |
 |------|-----------|------------------------|
-| Patterns (8 topologies) | `PatternSpec` (sealed) | `SupervisorSpec`, `SequenceSpec`, `LoopSpec`, `ParallelSpec`, `VotingSpec`, `DebateSpec`, `ConditionalSpec`, `HtnSpec` |
+| Patterns (8 topologies) | `PatternDefinition` (sealed) | `SupervisorSpec`, `SequenceSpec`, `LoopSpec`, `ParallelSpec`, `VotingSpec`, `DebateSpec`, `ConditionalSpec`, `HtnSpec` |
 | Routing | `RoutingSpec` (sealed) | `FirstMatchRoutingSpec`, `RoundRobinRoutingSpec`, `SequentialRoutingSpec`, `LlmSelectedRoutingSpec`, `SelectAllRoutingSpec` |
 | Termination | `TerminationSpec` (sealed) | `MaxIterationsSpec`, `GoalReachedSpec`, `JudgeConvergenceSpec`, `AllAgreedSpec`, `SupervisorTermSpec`, `ContestedSpec`, `ConvergenceTermSpec`, `SinglePassSpec`, `AgentCountSpec` |
 | Aggregation | `AggregationSpec` (sealed) | `PassThroughSpec`, `CollectAllSpec`, `MajorityVoteSpec`, `AuctionSpec` |

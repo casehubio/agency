@@ -1,16 +1,15 @@
 package io.casehub.agency.core.yaml.deployment;
 
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.quarkus.builder.item.SimpleBuildItem;
 
 import java.util.List;
 
 public final class AgenticPatternsBuildItem extends SimpleBuildItem {
-    private final List<PatternSpec> patterns;
+    private final List<io.casehub.agency.core.yaml.spec.PatternDefinition> patterns;
 
-    public AgenticPatternsBuildItem(List<PatternSpec> patterns) {
+    public AgenticPatternsBuildItem(List<io.casehub.agency.core.yaml.spec.PatternDefinition> patterns) {
         this.patterns = List.copyOf(patterns);
     }
 
-    public List<PatternSpec> patterns() { return patterns; }
+    public List<io.casehub.agency.core.yaml.spec.PatternDefinition> patterns() { return patterns; }
 }

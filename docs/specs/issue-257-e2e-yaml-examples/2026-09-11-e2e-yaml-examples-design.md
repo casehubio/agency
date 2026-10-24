@@ -28,7 +28,7 @@ what that example demonstrates.
 `ExampleTestBase` — abstract base class providing:
 - `ObjectMapper` with YAML + JavaTimeModule pre-configured
 - `PatternCompiler`, `CognitionCompiler`, `WorldCompiler` instances
-- Helper: `loadPattern(scenario, filename)` → `PatternSpec`
+- Helper: `loadPattern(scenario, filename)` → `PatternDefinition`
 - Helper: `loadCognition(scenario)` → `CognitionDefinition`
 - Helper: `loadWorld(scenario)` → `WorldDefinition`
 - Helper: `loadPipeline(scenario)` → `PipelineDefinition`

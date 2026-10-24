@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class GovernanceOnPatternSpecTest {
+class GovernanceOnPatternDefinitionTest {
 
     private ObjectMapper mapper;
 
@@ -27,7 +27,7 @@ class GovernanceOnPatternSpecTest {
                   - type: external
                     name: agent-1
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.governance()).isNull();
     }
 
@@ -46,7 +46,7 @@ class GovernanceOnPatternSpecTest {
                       - mlro
                       - compliance
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.governance()).isNotNull();
         assertThat(spec.governance().oversight()).isNotNull();
         assertThat(spec.governance().oversight().classifier()).isEqualTo("com.example.MyClassifier");
@@ -68,7 +68,7 @@ class GovernanceOnPatternSpecTest {
                     borderlineMargin: 0.15
                     blendFactor: 0.5
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.governance()).isNotNull();
         assertThat(spec.governance().trustRouting()).isNotNull();
         assertThat(spec.governance().trustRouting().threshold()).isEqualTo(0.8);
@@ -87,7 +87,7 @@ class GovernanceOnPatternSpecTest {
                     successWeight: 1.0
                     failureWeight: 0.0
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.governance()).isNotNull();
         assertThat(spec.governance().cbrRouting()).isNotNull();
         assertThat(spec.governance().cbrRouting().successWeight()).isEqualTo(1.0);
@@ -106,7 +106,7 @@ class GovernanceOnPatternSpecTest {
                     observer: com.example.MyObserver
                     capabilityTag: investigation
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.governance()).isNotNull();
         assertThat(spec.governance().attestation()).isNotNull();
         assertThat(spec.governance().attestation().observer()).isEqualTo("com.example.MyObserver");
@@ -132,7 +132,7 @@ class GovernanceOnPatternSpecTest {
                     observer: com.example.Observer
                     capabilityTag: sar
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         var gov = spec.governance();
         assertThat(gov).isNotNull();
         assertThat(gov.oversight()).isNotNull();
@@ -153,7 +153,7 @@ class GovernanceOnPatternSpecTest {
                   attestation:
                     observer: com.example.Observer
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         var gov = spec.governance();
         assertThat(gov).isNotNull();
         assertThat(gov.oversight()).isNull();

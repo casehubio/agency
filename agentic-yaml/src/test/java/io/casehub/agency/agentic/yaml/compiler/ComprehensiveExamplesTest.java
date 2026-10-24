@@ -12,7 +12,6 @@ import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.orchestration.routing.FirstMatchRouting;
 import io.casehub.agency.orchestration.routing.SelectAllRouting;
 import io.casehub.agency.orchestration.routing.SequentialRouting;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.agency.perception.observation.affordance.AnnotatedSection;
@@ -180,9 +179,9 @@ class ComprehensiveExamplesTest {
         assertThat(candidates.get(2).descriptor().name()).isEqualTo("action-recommender");
     }
 
-    private PatternSpec loadPattern(String name) throws IOException {
+    private io.casehub.agency.core.yaml.spec.PatternDefinition loadPattern(String name) throws IOException {
         try (var is = getClass().getResourceAsStream("/examples/" + name + ".yaml")) {
-            return mapper.readValue(is, PatternSpec.class);
+            return mapper.readValue(is, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         }
     }
 }

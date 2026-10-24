@@ -34,7 +34,6 @@ import io.casehub.agency.core.yaml.registry.RoutingStrategyRegistry;
 import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
 import io.casehub.agency.core.yaml.spec.AgentRefSpec;
 import io.casehub.agency.core.yaml.spec.JudgmentSpec;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.agency.core.yaml.spec.TerminationSpec;
 import io.casehub.eidos.api.AgentCapability;
 import io.casehub.eidos.api.AgentDescriptor;
@@ -62,7 +61,7 @@ public class PatternCompiler {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ExecutionModel<T> compile(PatternSpec spec) {
+    public <T> ExecutionModel<T> compile(io.casehub.agency.core.yaml.spec.PatternDefinition spec) {
         var agents = buildCandidates(spec.agents());
         var patternType = resolvePatternType(spec);
 
@@ -106,37 +105,37 @@ public class PatternCompiler {
                 .build();
     }
 
-    private PatternType resolvePatternType(PatternSpec spec) {
+    private PatternType resolvePatternType(io.casehub.agency.core.yaml.spec.PatternDefinition spec) {
         return switch (spec) {
-            case PatternSpec.Supervisor s -> PatternType.SUPERVISOR;
-            case PatternSpec.Debate d -> PatternType.DEBATE;
-            case PatternSpec.Loop l -> PatternType.LOOP;
-            case PatternSpec.Parallel p -> PatternType.PARALLEL;
-            case PatternSpec.Voting v -> PatternType.VOTING;
-            case PatternSpec.Conditional c -> PatternType.CONDITIONAL;
-            case PatternSpec.Sequence s -> PatternType.SEQUENCE;
-            case PatternSpec.Htn h -> PatternType.HTN;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Supervisor s -> PatternType.SUPERVISOR;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Debate d -> PatternType.DEBATE;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Loop l -> PatternType.LOOP;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Parallel p -> PatternType.PARALLEL;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Voting v -> PatternType.VOTING;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional c -> PatternType.CONDITIONAL;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence s -> PatternType.SEQUENCE;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> PatternType.HTN;
         };
     }
 
-    private RoutingStrategy<?> resolveRouting(PatternSpec spec) {
+    private RoutingStrategy<?> resolveRouting(io.casehub.agency.core.yaml.spec.PatternDefinition spec) {
         if (spec.routing() != null) {
             return routingRegistry.resolve(spec.routing(), expressionEngine);
         }
         return switch (spec) {
-            case PatternSpec.Parallel p -> new SelectAllRouting<>();
-            case PatternSpec.Voting v -> new SelectAllRouting<>();
-            case PatternSpec.Sequence s -> new SequentialRouting<>();
-            case PatternSpec.Conditional c -> new FirstMatchRouting<>(candidate -> true);
-            case PatternSpec.Supervisor s -> new FirstMatchRouting<>(candidate -> true);
-            case PatternSpec.Debate d -> new RoundRobinRouting<>();
-            case PatternSpec.Loop l -> new RoundRobinRouting<>();
-            case PatternSpec.Htn h -> new SequentialRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Parallel p -> new SelectAllRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Voting v -> new SelectAllRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence s -> new SequentialRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional c -> new FirstMatchRouting<>(candidate -> true);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Supervisor s -> new FirstMatchRouting<>(candidate -> true);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Debate d -> new RoundRobinRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Loop l -> new RoundRobinRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> new SequentialRouting<>();
         };
     }
 
-    private TerminationCondition<?> resolveTermination(PatternSpec spec,
-                                                        List<RoutingCandidate> agents) {
+    private TerminationCondition<?> resolveTermination(io.casehub.agency.core.yaml.spec.PatternDefinition spec,
+                                                       List<RoutingCandidate> agents) {
         if (spec.termination() != null && !spec.termination().isEmpty()) {
             if (spec.termination().size() == 1) {
                 return resolveSingleTermination(spec.termination().get(0), agents);
@@ -151,14 +150,14 @@ public class PatternCompiler {
             return composite;
         }
         return switch (spec) {
-            case PatternSpec.Debate d -> new MaxIterationsTermination<>(d.maxRounds());
-            case PatternSpec.Loop l -> new MaxIterationsTermination<>(l.maxIterations());
-            case PatternSpec.Supervisor s -> new MaxIterationsTermination<>(10);
-            case PatternSpec.Parallel p -> new MaxIterationsTermination<>(1);
-            case PatternSpec.Voting v -> new MaxIterationsTermination<>(1);
-            case PatternSpec.Conditional c -> new MaxIterationsTermination<>(1);
-            case PatternSpec.Sequence s -> new MaxIterationsTermination<>(agents.size());
-            case PatternSpec.Htn h -> new MaxIterationsTermination<>(1);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Debate d -> new MaxIterationsTermination<>(d.maxRounds());
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Loop l -> new MaxIterationsTermination<>(l.maxIterations());
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Supervisor s -> new MaxIterationsTermination<>(10);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Parallel p -> new MaxIterationsTermination<>(1);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Voting v -> new MaxIterationsTermination<>(1);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional c -> new MaxIterationsTermination<>(1);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence s -> new MaxIterationsTermination<>(agents.size());
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> new MaxIterationsTermination<>(1);
         };
     }
 
@@ -170,7 +169,7 @@ public class PatternCompiler {
         return terminationRegistry.resolve(ts, expressionEngine);
     }
 
-    private AggregationStrategy<?> resolveAggregation(PatternSpec spec, PatternType type) {
+    private AggregationStrategy<?> resolveAggregation(io.casehub.agency.core.yaml.spec.PatternDefinition spec, PatternType type) {
         if (spec.aggregation() != null) {
             return aggregationRegistry.resolve(spec.aggregation());
         }
@@ -182,14 +181,14 @@ public class PatternCompiler {
         };
     }
 
-    private ActivationRule<?> resolveActivation(PatternSpec spec) {
+    private ActivationRule<?> resolveActivation(io.casehub.agency.core.yaml.spec.PatternDefinition spec) {
         if (spec.activation() != null) {
             return activationRegistry.resolve(spec.activation());
         }
         return new OnExplicitDispatch<>();
     }
 
-    private DecompositionStrategy<?> resolveDecomposition(PatternSpec spec) {
+    private DecompositionStrategy<?> resolveDecomposition(io.casehub.agency.core.yaml.spec.PatternDefinition spec) {
         if (spec.decomposition() != null) {
             return decompositionRegistry.resolve(spec.decomposition(), expressionEngine);
         }

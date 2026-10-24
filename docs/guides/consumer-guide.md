@@ -503,11 +503,11 @@ YAML surface for agentic orchestration patterns — makes all 8 pattern topologi
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `PatternSpec` | sealed interface | 8 topology subtypes (Supervisor, Debate, Loop, Parallel, Voting, Conditional, Sequence, Htn) with shared concern fields (routing, termination, aggregation, activation, decomposition, failurePolicy, agents, judgment). Jackson `@JsonTypeInfo` discriminated. |
+| `PatternDefinition` | sealed interface | 8 topology subtypes (Supervisor, Debate, Loop, Parallel, Voting, Conditional, Sequence, Htn) with shared concern fields (routing, termination, aggregation, activation, decomposition, failurePolicy, agents, judgment). Jackson `@JsonTypeInfo` discriminated. |
 | `RoutingSpec` | sealed interface | 5 subtypes: FirstMatch (with optional guard expression), RoundRobin, Sequential, LlmSelected, SelectAll |
 | `TerminationSpec` | sealed interface | 9 subtypes: MaxIterations, GoalReached, JudgeConvergence, AllAgreed, Supervisor, Contested, Convergence, SinglePass, AgentCount |
 | `AggregationSpec` | sealed interface | 4 subtypes: PassThrough, CollectAll, MajorityVote, Auction |
-| `AgentRefSpec` | sealed interface | 5 subtypes: Worker, Channel, Human, External, Composed (recursive — holds nested `PatternSpec`) |
+| `AgentRefSpec` | sealed interface | 5 subtypes: Worker, Channel, Human, External, Composed (recursive — holds nested `PatternDefinition`) |
 | `PatternCompiler` | class | `compile(PatternSpec) → ExecutionModel<T>`. Resolves spec records to live runtime objects via registries. Applies pattern-specific defaults. |
 | `AgencySchemaGenerator` | class | `generate(Class<?>) → JsonNode`. Produces JSON Schema from spec record sealed hierarchies via victools with Jackson-aligned discriminator names. |
 

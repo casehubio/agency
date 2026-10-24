@@ -3,7 +3,6 @@ package io.casehub.agency.core.yaml.deployment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
@@ -31,7 +30,7 @@ public class AgenticYamlProcessor {
 
     @BuildStep
     AgenticPatternsBuildItem discoverAndValidatePatterns() throws IOException {
-        var patterns = new ArrayList<PatternSpec>();
+        var patterns = new ArrayList<io.casehub.agency.core.yaml.spec.PatternDefinition>();
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Enumeration<URL> resources = cl.getResources(AGENTIC_YAML_PATH);
 
@@ -48,7 +47,7 @@ public class AgenticYamlProcessor {
                                     })
                                     .forEach(f -> {
                                         try (InputStream in = Files.newInputStream(f)) {
-                                            var spec = YAML.readValue(in, PatternSpec.class);
+                                            var spec = YAML.readValue(in, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
                                             patterns.add(spec);
                                         } catch (IOException e) {
                                             throw new RuntimeException(

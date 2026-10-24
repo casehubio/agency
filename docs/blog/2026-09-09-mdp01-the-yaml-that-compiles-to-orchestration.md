@@ -30,7 +30,7 @@ public sealed interface RoutingSpec { ... }
 
 The sealed interface does three jobs at once. Jackson uses it for polymorphic YAML deserialization. The registries use exhaustive switch expressions — add a subtype and the compiler forces you to handle it. victools uses it for JSON Schema generation with discriminated unions. One type hierarchy, three consumers, zero drift.
 
-The pattern-specific fields are where it gets interesting. `DebateSpec` has `judge` and `maxRounds`. `LoopSpec` has `maxIterations` and `exitCondition` (an MVEL expression string). `ConditionalSpec` has `List<BranchSpec>`. `HtnSpec` has a recursive `TaskNodeSpec` tree. And `ComposedAgentSpec` holds a nested `PatternSpec` — patterns inside agents inside patterns. The mutual recursion between `AgentRefSpec` and `PatternSpec` just works because Java sealed interfaces resolve by name, not by order.
+The pattern-specific fields are where it gets interesting. `DebateSpec` has `judge` and `maxRounds`. `LoopSpec` has `maxIterations` and `exitCondition` (an MVEL expression string). `ConditionalSpec` has `List<BranchSpec>`. `HtnSpec` has a recursive `TaskNodeSpec` tree. And `ComposedAgentSpec` holds a nested `PatternDefinition` — patterns inside agents inside patterns. The mutual recursion between `AgentRefSpec` and `PatternDefinition` just works because Java sealed interfaces resolve by name, not by order.
 
 ## The expression compilation question
 
@@ -48,6 +48,6 @@ The fix: extract `@JsonSubTypes` annotations reflectively and pass them as discr
 
 ## What this opens up
 
-The immediate consumer is the TypeScript CDK generation tracked in parent#422. With typed spec records and JSON Schema, TypeScript types can be generated mechanically — `PatternSpec` → TypeScript discriminated union, `RoutingSpec` → union type, etc. The schema is the single source of truth for both Java and TypeScript surfaces.
+The immediate consumer is the TypeScript CDK generation tracked in parent#422. With typed spec records and JSON Schema, TypeScript types can be generated mechanically — `PatternDefinition` → TypeScript discriminated union, `RoutingSpec` → union type, etc. The schema is the single source of truth for both Java and TypeScript surfaces.
 
 The deferred items — type-safe expression compilation, AgentDescriptor wiring, schema drift CI, registry extensibility — are each focused enough for a single session. The expression compilation is the most interesting: it needs a per-site compilation strategy that knows the context type, not a generic `Object.class` escape hatch. The type information exists in the sealed interface hierarchy — `FirstMatch.guard` always evaluates against `RoutingCandidate`. The compiler just needs to thread that knowledge through.

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PatternSpecSerializationTest {
+class PatternDefinitionSerializationTest {
 
     private ObjectMapper mapper;
 
@@ -27,7 +27,7 @@ class PatternSpecSerializationTest {
             "voting", "conditional", "sequence", "htn"})
     void deserializesAllTopologies(String topology) throws IOException {
         var yaml = readFixture(topology);
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec).isNotNull();
         assertThat(spec.agents()).isNotEmpty();
         assertThat(spec.name()).isNotNull();
@@ -37,7 +37,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void supervisorFields() throws IOException {
-        var spec = loadPattern("supervisor", PatternSpec.Supervisor.class);
+        var spec = loadPattern("supervisor", PatternDefinition.Supervisor.class);
         assertThat(spec.name()).isEqualTo("supervised-analysis");
         assertThat(spec.description()).contains("Supervisor coordinates");
         assertThat(spec.task()).isEqualTo("analysis");
@@ -58,7 +58,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void debateFields() throws IOException {
-        var spec = loadPattern("debate", PatternSpec.Debate.class);
+        var spec = loadPattern("debate", PatternDefinition.Debate.class);
         assertThat(spec.name()).isEqualTo("adversarial-review");
         assertThat(spec.task()).isEqualTo("deliberation");
         assertThat(spec.maxRounds()).isEqualTo(7);
@@ -73,7 +73,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void loopFields() throws IOException {
-        var spec = loadPattern("loop", PatternSpec.Loop.class);
+        var spec = loadPattern("loop", PatternDefinition.Loop.class);
         assertThat(spec.name()).isEqualTo("iterative-refinement");
         assertThat(spec.task()).isEqualTo("refinement");
         assertThat(spec.maxIterations()).isEqualTo(15);
@@ -89,7 +89,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void conditionalBranches() throws IOException {
-        var spec = loadPattern("conditional", PatternSpec.Conditional.class);
+        var spec = loadPattern("conditional", PatternDefinition.Conditional.class);
         assertThat(spec.name()).isEqualTo("domain-case-router");
         assertThat(spec.task()).isEqualTo("routing");
         assertThat(spec.branches()).hasSize(3);
@@ -109,7 +109,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void votingFields() throws IOException {
-        var spec = loadPattern("voting", PatternSpec.Voting.class);
+        var spec = loadPattern("voting", PatternDefinition.Voting.class);
         assertThat(spec.name()).isEqualTo("proposal-evaluation");
         assertThat(spec.task()).isEqualTo("evaluation");
         assertThat(spec.aggregation()).isInstanceOf(AggregationSpec.MajorityVote.class);
@@ -134,7 +134,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void sequenceFields() throws IOException {
-        var spec = loadPattern("sequence", PatternSpec.Sequence.class);
+        var spec = loadPattern("sequence", PatternDefinition.Sequence.class);
         assertThat(spec.name()).isEqualTo("data-processing-pipeline");
         assertThat(spec.task()).isEqualTo("data-pipeline");
         assertThat(spec.termination()).hasSize(1);
@@ -149,7 +149,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void parallelFields() throws IOException {
-        var spec = loadPattern("parallel", PatternSpec.Parallel.class);
+        var spec = loadPattern("parallel", PatternDefinition.Parallel.class);
         assertThat(spec.name()).isEqualTo("multi-source-research");
         assertThat(spec.task()).isEqualTo("research");
         assertThat(spec.aggregation()).isInstanceOf(AggregationSpec.CollectAll.class);
@@ -167,7 +167,7 @@ class PatternSpecSerializationTest {
 
     @Test
     void htnRootTask() throws IOException {
-        var spec = loadPattern("htn", PatternSpec.Htn.class);
+        var spec = loadPattern("htn", PatternDefinition.Htn.class);
         assertThat(spec.name()).isEqualTo("data-processing-hierarchy");
         assertThat(spec.task()).isEqualTo("hierarchical-processing");
         assertThat(spec.rootTask()).isInstanceOf(TaskNodeSpec.Compound.class);
@@ -198,9 +198,9 @@ class PatternSpecSerializationTest {
                         - type: worker
                           name: db-researcher
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         var composed = (AgentRefSpec.Composed) spec.agents().get(0);
-        assertThat(composed.pattern()).isInstanceOf(PatternSpec.Parallel.class);
+        assertThat(composed.pattern()).isInstanceOf(PatternDefinition.Parallel.class);
         assertThat(composed.pattern().agents()).hasSize(2);
     }
 
@@ -219,7 +219,7 @@ class PatternSpecSerializationTest {
                   - type: worker
                     name: worker-1
                 """;
-        var spec = (PatternSpec.Supervisor) mapper.readValue(yaml, PatternSpec.class);
+        var spec = (PatternDefinition.Supervisor) mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.judgment()).isNotNull();
         assertThat(spec.judgment().trigger())
                 .isInstanceOf(JudgmentSpec.TriggerSpec.IterationBased.class);
@@ -238,7 +238,7 @@ class PatternSpecSerializationTest {
                   - type: worker
                     name: agent-1
                 """;
-        var spec = (PatternSpec.Supervisor) mapper.readValue(yaml, PatternSpec.class);
+        var spec = (PatternDefinition.Supervisor) mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.failurePolicy()).isNotNull();
         assertThat(spec.failurePolicy().onRoutingFailure().name()).isEqualTo("RETRY_BROADER");
     }
@@ -251,7 +251,7 @@ class PatternSpecSerializationTest {
                   - type: worker
                     name: agent-1
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.name()).isNull();
         assertThat(spec.description()).isNull();
     }
@@ -270,7 +270,7 @@ class PatternSpecSerializationTest {
                   - type: worker
                     name: no-model-agent
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         assertThat(spec.agents().get(0).model()).isEqualTo("claude-sonnet-5");
         assertThat(spec.agents().get(1).model()).isEqualTo("claude-opus-5");
         assertThat(spec.agents().get(2).model()).isNull();
@@ -290,13 +290,13 @@ class PatternSpecSerializationTest {
                         - type: worker
                           name: worker-1
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, PatternDefinition.class);
         var composed = (AgentRefSpec.Composed) spec.agents().get(0);
         assertThat(composed.model()).isEqualTo("claude-opus-5");
     }
 
-    private <T extends PatternSpec> T loadPattern(String name, Class<T> type) throws IOException {
-        var spec = mapper.readValue(readFixture(name), PatternSpec.class);
+    private <T extends PatternDefinition> T loadPattern(String name, Class<T> type) throws IOException {
+        var spec = mapper.readValue(readFixture(name), PatternDefinition.class);
         assertThat(spec).isInstanceOf(type);
         return type.cast(spec);
     }

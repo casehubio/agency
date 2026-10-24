@@ -3,7 +3,6 @@ package io.casehub.agency.core.yaml.schema;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.casehub.agency.core.yaml.spec.CbrOutcomeWeightsSpec;
 import io.casehub.agency.core.yaml.spec.CoordinationOutcomeWeightsSpec;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.agency.core.yaml.spec.RiskDecisionSpec;
 import io.casehub.agency.core.yaml.spec.RoutingSpec;
 import io.casehub.agency.core.yaml.spec.TerminationSpec;
@@ -50,7 +49,7 @@ class SchemaGenerationTest {
 
     @Test
     void patternSpecSchemaHasAllTopologies() {
-        JsonNode schema = generator.generate(PatternSpec.class);
+        JsonNode schema = generator.generate(io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         assertThat(schema).isNotNull();
         var schemaText = schema.toString();
         assertThat(schemaText).contains("supervisor");
@@ -65,7 +64,7 @@ class SchemaGenerationTest {
 
     @Test
     void patternSpecSchemaHasAgentsField() {
-        JsonNode schema = generator.generate(PatternSpec.class);
+        JsonNode schema = generator.generate(io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         assertThat(schema.toString()).contains("agents");
     }
 

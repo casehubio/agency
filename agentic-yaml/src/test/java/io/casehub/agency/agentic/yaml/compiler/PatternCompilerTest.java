@@ -16,7 +16,6 @@ import io.casehub.agency.orchestration.routing.RoundRobinRouting;
 import io.casehub.agency.orchestration.routing.SelectAllRouting;
 import io.casehub.agency.orchestration.routing.SequentialRouting;
 import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
-import io.casehub.agency.core.yaml.spec.PatternSpec;
 import io.casehub.platform.expression.MvelExpressionEngine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -140,7 +139,7 @@ class PatternCompilerTest {
                         - type: worker
                           name: db-researcher
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         var model = compiler.compile(spec);
         var candidate = model.candidateSupplier().get().get(0);
         assertThat(candidate.ref()).isInstanceOf(AgentRef.ComposedAgent.class);
@@ -164,7 +163,7 @@ class PatternCompilerTest {
                   - type: worker
                     name: agent-1
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         var model = compiler.compile(spec);
         assertThat(model.failurePolicy().onRoutingFailure())
                 .isEqualTo(FailurePolicy.RoutingFailureAction.RETRY_BROADER);
@@ -180,7 +179,7 @@ class PatternCompilerTest {
                   - type: worker
                     name: agent-1
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         var model = compiler.compile(spec);
         assertThat(model.routing()).isInstanceOf(FirstMatchRouting.class);
         assertThat(model.activation()).isInstanceOf(OnExplicitDispatch.class);
@@ -225,7 +224,7 @@ class PatternCompilerTest {
                       - synthesis
                       - reporting
                 """;
-        var spec = mapper.readValue(yaml, PatternSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         var model = compiler.compile(spec);
         var candidate = model.candidateSupplier().get().get(0);
         assertThat(candidate.descriptor()).isNotNull();
@@ -235,9 +234,9 @@ class PatternCompilerTest {
         assertThat(candidate.descriptor().capabilities().get(2).name()).isEqualTo("reporting");
     }
 
-    private PatternSpec loadPattern(String name) throws IOException {
+    private io.casehub.agency.core.yaml.spec.PatternDefinition loadPattern(String name) throws IOException {
         try (var is = getClass().getResourceAsStream("/patterns/" + name + ".yaml")) {
-            return mapper.readValue(is, PatternSpec.class);
+            return mapper.readValue(is, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         }
     }
 }
