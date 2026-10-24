@@ -86,6 +86,7 @@ import io.casehub.neocortex.cognition.usermodel.UserProfileMemory;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
 import io.casehub.platform.agent.AgentProvider;
+import io.casehub.platform.agent.session.SessionPipeline;
 import io.casehub.qhorus.api.channel.ThreadSummaryUpdatedEvent;
 import io.casehub.qhorus.api.message.Message;
 import io.casehub.qhorus.api.spi.SummaryResult;
@@ -140,6 +141,7 @@ public class AgencyBeans {
     @Inject Instance<io.casehub.neocortex.cognition.subthought.SubThoughtTickParticipant> subThoughtParticipantInstance;
     @Inject Instance<AgentGraphQuery> agentGraphQueryInstance;
     @Inject Instance<RoutingSignalAssembler> routingSignalAssemblerInstance;
+    @Inject Instance<SessionPipeline> sessionPipelineInstance;
     @Inject Instance<ManagedExecutor> managedExecutorInstance;
     @Inject Event<ThreadSummaryUpdatedEvent> summaryUpdatedEvent;
 
@@ -264,7 +266,8 @@ public class AgencyBeans {
     public MentalModelOrchestrator mentalModelOrchestrator(
             MentalModelMemory modelMemory,
             MentalModelConfig config) {
-        return new MentalModelOrchestrator(modelMemory, config);
+        return new MentalModelOrchestrator(modelMemory, config, java.time.Clock.systemUTC(),
+                nullableFrom(sessionPipelineInstance));
     }
 
     @Produces
@@ -272,7 +275,8 @@ public class AgencyBeans {
     public UserModelOrchestrator userModelOrchestrator(
             UserProfileMemory profileMemory,
             UserModelConfig config) {
-        return new UserModelOrchestrator(profileMemory, config);
+        return new UserModelOrchestrator(profileMemory, config,
+                nullableFrom(sessionPipelineInstance));
     }
 
     @Produces
@@ -283,7 +287,8 @@ public class AgencyBeans {
             StrategyLearningConfig config) {
         return new StrategyLearningOrchestrator(
                 strategyMemory, reflectionOrchestrator,
-                config);
+                config, java.time.Clock.systemUTC(),
+                nullableFrom(sessionPipelineInstance));
     }
 
     @Produces
@@ -327,7 +332,8 @@ public class AgencyBeans {
         return new InnerLifeOrchestrator(
                 reflectionOrchestrator,
                 listFrom(civilityConstraintInstance),
-                innerLifeConfig, driveOrchestrator);
+                innerLifeConfig, driveOrchestrator,
+                nullableFrom(sessionPipelineInstance));
     }
 
     // socialNormDetector removed — SocialNormDetector needs migration to neocortex (follow-up issue)
@@ -358,7 +364,8 @@ public class AgencyBeans {
                                              .orElse(null),
                                      nullableFrom(temporalFocusOrchestratorInstance),
                                      nullableFrom(reflectionOrchestratorInstance),
-                                     nullableFrom(consolidationMediatorInstance));
+                                     nullableFrom(consolidationMediatorInstance),
+                                     nullableFrom(sessionPipelineInstance));
 
         optionalFrom(subThoughtParticipantInstance).ifPresent(core::configureSubThoughts);
 
@@ -461,7 +468,8 @@ public class AgencyBeans {
     @Produces @ApplicationScoped
     public NarrativeContentSummariser narrativeContentSummariser(
             NarrativeConfig config) {
-        return new NarrativeContentSummariser(config);
+        return new NarrativeContentSummariser(config, java.time.Clock.systemUTC(),
+                nullableFrom(sessionPipelineInstance));
     }
 
     @Produces

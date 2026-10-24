@@ -73,6 +73,7 @@ import io.casehub.neocortex.cognition.usermodel.UserModelOrchestrator;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
 import io.casehub.platform.agent.AgentProvider;
+import io.casehub.platform.agent.session.SessionPipeline;
 import io.casehub.qhorus.api.message.Message;
 import io.casehub.qhorus.api.spi.SummaryResult;
 import io.casehub.qhorus.api.store.CrossTenantMessageStore;
@@ -82,6 +83,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+
+import org.jspecify.annotations.Nullable;
 
 import java.time.Clock;
 import java.util.List;
@@ -223,25 +226,28 @@ public class AgencyAutoConfiguration {
     @Bean
     public MentalModelOrchestrator mentalModelOrchestrator(
             io.casehub.neocortex.cognition.mentalmodel.MentalModelMemory modelMemory,
-            MentalModelConfig config) {
-        return new MentalModelOrchestrator(modelMemory, config);
+            MentalModelConfig config,
+            @Nullable SessionPipeline sessionPipeline) {
+        return new MentalModelOrchestrator(modelMemory, config, Clock.systemUTC(), sessionPipeline);
     }
 
     @Bean
     public UserModelOrchestrator userModelOrchestrator(
             io.casehub.neocortex.cognition.usermodel.UserProfileMemory profileMemory,
-            UserModelConfig config) {
-        return new UserModelOrchestrator(profileMemory, config);
+            UserModelConfig config,
+            @Nullable SessionPipeline sessionPipeline) {
+        return new UserModelOrchestrator(profileMemory, config, sessionPipeline);
     }
 
     @Bean
     public StrategyLearningOrchestrator strategyLearningOrchestrator(
             io.casehub.neocortex.cognition.strategy.StrategyMemory strategyMemory,
             ReflectionOrchestrator reflectionOrchestrator,
-            StrategyLearningConfig config) {
+            StrategyLearningConfig config,
+            @Nullable SessionPipeline sessionPipeline) {
         return new StrategyLearningOrchestrator(
                 strategyMemory, reflectionOrchestrator,
-                config);
+                config, Clock.systemUTC(), sessionPipeline);
     }
 
     @Bean
@@ -285,10 +291,11 @@ public class AgencyAutoConfiguration {
             ReflectionOrchestrator reflectionOrchestrator,
             List<CivilityConstraint> civilityConstraints,
             InnerLifeConfig innerLifeConfig,
-            DriveOrchestrator driveOrchestrator) {
+            DriveOrchestrator driveOrchestrator,
+            @Nullable SessionPipeline sessionPipeline) {
         return new InnerLifeOrchestrator(
                 reflectionOrchestrator,
-                civilityConstraints, innerLifeConfig, driveOrchestrator);
+                civilityConstraints, innerLifeConfig, driveOrchestrator, sessionPipeline);
     }
 
     // socialNormDetector removed — needs migration to neocortex (follow-up issue)
@@ -316,7 +323,8 @@ public class AgencyAutoConfiguration {
             Optional<io.casehub.neocortex.memory.CaseMemoryStore> memoryStore,
             io.casehub.neocortex.cognition.goal.CognitiveGoalConfig cognitiveGoalConfig,
             Optional<io.casehub.neocortex.cognitive.index.CognitiveProfile> cognitiveProfile,
-            Optional<io.casehub.neocortex.cognitive.index.DomainActivation> domainActivation) {
+            Optional<io.casehub.neocortex.cognitive.index.DomainActivation> domainActivation,
+            @Nullable SessionPipeline sessionPipeline) {
         var hygieneAdapter = hygieneOrchestrator
                                      .map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new)
                                      .orElse(null);
@@ -332,7 +340,8 @@ public class AgencyAutoConfiguration {
                 engagementRecorder.map(r -> (java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent>) r::record).orElse(null),
                 temporalFocus.orElse(null),
                 reflectionOrchestrator.orElse(null),
-                consolidationMediator.orElse(null));
+                consolidationMediator.orElse(null),
+                sessionPipeline);
 
         io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator cognitiveGoals = null;
         if (mindMapStore.isPresent() && goalAppraisal.isPresent() && memoryStore.isPresent()) {
@@ -398,8 +407,9 @@ public class AgencyAutoConfiguration {
 
     @Bean
     public NarrativeContentSummariser narrativeContentSummariser(
-            NarrativeConfig config) {
-        return new NarrativeContentSummariser(config);
+            NarrativeConfig config,
+            @Nullable SessionPipeline sessionPipeline) {
+        return new NarrativeContentSummariser(config, Clock.systemUTC(), sessionPipeline);
     }
 
     @Bean
