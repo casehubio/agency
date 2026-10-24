@@ -5,7 +5,6 @@ import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.orchestration.routing.RoundRobinRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
 import io.casehub.agency.core.yaml.compiler.CompiledWorld;
-import io.casehub.agency.core.yaml.spec.ConversationSpec;
 import io.casehub.agency.core.yaml.spec.JointIntentionSpec;
 import io.casehub.agency.deliberation.conversation.orchestration.RoundRobinTurnPolicy;
 import io.casehub.agency.core.yaml.registry.ConvergencePolicyRegistry;
@@ -161,7 +160,7 @@ class HistoricalEncounterExampleTest extends ExampleTestBase {
 
     @Test
     void conversationSpecCompiles() throws IOException {
-        var spec = load(SCENARIO, "conversation.yaml", ConversationSpec.class);
+        var spec = load(SCENARIO, "conversation.yaml", io.casehub.agency.core.yaml.spec.ConversationDefinition.class);
 
         assertThat(spec.turnPolicy()).isNotNull();
         var turnPolicy = new TurnPolicyRegistry().resolve(spec.turnPolicy());

@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public record NegotiationSpec(
+public record NegotiationDefinition(
         Set<String> parties,
         AcceptancePolicySpec acceptance,
         @Nullable List<TerminationSpec> termination

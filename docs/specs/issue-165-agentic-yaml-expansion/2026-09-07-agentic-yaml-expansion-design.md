@@ -40,8 +40,8 @@ Each spec area gets its own record hierarchy:
 | Failure policy | `FailurePolicy` | Reused directly — already a pure data record |
 | Agent reference | `AgentRefSpec` (sealed) | `WorkerAgentSpec`, `ChannelAgentSpec`, `HumanAgentSpec`, `ExternalAgentSpec`, `ComposedAgentSpec` |
 | Judgment | `JudgmentSpec` | `TriggerSpec`, `CallerSpec`, `AgreementSpec` |
-| Negotiation | `NegotiationSpec` | `AcceptancePolicySpec` |
-| Conversation | `ConversationSpec` | `TurnPolicySpec`, `EpistemicRuleSpec`, `ConvergencePolicySpec` |
+| Negotiation | `NegotiationDefinition` | `AcceptancePolicySpec` |
+| Conversation | `ConversationDefinition` | `TurnPolicySpec`, `EpistemicRuleSpec`, `ConvergencePolicySpec` |
 | Normative | `ConflictResolutionSpec` (sealed) | Per-strategy subtypes |
 
 Spec records are plain Java records with Jackson annotations. No functional interfaces. All fields are either primitives, strings, enums, nested spec records, or lists thereof.

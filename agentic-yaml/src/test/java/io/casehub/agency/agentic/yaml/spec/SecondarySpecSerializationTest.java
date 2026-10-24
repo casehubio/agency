@@ -27,7 +27,7 @@ class SecondarySpecSerializationTest {
     }
 
     @Nested
-    class NegotiationSpecs {
+    class NegotiationDefinitions {
         @Test
         void fullNegotiation() throws Exception {
             var yaml = """
@@ -40,7 +40,7 @@ class SecondarySpecSerializationTest {
                       - type: max-iterations
                         iterations: 10
                     """;
-            var spec = mapper.readValue(yaml, NegotiationSpec.class);
+            var spec = mapper.readValue(yaml, NegotiationDefinition.class);
             assertThat(spec.parties()).containsExactlyInAnyOrder("buyer", "seller");
             assertThat(spec.acceptance()).isInstanceOf(AcceptancePolicySpec.Majority.class);
             assertThat(spec.termination()).hasSize(1);
@@ -57,7 +57,7 @@ class SecondarySpecSerializationTest {
     }
 
     @Nested
-    class ConversationSpecs {
+    class ConversationDefinitions {
         @Test
         void fullConversation() throws Exception {
             var yaml = """
@@ -71,7 +71,7 @@ class SecondarySpecSerializationTest {
                       similarityThreshold: 0.8
                       staleRounds: 3
                     """;
-            var spec = mapper.readValue(yaml, ConversationSpec.class);
+            var spec = mapper.readValue(yaml, ConversationDefinition.class);
             assertThat(spec.turnPolicy()).isInstanceOf(TurnPolicySpec.RoundRobin.class);
             assertThat(spec.epistemicRule())
                     .isInstanceOf(EpistemicRuleSpec.ExplicitAcknowledgement.class);

@@ -3,7 +3,6 @@ package io.casehub.agency.core.yaml.compiler;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
 import io.casehub.agency.core.yaml.spec.AcceptancePolicySpec;
-import io.casehub.agency.core.yaml.spec.NegotiationSpec;
 import io.casehub.agency.core.yaml.spec.TerminationSpec;
 import io.casehub.agency.deliberation.negotiation.*;
 import io.casehub.platform.api.expression.ExpressionEngine;
@@ -22,7 +21,7 @@ public class NegotiationCompiler {
         this.expressionEngine = expressionEngine;
     }
 
-    public CompiledNegotiation compile(NegotiationSpec spec) {
+    public CompiledNegotiation compile(io.casehub.agency.core.yaml.spec.NegotiationDefinition spec) {
         var acceptance = compileAcceptance(spec.acceptance());
         var termination = compileTermination(spec.termination());
         var projection = new NegotiationProjection(spec.parties(), acceptance);

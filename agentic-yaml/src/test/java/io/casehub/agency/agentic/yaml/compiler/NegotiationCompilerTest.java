@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
-import io.casehub.agency.core.yaml.spec.NegotiationSpec;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +30,7 @@ class NegotiationCompilerTest {
                 acceptance:
                   type: unanimous
                 """;
-        var spec = mapper.readValue(yaml, NegotiationSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiled = compiler.compile(spec);
         assertThat(compiled.parties()).containsExactlyInAnyOrder("buyer", "seller");
         assertThat(compiled.projection()).isNotNull();
@@ -49,7 +48,7 @@ class NegotiationCompilerTest {
                   type: threshold
                   minAcceptances: 2
                 """;
-        var spec = mapper.readValue(yaml, NegotiationSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiled = compiler.compile(spec);
         assertThat(compiled.parties()).hasSize(3);
     }
@@ -67,7 +66,7 @@ class NegotiationCompilerTest {
                   - type: max-iterations
                     iterations: 10
                 """;
-        var spec = mapper.readValue(yaml, NegotiationSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiled = compiler.compile(spec);
         assertThat(compiled.termination()).isNotNull();
     }
@@ -85,7 +84,7 @@ class NegotiationCompilerTest {
                     timeout: PT1H
                   - type: terminal-outcome
                 """;
-        var spec = mapper.readValue(yaml, NegotiationSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiled = compiler.compile(spec);
         assertThat(compiled.termination()).isNotNull();
     }
@@ -101,7 +100,7 @@ class NegotiationCompilerTest {
                 termination:
                   - type: accepted
                 """;
-        var spec = mapper.readValue(yaml, NegotiationSpec.class);
+        var spec = mapper.readValue(yaml, io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiled = compiler.compile(spec);
         assertThat(compiled.termination()).isNotNull();
         assertThat(compiled.termination().getClass().getSimpleName())

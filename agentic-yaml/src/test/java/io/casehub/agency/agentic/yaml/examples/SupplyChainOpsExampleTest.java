@@ -10,7 +10,6 @@ import io.casehub.agency.core.yaml.compiler.NegotiationCompiler;
 import io.casehub.agency.core.yaml.registry.ConflictResolutionRegistry;
 import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
 import io.casehub.agency.core.yaml.spec.ConflictResolutionSpec;
-import io.casehub.agency.core.yaml.spec.NegotiationSpec;
 import io.casehub.agency.deliberation.negotiation.NegotiationOutcome;
 import io.casehub.agency.deliberation.normative.MostRestrictiveResolution;
 import io.casehub.agency.summarisation.EventLevel;
@@ -94,7 +93,7 @@ class SupplyChainOpsExampleTest extends ExampleTestBase {
 
     @Test
     void negotiationCompiles() throws IOException {
-        var spec = load(SCENARIO, "negotiation.yaml", NegotiationSpec.class);
+        var spec = load(SCENARIO, "negotiation.yaml", io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiler = new NegotiationCompiler(new TerminationConditionRegistry(), null);
         var compiled = compiler.compile(spec);
 
@@ -163,7 +162,7 @@ class SupplyChainOpsExampleTest extends ExampleTestBase {
 
     @Test
     void negotiationExecutesProposalToAgreement() throws IOException {
-        var spec = load(SCENARIO, "negotiation.yaml", NegotiationSpec.class);
+        var spec = load(SCENARIO, "negotiation.yaml", io.casehub.agency.core.yaml.spec.NegotiationDefinition.class);
         var compiler = new NegotiationCompiler(new TerminationConditionRegistry(), null);
         var compiled = compiler.compile(spec);
 

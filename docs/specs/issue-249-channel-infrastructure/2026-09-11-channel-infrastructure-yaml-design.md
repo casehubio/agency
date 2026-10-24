@@ -8,7 +8,7 @@
 
 Multi-agent conversations, negotiations, and channel wiring are all declarative in
 structure but require Java construction. The conversation compiler gap prevents
-YAML-only conversation setup. The negotiation gap is worse — `NegotiationSpec` exists
+YAML-only conversation setup. The negotiation gap is worse — `NegotiationDefinition` exists
 but has no compiler, and three termination types (`AcceptedTermination`,
 `TerminalOutcomeTermination`, `DeadlineTermination`) are missing from `TerminationSpec`.
 
@@ -239,7 +239,7 @@ The compiler validates the shape name against the known set. This is a thin conf
 | `CompiledNegotiation` | `io.casehub.agency.core.yaml.compiler` |
 
 New spec records go in the existing `spec` package (not a sub-package) since they're
-shared across pattern types, like `ConversationSpec` and `NegotiationSpec` already are.
+shared across pattern types, like `ConversationDefinition` and `NegotiationDefinition` already are.
 
 ## Type Inventory
 
