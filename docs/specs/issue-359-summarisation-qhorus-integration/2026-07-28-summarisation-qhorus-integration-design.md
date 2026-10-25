@@ -511,7 +511,7 @@ public class ChannelSummaryConfig {
     @Produces
     ContentSummariser<Message> channelSummariser(
             AgentProvider agentProvider,
-            @ConfigProperty(name = "casehub.blocks.channel.summary.mode",
+            @ConfigProperty(name = "casehub.agency.channel.summary.mode",
                             defaultValue = "EDIT")
             SummaryMode mode) {
         var heuristic = new HeuristicMessageSummariser();
@@ -528,9 +528,9 @@ The three config properties from `LlmChannelSummariser` map to CDI producer para
 
 | Prior config property | How it maps |
 |---|---|
-| `casehub.blocks.channel.summary.mode` | `@ConfigProperty` → `SummaryMode` parameter |
-| `casehub.blocks.channel.summary.max-tokens` | Deferred — not yet used by current implementation |
-| `casehub.blocks.channel.summary.system-prompt` | Deferred — custom system prompts require `LlmContentSummariser` constructor extension |
+| `casehub.agency.channel.summary.mode` | `@ConfigProperty` → `SummaryMode` parameter |
+| `casehub.agency.channel.summary.max-tokens` | Deferred — not yet used by current implementation |
+| `casehub.agency.channel.summary.system-prompt` | Deferred — custom system prompts require `LlmContentSummariser` constructor extension |
 
 ### Removed
 

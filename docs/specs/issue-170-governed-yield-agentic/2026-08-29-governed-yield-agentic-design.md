@@ -1,6 +1,6 @@
 # Governed Yield — Orchestration Layer for Judgment Patterns
 
-**Issue:** blocks#170 (epic), children #171, #172, #173
+**Issue:** agency#170 (epic), children #171, #172, #173
 **Date:** 2026-08-29 (revised 2026-08-31)
 **Status:** Design
 
@@ -360,5 +360,5 @@ No new compile dependencies. `JudgmentPhase`, `JudgmentDecision`, `JudgmentConte
 - `VerificationResult` — engine-api, sealed: Accepted, InsufficientEvidence, TrustTooLow, Rejected
 - `JudgeConvergence` — blocks termination, orthogonal convergence judgment
 - `AgentInvoker` — blocks, used by DirectJudgmentDispatcher
-- Epic blocks#170, children #171, #172, #173
+- Epic agency#170, children #171, #172, #173
 - Parent epic engine#994

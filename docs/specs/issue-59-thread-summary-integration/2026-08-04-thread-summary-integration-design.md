@@ -278,7 +278,7 @@ summarisation.
 | 5 | blocks | `ThreadSummaryObserver` + tests |
 
 Qhorus changes are backward-compatible — new types only. Commits reference
-`blocks#59`. A dedicated qhorus issue tracks the storage additions.
+`agency#59`. A dedicated qhorus issue tracks the storage additions.
 
 ---
 

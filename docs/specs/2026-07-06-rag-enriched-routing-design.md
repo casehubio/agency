@@ -95,8 +95,8 @@ Queries `CbrCaseMemoryStore` and formats historical context for the LLM prompt.
 - `RoutingFeatureExtractor` — uses default if no override present
 
 **Config:**
-- `casehub.blocks.cbr.top-k` (default 10)
-- `casehub.blocks.cbr.min-similarity` (default 0.5)
+- `casehub.agency.cbr.top-k` (default 10)
+- `casehub.agency.cbr.min-similarity` (default 0.5)
 
 **Query construction:**
 1. Uses `RoutingFeatureExtractor.extractProblem()` for text similarity

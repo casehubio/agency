@@ -1,6 +1,6 @@
 # ChoreographedDriver Event-Bus Integration Design
 
-**Issue:** blocks#19
+**Issue:** agency#19
 **Parent spec:** blocks `docs/specs/2026-06-30-engine-integration-design.md` (engine integration & channel coordination)
 
 ## Context

@@ -20,7 +20,7 @@ All decisions are recorded in `decisions.md` alongside this spec. ADR-0004 (`doc
 
 | # | Decision | Summary |
 |---|----------|---------|
-| D1 | Own all annotations | No `langchain4j-agentic` dependency. Dual-track: CaseHub owns orchestration annotations, LC4j agents integrate as workers at runtime (blocks#150). |
+| D1 | Own all annotations | No `langchain4j-agentic` dependency. Dual-track: CaseHub owns orchestration annotations, LC4j agents integrate as workers at runtime (agency#150). |
 | D2 | Nested module layout | `annotations/runtime/` + `annotations/deployment/`. Matches engine, work, ledger. |
 | D3 | Dual-use ExecutionModel | Pattern annotations produce `ExecutionModel<T>` CDI beans — usable standalone via `execute()` and as case workers via `@Worker` capability reference. |
 | D4 | Governance on @Worker + patterns | `@OversightGate`, `@TrustRouted`, `@CbrRouted`, `@Attestation` compose onto both engine `@Worker` methods and blocks pattern methods. |
@@ -31,7 +31,7 @@ All decisions are recorded in `decisions.md` alongside this spec. ADR-0004 (`doc
 
 **Scope evolution from issue #116:** The original issue listed `@Convergence` as a separate annotation and `@Decompose` as a governance meta-annotation. During design, `@Convergence` was subsumed into pattern attributes (D7 — convergence is intrinsic to the pattern, not cross-cutting) and `@Decompose` was subsumed into pattern attributes (D6 — decomposition is SPI configuration, not governance). The original issue also listed `@DebateAgent`, `@VotingAgent`, `@HtnAgent` — these became `@Debate`, `@Voting`, `@Htn` per D5 (bare names).
 
-**Epic #115 principle 1 departure:** The epic states "Adopt LangChain4j annotations as Layer 0." D1 and ADR-0004 depart from this — CaseHub owns all annotations with no `langchain4j-agentic` dependency. The ADR documents the architectural rationale (build extension coexistence, attribute surface mismatch, semantic divergence). The epic text should be updated to reflect the evolved position (see blocks#152).
+**Epic #115 principle 1 departure:** The epic states "Adopt LangChain4j annotations as Layer 0." D1 and ADR-0004 depart from this — CaseHub owns all annotations with no `langchain4j-agentic` dependency. The ADR documents the architectural rationale (build extension coexistence, attribute surface mismatch, semantic divergence). The epic text should be updated to reflect the evolved position (see agency#152).
 
 ---
 
@@ -143,7 +143,7 @@ public @interface Htn {
 }
 ```
 
-Maps to `Patterns.htn()`. Root task provided via method parameter or `@Customize`. Decomposition depth is controlled by the `DecompositionStrategy` and `PlanningConstraints`, not the pattern annotation — depth is a planning concern intrinsic to the task tree structure, not a top-level execution parameter (see blocks#151 for adding `maxDepth` to `PlanningConstraints`).
+Maps to `Patterns.htn()`. Root task provided via method parameter or `@Customize`. Decomposition depth is controlled by the `DecompositionStrategy` and `PlanningConstraints`, not the pattern annotation — depth is a planning concern intrinsic to the task tree structure, not a top-level execution parameter (see agency#151 for adding `maxDepth` to `PlanningConstraints`).
 
 ### @Sequence, @Parallel, @Loop, @Conditional
 
@@ -553,7 +553,7 @@ Each example module depends on its engine#945 base and adds blocks-specific anno
 | engine#909 | **Shipped** | Engine-annotations Layer 1 (`@Case`, `@Worker`, `@Customize`) — runtime + deployment live |
 | engine#945 | **Shipped** | Engine example bases (incident-response, aircraft-maintenance, wildfire-response, etc.) — available for blocks examples to extend |
 | eidos#139 | **Shipped** | Eidos-annotations (`@Identity`, `@Disposition`) — compose onto pattern interfaces |
-| blocks#150 | **Separate** | LC4j integration module — dual-track Track 2. Not blocking blocks-annotations |
+| agency#150 | **Separate** | LC4j integration module — dual-track Track 2. Not blocking blocks-annotations |
 
 ---
 
@@ -569,7 +569,7 @@ Each example module depends on its engine#945 base and adds blocks-specific anno
 
 The annotation model handles the 80% case. The builders handle the 20% that needs runtime flexibility. `@Customize` bridges the gap.
 
-**YAML relationship:** Annotations define pattern structure at compile time. YAML configuration (`application.properties`) can override scalar parameters at runtime (e.g., `casehub.blocks.patterns.my-debate.max-rounds=10`). Annotations take precedence for structural configuration (which SPI classes, which agents); YAML provides runtime tuning. YAML-driven pattern definitions (defining entire patterns in YAML without annotations) are a separate concern not addressed by this spec. The epic's principle 4 ("Full interop with existing fluent builders and YAML") is satisfied for builders via `@Customize`; YAML overlay design is tracked separately (blocks#153).
+**YAML relationship:** Annotations define pattern structure at compile time. YAML configuration (`application.properties`) can override scalar parameters at runtime (e.g., `casehub.agency.patterns.my-debate.max-rounds=10`). Annotations take precedence for structural configuration (which SPI classes, which agents); YAML provides runtime tuning. YAML-driven pattern definitions (defining entire patterns in YAML without annotations) are a separate concern not addressed by this spec. The epic's principle 4 ("Full interop with existing fluent builders and YAML") is satisfied for builders via `@Customize`; YAML overlay design is tracked separately (agency#153).
 
 ---
 
@@ -590,6 +590,6 @@ The annotation model handles the 80% case. The builders handle the 20% that need
 - GE-20260521-977e3e — Void @BuildStep silently elided
 - LC4j source analysis: `SupervisorPlanner`, `PlannerAgent`, `GoalOrientedPlanner`, `DebatePlanner`, `VotingPlanner`
 - Blog: `docs/blog/2026-08-22-mdp01-annotation-boundaries-follow-execution-models.md`
-- LC4j integration: blocks#150
+- LC4j integration: agency#150
 - Platform boundary-rules: `casehub-parent/docs/platform/boundary-rules.md`
 - Platform capability-ownership: `casehub-parent/docs/platform/capability-ownership.md`

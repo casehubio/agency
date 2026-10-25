@@ -5,7 +5,7 @@ surface — topic-grouped, obligation-aware, reaction-decorated — and why
 this is fundamentally different from what everyone else is building.
 
 **Issue:** casehubio/agency#49
-**Related:** casehubio/work#237 (structured progress), casehubio/engine#84 (milestone/stage/goal alignment), blocks#62 (progress integration — deferred)
+**Related:** casehubio/work#237 (structured progress), casehubio/engine#84 (milestone/stage/goal alignment), agency#62 (progress integration — deferred)
 
 ---
 
@@ -160,7 +160,7 @@ public record ConversationState(
         Map<String, SubTaskFinding> subTaskFindings) { ... }
 ```
 
-No `ChoreographyProgress` field. Progress rendering is deferred to blocks#62,
+No `ChoreographyProgress` field. Progress rendering is deferred to agency#62,
 which integrates work#237's `ProgressInstance` when it lands. The state record
 stays unchanged for now — progress will be a supplementary render-time input
 (same pattern as reactions).
@@ -186,7 +186,7 @@ in the right place.
    point initiation
 2. Pass `message.id()` and `message.type()` through to all
    `ConversationFold` methods that create `ThreadEntry` instances
-3. No choreography metadata parsing — deferred to blocks#62
+3. No choreography metadata parsing — deferred to agency#62
 
 The three abstract hook methods (`sentinel()`, `isPointInitiator()`,
 `statusAfter()`) don't change. Subclasses are unaffected.
@@ -233,7 +233,7 @@ The existing `render(ConversationState)` stays as a convenience overload
    `reactions.get(entry.messageId())` and render emoji counts inline
    (e.g., `👍×3 ✅×1`). Null or empty → no decoration.
 
-4. **Progress overlay** — placeholder. When blocks#62 integrates work#237,
+4. **Progress overlay** — placeholder. When agency#62 integrates work#237,
    the renderer will accept a progress snapshot and render it at the top of
    each topic section. For now, no progress display.
 
@@ -278,15 +278,15 @@ query layer, which qhorus already provides.
 - `ChannelProjection<S>` SPI — untouched
 - `ProjectionService` — already supports topic-scoped queries
 - `ConversationProjection` class structure — still abstract, still three hooks
-- `ConversationProtocol` — no new metadata keys (progress deferred to blocks#62)
+- `ConversationProtocol` — no new metadata keys (progress deferred to agency#62)
 - `ChannelAgentDispatcher` — passes topic from request to handler, no structural change
 
 ---
 
-## Deferred: structured progress integration (blocks#62)
+## Deferred: structured progress integration (agency#62)
 
 The choreography progress overlay ("step 3 of 7: calibration") is deferred
-to blocks#62, which depends on:
+to agency#62, which depends on:
 
 - **casehubio/work#237** — structured progress as a platform primitive:
   schema-validated, hierarchical `ProgressInstance` tree. Progress is not a
@@ -296,11 +296,11 @@ to blocks#62, which depends on:
   extends/replaces milestones; `ProgressInstance` is a superset of the
   binary milestone concept.
 
-When work#237 delivers, blocks#62 integrates `ProgressUpdatedEvent` as a
+When work#237 delivers, agency#62 integrates `ProgressUpdatedEvent` as a
 supplementary render-time input (same pattern as reactions). The renderer
 shows the progress tree as a choreography overlay per topic.
 
-This issue (blocks#49) builds the rendering surface that blocks#62 plugs
+This issue (agency#49) builds the rendering surface that agency#62 plugs
 into. Topic grouping, message identity, obligation chains, and reactions
 are the foundation. Progress is the overlay.
 

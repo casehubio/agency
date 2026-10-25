@@ -575,7 +575,7 @@ public class LlmChannelSummariser implements SummaryUpdateHook {
 
     @Inject
     public LlmChannelSummariser(AgentProvider agentProvider,
-                                 @ConfigProperty(name = "casehub.blocks.channel.summary.mode",
+                                 @ConfigProperty(name = "casehub.agency.channel.summary.mode",
                                                   defaultValue = "EDIT")
                                  SummaryMode mode) {
         this.agentProvider = agentProvider;
@@ -814,7 +814,7 @@ or create a new section:
 |-------|-------------|
 | `SummaryMode` | Enum: `APPEND` (delta only) or `EDIT` (rewrite entire summary) |
 | `HeuristicChannelSummariser` | `@DefaultBean` `SummaryUpdateHook` — append-only structural summary from message metadata (participants, count, topics, time span). Zero LLM cost. |
-| `LlmChannelSummariser` | `@Alternative @Priority(1)` `SummaryUpdateHook` — LLM-powered via `AgentProvider`. Edit mode by default (rewrites surrounding context). Configurable via `casehub.blocks.channel.summary.mode`. |
+| `LlmChannelSummariser` | `@Alternative @Priority(1)` `SummaryUpdateHook` — LLM-powered via `AgentProvider`. Edit mode by default (rewrites surrounding context). Configurable via `casehub.agency.channel.summary.mode`. |
 ```
 
 - [ ] **Step 2: Commit**

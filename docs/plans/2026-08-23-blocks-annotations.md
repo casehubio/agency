@@ -29,7 +29,7 @@
 - Build extension ordering: engine → eidos → work → blocks (via `@Consume`)
 - Test build extension validation with Jandex Indexer API, not `QuarkusUnitTest` (GE-20260819-e4a624)
 - `SyntheticBeanBuildItem` requires `.setRuntimeInit()` for `RUNTIME_INIT` recorders (GE-20260817-48caeb)
-- Prerequisite: blocks#156 — `SequenceBuilder.agents(RoutingCandidate...)` must set routing/termination (recorder uses RoutingCandidate for eidos identity pairing)
+- Prerequisite: agency#156 — `SequenceBuilder.agents(RoutingCandidate...)` must set routing/termination (recorder uses RoutingCandidate for eidos identity pairing)
 - Governance CDI aggregation: ONE composite `TrustRoutingPolicyProvider` per app (multiple `@TrustRouted` dispatch via `forCapability()`). Multiple `@CbrRouted` with different weights → build error (one set per app)
 - Governance only takes effect when the pattern is used as a case worker (via `@Worker` capability reference). Standalone `execute()` invocation bypasses engine dispatch — governance beans exist but are not consumed
 

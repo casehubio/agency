@@ -1,8 +1,8 @@
 # Supervisor Channel Observation Design
 
-**Issue:** blocks#97
+**Issue:** agency#97
 **Parent spec:** blocks `docs/specs/issue-19-choreographed-event-bus/2026-08-11-choreographed-event-bus-design.md` (ChoreographedDriver event-bus integration)
-**Depends on:** blocks#20 (inter-agent channel setup — closed)
+**Depends on:** agency#20 (inter-agent channel setup — closed)
 
 ## Context
 

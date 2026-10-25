@@ -473,7 +473,7 @@ The following items are out of scope for this spec and must be filed as separate
    engine#718. Currently hardcodes `priority = 0` for all `PlanTrace` entries. Meaningful
    priorities are needed before predecessor-specific analysis can be added.
 
-3. **Predecessor-specific plan composition analysis** (blocks) — blocks#53. Enhancement
+3. **Predecessor-specific plan composition analysis** (blocks) — agency#53. Enhancement
    to `PlanCompositionAnalyser` that scores candidates based on predecessor patterns.
    Blocked by engine#718.
 

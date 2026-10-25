@@ -125,7 +125,7 @@ observability and oversight display. Nullable — enrichment, not structure.
 | Location | Break | Fix |
 |----------|-------|-----|
 | `TaskNode` permits clause | Compile — sealed hierarchy changes | Update permits to `LeafTask`, `CompoundTask` |
-| `HtnBuilder.flatten()` switch | Compile — non-exhaustive | Match `LeafTask` (not individual variants — forward-compatible with blocks#46) |
+| `HtnBuilder.flatten()` switch | Compile — non-exhaustive | Match `LeafTask` (not individual variants — forward-compatible with agency#46) |
 | `HtnBuilder.flatten()` return type | Compile — `List<PrimitiveTask>` → `List<LeafTask>` | Widen type, update agent extraction, update `@SuppressWarnings` cast to `List<LeafTask<T>>` |
 | `Decomposition.primitive()` | Compile — `PrimitiveTask` constructor changes | Add `null` description as first arg |
 | `TaskNodeTest` | Test — permitted subclass count | Update assertions |
@@ -269,7 +269,7 @@ Re-planning (engine#696) will address this.
 - CDI / `@ApplicationScoped` — plain class, instantiated by caller
 - Re-planning on failure — engine#696
 - DAG output — returns `List<TaskNode<T>>` (linear). DAG is engine#694
-- Output contracts per step — blocks#46
+- Output contracts per step — agency#46
 
 ---
 

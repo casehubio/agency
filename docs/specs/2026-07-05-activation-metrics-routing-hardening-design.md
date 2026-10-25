@@ -219,8 +219,8 @@ Add `@ConfigProperty` parameters to `CbrAgentRoutingStrategy`'s `@Inject` constr
 ```java
 @Inject
 public CbrAgentRoutingStrategy(
-    @ConfigProperty(name = "casehub.blocks.cbr.top-k", defaultValue = "10") int topK,
-    @ConfigProperty(name = "casehub.blocks.cbr.min-similarity",
+    @ConfigProperty(name = "casehub.agency.cbr.top-k", defaultValue = "10") int topK,
+    @ConfigProperty(name = "casehub.agency.cbr.min-similarity",
                     defaultValue = "0.5") double minSimilarity,
     Instance<CbrCaseMemoryStore> cbrStore,
     Instance<AgentGraphQuery> graphQuery,
@@ -244,7 +244,7 @@ Remove `DEFAULT_TOP_K` constant. Tests construct directly with explicit values.
 `CbrQuery.of()`) to `0.5`. The previous `0.0` accepted all CBR results regardless of
 similarity, passing irrelevant cases into success rate analysis. The new `0.5` default
 filters low-quality matches. Operators who need lower thresholds can configure
-`casehub.blocks.cbr.min-similarity` explicitly.
+`casehub.agency.cbr.min-similarity` explicitly.
 
 ### 4b. Parser hardening — Jackson replaces manual indexOf
 

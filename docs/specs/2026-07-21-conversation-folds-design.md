@@ -45,7 +45,7 @@ from `ConversationState → DerivedView` — not as fold extensions.
    need to feed another mid-fold.
 
 3. **Performance is not a concern.** Conversation state is bounded by
-   active points, not history length (the CQRS premise from blocks#49).
+   active points, not history length (the CQRS premise from agency#49).
    Derivation is O(points × thread_depth) — small.
 
 4. **The door stays open.** If incremental performance ever matters, the

@@ -1,7 +1,7 @@
 # Engine Integration & Channel Coordination Design
 
-**Issues:** blocks#14 (engine integration), blocks#15 (channel coordination), blocks#6 (driver extraction)
-**Parent:** blocks#10 (supervisor mode epic)
+**Issues:** agency#14 (engine integration), agency#15 (channel coordination), agency#6 (driver extraction)
+**Parent:** agency#10 (supervisor mode epic)
 
 ## Context
 
@@ -113,7 +113,7 @@ public class PlatformAgentInvoker<T> implements AgentInvoker<T> {
 | HumanAgent | Create work item via workItemLifecycle, observe completion via lifecycle events → AgentResult |
 | ComposedAgent | Create child driver (inherits this invoker), execute nested model with current state → map ExecutionResult to AgentResult |
 
-**WorkerAgent dispatch — WorkerRuntime, not WorkerExecutionManager.** The supervisor IS a worker dispatched by WorkerExecutionManager at the engine level. Its sub-agents are internal — they don't need separate PlanItems, Quartz scheduling, or engine EventLog entries. WorkerRuntime (`casehub-engine-api`) provides synchronous in-process execution, which is the correct abstraction for supervisor-internal dispatch. WorkerExecutionManager (`casehub-engine-common`) takes engine-internal types (CaseInstance, EventLog, Worker, Capability) that blocks cannot and should not reference. Sub-agent execution is audited via ExecutionEventListener (§5) — specifically, `EventLogListener` and `LedgerExecutionListener` (blocks#12) write persistent audit records for routing decisions, agent results, and terminations. PlatformAgentInvoker wires these listeners by default when operating within an engine case. See §Persistent Audit Trail.
+**WorkerAgent dispatch — WorkerRuntime, not WorkerExecutionManager.** The supervisor IS a worker dispatched by WorkerExecutionManager at the engine level. Its sub-agents are internal — they don't need separate PlanItems, Quartz scheduling, or engine EventLog entries. WorkerRuntime (`casehub-engine-api`) provides synchronous in-process execution, which is the correct abstraction for supervisor-internal dispatch. WorkerExecutionManager (`casehub-engine-common`) takes engine-internal types (CaseInstance, EventLog, Worker, Capability) that blocks cannot and should not reference. Sub-agent execution is audited via ExecutionEventListener (§5) — specifically, `EventLogListener` and `LedgerExecutionListener` (agency#12) write persistent audit records for routing decisions, agent results, and terminations. PlatformAgentInvoker wires these listeners by default when operating within an engine case. See §Persistent Audit Trail.
 
 **ChannelAgent dispatch — multiplexing CDI observer, not per-dispatch registration.**
 
@@ -316,7 +316,7 @@ Work SPI: blocks needs work item lifecycle observation for HumanAgent event-driv
 
 ## Epic Completeness
 
-Parent epic blocks#10 has five children. This spec covers:
+Parent epic agency#10 has five children. This spec covers:
 
 | # | Title | Addressed | Notes |
 |---|-------|-----------|-------|
@@ -325,7 +325,7 @@ Parent epic blocks#10 has five children. This spec covers:
 | #12 | Routing accountability | No | Separate spec — EventLogListener, LedgerExecutionListener |
 | #13 | LLM decomposition | No | Separate spec — LlmDecomposition strategy |
 | #14 | Engine integration | Yes — §§1-6 | Stage gating, real agent dispatch, resilience clarification |
-| #15 | Channel coordination | Partial — ChannelAgent dispatch | Channel setup between agents mid-execution deferred (blocks#20) |
+| #15 | Channel coordination | Partial — ChannelAgent dispatch | Channel setup between agents mid-execution deferred (agency#20) |
 
 Issues #11, #12, #13 are out of scope — each is a separate concern with its own implementation. Issue #7 (ActivationContext population) is subsumed by §1 tracked state.
 
@@ -416,11 +416,11 @@ Sub-agent dispatch via WorkerRuntime produces no engine-level EventLog entry —
 | `LedgerExecutionListener` | casehub-ledger | Compliance-grade audit (EU AI Act Art.12) |
 | `MetricsListener` | OpenTelemetry | Latency, distribution, failure rates |
 
-These are in-scope for blocks#12 (routing accountability). `EventLogListener` writes to the engine's EventLog — this IS a persistent record of which sub-agents were dispatched, what inputs they received, what results they returned, and what failed.
+These are in-scope for agency#12 (routing accountability). `EventLogListener` writes to the engine's EventLog — this IS a persistent record of which sub-agents were dispatched, what inputs they received, what results they returned, and what failed.
 
 PlatformAgentInvoker wires `EventLogListener` by default when operating within an engine case (EventLog is available from the case context). Outside an engine case (standalone mode), the consumer chooses whether to wire audit listeners.
 
-This is a conscious design: the audit trail is a listener concern (blocks#12), not an invoker concern (this spec). The invoker dispatches; listeners observe and persist. The separation is clean — different deployments wire different listeners based on their audit requirements.
+This is a conscious design: the audit trail is a listener concern (agency#12), not an invoker concern (this spec). The invoker dispatches; listeners observe and persist. The separation is clean — different deployments wire different listeners based on their audit requirements.
 
 ## Testing Strategy
 

@@ -45,7 +45,7 @@
 - Retrofit now — proves both use cases in one shot but doubles scope, makes debugging harder
 **Rationale:** Decision narratives prove the pipeline enhancements on greenfield code. No risk of breaking the existing social cognition stack. Identity narrative retrofit (#259) references this work as proof the pattern works.
 **Trade-offs:** Two narrative systems coexist temporarily — `NarrativeSynthesiser` (identity) and the summarisation pipeline (decision). Unified after #259.
-**Sources:** `NarrativeSynthesiser.java` (working, tested, consumed by SocialAvatarCognition), blocks#259
+**Sources:** `NarrativeSynthesiser.java` (working, tested, consumed by SocialAvatarCognition), agency#259
 **Exploration:** quick
 **Status:** captured
 

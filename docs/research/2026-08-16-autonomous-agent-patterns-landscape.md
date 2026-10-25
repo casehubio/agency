@@ -231,7 +231,7 @@ All 14 scholar-identified gaps mapped to patterns, fold-ins, foundation addition
 | 5 | Emotional state tracking | P1 | Mood pattern (§2.3) + MoodState foundation addition | Pattern class + small feature |
 | 6 | Self-reflection on strategy | P1 | StrategyLearning pattern (§2.6) | Pattern class |
 | 7 | Theory of Mind | P1 | MentalModel pattern (§2.5) | Pattern class |
-| 8 | Personality evolution | P2 | PersonalityEvolution pattern (§2.7) | Pattern class (blocks#118) |
+| 8 | Personality evolution | P2 | PersonalityEvolution pattern (§2.7) | Pattern class (agency#118) |
 | 9 | Memory cross-linking | P2 | MemoryHygiene fold-in (§2.8) | Strategy |
 | 10 | Communication style adaptation | P2 | StrategyLearning + UserModel fold-in (§2.8) | Strategy |
 | 11 | System 1/System 2 fast path | P2 | InnerLife fold-in (§2.8) | Strategy |

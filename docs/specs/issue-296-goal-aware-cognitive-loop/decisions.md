@@ -1,4 +1,4 @@
-# Decisions — blocks#296 Goal-Aware Cognitive Loop
+# Decisions — agency#296 Goal-Aware Cognitive Loop
 
 ## D1: Unified goal model for LLM prompt
 

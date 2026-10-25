@@ -5,7 +5,7 @@ as a supplementary render-time input — the same pattern used for reactions,
 common ground, and convergence.
 
 **Issue:** casehubio/agency#62
-**Depends on:** casehubio/work#237 (progress model — shipped), blocks#49 (topic-aware conversation model — shipped)
+**Depends on:** casehubio/work#237 (progress model — shipped), agency#49 (topic-aware conversation model — shipped)
 
 ---
 

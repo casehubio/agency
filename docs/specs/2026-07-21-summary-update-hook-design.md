@@ -127,9 +127,9 @@ Edit-mode by default. Injects `AgentProvider`. Constructs a prompt from
 rewritten summary integrating new information into the existing narrative.
 
 Configurable via `@ConfigProperty`:
-- `casehub.blocks.channel.summary.mode` — `EDIT` (default) or `APPEND`
-- `casehub.blocks.channel.summary.max-tokens` — limit on summary length
-- `casehub.blocks.channel.summary.system-prompt` — override default
+- `casehub.agency.channel.summary.mode` — `EDIT` (default) or `APPEND`
+- `casehub.agency.channel.summary.max-tokens` — limit on summary length
+- `casehub.agency.channel.summary.system-prompt` — override default
 
 When `currentSummary` is null, both modes behave identically — produce a
 fresh summary from all messages.
@@ -182,7 +182,7 @@ Plain JUnit 5 + Mockito. No CDI container.
 | 4 | blocks | Implement `HeuristicChannelSummariser` + `LlmChannelSummariser` with tests |
 
 Qhorus change is backward-compatible. `NoOpSummaryUpdateHook` still works.
-No migration. Commits in both repos reference `blocks#64`.
+No migration. Commits in both repos reference `agency#64`.
 
 ---
 

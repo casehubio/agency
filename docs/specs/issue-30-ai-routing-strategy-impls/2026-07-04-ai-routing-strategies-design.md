@@ -1,6 +1,6 @@
 # AI Routing Strategy Implementations — Design Spec
 
-**Issue:** blocks#30
+**Issue:** agency#30
 **Date:** 2026-07-04
 **Status:** Approved
 
@@ -58,8 +58,8 @@ Existing strategies stay where they are — `TrustWeightedAgentStrategy` in engi
    - `domain`: `new MemoryDomain(capabilityName)` — MemoryDomain is a record (`record MemoryDomain(String name)`), not an enum; direct construction
    - `caseType`: `"agent-routing"` (convention: scopes retrieval to routing-decision cases)
    - `features`: empty map by default; extractable from `caseContext` for feature-vector matching
-   - `topK`: configurable via MP config (`casehub.blocks.cbr.top-k`, default 10)
-   - `minSimilarity`: configurable via MP config (`casehub.blocks.cbr.min-similarity`, default 0.5)
+   - `topK`: configurable via MP config (`casehub.agency.cbr.top-k`, default 10)
+   - `minSimilarity`: configurable via MP config (`casehub.agency.cbr.min-similarity`, default 0.5)
    - `problem`: text summary from `caseContext` via JQ expression (follows SemanticAgentRoutingStrategy pattern)
 3. Offload to worker pool: `.emitOn(Infrastructure.getDefaultWorkerPool())` — `CbrCaseMemoryStore.retrieveSimilar()` may block
 4. Call `CbrCaseMemoryStore.retrieveSimilar(query, CbrCase.class)` on worker thread

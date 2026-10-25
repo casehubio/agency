@@ -1,7 +1,7 @@
 # Routing Enrichment & Accountability Design
 
-**Issues:** blocks#8 (batch minor findings), blocks#11 (routing enrichment), blocks#12 (routing accountability)
-**Parent:** blocks#10 (supervisor mode epic)
+**Issues:** agency#8 (batch minor findings), agency#11 (routing enrichment), agency#12 (routing accountability)
+**Parent:** agency#10 (supervisor mode epic)
 **Branch:** issue-8-routing-enrichment-accountability
 
 ## Context
@@ -330,7 +330,7 @@ public class DebateBuilder<T> extends AbstractPatternBuilder<T, DebateBuilder<T>
 
 `HtnBuilder` overrides `execute()` to eagerly decompose the task tree using the initial state, extract primitive task agents as routing candidates, and wire sequential execution with sized termination.
 
-Guard evaluation happens once at execute() time — the initial state `T` determines which decomposition methods fire. For runtime re-decomposition (guards that depend on intermediate state), see the decomposition phase integration tracked in blocks#13.
+Guard evaluation happens once at execute() time — the initial state `T` determines which decomposition methods fire. For runtime re-decomposition (guards that depend on intermediate state), see the decomposition phase integration tracked in agency#13.
 
 ```java
 public class HtnBuilder<T> extends AbstractPatternBuilder<T, HtnBuilder<T>> {
@@ -373,7 +373,7 @@ public class HtnBuilder<T> extends AbstractPatternBuilder<T, HtnBuilder<T>> {
      * Pre-decomposition runs without agent context — the task tree structure
      * determines which agents participate. DecompositionContext receives an
      * empty candidates list because candidates ARE the output of decomposition.
-     * For agent-aware decomposition at runtime, see blocks#13.
+     * For agent-aware decomposition at runtime, see agency#13.
      */
     private List<TaskNode.PrimitiveTask<T>> flatten(TaskNode<T> node, T state) {
         if (node instanceof TaskNode.PrimitiveTask<T> p) {
@@ -728,9 +728,9 @@ public class LedgerExecutionListener implements ExecutionEventListener {
 
 | Item | Issue | Reason |
 |------|-------|--------|
-| Runtime HTN re-decomposition | blocks#13 | Requires decomposition phase in driver loop — different execution flow |
+| Runtime HTN re-decomposition | agency#13 | Requires decomposition phase in driver loop — different execution flow |
 | `AgentCapability.description` in prompts | eidos#77 | Field doesn't exist yet in eidos-api |
 | `CaseHubEventType` orchestration values | engine#626 | Cross-repo extraction to engine-api |
 | `LedgerAppender` in ledger-api | ledger#168 | Cross-repo extraction |
-| `MetricsListener` (OpenTelemetry) | blocks#21 | Third listener from prior spec, not in scope for #12 |
+| `MetricsListener` (OpenTelemetry) | agency#21 | Third listener from prior spec, not in scope for #12 |
 | ExternalAgent identity in listener callbacks | — | `agentName()` uses `identityHashCode` as interim distinguisher; proper fix is carrying `RoutingCandidate` identity through dispatch/result callbacks |

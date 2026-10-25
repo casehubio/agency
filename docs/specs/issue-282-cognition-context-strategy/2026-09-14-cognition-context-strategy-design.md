@@ -138,7 +138,7 @@ var section = CognitiveObservationSections.normsSection(norms);
 
 ## DefaultBean producers
 
-All three SPIs get `@DefaultBean` producers (per blocks#280 pattern):
+All three SPIs get `@DefaultBean` producers (per agency#280 pattern):
 - `SubjectResolver` → returns `Set.of()` (no subjects — consumers must provide their own or pass explicitly)
 - `InteractionMapper` → returns `CognitiveImpact.fromText(interactionType)` (passthrough)
 - `NormFilter` → returns input unchanged (no filtering)

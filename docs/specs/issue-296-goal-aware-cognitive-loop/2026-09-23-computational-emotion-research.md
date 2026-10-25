@@ -485,7 +485,7 @@ but moral/social appraisals may need per-agent or per-culture calibration.
 
 ## 6. Integration Path
 
-### 6.1 Phase 1: OCC Foundation (blocks#296)
+### 6.1 Phase 1: OCC Foundation (agency#296)
 
 **Goal:** Introduce the OCC emotion type system and wire cognitive goals.
 
