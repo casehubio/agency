@@ -42,10 +42,12 @@ public final class LlmSummarisers {
                     var userPrompt = buildObservationPrompt(items, rendered.renderedText());
                     var config = AgentSessionConfig.of(systemPrompt, userPrompt);
 
+                    var invokeStart = Instant.now();
                     var invocationResult = StructuredAgentInvoker.invoke(
                         agentProvider, config, LlmObservationResponse.class);
-
                     var batchEnd = Instant.now();
+                    InvocationPolicyMonitor.check(policy,
+                        java.time.Duration.between(invokeStart, batchEnd), "observation");
 
                     if (invocationResult instanceof StructuredAgentInvoker.InvocationResult.Success<LlmObservationResponse> success) {
                         var response = success.value();
@@ -93,8 +95,11 @@ public final class LlmSummarisers {
                     var userPrompt = buildObservationPrompt(items, rendered.renderedText());
                     var config = AgentSessionConfig.of(systemPrompt, userPrompt);
 
+                    var invokeStart = Instant.now();
                     var obsResult = StructuredAgentInvoker.invoke(
                         agentProvider, config, LlmObservationResponse.class);
+                    InvocationPolicyMonitor.check(policy,
+                        java.time.Duration.between(invokeStart, Instant.now()), "combined");
 
                     if (obsResult instanceof StructuredAgentInvoker.InvocationResult.Success<LlmObservationResponse> s) {
                         var observations = LlmResponseConverter.toObservations(s.value());
@@ -133,8 +138,11 @@ public final class LlmSummarisers {
                         "\n\nObservations:\n" + obsText;
                     var config = AgentSessionConfig.of(systemPrompt, userPrompt);
 
+                    var invokeStart = Instant.now();
                     var result = StructuredAgentInvoker.invoke(
                         agentProvider, config, LlmActionResponse.class);
+                    InvocationPolicyMonitor.check(policy,
+                        java.time.Duration.between(invokeStart, Instant.now()), "action");
 
                     if (result instanceof StructuredAgentInvoker.InvocationResult.Success<LlmActionResponse> s) {
                         var actions = LlmResponseConverter.toRecommendedActions(s.value());
