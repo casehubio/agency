@@ -1,18 +1,15 @@
 package io.casehub.agency.core.yaml.llm;
 
 import io.casehub.neocortex.cognition.core.CognitionCore;
-import io.casehub.neocortex.cognition.strategy.EngagementEvidence;
-import io.casehub.neocortex.cognition.core.CognitionSnapshot;
 import io.casehub.neocortex.cognition.mentalmodel.MentalModelOrchestrator;
-import io.casehub.neocortex.cognition.mentalmodel.MentalModelSnapshot;
 import io.casehub.neocortex.cognition.mentalmodel.MentalModelMemory;
 import io.casehub.neocortex.cognition.mood.MoodOrchestrator;
+import io.casehub.neocortex.cognition.prompt.CognitionPromptRenderer;
+import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningOrchestrator;
-import io.casehub.neocortex.cognition.strategy.StrategyProfile;
 import io.casehub.neocortex.cognition.strategy.StrategyMemory;
 import io.casehub.neocortex.cognition.usermodel.UserModelOrchestrator;
-import io.casehub.agency.core.social.UserProfile;
-import io.casehub.agency.core.social.UserProfileStore;
+import io.casehub.neocortex.cognition.usermodel.UserProfileMemory;
 import io.casehub.neocortex.cognition.drive.AffiliationDrive;
 import io.casehub.neocortex.cognition.drive.AutonomyDrive;
 import io.casehub.neocortex.cognition.drive.CompetenceDrive;
@@ -22,28 +19,25 @@ import io.casehub.neocortex.cognition.drive.DriveComposer;
 import io.casehub.neocortex.cognition.drive.DriveIntensity;
 import io.casehub.neocortex.cognition.drive.DriveOrchestrator;
 import io.casehub.neocortex.cognition.drive.DriveSource;
-import io.casehub.neocortex.cognition.goal.AffiliationGoalMapper;
-import io.casehub.neocortex.cognition.goal.AutonomyGoalMapper;
-import io.casehub.neocortex.cognition.goal.CompetenceGoalMapper;
-import io.casehub.neocortex.cognition.goal.CuriosityGoalMapper;
 import io.casehub.neocortex.cognition.goal.DriveGoalMapper;
 import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
 import io.casehub.neocortex.cognition.goal.GoalProposalOrchestrator;
 import io.casehub.neocortex.cognition.narrative.DerivedTheme;
 import io.casehub.neocortex.cognition.narrative.IndividualEpisode;
 import io.casehub.neocortex.cognition.narrative.NarrativeFragment;
+import io.casehub.neocortex.cognition.narrative.NarrativeMemory;
 import io.casehub.neocortex.cognition.narrative.NarrativeOrchestrator;
 import io.casehub.neocortex.cognition.narrative.NarrativeScope;
 import io.casehub.neocortex.cognition.narrative.NarrativeState;
-import io.casehub.neocortex.cognition.narrative.NarrativeStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.agency.core.yaml.compiler.CompiledCognition;
+import io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter;
 import io.casehub.agency.social.memory.ArousalScorer;
 import io.casehub.agency.social.memory.CompositeConfidenceScorer;
 import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
 import io.casehub.agency.social.memory.RetentionConfig;
 import io.casehub.agency.social.memory.SurpriseScorer;
 import io.casehub.agency.social.memory.WeightedScorer;
-import io.casehub.agency.speech.PromptSection;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.neocortex.memory.cbr.ScopeDecay;
 import io.casehub.neocortex.memory.cbr.TemporalDecay;
@@ -51,9 +45,9 @@ import io.casehub.neocortex.memory.cbr.inmem.InMemoryCbrRecordStore;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.AgentSessionConfig;
-import jakarta.enterprise.inject.Instance;
 import org.jspecify.annotations.Nullable;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,10 +65,10 @@ public class CognitionStack {
 
     private final CognitionCore core;
     private final Stage stage;
-    private final NarrativeStore narrativeStore;
+    private final NarrativeMemory narrativeMemory;
     private final @Nullable AgentProvider agentProvider;
-    private final @Nullable io.casehub.neocortex.memory.cbr.CbrRecordStore cbrStore;
-    private final @Nullable io.casehub.neocortex.cognition.strategy.StrategyLearningConfig strategyConfig;
+    private final @Nullable CbrRecordStore cbrStore;
+    private final @Nullable StrategyLearningConfig strategyConfig;
     private final ConcurrentHashMap<String, Boolean> primedAgents = new ConcurrentHashMap<>();
 
     public enum Stage {
@@ -82,13 +76,13 @@ public class CognitionStack {
     }
 
     CognitionStack(CognitionCore core, Stage stage,
-                   NarrativeStore narrativeStore,
+                   NarrativeMemory narrativeMemory,
                    @Nullable AgentProvider agentProvider,
-                   @Nullable io.casehub.neocortex.memory.cbr.CbrRecordStore cbrStore,
-                   @Nullable io.casehub.neocortex.cognition.strategy.StrategyLearningConfig strategyConfig) {
+                   @Nullable CbrRecordStore cbrStore,
+                   @Nullable StrategyLearningConfig strategyConfig) {
         this.core = core;
         this.stage = stage;
-        this.narrativeStore = narrativeStore;
+        this.narrativeMemory = narrativeMemory;
         this.agentProvider = agentProvider;
         this.cbrStore = cbrStore;
         this.strategyConfig = strategyConfig;
@@ -98,32 +92,33 @@ public class CognitionStack {
                                        @Nullable AgentProvider agentProvider,
                                        Stage stage) {
         var mood = new MoodOrchestrator(config.mood());
-        var narrativeStore = new InMemoryNarrativeStore();
-        var narrative = new NarrativeOrchestrator(narrativeStore);
+        var cbrStore = new InMemoryCbrRecordStore();
+        var narrativeMemory = new NarrativeMemory(cbrStore, config.narrative());
+        var narrative = new NarrativeOrchestrator(narrativeMemory);
         var composer = new DriveComposer();
 
         UserModelOrchestrator userModel = null;
         MentalModelOrchestrator mentalModel = null;
         StrategyLearningOrchestrator strategy = null;
-        io.casehub.neocortex.memory.cbr.CbrRecordStore cbrStore = null;
 
         if (agentProvider != null && stage.ordinal() >= Stage.SIGNALS.ordinal()) {
             userModel = new UserModelOrchestrator(
-                    new InMemoryUserProfileStore(), null, config.userModel());
+                    new UserProfileMemory(cbrStore, config.userModel()),
+                    config.userModel(), null);
             mentalModel = new MentalModelOrchestrator(
-                    new InMemoryMentalModelStore(), null, config.mentalModel());
+                    new MentalModelMemory(cbrStore, config.mentalModel()),
+                    config.mentalModel(), Clock.systemUTC(), null);
         }
 
         DriveOrchestrator drives;
         GoalProposalOrchestrator goals = null;
-        MemoryHygieneOrchestrator memoryHygiene = null;
+        io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator hygieneAdapter = null;
         if (agentProvider != null && stage.ordinal() >= Stage.REAL_DRIVES.ordinal()) {
-            cbrStore = new InMemoryCbrRecordStore();
             strategy = new StrategyLearningOrchestrator(
-                    new InMemoryStrategyStore(),
+                    new StrategyMemory(cbrStore, config.strategyLearning()),
                     (agentId, tenantId, since, maxEntries) -> List.of(),
-                    agentProvider, config.strategyLearning());
-            memoryHygiene = new MemoryHygieneOrchestrator(
+                    config.strategyLearning(), Clock.systemUTC(), null);
+            var memoryHygiene = new MemoryHygieneOrchestrator(
                     cbrStore,
                     new CompositeConfidenceScorer(List.of(
                             new WeightedScorer(new ArousalScorer(), 0.5),
@@ -137,7 +132,8 @@ public class CognitionStack {
                     10,
                     0.7,
                     event -> {});
-            var curiosityDrive = new CuriosityDrive(memoryHygiene);
+            hygieneAdapter = new MemoryHygieneSpiAdapter(memoryHygiene);
+            var curiosityDrive = new CuriosityDrive(hygieneAdapter);
             var competence = new CompetenceDrive(strategy);
             var affiliation = new AffiliationDrive(userModel, 0.3,
                     java.time.Duration.ofHours(1));
@@ -154,20 +150,20 @@ public class CognitionStack {
                         java.time.Duration.ofSeconds(30),
                         config.goalProposal().failureAbandonmentThreshold());
                 var mapperList = List.<DriveGoalMapper>of(
-                        new CuriosityGoalMapper(curiosityDrive),
-                        new CompetenceGoalMapper(competence),
-                        new AffiliationGoalMapper(affiliation, 0.3,
-                                java.time.Duration.ofHours(1)),
-                        new AutonomyGoalMapper(autonomy, 0.5));
+                        (agentId, tenantId, intensity) -> null,
+                        (agentId, tenantId, intensity) -> null,
+                        (agentId, tenantId, intensity) -> null,
+                        (agentId, tenantId, intensity) -> null);
                 goals = new GoalProposalOrchestrator(drives,
-                        listInstance(mapperList),
-                        noOpInstance(),
-                        noOpInstance(),
-                        noOpInstance(),
-                        noOpInstance(),
-                        noOpInstance(),
+                        mapperList,
+                        null,
+                        Optional.empty(),
+                        null,
+                        null,
+                        null,
                         goalConfig,
-                        config.goalEscalation());
+                        config.goalEscalation(),
+                        Clock.systemUTC());
             }
         } else {
             DriveSource baseline = (agentId, tenantId) ->
@@ -178,9 +174,9 @@ public class CognitionStack {
         }
 
         var core = new CognitionCore(mood, drives, userModel, mentalModel,
-                strategy, narrative, goals, memoryHygiene, agentProvider);
-        return new CognitionStack(core, stage, narrativeStore, agentProvider,
-                cbrStore, cbrStore != null ? config.strategyLearning() : null);
+                strategy, narrative, goals, hygieneAdapter);
+        return new CognitionStack(core, stage, narrativeMemory, agentProvider,
+                cbrStore, strategy != null ? config.strategyLearning() : null);
     }
 
     public static CognitionStack from(CompiledCognition config,
@@ -216,7 +212,7 @@ public class CognitionStack {
         for (int i = 0; i < strategyConfig.minCasesForReflection(); i++) {
             var features = buildSyntheticFeatures(descriptor, i, strategyConfig.minCasesForReflection());
             var summary = "Synthetic interaction " + (i + 1) + " derived from "
-                    + constraints.getFirst().text();
+                    + constraints.getFirst().description();
             var cbrCase = new io.casehub.neocortex.memory.cbr.CbrFeatureRecord(
                     summary, "-", null, null, features, null, agentId);
             cbrStore.store(cbrCase, strategyConfig.engagementCaseType(),
@@ -244,7 +240,7 @@ public class CognitionStack {
         double verbosity = 0.5;
         if (descriptor.constraints() != null) {
             for (var c : descriptor.constraints()) {
-                var text = c.text().toLowerCase();
+                var text = c.description().toLowerCase();
                 if (text.contains("precision") || text.contains("exact") || text.contains("rigour")) {
                     formality = 0.8; verbosity = 0.3;
                 } else if (text.contains("artistic") || text.contains("creative") || text.contains("expressive")) {
@@ -261,38 +257,32 @@ public class CognitionStack {
         return Map.copyOf(features);
     }
 
-    public List<PromptSection> promptSections() {
+    public List<CognitionPromptRenderer> promptSections() {
         return core.promptSections();
-    }
-
-    public CognitionSnapshot snapshot(String agentId, String tenantId,
-                                       int turnNumber, Set<String> subjectIds) {
-        return CognitionSnapshot.capture(core, agentId, tenantId,
-                turnNumber, subjectIds);
     }
 
     private static final String EPISODE_PROMPT = """
             You are analysing a conversation between historical figures. \
             Extract the most significant moment from the latest exchange.
-            
+
             Respond ONLY with JSON:
             {"description":"One sentence describing what happened and why it matters",\
             "valence":0.5,\
             "tags":["tag1","tag2"]}
-            
+
             valence: emotional significance from -1 (deeply negative) to +1 (deeply positive)
             tags: 2-4 thematic tags (e.g. "intellectual-recognition", "shared-vulnerability")""";
 
     private static final String THEME_PROMPT = """
             You are analysing a series of narrative episodes from a conversation \
             between historical figures. Derive the overarching theme.
-            
+
             Respond ONLY with JSON:
             {"label":"kebab-case-theme-name",\
             "salience":0.7,\
             "tags":["tag1","tag2"],\
             "drives":{"CURIOSITY":0.3,"AFFILIATION":0.2}}
-            
+
             label: short kebab-case theme identifier
             salience: how central this theme is [0,1]
             tags: 2-3 thematic tags
@@ -305,7 +295,7 @@ public class CognitionStack {
         if (recentTurns.size() < 2) return;
 
         var now = Instant.now();
-        var existing = narrativeStore.load(agentId, tenantId);
+        var existing = narrativeMemory.load(agentId, tenantId);
         var fragments = new ArrayList<NarrativeFragment>();
         if (existing != null) fragments.addAll(existing.fragments());
 
@@ -327,7 +317,7 @@ public class CognitionStack {
         var state = new NarrativeState(agentId, tenantId,
                 NarrativeScope.INDIVIDUAL, fragments, now,
                 recentTurns.size());
-        narrativeStore.store(state);
+        narrativeMemory.store(state);
     }
 
     private IndividualEpisode extractEpisode(List<ConversationRunner.Turn> turns,
@@ -376,14 +366,14 @@ public class CognitionStack {
             var label = extractJsonString(json, "label");
             var salience = extractJsonDouble(json, "salience", 0.7);
             var tags = extractJsonStringArray(json, "tags");
-            var drives = extractDriveWeights(json);
+            var driveWeights = extractDriveWeights(json);
 
             if (label.isBlank()) return heuristicTheme(fragments, now);
 
             return new DerivedTheme(
                     UUID.randomUUID().toString(), now, now,
                     tags.isEmpty() ? List.of("dialogue") : tags,
-                    label, Math.clamp(salience, 0.0, 1.0), drives,
+                    label, Math.clamp(salience, 0.0, 1.0), driveWeights,
                     fragments.stream()
                             .filter(f -> f instanceof IndividualEpisode)
                             .map(NarrativeFragment::id).toList());
@@ -478,158 +468,9 @@ public class CognitionStack {
         return s.length() > maxLen ? s.substring(0, maxLen) : s;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> Instance<T> noOpInstance() {
-        return (Instance<T>) NO_OP_INSTANCE;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Instance<T> listInstance(List<T> items) {
-        return new Instance<>() {
-            @Override public Instance<T> select(java.lang.annotation.Annotation... q) { return this; }
-            @Override public <U extends T> Instance<U> select(Class<U> s, java.lang.annotation.Annotation... q) { throw new UnsupportedOperationException(); }
-            @Override public <U extends T> Instance<U> select(jakarta.enterprise.util.TypeLiteral<U> s, java.lang.annotation.Annotation... q) { throw new UnsupportedOperationException(); }
-            @Override public boolean isUnsatisfied() { return items.isEmpty(); }
-            @Override public boolean isAmbiguous() { return items.size() > 1; }
-            @Override public boolean isResolvable() { return items.size() == 1; }
-            @Override public void destroy(T instance) {}
-            @Override public Handle<T> getHandle() { throw new UnsupportedOperationException(); }
-            @Override public Iterable<? extends Handle<T>> handles() { return List.of(); }
-            @Override public T get() { return items.getFirst(); }
-            @Override public java.util.Iterator<T> iterator() { return items.iterator(); }
-            @Override public java.util.stream.Stream<T> stream() { return items.stream(); }
-        };
-    }
-
-    private static final Instance<?> NO_OP_INSTANCE = new Instance<>() {
-        @Override public Instance<Object> select(java.lang.annotation.Annotation... qualifiers) { return this; }
-        @Override public <U extends Object> Instance<U> select(Class<U> subtype, java.lang.annotation.Annotation... qualifiers) { throw new UnsupportedOperationException(); }
-        @Override public <U extends Object> Instance<U> select(jakarta.enterprise.util.TypeLiteral<U> subtype, java.lang.annotation.Annotation... qualifiers) { throw new UnsupportedOperationException(); }
-        @Override public boolean isUnsatisfied() { return true; }
-        @Override public boolean isAmbiguous() { return false; }
-        @Override public boolean isResolvable() { return false; }
-        @Override public void destroy(Object instance) {}
-        @Override public Handle<Object> getHandle() { throw new UnsupportedOperationException(); }
-        @Override public Iterable<? extends Handle<Object>> handles() { return List.of(); }
-        @Override public Object get() { throw new UnsupportedOperationException(); }
-        @Override public java.util.Iterator<Object> iterator() { return java.util.Collections.emptyIterator(); }
-    };
-
     public MoodOrchestrator mood() { return core.mood(); }
     public DriveOrchestrator drives() { return core.drives(); }
     public NarrativeOrchestrator narrative() { return core.narrative(); }
     public @Nullable UserModelOrchestrator userModel() { return core.userModel(); }
     public @Nullable MentalModelOrchestrator mentalModel() { return core.mentalModel(); }
-
-    static final class InMemoryNarrativeStore implements NarrativeStore {
-        private final Map<String, NarrativeState> states = new ConcurrentHashMap<>();
-
-        @Override public void store(NarrativeState state) {
-            states.put(state.scopeId() + ":" + state.tenantId(), state);
-        }
-
-        @Override public @Nullable NarrativeState load(String scopeId, String tenantId) {
-            return states.get(scopeId + ":" + tenantId);
-        }
-    }
-
-    static final class InMemoryUserProfileStore implements UserProfileStore {
-        private final Map<String, UserProfile> profiles = new ConcurrentHashMap<>();
-
-        @Override public void store(UserProfile profile) {
-            profiles.put(key(profile.agentId(), profile.subjectId(), profile.tenantId()), profile);
-        }
-
-        @Override public Optional<UserProfile> lookup(String agentId, String subjectId, String tenantId) {
-            return Optional.ofNullable(profiles.get(key(agentId, subjectId, tenantId)));
-        }
-
-        @Override public List<UserProfile> findByAgent(String agentId, String tenantId) {
-            return profiles.values().stream()
-                    .filter(p -> p.agentId().equals(agentId) && p.tenantId().equals(tenantId))
-                    .toList();
-        }
-
-        @Override public void eraseSubject(String subjectId, String tenantId) {
-            profiles.entrySet().removeIf(e ->
-                    e.getValue().subjectId().equals(subjectId) && e.getValue().tenantId().equals(tenantId));
-        }
-
-        private static String key(String agentId, String subjectId, String tenantId) {
-            return agentId + ":" + subjectId + ":" + tenantId;
-        }
-    }
-
-    static final class InMemoryStrategyStore implements StrategyStore {
-        private final Map<String, StrategyProfile> profiles = new ConcurrentHashMap<>();
-
-        @Override public void store(StrategyProfile profile) {
-            profiles.put(profile.agentId() + ":" + profile.tenantId(), profile);
-        }
-
-        @Override public Optional<StrategyProfile> lookup(String agentId, String tenantId) {
-            return Optional.ofNullable(profiles.get(agentId + ":" + tenantId));
-        }
-
-        @Override public List<String> subjectInsights(String agentId, String subjectId, String tenantId) {
-            return List.of();
-        }
-
-        @Override public void eraseAgent(String agentId, String tenantId) {
-            profiles.remove(agentId + ":" + tenantId);
-        }
-
-        @Override public void eraseSubject(String subjectId, String tenantId) {}
-
-        private final java.util.List<EngagementEvidence> evidence = new java.util.concurrent.CopyOnWriteArrayList<>();
-
-        @Override
-        public void storeEvidence(EngagementEvidence e) {
-            evidence.add(e);
-        }
-
-        @Override
-        public int evidenceCount(String agentId, String tenantId) {
-            return (int) evidence.stream()
-                                 .filter(ev -> ev.agentId().equals(agentId) && ev.tenantId().equals(tenantId))
-                                 .count();
-        }
-
-        @Override
-        public java.util.List<EngagementEvidence> recentEvidence(String agentId, String tenantId, int limit) {
-            return evidence.stream()
-                           .filter(ev -> ev.agentId().equals(agentId) && ev.tenantId().equals(tenantId))
-                           .sorted(java.util.Comparator.comparing(EngagementEvidence::recordedAt).reversed())
-                           .limit(limit)
-                           .toList();
-        }
-
-    }
-
-    static final class InMemoryMentalModelStore implements MentalModelStore {
-        private final Map<String, MentalModelSnapshot> snapshots = new ConcurrentHashMap<>();
-
-        @Override public void store(MentalModelSnapshot snapshot) {
-            snapshots.put(key(snapshot.agentId(), snapshot.subjectId(), snapshot.tenantId()), snapshot);
-        }
-
-        @Override public Optional<MentalModelSnapshot> lookup(String agentId, String subjectId, String tenantId) {
-            return Optional.ofNullable(snapshots.get(key(agentId, subjectId, tenantId)));
-        }
-
-        @Override public List<MentalModelSnapshot> findByAgent(String agentId, String tenantId) {
-            return snapshots.values().stream()
-                    .filter(s -> s.agentId().equals(agentId) && s.tenantId().equals(tenantId))
-                    .toList();
-        }
-
-        @Override public void eraseSubject(String subjectId, String tenantId) {
-            snapshots.entrySet().removeIf(e ->
-                    e.getValue().subjectId().equals(subjectId) && e.getValue().tenantId().equals(tenantId));
-        }
-
-        private static String key(String agentId, String subjectId, String tenantId) {
-            return agentId + ":" + subjectId + ":" + tenantId;
-        }
-    }
 }
