@@ -91,6 +91,8 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agency/src/test/java/io/casehub/agency/deliberation/conversation/` | Tests for conversation protocol |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/orchestration/` | Conversation orchestrator — TurnPolicy SPI, termination conditions, PromptAssembler, ConversationOrchestrator composition root, ConversationListener per-dispatch callback |
 | `agency/src/test/java/io/casehub/agency/deliberation/conversation/orchestration/` | Tests for conversation orchestrator |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/protocol/` | Conversation channel protocol — `ConversationProtocol` (`ChannelProtocol` impl with incremental `ChannelProjector` caching), `ConversationRules` (turn-policy, max-consecutive, convergence-threshold via `policyOverrides`), `DefaultConversationProjection` (concrete `ConversationProjection` with general-purpose defaults) |
+| `agency/src/test/java/io/casehub/agency/deliberation/conversation/protocol/` | Tests for conversation channel protocol |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/normative/` | Normative conflict resolution — `ConflictResolutionStrategy<T>` SPI, `NormDecision<T>`, `NormResolution<T>`, five resolution strategies (priority, specificity, recency, most-restrictive, escalation) |
 | `agency/src/test/java/io/casehub/agency/deliberation/normative/` | Tests for normative conflict resolution |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/` | Negotiation channel protocol — `NegotiationProjection`, `NegotiationFold`, `AcceptancePolicy` SPI (unanimous, majority, threshold), `NegotiationRenderer`, termination conditions (`MaxRoundsTermination`, `DeadlineTermination`, `AcceptedTermination`, `TerminalOutcomeTermination`, `NegotiationCompositeTermination`) |
@@ -199,7 +201,7 @@ Structured conversation protocol — reusable infrastructure for multi-agent del
 
 | Class | What it does |
 |-------|-------------|
-| `ConversationProtocol` | Sentinel-based metadata encoding/decoding for structured conversation messages. Defines entry types, round markers, status transitions. |
+| `ConversationConstants` | Sentinel-based metadata encoding/decoding for structured conversation messages. Defines entry types, round markers, status transitions. |
 | `ConversationProjection` | Incremental projection over conversation messages — maintains fold state, tracks rounds, classifies points. |
 | `ConversationFold` | Fold operations for typed-message projections — accumulates conversation state from a message stream. |
 | `ConversationState` | Immutable snapshot of conversation state: points by thread, round boundaries, flags, sub-task status. |
@@ -296,6 +298,8 @@ Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` 
 | `NegotiationConstants` | Constants for negotiation outcome strings |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/protocol/` | Negotiation channel protocol — `NegotiationProtocol` (`ChannelProtocol` impl with incremental `ChannelProjector` caching), `NegotiationRules` (builder-configurable pure rules function with `policyOverrides` mapping) |
 | `agency/src/test/java/io/casehub/agency/deliberation/negotiation/protocol/` | Tests for negotiation channel protocol |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/judgment/protocol/` | Judgment channel protocol — `JudgmentProtocol` (`ChannelProtocol` impl with incremental `ChannelProjector` caching), `JudgmentRules` (agreement, min-reviewers, escalation via `policyOverrides`), `JudgmentProjection` (`ChannelProjection<JudgmentState>` — DONE → approve, DECLINE → reject), `JudgmentState`, `JudgmentFold`, `JudgmentVerdict`, `JudgmentOutcome` |
+| `agency/src/test/java/io/casehub/agency/deliberation/judgment/protocol/` | Tests for judgment channel protocol |
 
 ## Package: `io.casehub.agency.core`
 
@@ -581,7 +585,7 @@ Consumers that only use agency's pure types (records, sealed interfaces, plain c
 
 | Repo | What it uses |
 |------|-------------|
-| casehub-drafthouse | Channel + conversation — DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, ReviewChannelProjection uses `ConversationFold`/`ConversationState`, `ChannelAgentDispatcher` subclass with debate-specific error dispatch, `BoundedProjectionDecorator` for round bounding, `ContextTracker` for LLM window tracking |
+| casehub-drafthouse | Channel + conversation — DebateProtocol delegates to `ConversationConstants`, DebateChannelProjection extends `ConversationProjection`, ReviewChannelProjection uses `ConversationFold`/`ConversationState`, `ChannelAgentDispatcher` subclass with debate-specific error dispatch, `BoundedProjectionDecorator` for round bounding, `ContextTracker` for LLM window tracking |
 | casehub-engine | Oversight: `GateOutcome`, `OversightGateService`, `ReactiveOversightGateService` (NoOp impls), `ReactiveActionRiskClassifier`, `RiskDecision`, `ClassificationContext` (handler + health check) |
 | casehub-openclaw | Oversight: `ActionRiskClassifier`, `RiskClassifier`, `RiskDecision`, `ClassificationContext`, `GateOutcome` (concrete OversightGateService impl) |
 | casehub-aml | Routing: `TrustRoutingPolicyKeys`, `TrustRoutingPolicyResolver`, `DoublePreference`, `IntPreference`. Oversight: `ActionRiskClassifier`, `RiskClassifier`, `RiskDecision`, `ClassificationContext` |

@@ -1,7 +1,7 @@
 package io.casehub.agency.deliberation.conversation;
 
-public final class ConversationProtocol {
-    private ConversationProtocol() {}
+public final class ConversationConstants {
+    private ConversationConstants() {}
 
     // Meta key constants
     public static final String ENTRY_TYPE  = "entryType";

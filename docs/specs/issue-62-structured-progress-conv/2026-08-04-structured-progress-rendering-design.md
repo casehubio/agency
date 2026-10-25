@@ -225,7 +225,7 @@ Progress goes immediately after the topic header — it is the highest-level
 - `ConversationState` — no new fields
 - `ConversationProjection` — no progress parsing
 - `ConversationFold` — no progress folding
-- `ConversationProtocol` — no new metadata keys
+- `ConversationConstants` — no new metadata keys
 - `ChannelAgentDispatcher` — no progress concerns
 
 ### 9. Migration note

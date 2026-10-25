@@ -37,7 +37,7 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
     /**
      * Returns {@code true} if the given entry type initiates a new conversation point
      * (e.g. {@code RAISE} in DraftHouse debates). The point is created with
-     * {@link ConversationProtocol#STATUS_OPEN} status.
+     * {@link ConversationConstants#STATUS_OPEN} status.
      */
     protected abstract boolean isPointInitiator(String entryType);
 
@@ -73,18 +73,18 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
         Map<String, String> meta = ChannelMessageMeta.parseMeta(sentinel(), message.content());
         if (meta.isEmpty()) {return state;}
 
-        String entryType = meta.get(ConversationProtocol.ENTRY_TYPE);
+        String entryType = meta.get(ConversationConstants.ENTRY_TYPE);
         if (entryType == null) {return state;}
 
-        if (ConversationProtocol.RESTART_CONTEXT.equals(entryType)) {return state;}
+        if (ConversationConstants.RESTART_CONTEXT.equals(entryType)) {return state;}
         if (skipEntryTypes().contains(entryType)) {return state;}
 
         return switch (entryType) {
-            case ConversationProtocol.MEMO -> handleMemo(state, message, meta);
-            case ConversationProtocol.SUB_TASK_REQUEST -> handleSubTaskRequest(state, message, meta);
-            case ConversationProtocol.SUB_TASK_FINDING -> handleSubTaskFinding(state, message, meta);
-            case ConversationProtocol.SUB_TASK_ERROR -> handleSubTaskError(state, message, meta);
-            case ConversationProtocol.FLAG_HUMAN -> handleFlagHuman(state, message, meta);
+            case ConversationConstants.MEMO -> handleMemo(state, message, meta);
+            case ConversationConstants.SUB_TASK_REQUEST -> handleSubTaskRequest(state, message, meta);
+            case ConversationConstants.SUB_TASK_FINDING -> handleSubTaskFinding(state, message, meta);
+            case ConversationConstants.SUB_TASK_ERROR -> handleSubTaskError(state, message, meta);
+            case ConversationConstants.FLAG_HUMAN -> handleFlagHuman(state, message, meta);
             default -> handleDomain(state, message, meta, entryType);
         };
     }
@@ -93,7 +93,7 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
 
     private ConversationState handleDomain(ConversationState state, MessageView message,
                                            Map<String, String> meta, String entryType) {
-        String role = meta.get(ConversationProtocol.ROLE);
+        String role = meta.get(ConversationConstants.ROLE);
         if (role == null) {
             LOG.log(Level.WARNING, "Message missing role — discarded (entryType={0})", entryType);
             return state;
@@ -115,13 +115,13 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
             return state;
         }
 
-        Priority priority = parsePriority(meta.get(ConversationProtocol.PRIORITY));
-        String   scope    = meta.get(ConversationProtocol.SCOPE);
-        String   location = meta.get(ConversationProtocol.LOCATION);
+        Priority priority = parsePriority(meta.get(ConversationConstants.PRIORITY));
+        String   scope    = meta.get(ConversationConstants.SCOPE);
+        String   location = meta.get(ConversationConstants.LOCATION);
         if (location != null && location.isBlank()) {location = null;}
         var classification = new PointClassification(priority, scope, location);
 
-        int    round = ChannelMessageMeta.parseInt(meta, ConversationProtocol.ROUND);
+        int    round = ChannelMessageMeta.parseInt(meta, ConversationConstants.ROUND);
         String body  = ChannelMessageMeta.bodyContent(sentinel(), message.content());
 
         return ConversationFold.createPoint(state, pointId, message.topic(), message.id(), message.type(),
@@ -139,7 +139,7 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
             return state;
         }
 
-        int    round = ChannelMessageMeta.parseInt(meta, ConversationProtocol.ROUND);
+        int    round = ChannelMessageMeta.parseInt(meta, ConversationConstants.ROUND);
         String body  = ChannelMessageMeta.bodyContent(sentinel(), message.content());
 
         return ConversationFold.respondToPoint(state, targetId, message.id(), message.type(),
@@ -150,30 +150,30 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
 
     private ConversationState handleMemo(ConversationState state, MessageView message,
                                          Map<String, String> meta) {
-        String role    = meta.getOrDefault(ConversationProtocol.ROLE, "UNKNOWN");
-        int    round   = ChannelMessageMeta.parseInt(meta, ConversationProtocol.ROUND);
+        String role    = meta.getOrDefault(ConversationConstants.ROLE, "UNKNOWN");
+        int    round   = ChannelMessageMeta.parseInt(meta, ConversationConstants.ROUND);
         String content = ChannelMessageMeta.bodyContent(sentinel(), message.content());
         return ConversationFold.addMemo(state, role, round, content);
     }
 
     private ConversationState handleSubTaskRequest(ConversationState state, MessageView message,
                                                    Map<String, String> meta) {
-        String subTaskId = meta.getOrDefault(ConversationProtocol.SUB_TASK_ID,
+        String subTaskId = meta.getOrDefault(ConversationConstants.SUB_TASK_ID,
                                              message.correlationId() != null ? message.correlationId() : "unknown");
-        String taskType       = meta.getOrDefault(ConversationProtocol.TASK_TYPE, "CUSTOM");
-        String requestingRole = meta.getOrDefault(ConversationProtocol.ROLE, "UNKNOWN");
-        String pointId        = meta.get(ConversationProtocol.POINT_ID);
+        String taskType       = meta.getOrDefault(ConversationConstants.TASK_TYPE, "CUSTOM");
+        String requestingRole = meta.getOrDefault(ConversationConstants.ROLE, "UNKNOWN");
+        String pointId        = meta.get(ConversationConstants.POINT_ID);
 
         return ConversationFold.requestSubTask(state, subTaskId, taskType, requestingRole, pointId);
     }
 
     private ConversationState handleSubTaskFinding(ConversationState state, MessageView message,
                                                    Map<String, String> meta) {
-        String subTaskId = meta.getOrDefault(ConversationProtocol.SUB_TASK_ID,
+        String subTaskId = meta.getOrDefault(ConversationConstants.SUB_TASK_ID,
                                              message.correlationId() != null ? message.correlationId() : "unknown");
-        String taskType = meta.getOrDefault(ConversationProtocol.TASK_TYPE, "CUSTOM");
-        String role     = meta.getOrDefault(ConversationProtocol.ROLE, "UNKNOWN");
-        String pointId  = meta.get(ConversationProtocol.POINT_ID);
+        String taskType = meta.getOrDefault(ConversationConstants.TASK_TYPE, "CUSTOM");
+        String role     = meta.getOrDefault(ConversationConstants.ROLE, "UNKNOWN");
+        String pointId  = meta.get(ConversationConstants.POINT_ID);
         String finding  = ChannelMessageMeta.bodyContent(sentinel(), message.content());
 
         return ConversationFold.completeSubTask(state, subTaskId, taskType, role, pointId, finding);
@@ -181,10 +181,10 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
 
     private ConversationState handleSubTaskError(ConversationState state, MessageView message,
                                                  Map<String, String> meta) {
-        String subTaskId = meta.getOrDefault(ConversationProtocol.SUB_TASK_ID,
+        String subTaskId = meta.getOrDefault(ConversationConstants.SUB_TASK_ID,
                                              message.correlationId() != null ? message.correlationId() : "unknown");
-        String taskType = meta.getOrDefault(ConversationProtocol.TASK_TYPE, "CUSTOM");
-        String role     = meta.getOrDefault(ConversationProtocol.ROLE, "UNKNOWN");
+        String taskType = meta.getOrDefault(ConversationConstants.TASK_TYPE, "CUSTOM");
+        String role     = meta.getOrDefault(ConversationConstants.ROLE, "UNKNOWN");
         String reason   = ChannelMessageMeta.bodyContent(sentinel(), message.content());
 
         return ConversationFold.errorSubTask(state, subTaskId, taskType, role, reason);
@@ -194,8 +194,8 @@ public abstract class ConversationProjection implements ChannelProjection<Conver
                                               Map<String, String> meta) {
         String content = ChannelMessageMeta.bodyContent(sentinel(),
                                                         Objects.requireNonNullElse(message.content(), ""));
-        int    round = ChannelMessageMeta.parseInt(meta, ConversationProtocol.ROUND);
-        String role  = meta.get(ConversationProtocol.ROLE);
+        int    round = ChannelMessageMeta.parseInt(meta, ConversationConstants.ROUND);
+        String role  = meta.get(ConversationConstants.ROLE);
         if (role == null) {
             LOG.log(Level.WARNING, "FLAG_HUMAN missing role — discarded");
             return state;

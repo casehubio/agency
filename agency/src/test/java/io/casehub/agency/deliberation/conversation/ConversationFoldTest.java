@@ -28,7 +28,7 @@ class ConversationFoldTest {
             assertThat(result.points()).containsKey("point-1");
             ConversationPoint point = result.points().get("point-1");
             assertThat(point.id()).isEqualTo("point-1");
-            assertThat(point.status()).isEqualTo(ConversationProtocol.STATUS_OPEN);
+            assertThat(point.status()).isEqualTo(ConversationConstants.STATUS_OPEN);
             assertThat(point.classification()).isEqualTo(classification);
             assertThat(point.thread()).hasSize(1);
 
@@ -126,7 +126,7 @@ class ConversationFoldTest {
                     "point-1", null, null, null, null, "IMP", 1, "UNKNOWN_TYPE", "content", null);
 
             assertThat(result.points().get("point-1").status())
-                    .isEqualTo(ConversationProtocol.STATUS_OPEN);
+                    .isEqualTo(ConversationConstants.STATUS_OPEN);
             assertThat(result.points().get("point-1").thread()).hasSize(2);
         }
 
@@ -150,7 +150,7 @@ class ConversationFoldTest {
                     "p1", null, null, null, null, "IMP", 1, "AGREE", "ok", "AGREED");
 
             assertThat(result.points().get("p1").status()).isEqualTo("AGREED");
-            assertThat(result.points().get("p2").status()).isEqualTo(ConversationProtocol.STATUS_OPEN);
+            assertThat(result.points().get("p2").status()).isEqualTo(ConversationConstants.STATUS_OPEN);
         }
 
         @Test
@@ -188,9 +188,9 @@ class ConversationFoldTest {
 
             ConversationPoint point = result.points().get("point-1");
             assertThat(point.thread()).hasSize(2);
-            assertThat(point.thread().get(1).entryType()).isEqualTo(ConversationProtocol.FLAG_HUMAN);
+            assertThat(point.thread().get(1).entryType()).isEqualTo(ConversationConstants.FLAG_HUMAN);
             assertThat(point.thread().get(1).content()).isEqualTo("human help needed");
-            assertThat(point.status()).isEqualTo(ConversationProtocol.STATUS_ESCALATED);
+            assertThat(point.status()).isEqualTo(ConversationConstants.STATUS_ESCALATED);
 
             assertThat(result.humanFlags()).hasSize(1);
             FlagEntry flag = result.humanFlags().get(0);

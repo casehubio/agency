@@ -341,7 +341,7 @@ Epic #28 tracks extraction of shared patterns from domain repos into agency.
 
 | Repo | What it uses |
 |------|-------------|
-| casehub-drafthouse | Channel + conversation -- DebateProtocol delegates to `ConversationProtocol`, DebateChannelProjection extends `ConversationProjection`, `ChannelAgentDispatcher`, `BoundedProjectionDecorator`, `ContextTracker` |
+| casehub-drafthouse | Channel + conversation -- DebateProtocol delegates to `ConversationConstants`, DebateChannelProjection extends `ConversationProjection`, `ChannelAgentDispatcher`, `BoundedProjectionDecorator`, `ContextTracker` |
 | casehub-engine | `ExecutionModel`, `ExecutionDriver`, `ExecutionResult`, `AgentRef`, `RoutingCandidate`, agentic SPIs |
 | casehub-quarkmind | Summarisation: `SummarisationRunner`, `EventStreamBus`, `EventAccumulator`, `WindowPolicy`, `Summariser`, `EventLevel`, `LevelEvent` |
 

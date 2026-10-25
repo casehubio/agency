@@ -74,7 +74,7 @@ Structured conversation protocol -- reusable infrastructure for multi-agent deli
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `ConversationProtocol` | final class | Protocol constants: meta key names (`ENTRY_TYPE`, `ROLE`, `ROUND`, `PRIORITY`, `SCOPE`, `LOCATION`, `POINT_ID`, `SUB_TASK_ID`, `TASK_TYPE`) and infrastructure entry types (`SUB_TASK_REQUEST`, `SUB_TASK_FINDING`, `SUB_TASK_ERROR`, `MEMO`, `FLAG_HUMAN`, `RESTART_CONTEXT`) and statuses (`STATUS_OPEN`, `STATUS_ESCALATED`). |
+| `ConversationConstants` | final class | Protocol constants: meta key names (`ENTRY_TYPE`, `ROLE`, `ROUND`, `PRIORITY`, `SCOPE`, `LOCATION`, `POINT_ID`, `SUB_TASK_ID`, `TASK_TYPE`) and infrastructure entry types (`SUB_TASK_REQUEST`, `SUB_TASK_FINDING`, `SUB_TASK_ERROR`, `MEMO`, `FLAG_HUMAN`, `RESTART_CONTEXT`) and statuses (`STATUS_OPEN`, `STATUS_ESCALATED`). |
 | `ConversationProjection` | abstract class | Base for conversation-style channel projections. Implements `ChannelProjection<ConversationState>`. Folds channel messages into `ConversationState` by dispatching on metadata entry types. Subclass hooks: `sentinel()`, `isPointInitiator(entryType)`, `statusAfter(entryType)`, `skipEntryTypes()`. |
 | `ConversationFold` | final class | Pure state-transition operations on `ConversationState`. Static methods: `createPoint()`, `respondToPoint()`, `reprioritisePoint()`, `flagHuman()`, `addMemo()`, `requestSubTask()`, `completeSubTask()`, `errorSubTask()`. No I/O, no parsing. |
 | `ConversationRenderer` | class | Renders `ConversationState` into Markdown. Supports topic grouping, epistemic badges, convergence signal display, obligation chains, reaction counts, sub-task findings. Configurable via `ConversationRendererConfig`. |
@@ -185,6 +185,24 @@ ConversationOutcome outcome = orchestrator.converse(triggeringMessage)
     .await().indefinitely();
 ```
 
+### `io.casehub.agency.deliberation.conversation.protocol`
+
+Conversation as a qhorus `ChannelProtocol` -- advisory-based enforcement of turn-taking rules, consecutive-message limits, and convergence thresholds. Uses `DefaultConversationProjection` internally (concrete `ConversationProjection` with general-purpose defaults).
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `ConversationProtocol` | class | `@ApplicationScoped` `ChannelProtocol` impl. Projection caching per channel, policyOverrides per-call. |
+| `ConversationRules` | final class | Pure, immutable. `defaults()`, `builder()`, `withOverrides(Map)`. Structural rules (non-participant sender) + policy rules (turn-policy, max-consecutive, convergence-threshold). |
+| `DefaultConversationProjection` | class | Concrete `ConversationProjection` -- all non-infrastructure entry types are point initiators. |
+
+**policyOverrides:**
+
+| Key | Values | Default |
+|-----|--------|---------|
+| `conversation.turn-policy` | `round-robin`, `free-form`, `moderated` | `free-form` |
+| `conversation.max-consecutive` | integer | `2` |
+| `conversation.convergence-threshold` | 0.0-1.0 | none |
+
 ### `io.casehub.agency.deliberation.normative`
 
 Generic normative conflict resolution — resolves conflicts between competing norm decisions. When multiple norms (e.g., risk classifiers, policy rules) produce contradictory decisions, a `ConflictResolutionStrategy<T>` determines which one wins.
@@ -259,6 +277,37 @@ var consensus = new NegotiationProjection(
 // ThresholdAcceptance fires AGREED when 2 voters accept.
 // For unanimous: use UnanimousAcceptance. For majority: MajorityAcceptance.
 ```
+
+### `io.casehub.agency.deliberation.negotiation.protocol`
+
+Negotiation as a qhorus `ChannelProtocol` -- advisory-based enforcement of negotiation rules (max rounds, deadlines, turn order, acceptance policy).
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `NegotiationProtocol` | class | `@ApplicationScoped` `ChannelProtocol` impl. Projection caching per channel, policyOverrides per-call. |
+| `NegotiationRules` | final class | Pure, immutable. `defaults()`, `builder()`, `withOverrides(Map)`. Structural rules (terminal state, non-participant, orphan accept/reject) + policy rules (max-rounds, deadline, turn-order). |
+
+### `io.casehub.agency.deliberation.judgment.protocol`
+
+Judgment as a qhorus `ChannelProtocol` -- advisory-based enforcement of quorum-based approval gates. Reviewers submit verdicts via DONE (approve) or DECLINE (reject) message types.
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `JudgmentProtocol` | class | `@ApplicationScoped` `ChannelProtocol` impl. Projection caching per channel, policyOverrides per-call. |
+| `JudgmentRules` | final class | Pure, immutable. `defaults()`, `builder()`, `withOverrides(Map)`. Structural rules (terminal state, non-reviewer verdict) + policy rules (agreement type, min-reviewers, escalation). |
+| `JudgmentProjection` | class | `ChannelProjection<JudgmentState>`. DONE → approve, DECLINE → reject. Unknown senders ignored. Duplicate verdicts supersede. |
+| `JudgmentState` | record | `reviewers`, `verdicts`, `outcome`, `subject`. Methods: `pendingReviewers()`, `hasAllReviewed()`, `approvalCount()`, `rejectionCount()`. |
+| `JudgmentFold` | final class | Pure static transitions: `submitVerdict()`, `approve()`, `reject()`, `escalate()`. |
+| `JudgmentVerdict` | record | `reviewer`, `decision` (APPROVE/REJECT), `reason`, `respondedAt`. |
+| `JudgmentOutcome` | enum | PENDING, APPROVED, REJECTED, ESCALATED. `isTerminal()`. |
+
+**policyOverrides:**
+
+| Key | Values | Default |
+|-----|--------|---------|
+| `judgment.agreement` | `unanimous`, `consensus`, `majority` | `consensus` |
+| `judgment.min-reviewers` | integer | `2` |
+| `judgment.escalation` | `none`, `chain` | `none` |
 
 ### `io.casehub.agency.core`
 

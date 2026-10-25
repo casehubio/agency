@@ -29,7 +29,7 @@ public final class ConversationFold {
         var thread = new ArrayList<ThreadEntry>();
         thread.add(new ThreadEntry(pointId, messageId, messageType, sender, createdAt, role, round, entryType, content));
         var point = new ConversationPoint(pointId, topic, classification, thread,
-                                          ConversationProtocol.STATUS_OPEN);
+                                          ConversationConstants.STATUS_OPEN);
 
         var points = new LinkedHashMap<>(state.points());
         points.put(pointId, point);
@@ -105,9 +105,9 @@ public final class ConversationFold {
         if (targetId != null && points.containsKey(targetId)) {
             ConversationPoint p      = points.get(targetId);
             var               thread = new ArrayList<>(p.thread());
-            thread.add(new ThreadEntry(null, messageId, null, sender, createdAt, role, round, ConversationProtocol.FLAG_HUMAN, content));
+            thread.add(new ThreadEntry(null, messageId, null, sender, createdAt, role, round, ConversationConstants.FLAG_HUMAN, content));
             points.put(targetId, new ConversationPoint(p.id(), p.topic(), p.classification(),
-                                                       thread, ConversationProtocol.STATUS_ESCALATED));
+                                                       thread, ConversationConstants.STATUS_ESCALATED));
         }
 
         var flags = new ArrayList<>(state.humanFlags());

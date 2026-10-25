@@ -278,7 +278,7 @@ query layer, which qhorus already provides.
 - `ChannelProjection<S>` SPI — untouched
 - `ProjectionService` — already supports topic-scoped queries
 - `ConversationProjection` class structure — still abstract, still three hooks
-- `ConversationProtocol` — no new metadata keys (progress deferred to agency#62)
+- `ConversationConstants` — no new metadata keys (progress deferred to agency#62)
 - `ChannelAgentDispatcher` — passes topic from request to handler, no structural change
 
 ---

@@ -72,7 +72,7 @@ class ConversationProjectionTest {
         assertThat(result.points()).containsKey("point-1");
         ConversationPoint point = result.points().get("point-1");
         assertThat(point.id()).isEqualTo("point-1");
-        assertThat(point.status()).isEqualTo(ConversationProtocol.STATUS_OPEN);
+        assertThat(point.status()).isEqualTo(ConversationConstants.STATUS_OPEN);
         assertThat(point.classification().priority()).isEqualTo(Priority.HIGH);
         assertThat(point.classification().scope()).isEqualTo("global");
         assertThat(point.classification().location()).isEqualTo("section 3.2");
@@ -217,7 +217,7 @@ class ConversationProjectionTest {
 
         ConversationPoint point = result.points().get("point-1");
         assertThat(point.thread()).hasSize(2);
-        assertThat(point.status()).isEqualTo(ConversationProtocol.STATUS_OPEN);
+        assertThat(point.status()).isEqualTo(ConversationConstants.STATUS_OPEN);
         assertThat(point.thread().get(1).entryType()).isEqualTo("SOME_UNKNOWN_TYPE");
     }
 
@@ -402,8 +402,8 @@ class ConversationProjectionTest {
         // Thread gets a FLAG_HUMAN entry
         ConversationPoint point = result.points().get("point-1");
         assertThat(point.thread()).hasSize(2);
-        assertThat(point.thread().get(1).entryType()).isEqualTo(ConversationProtocol.FLAG_HUMAN);
-        assertThat(point.status()).isEqualTo(ConversationProtocol.STATUS_ESCALATED);
+        assertThat(point.thread().get(1).entryType()).isEqualTo(ConversationConstants.FLAG_HUMAN);
+        assertThat(point.status()).isEqualTo(ConversationConstants.STATUS_ESCALATED);
 
         // Flags list gets an entry
         assertThat(result.humanFlags()).hasSize(1);
@@ -574,7 +574,7 @@ class ConversationProjectionTest {
         assertThat(state.points()).hasSize(2);
         assertThat(state.points().get("point-1").status()).isEqualTo("ACCEPTED");
         assertThat(state.points().get("point-1").thread()).hasSize(2);
-        assertThat(state.points().get("point-2").status()).isEqualTo(ConversationProtocol.STATUS_OPEN);
+        assertThat(state.points().get("point-2").status()).isEqualTo(ConversationConstants.STATUS_OPEN);
         assertThat(state.points().get("point-2").thread()).hasSize(1);
     }
 

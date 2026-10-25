@@ -24,8 +24,8 @@ class ConvergenceTerminationTest {
 
     static ConversationPoint point(String id, List<ThreadEntry> thread) {
         return new ConversationPoint(id, "general",
-                new PointClassification(Priority.MEDIUM, null, null),
-                thread, ConversationProtocol.STATUS_OPEN);
+                                     new PointClassification(Priority.MEDIUM, null, null),
+                                     thread, ConversationConstants.STATUS_OPEN);
     }
 
     static ConversationState stateWith(ConversationPoint... points) {
