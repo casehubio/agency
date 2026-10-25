@@ -555,6 +555,32 @@ Decision narrative pipeline -- transforms platform decision signals into human-r
 | `AbstractNarrativeSignalStrategy` | abstract class | Base class: `emit(DecisionSignal)` publishes to `EventStreamBus`, `onCaseClose(caseId)` evicts pipeline state. |
 | `DecisionNarrativePipeline` | @ApplicationScoped | Factory: wires L1→L2 via `EventStreamBus`. `signalBus()`, `narrativeBus()`, `tick(now)`, `evictCaseState(caseId)`. |
 
+### `io.casehub.agency.stigmergy.llm`
+
+LLM-driven stigmergy interpretation — event-driven LLM layer that sits alongside the engine's tick loop (not inside it). Composes existing summarisation primitives (`ContentSummariser`, `SummarisationRunner`, `EventStreamBus`) via named templates. Agents use LLM reasoning to interpret full environment state and dispatch observations to pattern-matched handlers.
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `LlmObservation` | record | LLM-facing observation: `patternId`, `confidence`, `evidence`, `derivedFrom`, `details`, `reasoning`. Defensive copies, validation. |
+| `LlmObservationResponse` | record | LLM JSON response wrapper: `List<LlmObservation>` |
+| `LlmRecommendation` | record | LLM-facing action recommendation: `actionType`, `parameters`, `justifyingPatternIds`, `confidence`, `reasoning` |
+| `LlmActionResponse` | record | LLM JSON response wrapper: `List<LlmRecommendation>` |
+| `LlmInvocationPolicy` | record | Caller-supplied latency thresholds: `expectedDuration`, `warnAfter`, `errorAfter`. Factory: `of()` |
+| `RecommendedAction` | record | Wraps engine `RuleAction` with `justifyingPatternIds` and `confidence` for causal attribution |
+| `LlmObservationResult` | record | Engine-facing observation batch result: parallel `observations` (engine) + `rawObservations` (LLM), batch metadata, `InvocationMetadata` |
+| `ActionResult` | record | Engine-facing action result: `recommendedActions`, `confidence`, `reasoning`, `InvocationMetadata` |
+| `InterpretationResult` | record | Combined observation + action result |
+| `EnvironmentWriter` | interface (SPI) | Engine write-back: `storeObservations()`, `depositSignal()`, `writeContext()` |
+| `ObservationHandler` | @FunctionalInterface | Pattern-matched handler: `handle(Observation, LlmObservation, ObservationHandlerContext)` |
+| `ObservationHandlerContext` | final class | Handler dispatch context: `depositSignal()`, `writeContext()`, `storeObservation()` (accumulated), package-private `flushObservations()` |
+| `ObservationDispatcher` | final class | Builder: `on(patternId)`, `onDerived()`, `onUnhandled()`. `dispatch()` topologically sorts by `derivedFrom`, routes to handlers by precedence, flushes observations. Cycle detection with fallback. |
+| `EnvironmentWriteBackHandlers` | final class | Convenience handlers: `depositSignal(prefix)`, `storeObservation()`, `all()` |
+| `ChangeGatedEmissionPolicy<E>` | final class | `EmissionPolicy` that gates on watched-key changes. Prefix matching (`risk.*`) and exact matching. Composes with delegate policy. |
+| `InFlightGate<E, R>` | final class | Concurrency guard: `summariser()` wraps `ContentSummariser`, `gating()` wraps `EmissionPolicy`. Suppresses emission while previous call in-flight. |
+| `LlmResponseConverter` | final class | Static: `toObservations(LlmObservationResponse)`, `toRecommendedActions(LlmActionResponse)`. Converts LLM JSON to engine types. Drops unknown/invalid entries with warnings. |
+| `LlmSummarisers` | final class | Factory: `observation()`, `combined()`, `action()` templates producing `ContentSummariser` implementations. Graceful degradation on parse/agent errors. |
+| `InterpretationBuilder<E>` | final class | Fluent builder: `create()`, `actionPrompt()`, `contextSupplier()`, `observationOnly()`, `combined()` |
+
 ### `io.casehub.agency.speech` (module: `casehub-agency-speech-api`)
 
 Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly, and avatar cognition. Zero foundation dependencies.

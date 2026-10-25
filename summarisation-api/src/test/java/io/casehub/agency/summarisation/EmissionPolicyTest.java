@@ -55,4 +55,28 @@ class EmissionPolicyTest {
         assertThat(policy.shouldEmit(buffered, "stop", 200)).isFalse();
         assertThat(policy.shouldEmit(buffered, "go", 50)).isFalse();
     }
+
+    @Test
+    void window_wrapsWindowPolicyAsEmissionPolicy() {
+        var                            wp = WindowPolicy.ofCount(3);
+        EmissionPolicy<String, Object> ep = EmissionPolicy.window(wp);
+        var twoEvents = List.of(
+                new LevelEvent<>("a", 1L, LEVEL, null),
+                new LevelEvent<>("b", 2L, LEVEL, null));
+        assertThat(ep.shouldEmit(twoEvents, null, 100L)).isFalse();
+        var threeEvents = List.of(
+                new LevelEvent<>("a", 1L, LEVEL, null),
+                new LevelEvent<>("b", 2L, LEVEL, null),
+                new LevelEvent<>("c", 3L, LEVEL, null));
+        assertThat(ep.shouldEmit(threeEvents, null, 100L)).isTrue();
+    }
+
+    @Test
+    void window_respectsAgePolicy() {
+        var                            wp     = WindowPolicy.ofAge(100);
+        EmissionPolicy<String, Object> ep     = EmissionPolicy.window(wp);
+        var                            events = List.of(new LevelEvent<>("a", 50L, LEVEL, null));
+        assertThat(ep.shouldEmit(events, null, 100L)).isFalse();
+        assertThat(ep.shouldEmit(events, null, 200L)).isTrue();
+    }
 }

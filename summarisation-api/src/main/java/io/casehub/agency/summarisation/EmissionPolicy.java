@@ -21,4 +21,9 @@ public interface EmissionPolicy<IN, S> {
         return (buffered, state, now) ->
                 policies.stream().allMatch(p -> p.shouldEmit(buffered, state, now));
     }
+
+    static <IN, S> EmissionPolicy<IN, S> window(WindowPolicy policy) {
+        return new WindowPolicyEmission<>(policy);
+    }
+
 }
