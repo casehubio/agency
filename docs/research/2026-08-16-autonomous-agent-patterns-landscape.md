@@ -320,7 +320,7 @@ This section documents every existing CaseHub capability that the patterns above
 - `JointIntention` / `IntentionMonitor` — shared goals between agents
 - `CoalitionEvaluator` — alliance formation
 - `NormDecision` / `NormResolution` — normative reasoning (priority, specificity, recency)
-- `NegotiationProtocol` — multi-party negotiation with acceptance policies
+- `NegotiationConstants` — multi-party negotiation with acceptance policies
 
 **Summarisation:**
 - `SummarisationRunner` / `KeyedSummarisationRunner` — event hierarchy

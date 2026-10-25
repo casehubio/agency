@@ -293,7 +293,9 @@ Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` 
 | `TerminalOutcomeTermination` | `TerminationCondition<NegotiationState>` — Complete for AGREED, Failed for DEADLOCKED/WITHDRAWN |
 | `DeadlineTermination` | `TerminationCondition<NegotiationState>` — Complete when latest proposal exceeds deadline |
 | `NegotiationCompositeTermination` | First-non-Continue-wins composition of termination conditions |
-| `NegotiationProtocol` | Constants for negotiation outcome strings |
+| `NegotiationConstants` | Constants for negotiation outcome strings |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/protocol/` | Negotiation channel protocol — `NegotiationProtocol` (`ChannelProtocol` impl with incremental `ChannelProjector` caching), `NegotiationRules` (builder-configurable pure rules function with `policyOverrides` mapping) |
+| `agency/src/test/java/io/casehub/agency/deliberation/negotiation/protocol/` | Tests for negotiation channel protocol |
 
 ## Package: `io.casehub.agency.core`
 

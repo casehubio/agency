@@ -1,7 +1,7 @@
 package io.casehub.agency.deliberation.negotiation;
 
-public final class NegotiationProtocol {
-    private NegotiationProtocol() {}
+public final class NegotiationConstants {
+    private NegotiationConstants() {}
 
     public static final String OUTCOME_PENDING    = "PENDING";
     public static final String OUTCOME_AGREED     = "AGREED";
