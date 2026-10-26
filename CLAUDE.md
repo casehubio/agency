@@ -113,6 +113,8 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agency/src/test/java/io/casehub/agency/optimisation/prompt/optimiser/` | Tests for prompt optimisers |
 | `agency-core/src/main/java/io/casehub/agency/optimisation/prompt/runtime/` | CDI runtime beans — `OptimisedFewShotSection`, `VariantAwareSystemPromptCustomiser`, `WeightedOutcomeMetric`, `InMemoryPromptVariantStore` |
 | `agency/src/test/java/io/casehub/agency/optimisation/prompt/runtime/` | Tests for prompt runtime beans |
+| `agency-core/src/main/java/io/casehub/agency/optimisation/prompt/evolution/` | Evolution loop integration — `PromptOptimisationProposalSource` (`ImprovementProposalSource`), `PromptRegressionEvaluator` (`RegressionEvaluator`), `PromptOptimisationCategoryProvider` (`ImprovementCategoryProvider`), `PromptConflictStrategy` (`ConflictStrategy`), `PromptOutcomeProvider` (`@FunctionalInterface`) |
+| `agency/src/test/java/io/casehub/agency/optimisation/prompt/evolution/` | Tests for evolution loop integration |
 | `agency-core/src/main/java/io/casehub/agency/summarisation/` | Summarisation extensions (depends on summarisation-api) — `TieredContentSummariser<T>`, `SummaryMode`, observation package. Core types live in `summarisation-api/`. |
 | `agency/src/test/java/io/casehub/agency/summarisation/` | Tests for summarisation extensions |
 | `agency-core/src/main/java/io/casehub/agency/perception/llm/` | LLM-backed `ContentSummariser<T, SummaryResult>` — generic synthesis via `AgentProvider` |
@@ -411,6 +413,18 @@ DSPy-inspired prompt optimisation framework — offline batch cycle that auto-im
 | `VariantAwareSystemPromptCustomiser` | `SystemPromptCustomiser` `@DefaultBean` — reads instruction delta from active variant, appends to base system prompt. |
 | `WeightedOutcomeMetric` | `PromptQualityMetric` `@DefaultBean` — maps outcome strings to weights (SUCCESS=1.0, GATE_EXPIRED=0.5, GATE_REJECTED=0.25, DECLINED=0.0, FAILURE=0.0). Unknown outcomes default to 0.0. |
 | `InMemoryPromptVariantStore` | `PromptVariantStore` `@DefaultBean` — in-memory with atomic write semantics (write-fsync-rename). |
+
+### Sub-package: `io.casehub.agency.optimisation.prompt.evolution`
+
+Evolution loop integration — registers prompt optimisation as a domain participant in the engine's continuous evolution pipeline (engine#1115/1148). All implementations use domain ID `"prompt-optimisation"`.
+
+| Class | What it does |
+|-------|-------------|
+| `PromptOutcomeProvider` | `@FunctionalInterface` SPI: `List<VariantOutcome> outcomes(String signatureId)`. Consumer-supplied outcome data retrieval. |
+| `PromptOptimisationProposalSource` | `ImprovementProposalSource` impl (sourceId: `"prompt-optimisation"`). Scans registered `PromptSignature` instances, evaluates quality via `PromptQualityMetric`, proposes tuning when quality drops below threshold. |
+| `PromptRegressionEvaluator` | `RegressionEvaluator` impl (evaluatorId: `"prompt-quality"`). Compares per-signature quality scores in `HealthScoreSnapshot.componentScores()` (keyed with `prompt:` prefix). Reports regression when any signature drops by more than threshold (default 0.1). |
+| `PromptOptimisationCategoryProvider` | `ImprovementCategoryProvider` impl. Single category `"prompt-tuning"`, four stages: evaluate → optimise → promote → outcome-recording. No approval gates. |
+| `PromptConflictStrategy` | `ConflictStrategy` impl. Signature-level mutual exclusion — conflicts when an active improvement targets the same `PromptSignature.id()` via metadata key `signatureId`. |
 
 ## Package: `io.casehub.agency.summarisation`
 
