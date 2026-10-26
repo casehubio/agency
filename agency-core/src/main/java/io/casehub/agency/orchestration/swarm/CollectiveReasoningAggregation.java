@@ -2,6 +2,7 @@ package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.orchestration.aggregation.AggregationContext;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
@@ -17,18 +18,34 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
     private static final System.Logger LOG =
             System.getLogger(CollectiveReasoningAggregation.class.getName());
 
-    private final AgentProvider agentProvider;
+    private final           AgentProvider          agentProvider;
     private final @Nullable SwarmInvocationTracker invocationTracker;
+    private final @Nullable SystemPromptCustomiser promptCustomiser;
+    private @Nullable       String                 variantSlot;
+
+
+    public CollectiveReasoningAggregation(AgentProvider agentProvider,
+                                          @Nullable SwarmInvocationTracker invocationTracker,
+                                          @Nullable SystemPromptCustomiser promptCustomiser) {
+        this.agentProvider     = agentProvider;
+        this.invocationTracker = invocationTracker;
+        this.promptCustomiser  = promptCustomiser;
+    }
+
 
     public CollectiveReasoningAggregation(AgentProvider agentProvider,
                                           @Nullable SwarmInvocationTracker invocationTracker) {
-        this.agentProvider = agentProvider;
-        this.invocationTracker = invocationTracker;
+        this(agentProvider, invocationTracker, null);
     }
 
     public CollectiveReasoningAggregation(AgentProvider agentProvider) {
-        this(agentProvider, null);
+        this(agentProvider, null, null);
     }
+
+    public void setVariantSlot(@Nullable String variantSlot) {
+        this.variantSlot = variantSlot;
+    }
+
 
     @Override
     public AggregationResult aggregate(List<AgentResult> results,
@@ -44,10 +61,15 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
         }
 
         var prompt = buildSynthesisPrompt(results);
+        if (promptCustomiser != null) {
+            prompt = promptCustomiser.customise(prompt,
+                                                io.casehub.agency.orchestration.swarm.prompt.SwarmPromptSignatures.COLLECTIVE_REASONING.id(),
+                                                variantSlot != null ? variantSlot : "control");
+        }
         var userMessage = "Synthesise these agent observations. Respond in JSON: " +
-                "{\"agreements\": [...], \"disagreements\": [...], " +
-                "\"complementaryObservations\": [...], \"confidence\": 0.0-1.0, " +
-                "\"minorityViewpoints\": [...]}";
+                          "{\"agreements\": [...], \"disagreements\": [...], " +
+                          "\"complementaryObservations\": [...], \"confidence\": 0.0-1.0, " +
+                          "\"minorityViewpoints\": [...]}";
         var config = AgentSessionConfig.of(prompt, userMessage);
 
         var invResult = StructuredAgentInvoker.invoke(agentProvider, config, SwarmAggregationState.class);
@@ -83,8 +105,8 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
 
     private AggregationResult collectAllFallback(List<AgentResult> results) {
         var outputs = results.stream()
-                .map(r -> r.agent().name() + ": " + (r.output() != null ? r.output().toString() : ""))
-                .collect(Collectors.toList());
+                             .map(r -> r.agent().name() + ": " + (r.output() != null ? r.output().toString() : ""))
+                             .collect(Collectors.toList());
         return new AggregationResult.Resolved(new SwarmAggregationState(
                 outputs, List.of(), List.of(), 0.0, List.of()));
     }
