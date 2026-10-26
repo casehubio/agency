@@ -1,7 +1,6 @@
 package io.casehub.agency.orchestration.routing;
 
 import io.casehub.agency.core.AgentRef;
-import io.casehub.agency.orchestration.routing.RoutingDecision;
 import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerResult;
 import org.junit.jupiter.api.Nested;
@@ -66,8 +65,38 @@ class RoutingDecisionTest {
         }
     }
 
+    @Nested
+    class SwarmAssignment {
+        @Test
+        void defensiveCopy() {
+            var agent = AgentRef.external("a1", x ->
+                    java.util.concurrent.CompletableFuture.completedFuture(
+                            io.casehub.agency.core.AgentResult.success(null, "ok")));
+            var agents = new java.util.ArrayList<AgentRef>(List.of(agent));
+            var teams = new java.util.HashMap<String, List<AgentRef>>(Map.of("team1", List.of(agent)));
+            var assignment = new RoutingDecision.SwarmAssignment(agents, teams, "divide", "test reason");
+            agents.clear();
+            teams.clear();
+            assertThat(assignment.agents()).hasSize(1);
+            assertThat(assignment.teams()).hasSize(1);
+            assertThat(assignment.strategy()).isEqualTo("divide");
+            assertThat(assignment.reason()).isEqualTo("test reason");
+        }
+
+        @Test
+        void nullableStrategyAndReason() {
+            var agent = AgentRef.external("a1", x ->
+                    java.util.concurrent.CompletableFuture.completedFuture(
+                            io.casehub.agency.core.AgentResult.success(null, "ok")));
+            var assignment = new RoutingDecision.SwarmAssignment(List.of(agent), Map.of(), null, null);
+            assertThat(assignment.strategy()).isNull();
+            assertThat(assignment.reason()).isNull();
+        }
+    }
+
+
     @Test
     void sealedInterfacePermitsThreeVariants() {
-        assertThat(RoutingDecision.class.getPermittedSubclasses()).hasSize(3);
+        assertThat(RoutingDecision.class.getPermittedSubclasses()).hasSize(4);
     }
 }

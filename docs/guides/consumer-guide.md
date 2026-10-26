@@ -552,7 +552,7 @@ YAML surface for agentic orchestration patterns — makes all 8 pattern topologi
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `PatternDefinition` | sealed interface | 8 topology subtypes (Supervisor, Debate, Loop, Parallel, Voting, Conditional, Sequence, Htn) with shared concern fields (routing, termination, aggregation, activation, decomposition, failurePolicy, agents, judgment). Jackson `@JsonTypeInfo` discriminated. |
+| `PatternDefinition` | sealed interface | 9 topology subtypes (Supervisor, Debate, Loop, Parallel, Voting, Conditional, Sequence, Htn, Swarm) with shared concern fields (routing, termination, aggregation, activation, decomposition, failurePolicy, agents, judgment). Jackson `@JsonTypeInfo` discriminated. Swarm adds: `experience` (replay config), `coordinationModel`, `invocationPolicy`, `preFilterThreshold`. |
 | `RoutingSpec` | sealed interface | 5 subtypes: FirstMatch (with optional guard expression), RoundRobin, Sequential, LlmSelected, SelectAll |
 | `TerminationSpec` | sealed interface | 9 subtypes: MaxIterations, GoalReached, JudgeConvergence, AllAgreed, Supervisor, Contested, Convergence, SinglePass, AgentCount |
 | `AggregationSpec` | sealed interface | 4 subtypes: PassThrough, CollectAll, MajorityVote, Auction |
@@ -716,7 +716,7 @@ TranscriptionResult result = stt.transcribe(audioFile, TranscriptionOptions.defa
 
 **Observation pipeline**: `ObservationAccumulator` -> `TieredObservationRenderer` for demand-driven agent context. `PartitionedObservationService` for multi-observer scenarios.
 
-**Pattern DSL**: `Patterns.supervisor().agents(a, b, c).task("route claim").execute(state)` for quick multi-agent setups. HTN pattern via `Patterns.htn().rootTask(compound(...)).execute(state)`.
+**Pattern DSL**: `Patterns.supervisor().agents(a, b, c).task("route claim").execute(state)` for quick multi-agent setups. HTN pattern via `Patterns.htn().rootTask(compound(...)).execute(state)`. Swarm pattern via `Patterns.swarm().agentProvider(provider).experienceConfig(config).build()` — LLM-driven team formation with experience replay, collective reasoning, and adaptive coordination.
 
 ## Configuration
 

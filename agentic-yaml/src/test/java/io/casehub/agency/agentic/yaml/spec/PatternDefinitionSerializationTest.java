@@ -1,8 +1,8 @@
 package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +24,7 @@ class PatternDefinitionSerializationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"supervisor", "debate", "loop", "parallel",
-            "voting", "conditional", "sequence", "htn"})
+            "voting", "conditional", "sequence", "htn", "swarm"})
     void deserializesAllTopologies(String topology) throws IOException {
         var yaml = readFixture(topology);
         var spec = mapper.readValue(yaml, PatternDefinition.class);
@@ -182,6 +182,27 @@ class PatternDefinitionSerializationTest {
         var analyse = (TaskNodeSpec.Primitive) process.subtasks().get(1);
         assertThat(analyse.description()).isEqualTo("Performs statistical analysis and generates insight reports");
     }
+
+    @Test
+    void swarmFields() throws IOException {
+        var spec = loadPattern("swarm", PatternDefinition.Swarm.class);
+        assertThat(spec.name()).isEqualTo("test-swarm");
+        assertThat(spec.task()).isEqualTo("swarm-coordination");
+        assertThat(spec.coordinationModel()).isEqualTo("claude-sonnet-4-5");
+        assertThat(spec.preFilterThreshold()).isEqualTo(12);
+        assertThat(spec.experience()).isNotNull();
+        assertThat(spec.experience().maxTraces()).isEqualTo(5);
+        assertThat(spec.experience().minSimilarity()).isEqualTo(0.3);
+        assertThat(spec.invocationPolicy()).isNotNull();
+        assertThat(spec.invocationPolicy().maxCalls()).isEqualTo(50);
+        assertThat(spec.invocationPolicy().maxTokens()).isEqualTo(500_000);
+        assertThat(spec.invocationPolicy().provisioningReserve()).isEqualTo(3);
+        assertThat(spec.invocationPolicy().warnAfter()).isEqualTo("5s");
+        assertThat(spec.invocationPolicy().errorAfter()).isEqualTo("30s");
+        assertThat(spec.termination()).hasSize(1);
+        assertThat(spec.agents()).hasSize(2);
+    }
+
 
     @Test
     void composedAgentWithNestedPattern() throws IOException {

@@ -7,6 +7,7 @@ public enum CapabilityType {
     CHOREOGRAPHY(CapabilityCategory.ORCHESTRATION),
     SAGA(CapabilityCategory.ORCHESTRATION),
     DECOMPOSITION(CapabilityCategory.ORCHESTRATION),
+    SWARM_COORDINATION(CapabilityCategory.ORCHESTRATION),
 
     VOTING(CapabilityCategory.DELIBERATION),
     DEBATE(CapabilityCategory.DELIBERATION),
@@ -59,6 +60,7 @@ public enum CapabilityType {
             case PARALLEL -> Optional.of(PatternType.PARALLEL);
             case LOOP -> Optional.of(PatternType.LOOP);
             case CONDITIONAL -> Optional.of(PatternType.CONDITIONAL);
+            case SWARM_COORDINATION -> Optional.of(PatternType.SWARM);
             default -> Optional.empty();
         };
     }

@@ -38,6 +38,7 @@ import io.casehub.agency.core.yaml.spec.TerminationSpec;
 import io.casehub.eidos.api.AgentCapability;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.engine.plan.DecompositionStrategy;
+import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import org.jspecify.annotations.Nullable;
 
@@ -55,9 +56,16 @@ public class PatternCompiler {
     private final CallerStrategyRegistry callerStrategyRegistry = new CallerStrategyRegistry();
 
     private final @Nullable ExpressionEngine expressionEngine;
+    private final @Nullable AgentProvider agentProvider;
 
     public PatternCompiler(@Nullable ExpressionEngine expressionEngine) {
+        this(expressionEngine, null);
+    }
+
+    public PatternCompiler(@Nullable ExpressionEngine expressionEngine,
+                           @Nullable AgentProvider agentProvider) {
         this.expressionEngine = expressionEngine;
+        this.agentProvider = agentProvider;
     }
 
     @SuppressWarnings("unchecked")
@@ -115,6 +123,7 @@ public class PatternCompiler {
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional c -> PatternType.CONDITIONAL;
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence s -> PatternType.SEQUENCE;
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> PatternType.HTN;
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Swarm s -> PatternType.SWARM;
         };
     }
 
@@ -131,6 +140,18 @@ public class PatternCompiler {
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Debate d -> new RoundRobinRouting<>();
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Loop l -> new RoundRobinRouting<>();
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> new SequentialRouting<>();
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Swarm s -> {
+                if (agentProvider == null) throw new UnsupportedOperationException("Swarm routing requires AgentProvider — use PatternCompiler(expressionEngine, agentProvider) or Patterns.swarm()");
+                var expConfig = s.experience() != null
+                        ? new io.casehub.agency.orchestration.swarm.ExperienceReplayConfig(s.experience().maxTraces(), s.experience().minSimilarity())
+                        : io.casehub.agency.orchestration.swarm.ExperienceReplayConfig.defaults();
+                var expSection = new io.casehub.agency.orchestration.swarm.SwarmExperienceSection(expConfig);
+                var invPolicy = s.invocationPolicy() != null
+                        ? new io.casehub.agency.orchestration.swarm.SwarmInvocationPolicy(s.invocationPolicy().maxCalls(), s.invocationPolicy().maxTokens(), s.invocationPolicy().provisioningReserve(), java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(30))
+                        : io.casehub.agency.orchestration.swarm.SwarmInvocationPolicy.defaults();
+                var invTracker = new io.casehub.agency.orchestration.swarm.SwarmInvocationTracker(invPolicy);
+                yield new io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy(agentProvider, expSection, s.preFilterThreshold() > 0 ? s.preFilterThreshold() : 12, invTracker);
+            }
         };
     }
 
@@ -158,6 +179,7 @@ public class PatternCompiler {
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional c -> new MaxIterationsTermination<>(1);
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence s -> new MaxIterationsTermination<>(agents.size());
             case io.casehub.agency.core.yaml.spec.PatternDefinition.Htn h -> new MaxIterationsTermination<>(1);
+            case io.casehub.agency.core.yaml.spec.PatternDefinition.Swarm s -> new MaxIterationsTermination<>(20);
         };
     }
 

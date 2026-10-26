@@ -24,6 +24,7 @@ public interface ExecutionEventListener {
     default void onExecutionStart(ExecutionModel<?> model) {}
     default void onExecutionComplete(ExecutionResult result, Duration executionDuration,
                                      int iterationCount) {}
+    default void onSwarmDegraded(io.casehub.agency.orchestration.swarm.SwarmDegradedEvent event) {}
 
     static String agentName(AgentRef agent) {return agent.name();}
 }

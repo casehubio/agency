@@ -14,4 +14,5 @@ public final class Patterns {
     public static <T> DebateBuilder<T> debate() { return new DebateBuilder<>(); }
     public static <T> ConditionalBuilder<T> conditional() { return new ConditionalBuilder<>(); }
     public static <T> HtnBuilder<T> htn() { return new HtnBuilder<>(); }
+    public static io.casehub.agency.orchestration.swarm.SwarmCoordinatorBuilder swarm() { return new io.casehub.agency.orchestration.swarm.SwarmCoordinatorBuilder(); }
 }

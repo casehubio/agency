@@ -1,7 +1,6 @@
 package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.FailurePolicy;
@@ -17,6 +16,7 @@ import io.casehub.agency.orchestration.routing.SelectAllRouting;
 import io.casehub.agency.orchestration.routing.SequentialRouting;
 import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
 import io.casehub.platform.expression.MvelExpressionEngine;
+import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -238,5 +238,25 @@ class PatternCompilerTest {
         try (var is = getClass().getResourceAsStream("/patterns/" + name + ".yaml")) {
             return mapper.readValue(is, io.casehub.agency.core.yaml.spec.PatternDefinition.class);
         }
+    }
+
+    @Test
+    void compilesSwarm() throws IOException {
+        var agentProvider = org.mockito.Mockito.mock(io.casehub.platform.agent.AgentProvider.class);
+        var swarmCompiler = new PatternCompiler(new MvelExpressionEngine(), agentProvider);
+        var spec          = loadPattern("swarm");
+        var model         = swarmCompiler.compile(spec);
+        assertThat(model.patternType()).isEqualTo(PatternType.SWARM);
+        assertThat(model.routing()).isInstanceOf(io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy.class);
+        assertThat(model.aggregation()).isInstanceOf(PassThrough.class);
+        assertThat(model.candidateSupplier().get()).hasSize(2);
+    }
+
+    @Test
+    void swarmCompilationThrowsWithoutAgentProvider() {
+        assertThat(org.junit.jupiter.api.Assertions.assertThrows(
+                UnsupportedOperationException.class,
+                () -> compiler.compile(loadPattern("swarm"))
+                                                                )).hasMessageContaining("AgentProvider");
     }
 }

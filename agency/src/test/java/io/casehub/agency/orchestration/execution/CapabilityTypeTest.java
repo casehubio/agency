@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CapabilityTypeTest {
 
     @Test
-    void shouldHave28Capabilities() {
-        assertThat(CapabilityType.values()).hasSize(28);
+    void shouldHave29Capabilities() {
+        assertThat(CapabilityType.values()).hasSize(29);
     }
 
     @Test

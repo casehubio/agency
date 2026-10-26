@@ -1,0 +1,25 @@
+type: swarm
+name: test-swarm
+description: Test swarm coordination
+task: swarm-coordination
+coordinationModel: claude-sonnet-4-5
+preFilterThreshold: 12
+experience:
+  maxTraces: 5
+  minSimilarity: 0.3
+invocationPolicy:
+  maxCalls: 50
+  maxTokens: 500000
+  provisioningReserve: 3
+  warnAfter: 5s
+  errorAfter: 30s
+agents:
+  - type: worker
+    name: analyst
+    description: Analyses data
+  - type: worker
+    name: responder
+    description: Executes actions
+termination:
+  - type: max-iterations
+    iterations: 20

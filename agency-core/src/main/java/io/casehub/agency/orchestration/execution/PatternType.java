@@ -8,7 +8,8 @@ public enum PatternType {
     SUPERVISOR,
     DEBATE,
     VOTING,
-    HTN;
+    HTN,
+    SWARM;
 
     public boolean isWorkflowShaped() {
         return this == SEQUENCE || this == PARALLEL || this == LOOP || this == CONDITIONAL;
@@ -24,6 +25,7 @@ public enum PatternType {
             case PARALLEL -> CapabilityType.PARALLEL;
             case LOOP -> CapabilityType.LOOP;
             case CONDITIONAL -> CapabilityType.CONDITIONAL;
+            case SWARM -> CapabilityType.SWARM_COORDINATION;
         };
     }
 

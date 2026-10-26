@@ -41,6 +41,7 @@ public class AgencyAnnotationsRecorder {
             case PARALLEL -> buildParallel(desc, candidates);
             case LOOP -> buildLoop(desc, candidates);
             case CONDITIONAL -> buildConditional(desc, candidates);
+            case SWARM -> throw new UnsupportedOperationException("Swarm patterns require AgentProvider — use YAML compilation or Patterns.swarm() builder");
         };
     }
 

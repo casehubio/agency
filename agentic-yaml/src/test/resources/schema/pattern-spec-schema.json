@@ -928,6 +928,93 @@
       },
       "unevaluatedProperties" : false
     },
+    "Swarm" : {
+      "type" : "object",
+      "properties" : {
+        "activation" : {
+          "$ref" : "#/$defs/ActivationSpec"
+        },
+        "agents" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/AgentRefSpec"
+          }
+        },
+        "aggregation" : {
+          "$ref" : "#/$defs/AggregationSpec"
+        },
+        "coordinationModel" : {
+          "type" : "string"
+        },
+        "decomposition" : {
+          "$ref" : "#/$defs/DecompositionSpec"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "experience" : {
+          "type" : "object",
+          "properties" : {
+            "maxTraces" : {
+              "type" : "integer"
+            },
+            "minSimilarity" : {
+              "type" : "number"
+            }
+          },
+          "unevaluatedProperties" : false
+        },
+        "failurePolicy" : {
+          "$ref" : "#/$defs/FailurePolicy"
+        },
+        "governance" : {
+          "$ref" : "#/$defs/GovernanceSpec"
+        },
+        "invocationPolicy" : {
+          "type" : "object",
+          "properties" : {
+            "errorAfter" : {
+              "type" : "string"
+            },
+            "maxCalls" : {
+              "type" : "integer"
+            },
+            "maxTokens" : {
+              "type" : "integer"
+            },
+            "provisioningReserve" : {
+              "type" : "integer"
+            },
+            "warnAfter" : {
+              "type" : "string"
+            }
+          },
+          "unevaluatedProperties" : false
+        },
+        "judgment" : {
+          "$ref" : "#/$defs/JudgmentSpec"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "preFilterThreshold" : {
+          "type" : "integer"
+        },
+        "routing" : {
+          "$ref" : "#/$defs/RoutingSpec"
+        },
+        "task" : {
+          "type" : "string"
+        },
+        "termination" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TerminationSpec"
+          }
+        }
+      },
+      "unevaluatedProperties" : false
+    },
     "TaskNodeSpec" : {
       "oneOf" : [ {
         "properties" : {
@@ -1188,5 +1275,13 @@
     },
     "required" : [ "type" ],
     "$ref" : "#/$defs/Htn"
+  }, {
+    "properties" : {
+      "type" : {
+        "const" : "swarm"
+      }
+    },
+    "required" : [ "type" ],
+    "$ref" : "#/$defs/Swarm"
   } ]
 }

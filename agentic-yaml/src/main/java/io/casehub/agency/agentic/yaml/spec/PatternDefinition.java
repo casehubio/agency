@@ -18,7 +18,8 @@ import java.util.List;
         @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Voting.class, name = "voting"),
         @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Conditional.class, name = "conditional"),
         @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Sequence.class, name = "sequence"),
-        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Htn.class, name = "htn")
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Htn.class, name = "htn"),
+        @Type(value = io.casehub.agency.core.yaml.spec.PatternDefinition.Swarm.class, name = "swarm")
 })
 public sealed interface PatternDefinition {
 
@@ -160,4 +161,26 @@ public sealed interface PatternDefinition {
             @Nullable GovernanceSpec governance,
             TaskNodeSpec rootTask
     ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
+
+    record Swarm(
+            @Nullable String name,
+            @Nullable String description,
+            @Nullable RoutingSpec routing,
+            @Nullable List<TerminationSpec> termination,
+            @Nullable AggregationSpec aggregation,
+            @Nullable ActivationSpec activation,
+            @Nullable DecompositionSpec decomposition,
+            @Nullable FailurePolicy failurePolicy,
+            @Nullable String task,
+            List<AgentRefSpec> agents,
+            @Nullable JudgmentSpec judgment,
+            @Nullable GovernanceSpec governance,
+            @Nullable ExperienceReplaySpec experience,
+            @Nullable String coordinationModel,
+            @Nullable SwarmInvocationPolicySpec invocationPolicy,
+            int preFilterThreshold
+    ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {
+        public Swarm {if (agents == null) {agents = List.of();}}
+    }
+
 }

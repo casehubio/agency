@@ -119,6 +119,15 @@ public abstract class AbstractExecutionDriver<T> implements ExecutionDriver<T> {
 
             lastAggregationResult = aggregated;
             notifyAggregation(model, aggregated);
+        } else if (decision instanceof RoutingDecision.SwarmAssignment assignment) {
+            var results = dispatchAgents(model, assignment.agents(), context);
+            allResults.addAll(results);
+
+            var aggCtx = new AggregationContext<>(context);
+            var aggregated = model.aggregation().aggregate(results, aggCtx);
+
+            lastAggregationResult = aggregated;
+            notifyAggregation(model, aggregated);
         } else if (decision instanceof RoutingDecision.Unresolvable unresolvable) {
             var action = model.failurePolicy().onRoutingFailure();
             if (action == FailurePolicy.RoutingFailureAction.FAIL) {
