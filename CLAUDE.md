@@ -89,6 +89,8 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agency/src/test/java/io/casehub/agency/deliberation/belief/` | Tests for belief revision |
 | `agency-core/src/main/java/io/casehub/agency/social/cognition/` | Cognition integration — `CognitionAvatarAdapter` (thin `AvatarCognition` bridge delegating to neocortex `CognitionCore`, maps speech lifecycle to cognitive tick/record/evaluate), `MemoryHygieneSpiAdapter` (bridges agency `MemoryHygieneOrchestrator` to neocortex SPI). All cognitive types, orchestrators, prompt sections, and config records now provided by `casehub-neocortex-cognition` module. |
 | `agency/src/test/java/io/casehub/agency/social/cognition/` | Tests for cognition integration |
+| `agency-core/src/main/java/io/casehub/agency/social/cognition/evolution/` | Cognitive evolution ticker — `CognitiveEvolutionAdapter` (composition root: drive-modulated `EvolutionTickBridge` invocation with circuit breaker → mood feedback), `EvolutionTickBridge` (`@FunctionalInterface`), `CognitiveEvolutionConfig` (curiosity thresholds), `CircuitBreakerMoodMapper` (TickTrace gate → MoodSignal.DirectShift) |
+| `agency/src/test/java/io/casehub/agency/social/cognition/evolution/` | Tests for cognitive evolution ticker |
 | `agency-core/src/main/java/io/casehub/agency/social/memory/` | Memory hygiene — `MemoryHygieneOrchestrator` (tick: importance scoring → eviction → consolidation; implements neocortex `io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator` SPI), `MemoryHygieneScheduler` (maintain: tick + reflection + peer-linking + integrity), `ConfidenceScorer` SPI with `ArousalScorer`/`SurpriseScorer`/`CompositeConfidenceScorer`, `RetentionScore`/`RetentionConfig` (composite eviction scoring), `DefaultIntegrityChecker` (structural + semantic escalation), `ReflectionStore` (reflection persistence SPI), `ReflectionQueryStore` SPI extending `io.casehub.neocortex.memory.ReflectionQueryStore` with `NoOpReflectionQueryStore` `@DefaultBean`, `HygieneTick`/`MaintenanceTick` sealed outcomes, `HygieneEvent` observability. Note: `ReflectionEntry` and `KnowledgeGapSummary` types moved to neocortex `memory-api`. |
 | `agency/src/test/java/io/casehub/agency/social/memory/` | Tests for memory hygiene |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/conversation/` | Structured conversation protocol — projections, fold state, rendering, point classification, epistemic common ground, convergence detection |
@@ -425,6 +427,17 @@ Evolution loop integration — registers prompt optimisation as a domain partici
 | `PromptRegressionEvaluator` | `RegressionEvaluator` impl (evaluatorId: `"prompt-quality"`). Compares per-signature quality scores in `HealthScoreSnapshot.componentScores()` (keyed with `prompt:` prefix). Reports regression when any signature drops by more than threshold (default 0.1). |
 | `PromptOptimisationCategoryProvider` | `ImprovementCategoryProvider` impl. Single category `"prompt-tuning"`, four stages: evaluate → optimise → promote → outcome-recording. No approval gates. |
 | `PromptConflictStrategy` | `ConflictStrategy` impl. Signature-level mutual exclusion — conflicts when an active improvement targets the same `PromptSignature.id()` via metadata key `signatureId`. |
+
+## Package: `io.casehub.agency.social.cognition.evolution`
+
+Cognitive evolution ticker — wires engine's `EvolutionTicker` into the cognitive agent's tick cycle via `CognitionAvatarAdapter`. CURIOSITY drive modulates tick frequency; circuit breaker state feeds PAD mood signals.
+
+| Class | What it does |
+|-------|-------------|
+| `EvolutionTickBridge` | `@FunctionalInterface` SPI: `TickTrace tick()`. Consumer binds `EvolutionTicker.tick(caseId, tenancyId, config, EVENT_DRIVEN)` at construction. |
+| `CognitiveEvolutionConfig` | Record: `curiosityFloor` (0.3), `curiosityFullEngage` (0.7), `circuitBreakerMoodEnabled` (true). `alwaysTick()` factory for testing. |
+| `CircuitBreakerMoodMapper` | Stateful mapper: `TickTrace` circuit breaker gate → `MoodSignal.DirectShift`. Tracks previous blocked state for recovery detection. |
+| `CognitiveEvolutionAdapter` | Composition root: queries `DriveOrchestrator.currentDrives()` for CURIOSITY intensity, applies frequency modulation (below floor → skip, above fullEngage → always, between → proportional probability), calls `EvolutionTickBridge.tick()`, feeds `CircuitBreakerMoodMapper` signals to `MoodOrchestrator.record()`. |
 
 ## Package: `io.casehub.agency.summarisation`
 

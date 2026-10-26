@@ -1,7 +1,8 @@
 package io.casehub.agency.social.cognition;
 
-import io.casehub.agency.speech.AvatarCognition;
+import io.casehub.agency.social.cognition.evolution.CognitiveEvolutionAdapter;
 import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.agency.speech.AvatarCognition;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.SpeechPromptAssembler;
@@ -26,14 +27,25 @@ public class CognitionAvatarAdapter implements AvatarCognition {
     private final CognitionCore core;
     private final @Nullable AgentRegistry agentRegistry;
     private final @Nullable CognitiveGoalOrchestrator cognitiveGoals;
+    private final @Nullable CognitiveEvolutionAdapter evolutionAdapter;
+
 
     public CognitionAvatarAdapter(CognitionCore core,
-                                   @Nullable AgentRegistry agentRegistry,
-                                   @Nullable CognitiveGoalOrchestrator cognitiveGoals) {
-        this.core = Objects.requireNonNull(core);
-        this.agentRegistry = agentRegistry;
-        this.cognitiveGoals = cognitiveGoals;
+                                  @Nullable AgentRegistry agentRegistry,
+                                  @Nullable CognitiveGoalOrchestrator cognitiveGoals) {
+        this(core, agentRegistry, cognitiveGoals, null);
     }
+
+    public CognitionAvatarAdapter(CognitionCore core,
+                                  @Nullable AgentRegistry agentRegistry,
+                                  @Nullable CognitiveGoalOrchestrator cognitiveGoals,
+                                  @Nullable CognitiveEvolutionAdapter evolutionAdapter) {
+        this.core             = Objects.requireNonNull(core);
+        this.agentRegistry    = agentRegistry;
+        this.cognitiveGoals   = cognitiveGoals;
+        this.evolutionAdapter = evolutionAdapter;
+    }
+
 
     @Override
     public SpeechPromptAssembler wrapAssembler(SpeechPromptAssembler base, String agentId,
@@ -72,6 +84,9 @@ public class CognitionAvatarAdapter implements AvatarCognition {
     public void tick(String agentId, String tenantId, Set<String> activeSubjects) {
         var descriptor = resolveDescriptor(agentId, tenantId);
         core.tick(agentId, tenantId, descriptor, (aid, tid) -> activeSubjects);
+        if (evolutionAdapter != null) {
+            evolutionAdapter.tickIfDue(agentId, tenantId);
+        }
         consumeGoalRevisions(agentId, tenantId);
     }
 
