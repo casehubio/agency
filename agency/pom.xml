@@ -169,6 +169,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Test — playbook primitives (counter, state machine, accumulator) -->
+    <dependency>
+      <groupId>io.casehub</groupId>
+      <artifactId>casehub-platform-yaml-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Test — foundation runtimes -->
     <dependency>
       <groupId>io.casehub</groupId>

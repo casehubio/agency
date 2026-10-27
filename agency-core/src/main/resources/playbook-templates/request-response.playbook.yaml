@@ -1,0 +1,32 @@
+playbook: "1.0"
+name: request-response
+---
+metadata:
+  type: protocol
+  description: >
+    Monitors the request-response cycle in a channel. Warns when too many
+    queries are unanswered, indicating the responder may be overloaded or
+    messages are being lost.
+  config:
+    maxOpenQueries:
+      type: int
+      default: 3
+      override-key: request-response.max-open-queries
+  rules:
+    - "QUERY with openQueries >= maxOpenQueries → WARNING/INVESTIGATE"
+    - "non-QUERY non-RESPONSE with openQueries > 0 → INFO/LOG"
+---
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "QUERY"
+      counter-add: { name: "openQueries", delta: 1 }
+      when ${counter-get('openQueries') >= config.maxOpenQueries}:
+        - advisory: { severity: WARNING, message: "unanswered queries exceed threshold", action: INVESTIGATE }
+    - pattern: "RESPONSE"
+      counter-add: { name: "openQueries", delta: -1 }
+    - default:
+        - when ${counter-get('openQueries') > 0}:
+            - advisory: { severity: INFO, message: "channel has open queries awaiting response", action: LOG }

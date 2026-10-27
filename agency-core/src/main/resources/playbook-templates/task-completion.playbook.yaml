@@ -1,0 +1,36 @@
+playbook: "1.0"
+name: task-completion
+---
+metadata:
+  type: protocol
+  description: >
+    Monitors the task assignment and completion cycle. Warns when too many
+    commands are outstanding or when an obligor sends non-completion messages
+    while they have open obligations.
+  config:
+    maxOpenCommands:
+      type: int
+      default: 3
+      override-key: task-completion.max-open-commands
+  rules:
+    - "COMMAND with openCommands >= maxOpenCommands → WARNING/INVESTIGATE"
+    - "obligor sends non-completion message with open obligation → WARNING/INVESTIGATE"
+---
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "COMMAND"
+      counter-add: { name: "openCommands", delta: 1 }
+      when ${counter-get('openCommands') >= config.maxOpenCommands}:
+        - advisory: { severity: WARNING, message: "incomplete tasks exceed threshold", action: INVESTIGATE }
+    - pattern: "DONE"
+      counter-add: { name: "openCommands", delta: -1 }
+    - pattern: "FAILURE"
+      counter-add: { name: "openCommands", delta: -1 }
+    - pattern: "DECLINE"
+      counter-add: { name: "openCommands", delta: -1 }
+    - default:
+        - when ${event.sender == obligor && counter-get('openCommands') > 0}:
+            - advisory: { severity: WARNING, message: "obligor has an open obligation", action: INVESTIGATE }

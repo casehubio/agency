@@ -698,6 +698,42 @@ var stt = new SherpaOnnxSpeechToText(config);
 TranscriptionResult result = stt.transcribe(audioFile, TranscriptionOptions.defaults());
 ```
 
+### Protocol Playbooks (module: `casehub-agency`)
+
+Standard playbook YAML files expressing qhorus built-in channel protocols. These are normal playbooks -- same format, same compiler, same executor -- that happen to evaluate channel dispatch events and emit advisories. They use counters for exact commitment tracking and guards for threshold enforcement.
+
+**Location:** `agency-core/src/main/resources/playbook-templates/`
+
+**Available playbooks:**
+
+| Playbook | Source Protocol | Mechanism |
+|----------|---------------|-----------|
+| `request-response.playbook.yaml` | `RequestResponseProtocol` (qhorus) | Counter tracks open queries, warns at threshold |
+| `task-completion.playbook.yaml` | `TaskCompletionProtocol` (qhorus) | Counter tracks open commands, warns at threshold + obligor check |
+
+**Playbook structure:**
+
+Each protocol playbook is a multi-document YAML file:
+
+- **Front-matter** (`playbook: "1.0"`, `name`) -- standard playbook envelope
+- **`metadata` section** -- declares the playbook's role and pre-initializes resources:
+  - `type: protocol` -- enables registry search, validation, and conformance checks
+  - `config` -- configurable parameters with defaults and `policyOverrides` keys for per-channel customisation
+  - `rules` -- concise specification of when advisories fire
+- **Body** -- event-driven loop using `from:` + `loop: continuous`, `match` on event type, `counter-add`/`counter-get` for tracking, `when` guards for threshold checks, advisory emission
+
+**Creating a custom protocol:**
+
+1. Copy a playbook to your project
+2. Change the `name` in front-matter
+3. Modify the event matching, counter logic, and advisory emission
+4. Adjust `metadata.config` for your thresholds
+5. Update `metadata.rules` to document the new behaviour
+
+**Current status:**
+
+Protocol playbooks are not executable as `ChannelProtocol` implementations until qhorus#497 wires channel dispatch into the playbook executor. The playbook primitives (counters, guards, pattern matching) are validated and working.
+
 ## Key Integration Patterns
 
 **Summarisation Pattern A** (SummarisationRunner pipeline): sync heuristics, microsecond latency. Wire accumulator -> optional compactor -> summariser -> output bus. Use `flush()` at shutdown for unconditional drain. Builder API available for opt-in SPIs: `SummarisationRunner.builder(summariser, bus, level).emissionPolicy(...).stateStore(...).outputProcessor(...).build()`.
