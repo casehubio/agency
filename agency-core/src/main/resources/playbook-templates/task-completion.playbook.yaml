@@ -22,9 +22,10 @@ metadata:
   match: "${event.type}"
   cases:
     - pattern: "COMMAND"
-      counter-add: { name: "openCommands", delta: 1 }
-      when ${counter-get('openCommands') >= config.maxOpenCommands}:
+      block:
+        - counter-add: { name: "openCommands", delta: 1 }
         - advisory: { severity: WARNING, message: "incomplete tasks exceed threshold", action: INVESTIGATE }
+          when: "${openCommands >= config.maxOpenCommands}"
     - pattern: "DONE"
       counter-add: { name: "openCommands", delta: -1 }
     - pattern: "FAILURE"
@@ -32,5 +33,5 @@ metadata:
     - pattern: "DECLINE"
       counter-add: { name: "openCommands", delta: -1 }
     - default:
-        - when ${event.sender == obligor && counter-get('openCommands') > 0}:
-            - advisory: { severity: WARNING, message: "obligor has an open obligation", action: INVESTIGATE }
+        - advisory: { severity: WARNING, message: "obligor has an open obligation", action: INVESTIGATE }
+          when: "${event.senderIsObligor && openCommands > 0}"

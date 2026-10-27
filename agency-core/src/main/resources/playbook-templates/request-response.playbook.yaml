@@ -22,11 +22,12 @@ metadata:
   match: "${event.type}"
   cases:
     - pattern: "QUERY"
-      counter-add: { name: "openQueries", delta: 1 }
-      when ${counter-get('openQueries') >= config.maxOpenQueries}:
+      block:
+        - counter-add: { name: "openQueries", delta: 1 }
         - advisory: { severity: WARNING, message: "unanswered queries exceed threshold", action: INVESTIGATE }
+          when: "${openQueries >= config.maxOpenQueries}"
     - pattern: "RESPONSE"
       counter-add: { name: "openQueries", delta: -1 }
     - default:
-        - when ${counter-get('openQueries') > 0}:
-            - advisory: { severity: INFO, message: "channel has open queries awaiting response", action: LOG }
+        - advisory: { severity: INFO, message: "channel has open queries awaiting response", action: LOG }
+          when: "${openQueries > 0}"
