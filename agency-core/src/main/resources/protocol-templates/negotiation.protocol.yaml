@@ -1,0 +1,23 @@
+MONITORING:
+  - "on":
+      PROPOSE: PROPOSED
+
+PROPOSED:
+  - "on":
+      DONE: RESPONDING
+      DECLINE: RESPONDING
+      PROPOSE: PROPOSED
+  - advisory:
+      severity: INFO
+      message: "Active proposal — awaiting responses"
+      action: LOG
+
+RESPONDING:
+  - "on":
+      DONE: RESPONDING
+      DECLINE: RESPONDING
+      PROPOSE: PROPOSED
+  - advisory:
+      severity: INFO
+      message: "Responses in progress"
+      action: LOG

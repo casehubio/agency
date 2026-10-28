@@ -1,43 +1,59 @@
 package io.casehub.agency.deliberation.negotiation.protocol;
 
-import io.casehub.agency.deliberation.negotiation.AcceptancePolicy;
-import io.casehub.agency.deliberation.negotiation.NegotiationProjection;
-import io.casehub.agency.deliberation.negotiation.NegotiationState;
+import io.casehub.agency.deliberation.protocol.PlaybookStateEvaluator;
+import io.casehub.agency.deliberation.protocol.ProtocolStateEvaluator;
+import io.casehub.platform.coordination.protocol.PlaybookProtocolEvaluator;
 import io.casehub.qhorus.api.channel.ChannelProjector;
 import io.casehub.qhorus.api.spi.ChannelProtocol;
 import io.casehub.qhorus.api.spi.DispatchAdvisory;
-import io.casehub.qhorus.api.spi.ProjectionResult;
 import io.casehub.qhorus.api.spi.ProtocolContext;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class NegotiationProtocol implements ChannelProtocol {
 
-    private final ChannelProjector projector;
-    private final NegotiationRules defaultRules;
-    private final boolean cachingEnabled;
-    private final ConcurrentHashMap<UUID, CachedProjection> cache;
+    private static final Logger LOG = Logger.getLogger(NegotiationProtocol.class);
+    private static final String STATE_BACKING_KEY = "negotiation.state-backing";
+    private static final String PLAYBOOK_MODE = "playbook";
+    private static final String PROJECTION_MODE = "projection";
+
+    private final ProtocolStateEvaluator projectionEvaluator;
+    private final ProtocolStateEvaluator playbookEvaluator;
 
     @Inject
+    public NegotiationProtocol(ChannelProjector projector,
+                               Instance<PlaybookProtocolEvaluator> playbookRuntime) {
+        this.projectionEvaluator = new NegotiationProjectionEvaluator(
+                projector, NegotiationRules.defaults(), true);
+        this.playbookEvaluator = playbookRuntime.isUnsatisfied()
+                ? null
+                : new PlaybookStateEvaluator(playbookRuntime.get(), "NEGOTIATION");
+    }
+
     public NegotiationProtocol(ChannelProjector projector) {
-        this(projector, NegotiationRules.defaults(), true);
+        this.projectionEvaluator = new NegotiationProjectionEvaluator(
+                projector, NegotiationRules.defaults(), true);
+        this.playbookEvaluator = null;
     }
 
     public NegotiationProtocol(ChannelProjector projector,
                                NegotiationRules defaultRules,
                                boolean cachingEnabled) {
-        this.projector = Objects.requireNonNull(projector);
-        this.defaultRules = Objects.requireNonNull(defaultRules);
-        this.cachingEnabled = cachingEnabled;
-        this.cache = new ConcurrentHashMap<>();
+        this.projectionEvaluator = new NegotiationProjectionEvaluator(
+                projector, defaultRules, cachingEnabled);
+        this.playbookEvaluator = null;
+    }
+
+    public NegotiationProtocol(ProtocolStateEvaluator projectionEvaluator,
+                               ProtocolStateEvaluator playbookEvaluator) {
+        this.projectionEvaluator = Objects.requireNonNull(projectionEvaluator);
+        this.playbookEvaluator = playbookEvaluator;
     }
 
     @Override
@@ -47,47 +63,17 @@ public class NegotiationProtocol implements ChannelProtocol {
 
     @Override
     public List<DispatchAdvisory> evaluate(ProtocolContext ctx) {
-        NegotiationRules rules = defaultRules.withOverrides(ctx.policyOverrides());
-        Set<String> parties = new HashSet<>(ctx.protocolParticipants());
-        AcceptancePolicy policy = rules.resolveAcceptancePolicy(parties.size());
+        String backing = ctx.policyOverrides().getOrDefault(STATE_BACKING_KEY, PROJECTION_MODE);
 
-        NegotiationState state = projectState(ctx.channelId(), parties, policy);
-
-        if (state.outcome().isTerminal()) {
-            evictCache(ctx.channelId());
+        if (PLAYBOOK_MODE.equals(backing)) {
+            if (playbookEvaluator != null) {
+                return playbookEvaluator.evaluate(ctx);
+            }
+            LOG.warnf("Playbook mode requested but PlaybookProtocolEvaluator unavailable — falling back to projection");
+        } else if (!PROJECTION_MODE.equals(backing)) {
+            LOG.warnf("Unknown state-backing value '%s' for NEGOTIATION — falling back to projection", backing);
         }
 
-        return rules.evaluate(state, ctx);
-    }
-
-    private NegotiationState projectState(UUID channelId, Set<String> parties,
-                                          AcceptancePolicy policy) {
-        NegotiationProjection projection = new NegotiationProjection(parties, policy);
-
-        if (!cachingEnabled) {
-            return projector.project(channelId, projection).state();
-        }
-
-        CachedProjection cached = cache.get(channelId);
-        ProjectionResult<NegotiationState> result;
-
-        if (cached != null && cached.matches(parties)) {
-            result = projector.project(channelId, projection, cached.result());
-        } else {
-            result = projector.project(channelId, projection);
-        }
-
-        cache.put(channelId, new CachedProjection(result, parties));
-        return result.state();
-    }
-
-    private void evictCache(UUID channelId) {
-        cache.remove(channelId);
-    }
-
-    record CachedProjection(ProjectionResult<NegotiationState> result, Set<String> parties) {
-        boolean matches(Set<String> currentParties) {
-            return parties.equals(currentParties);
-        }
+        return projectionEvaluator.evaluate(ctx);
     }
 }

@@ -1,18 +1,34 @@
 package io.casehub.agency.deliberation.negotiation.protocol;
 
-import io.casehub.agency.deliberation.negotiation.*;
+import io.casehub.agency.deliberation.negotiation.NegotiationOutcome;
+import io.casehub.agency.deliberation.protocol.ProtocolStateEvaluator;
+import io.casehub.agency.deliberation.negotiation.NegotiationProjection;
+import io.casehub.agency.deliberation.negotiation.NegotiationState;
+import io.casehub.agency.deliberation.negotiation.Proposal;
+import io.casehub.agency.deliberation.negotiation.ProposalStatus;
 import io.casehub.qhorus.api.channel.ChannelProjector;
 import io.casehub.qhorus.api.message.MessageType;
-import io.casehub.qhorus.api.spi.*;
+import io.casehub.qhorus.api.spi.ProjectionResult;
+import io.casehub.qhorus.api.spi.ProtocolContext;
+import io.casehub.qhorus.api.spi.Severity;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class NegotiationProtocolTest {
 
@@ -150,4 +166,72 @@ class NegotiationProtocolTest {
                 List.of("alice", "bob"), Map.of("negotiation.max-rounds", "3")));
         assertThat(advisories2).anyMatch(a -> a.message().contains("Max negotiation rounds"));
     }
+
+
+    // ── Dual-mode dispatch tests ──
+
+    @Test
+    void evaluate_defaultMode_usesProjection() {
+        when(projector.project(eq(channelId), any(NegotiationProjection.class)))
+                .thenReturn(new ProjectionResult<>(pendingState(), 1L));
+
+        var protocol = new NegotiationProtocol(projector);
+        protocol.evaluate(ctx(MessageType.PROPOSE, "alice"));
+
+        verify(projector).project(eq(channelId), any(NegotiationProjection.class));
+    }
+
+    @Test
+    void evaluate_explicitProjectionMode_usesProjection() {
+        when(projector.project(eq(channelId), any(NegotiationProjection.class)))
+                .thenReturn(new ProjectionResult<>(pendingState(), 1L));
+
+        var protocol = new NegotiationProtocol(projector);
+        protocol.evaluate(ctx(MessageType.PROPOSE, "alice",
+                              List.of("alice", "bob"), Map.of("negotiation.state-backing", "projection")));
+
+        verify(projector).project(eq(channelId), any(NegotiationProjection.class));
+    }
+
+    @Test
+    void evaluate_playbookMode_delegatesToPlaybookEvaluator() {
+        ProtocolStateEvaluator playbookEval = mock(ProtocolStateEvaluator.class);
+        when(playbookEval.evaluate(any())).thenReturn(List.of());
+
+        var protocol = new NegotiationProtocol(
+                new NegotiationProjectionEvaluator(projector, NegotiationRules.defaults(), true),
+                playbookEval);
+        protocol.evaluate(ctx(MessageType.PROPOSE, "alice",
+                              List.of("alice", "bob"), Map.of("negotiation.state-backing", "playbook")));
+
+        verify(playbookEval).evaluate(any());
+        verifyNoInteractions(projector);
+    }
+
+    @Test
+    void evaluate_playbookMode_fallsBackWhenUnavailable() {
+        when(projector.project(eq(channelId), any(NegotiationProjection.class)))
+                .thenReturn(new ProjectionResult<>(pendingState(), 1L));
+
+        var protocol = new NegotiationProtocol(
+                new NegotiationProjectionEvaluator(projector, NegotiationRules.defaults(), true),
+                null);
+        protocol.evaluate(ctx(MessageType.PROPOSE, "alice",
+                              List.of("alice", "bob"), Map.of("negotiation.state-backing", "playbook")));
+
+        verify(projector).project(eq(channelId), any(NegotiationProjection.class));
+    }
+
+    @Test
+    void evaluate_unknownMode_fallsBackToProjection() {
+        when(projector.project(eq(channelId), any(NegotiationProjection.class)))
+                .thenReturn(new ProjectionResult<>(pendingState(), 1L));
+
+        var protocol = new NegotiationProtocol(projector);
+        protocol.evaluate(ctx(MessageType.PROPOSE, "alice",
+                              List.of("alice", "bob"), Map.of("negotiation.state-backing", "invalid")));
+
+        verify(projector).project(eq(channelId), any(NegotiationProjection.class));
+    }
+
 }
