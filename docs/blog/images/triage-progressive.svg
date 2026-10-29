@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="340" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Progressive Capability: Add Agency, Get Intelligence</text>
+
+  <!-- Without agency -->
+  <rect x="20" y="50" width="300" height="220" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="170" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#64748b">Without casehub-agency</text>
+
+  <rect x="50" y="95" width="240" height="40" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="170" y="120" text-anchor="middle" font-size="12" fill="#1e40af">DefaultRecoveryCoordinator</text>
+
+  <line x1="170" y1="135" x2="170" y2="160" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+
+  <rect x="50" y="160" width="240" height="40" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="170" y="184" text-anchor="middle" font-size="12" fill="#475569">NoOpTriageHandler</text>
+
+  <line x1="170" y1="200" x2="170" y2="225" stroke="#dc2626" stroke-width="1" marker-end="url(#arr)"/>
+
+  <rect x="80" y="225" width="180" height="30" rx="5" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="170" y="245" text-anchor="middle" font-size="11" fill="#991b1b">Always abandons</text>
+
+  <!-- With agency -->
+  <rect x="360" y="50" width="300" height="220" rx="10" fill="#fff" stroke="#16a34a" stroke-width="2"/>
+  <text x="510" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">With casehub-agency</text>
+
+  <rect x="390" y="95" width="240" height="40" rx="6" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="510" y="120" text-anchor="middle" font-size="12" fill="#1e40af">DefaultRecoveryCoordinator</text>
+
+  <line x1="510" y1="135" x2="510" y2="160" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+
+  <rect x="390" y="160" width="240" height="40" rx="6" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/>
+  <text x="510" y="184" text-anchor="middle" font-size="12" font-weight="500" fill="#854d0e">LlmTriageHandler</text>
+
+  <line x1="440" y1="200" x2="440" y2="225" stroke="#16a34a" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="580" y1="200" x2="580" y2="225" stroke="#dc2626" stroke-width="1" marker-end="url(#arr)"/>
+
+  <rect x="390" y="225" width="100" height="30" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="440" y="245" text-anchor="middle" font-size="11" fill="#166534">Retry(mods)</text>
+
+  <rect x="530" y="225" width="100" height="30" rx="5" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="580" y="245" text-anchor="middle" font-size="11" fill="#991b1b">Abandon</text>
+
+  <!-- Arrow between -->
+  <text x="340" y="155" text-anchor="middle" font-size="20" fill="#16a34a">→</text>
+  <text x="340" y="175" text-anchor="middle" font-size="10" fill="#64748b">add jar</text>
+</svg>
