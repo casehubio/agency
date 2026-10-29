@@ -732,9 +732,97 @@ Each protocol playbook is a multi-document YAML file:
 4. Adjust `metadata.config` for your thresholds
 5. Update `metadata.rules` to document the new behaviour
 
+**Composing primitives:**
+
+The playbook executor exposes the full set of yaml-core orchestration primitives. The built-in protocol templates use counters, state, and guards -- but the same event loop can compose these with maps, flags, gauges, and state machines for richer protocol policies.
+
+| Primitive | Playbook action | What it does |
+|-----------|----------------|-------------|
+| `OrcCounter` | `counter-add`, `counter-get`, `counter-set` | Increment, decrement, read, reset -- volume tracking |
+| `OrcGauge<T>` | `gauge-set`, `gauge-get` | Store and compare arbitrary typed values (timestamps, sender IDs) |
+| `OrcMap<K,V>` | `map-put`, `map-get`, `map-contains`, `map-size` | Per-key tracking -- distinct sender sets, per-participant state |
+| `OrcFlag` | `flag-set`, `flag-clear`, `flag-get` | Boolean toggles -- presence/absence markers |
+| `OrcStateMachine` | `state-machine` block | Lifecycle phases with per-state event routing |
+
+**Quorum pattern -- N of M distinct contributors:**
+
+Track distinct senders with a map, count unique entries, fire when the count reaches a quorum threshold. Useful for distributed overload detection ("3 of 5 monitors report high load") or consensus-based escalation.
+
+```yaml
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "OVERLOAD_REPORT"
+      block:
+        - map-put: { name: "reporters", key: "${event.sender}", value: "true" }
+        - advisory: { severity: WARNING, message: "quorum reached — distributed overload confirmed", action: ESCALATE }
+          when: "${map-size('reporters') >= config.quorum}"
+    - pattern: "CLEAR_REPORT"
+      block:
+        - map-put: { name: "reporters", key: "${event.sender}", value: "false" }
+```
+
+**State machine + counter -- lifecycle-aware thresholds:**
+
+Different protocol phases require different thresholds. An onboarding channel might tolerate 10 unanswered queries during setup but only 3 during production. The state machine tracks the phase; the counter tracks volume within each phase.
+
+```yaml
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  state-machine: { name: "phase", initial: "ONBOARDING" }
+  cases:
+    - state: "ONBOARDING"
+      match: "${event.type}"
+      cases:
+        - pattern: "QUERY"
+          block:
+            - counter-add: { name: "openQueries", delta: 1 }
+            - advisory: { severity: INFO, message: "high query volume during onboarding", action: LOG }
+              when: "${openQueries >= config.onboardingThreshold}"
+        - pattern: "ACTIVATE"
+          state-transition: { to: "PRODUCTION" }
+    - state: "PRODUCTION"
+      match: "${event.type}"
+      cases:
+        - pattern: "QUERY"
+          block:
+            - counter-add: { name: "openQueries", delta: 1 }
+            - advisory: { severity: WARNING, message: "unanswered queries exceed threshold", action: INVESTIGATE }
+              when: "${openQueries >= config.productionThreshold}"
+        - pattern: "RESPONSE"
+          counter-add: { name: "openQueries", delta: -1 }
+```
+
+**Temporal pattern -- absence detection:**
+
+Track when a commitment was made (COMMAND) and detect when no completion arrives within a window. The gauge stores the timestamp; a tick-driven check compares against the configured deadline.
+
+```yaml
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "COMMAND"
+      block:
+        - counter-add: { name: "openCommands", delta: 1 }
+        - gauge-set: { name: "lastCommandAt", value: "${event.timestamp}" }
+    - pattern: "DONE"
+      block:
+        - counter-add: { name: "openCommands", delta: -1 }
+        - gauge-set: { name: "lastCommandAt", value: 0 }
+    - pattern: "TICK"
+      block:
+        - advisory: { severity: WARNING, message: "command has been open beyond deadline", action: ESCALATE }
+          when: "${openCommands > 0 && (event.timestamp - gauge-get('lastCommandAt')) > config.deadlineMs}"
+```
+
 **Current status:**
 
-Protocol playbooks execute as `ChannelProtocol` implementations via the playbook executor bridge (qhorus#497). The playbook primitives (counters, guards, pattern matching) are validated and working.
+Protocol playbooks execute as `ChannelProtocol` implementations via the playbook executor bridge (qhorus#497). The playbook primitives (counters, guards, pattern matching, maps, gauges, flags, state machines) are validated and working.
 
 ## Key Integration Patterns
 
