@@ -1,0 +1,34 @@
+playbook: "1.0"
+name: contribution-required
+---
+metadata:
+  type: protocol
+  description: >
+    Monitors contribution balance in a channel. Warns when a single sender
+    sends too many consecutive messages without contributions from other
+    participants, indicating missing engagement.
+  config:
+    maxConsecutive:
+      type: int
+      default: 2
+      override-key: contribution-required.max-consecutive
+  rules:
+    - "non-EVENT from same sender with consecutiveCount >= maxConsecutive → WARNING/LOG"
+    - "non-EVENT from different sender → reset consecutiveCount"
+    - "EVENT messages are skipped"
+---
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "EVENT"
+      counter-add: { name: "consecutiveCount", delta: 0 }
+    - default:
+        - counter-add: { name: "consecutiveCount", delta: 1 }
+          when: "${event.sender == state.lastSender}"
+        - counter-set: { name: "consecutiveCount", value: 1 }
+          when: "${event.sender != state.lastSender}"
+        - state-set: { name: "lastSender", value: "${event.sender}" }
+        - advisory: { severity: WARNING, message: "sender has sent too many consecutive messages without contributions from others", action: LOG }
+          when: "${consecutiveCount >= config.maxConsecutive}"

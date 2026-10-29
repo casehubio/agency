@@ -710,6 +710,8 @@ Standard playbook YAML files expressing qhorus built-in channel protocols. These
 |----------|---------------|-----------|
 | `request-response.playbook.yaml` | `RequestResponseProtocol` (qhorus) | Counter tracks open queries, warns at threshold |
 | `task-completion.playbook.yaml` | `TaskCompletionProtocol` (qhorus) | Counter tracks open commands, warns at threshold + obligor check |
+| `contribution-required.playbook.yaml` | `ContributionRequiredProtocol` (qhorus) | Counter tracks consecutive messages from same sender, resets on sender change |
+| `round-robin.playbook.yaml` | `RoundRobinProtocol` (qhorus) | State tracks last participant sender, warns when rotation order violated |
 
 **Playbook structure:**
 
@@ -720,7 +722,7 @@ Each protocol playbook is a multi-document YAML file:
   - `type: protocol` -- enables registry search, validation, and conformance checks
   - `config` -- configurable parameters with defaults and `policyOverrides` keys for per-channel customisation
   - `rules` -- concise specification of when advisories fire
-- **Body** -- event-driven loop using `from:` + `loop: continuous`, `match` on event type, `counter-add`/`counter-get` for tracking, `when` guards for threshold checks, advisory emission
+- **Body** -- event-driven loop using `from:` + `loop: continuous`, `match` on event type, `counter-add`/`counter-get`/`counter-set` for tracking, `state-set` for sender tracking, `when` guards for threshold checks, advisory emission
 
 **Creating a custom protocol:**
 
@@ -732,7 +734,7 @@ Each protocol playbook is a multi-document YAML file:
 
 **Current status:**
 
-Protocol playbooks are not executable as `ChannelProtocol` implementations until qhorus#497 wires channel dispatch into the playbook executor. The playbook primitives (counters, guards, pattern matching) are validated and working.
+Protocol playbooks execute as `ChannelProtocol` implementations via the playbook executor bridge (qhorus#497). The playbook primitives (counters, guards, pattern matching) are validated and working.
 
 ## Key Integration Patterns
 

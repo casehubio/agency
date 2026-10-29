@@ -1,0 +1,30 @@
+playbook: "1.0"
+name: round-robin
+---
+metadata:
+  type: protocol
+  description: >
+    Enforces round-robin turn order among channel participants. Warns when
+    a participant speaks out of the expected rotation order. Requires the
+    participant list to be configured upfront.
+  config:
+    participants:
+      type: list
+      override-key: round-robin.participants
+  rules:
+    - "non-EVENT from known participant out of expected rotation order → ADVISORY/LOG"
+    - "non-EVENT from unknown sender → ignored"
+    - "EVENT messages are skipped"
+---
+- step: evaluate
+  from: dispatch-events
+  loop: continuous
+  match: "${event.type}"
+  cases:
+    - pattern: "EVENT"
+      counter-add: { name: "_noop", delta: 0 }
+    - default:
+        - advisory: { severity: ADVISORY, message: "sender is out of expected round-robin order", action: LOG }
+          when: "${config.participants.contains(event.sender) && state.lastParticipantSender != null && event.sender != nextParticipant(state.lastParticipantSender, config.participants)}"
+        - state-set: { name: "lastParticipantSender", value: "${event.sender}" }
+          when: "${config.participants.contains(event.sender)}"

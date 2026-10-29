@@ -2,13 +2,11 @@ package io.casehub.agency.playbook;
 
 import io.casehub.yaml.core.orchestration.DefaultOrcCounter;
 import io.casehub.yaml.core.orchestration.DefaultOrcStateMachine;
-import io.casehub.yaml.core.orchestration.EventRouter;
 import io.casehub.yaml.core.orchestration.OrcCounter;
 import io.casehub.yaml.plugin.api.Definition;
 import io.casehub.yaml.plugin.api.Portability;
 import io.casehub.yaml.plugin.api.Result;
 import io.casehub.yaml.step.catalog.CompositePluginRegistry;
-import io.casehub.yaml.step.catalog.ResolvedMatchCase;
 import io.casehub.yaml.step.catalog.ResolvedStep;
 import io.casehub.yaml.step.catalog.Walker;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,7 @@ class ProtocolPlaybookTest {
     private static final CompositePluginRegistry REGISTRY = new CompositePluginRegistry();
 
     static {
-        for (String action : List.of("counter-add", "counter-get", "advisory")) {
+        for (String action : List.of("counter-add", "counter-get", "counter-set", "state-set", "advisory")) {
             REGISTRY.register(new Definition(action, null, Map.of(), Map.of(),
                     Portability.BOTH, (params, services) -> Result.of(Map.of()), null));
         }
@@ -59,6 +57,37 @@ class ProtocolPlaybookTest {
         var matchStep = (ResolvedStep.MatchStep) resolved.getFirst();
         assertThat(matchStep.cases()).hasSize(5);
     }
+
+    @Test
+    void contribution_required_playbook_parses_through_walker() {
+        var steps    = loadPlaybookSteps("playbook-templates/contribution-required.playbook.yaml");
+        var resolved = Walker.resolve(steps, REGISTRY);
+        assertThat(resolved).hasSize(1);
+
+        var evaluate = resolved.getFirst();
+        assertThat(evaluate.decorators()).containsKeys("from", "loop");
+        assertThat(evaluate).isInstanceOf(ResolvedStep.MatchStep.class);
+
+        var matchStep = (ResolvedStep.MatchStep) evaluate;
+        assertThat(matchStep.cases()).hasSize(2);
+        assertThat(matchStep.cases().get(0).pattern().toString()).contains("EVENT");
+    }
+
+    @Test
+    void round_robin_playbook_parses_through_walker() {
+        var steps    = loadPlaybookSteps("playbook-templates/round-robin.playbook.yaml");
+        var resolved = Walker.resolve(steps, REGISTRY);
+        assertThat(resolved).hasSize(1);
+
+        var evaluate = resolved.getFirst();
+        assertThat(evaluate.decorators()).containsKeys("from", "loop");
+        assertThat(evaluate).isInstanceOf(ResolvedStep.MatchStep.class);
+
+        var matchStep = (ResolvedStep.MatchStep) evaluate;
+        assertThat(matchStep.cases()).hasSize(2);
+        assertThat(matchStep.cases().get(0).pattern().toString()).contains("EVENT");
+    }
+
 
     // ── Sequence validation: REQUEST_RESPONSE ──
 
@@ -226,6 +255,193 @@ class ProtocolPlaybookTest {
                 .containsExactly("WARNING", "WARNING", "WARNING");
         assertThat(openCommands.get()).isEqualTo(4);
     }
+// ── Sequence validation: CONTRIBUTION_REQUIRED ──
+
+    @Test
+    void contribution_required_warns_at_consecutive_threshold() {
+        int            maxConsecutive = 2;
+        List<Advisory> advisories     = new ArrayList<>();
+
+        var evaluator = new ContributionRequiredEvaluator(maxConsecutive, advisories);
+
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1, no warning
+        evaluator.onEvent("alice", "INFORM");  // consecutive=2, WARNING
+
+        assertThat(advisories).hasSize(1);
+        assertThat(advisories.getFirst().severity()).isEqualTo("WARNING");
+    }
+
+    @Test
+    void contribution_required_sender_change_resets_counter() {
+        int            maxConsecutive = 3;
+        List<Advisory> advisories     = new ArrayList<>();
+
+        var evaluator = new ContributionRequiredEvaluator(maxConsecutive, advisories);
+
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1
+        evaluator.onEvent("alice", "INFORM");  // consecutive=2
+        evaluator.onEvent("bob", "INFORM");    // consecutive=1 (reset)
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1
+        evaluator.onEvent("alice", "INFORM");  // consecutive=2
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void contribution_required_skips_event_type_messages() {
+        int            maxConsecutive = 2;
+        List<Advisory> advisories     = new ArrayList<>();
+
+        var evaluator = new ContributionRequiredEvaluator(maxConsecutive, advisories);
+
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1
+        evaluator.onEvent("system", "EVENT");  // skipped
+        evaluator.onEvent("alice", "INFORM");  // consecutive=2, WARNING
+
+        assertThat(advisories).hasSize(1);
+    }
+
+    @Test
+    void contribution_required_no_warning_with_alternating_senders() {
+        int            maxConsecutive = 2;
+        List<Advisory> advisories     = new ArrayList<>();
+
+        var evaluator = new ContributionRequiredEvaluator(maxConsecutive, advisories);
+
+        evaluator.onEvent("alice", "INFORM");
+        evaluator.onEvent("bob", "QUERY");
+        evaluator.onEvent("alice", "RESPONSE");
+        evaluator.onEvent("bob", "INFORM");
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void contribution_required_full_event_stream() {
+        int            maxConsecutive = 3;
+        List<Advisory> advisories     = new ArrayList<>();
+
+        var evaluator = new ContributionRequiredEvaluator(maxConsecutive, advisories);
+
+        // alice×3, EVENT, alice×1, bob×1, alice×3
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1
+        evaluator.onEvent("alice", "QUERY");   // consecutive=2
+        evaluator.onEvent("alice", "INFORM");  // consecutive=3, WARNING
+        evaluator.onEvent("system", "EVENT");  // skipped
+        evaluator.onEvent("alice", "INFORM");  // consecutive=4, WARNING (still alice)
+        evaluator.onEvent("bob", "RESPONSE");  // consecutive=1 (reset)
+        evaluator.onEvent("alice", "INFORM");  // consecutive=1
+        evaluator.onEvent("alice", "QUERY");   // consecutive=2
+        evaluator.onEvent("alice", "INFORM");  // consecutive=3, WARNING
+
+        assertThat(advisories).extracting(Advisory::severity)
+                              .containsExactly("WARNING", "WARNING", "WARNING");
+    }
+// ── Sequence validation: ROUND_ROBIN ──
+
+    @Test
+    void round_robin_no_warning_when_in_order() {
+        List<String>   participants = List.of("alice", "bob", "carol");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("alice", "INFORM");
+        evaluator.onEvent("bob", "INFORM");
+        evaluator.onEvent("carol", "INFORM");
+        evaluator.onEvent("alice", "INFORM");
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void round_robin_warns_when_out_of_order() {
+        List<String>   participants = List.of("alice", "bob", "carol");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("alice", "INFORM");
+        evaluator.onEvent("carol", "INFORM"); // expected bob → ADVISORY
+
+        assertThat(advisories).hasSize(1);
+        assertThat(advisories.getFirst().severity()).isEqualTo("ADVISORY");
+    }
+
+    @Test
+    void round_robin_skips_event_type_messages() {
+        List<String>   participants = List.of("alice", "bob");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("alice", "INFORM");
+        evaluator.onEvent("system", "EVENT");  // skipped
+        evaluator.onEvent("bob", "INFORM");    // expected bob, got bob → OK
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void round_robin_ignores_unknown_senders() {
+        List<String>   participants = List.of("alice", "bob");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("alice", "INFORM");
+        evaluator.onEvent("external", "INFORM"); // not a participant → ignored
+        evaluator.onEvent("bob", "INFORM");       // expected bob → OK
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void round_robin_no_warning_on_first_message() {
+        List<String>   participants = List.of("alice", "bob", "carol");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("carol", "INFORM"); // first message, no prior sender
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void round_robin_wraps_around_participant_list() {
+        List<String>   participants = List.of("alice", "bob", "carol");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("carol", "INFORM");  // first, no warning
+        evaluator.onEvent("alice", "INFORM");  // expected: alice (carol→alice wraps) → OK
+        evaluator.onEvent("bob", "INFORM");    // expected: bob → OK
+        evaluator.onEvent("carol", "INFORM");  // expected: carol → OK
+
+        assertThat(advisories).isEmpty();
+    }
+
+    @Test
+    void round_robin_full_event_stream() {
+        List<String>   participants = List.of("alice", "bob", "carol");
+        List<Advisory> advisories   = new ArrayList<>();
+
+        var evaluator = new RoundRobinEvaluator(participants, advisories);
+
+        evaluator.onEvent("alice", "INFORM");   // first → OK
+        evaluator.onEvent("bob", "INFORM");     // expected bob → OK
+        evaluator.onEvent("alice", "INFORM");   // expected carol → ADVISORY
+        evaluator.onEvent("system", "EVENT");   // skipped
+        evaluator.onEvent("bob", "INFORM");     // expected bob (after alice) → OK
+        evaluator.onEvent("external", "QUERY"); // unknown → ignored
+        evaluator.onEvent("alice", "INFORM");   // expected carol → ADVISORY
+
+        assertThat(advisories).extracting(Advisory::severity)
+                              .containsExactly("ADVISORY", "ADVISORY");
+    }
+
 
     // ── State machine + counter composition for sequence detection ──
 
@@ -352,4 +568,61 @@ class ProtocolPlaybookTest {
             }
         }
     }
+
+    static class ContributionRequiredEvaluator {
+        private final int            maxConsecutive;
+        private final List<Advisory> advisories;
+        private       String         lastSender;
+        private       int            consecutiveCount;
+
+        ContributionRequiredEvaluator(int maxConsecutive, List<Advisory> advisories) {
+            this.maxConsecutive = maxConsecutive;
+            this.advisories     = advisories;
+        }
+
+        void onEvent(String sender, String eventType) {
+            if ("EVENT".equals(eventType)) {return;}
+
+            if (sender.equals(lastSender)) {
+                consecutiveCount++;
+            } else {
+                consecutiveCount = 1;
+                lastSender       = sender;
+            }
+
+            if (consecutiveCount >= maxConsecutive) {
+                advisories.add(new Advisory("WARNING", "LOG",
+                                            "sender has sent too many consecutive messages without contributions from others"));
+            }
+        }
+    }
+
+    static class RoundRobinEvaluator {
+        private final List<String>   participants;
+        private final List<Advisory> advisories;
+        private       String         lastParticipantSender;
+
+        RoundRobinEvaluator(List<String> participants, List<Advisory> advisories) {
+            this.participants = participants;
+            this.advisories   = advisories;
+        }
+
+        void onEvent(String sender, String eventType) {
+            if ("EVENT".equals(eventType)) {return;}
+            if (!participants.contains(sender)) {return;}
+
+            if (lastParticipantSender != null) {
+                int    lastIdx  = participants.indexOf(lastParticipantSender);
+                String expected = participants.get((lastIdx + 1) % participants.size());
+                if (!sender.equals(expected)) {
+                    advisories.add(new Advisory("ADVISORY", "LOG",
+                                                "sender is out of expected round-robin order"));
+                }
+            }
+
+            lastParticipantSender = sender;
+        }
+    }
+
+
 }
