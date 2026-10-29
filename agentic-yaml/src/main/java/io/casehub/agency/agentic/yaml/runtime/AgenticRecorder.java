@@ -5,6 +5,7 @@ import io.casehub.agency.core.yaml.compiler.PatternCompiler;
 import io.casehub.agency.core.yaml.compiler.PromptOptimisationCompiler;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.api.expression.ExpressionEngine;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import org.jspecify.annotations.Nullable;
 
@@ -29,4 +30,7 @@ public class AgenticRecorder {
     }
 
 
+    public RuntimeValue<AgencySpecsBean> createSpecsBean(String preSerializedJson) {
+        return new RuntimeValue<>(new AgencySpecsBean(preSerializedJson));
+    }
 }

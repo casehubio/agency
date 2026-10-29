@@ -1,11 +1,21 @@
 package io.casehub.agency.core.yaml.deployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.yaml.jackson.YamlMappers;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.casehub.agency.core.yaml.runtime.AgencySpecsBean;
+import io.casehub.agency.core.yaml.runtime.AgencySpecsResource;
+import io.casehub.agency.core.yaml.runtime.AgenticRecorder;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
+import io.casehub.yaml.jackson.YamlMappers;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
+import io.quarkus.runtime.RuntimeValue;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +27,14 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
+
 public class AgenticYamlProcessor {
 
     private static final String AGENTIC_YAML_PATH = "META-INF/agentic/";
     private static final ObjectMapper YAML = YamlMappers.create()
+            .registerModule(new JavaTimeModule());
+    private static final ObjectMapper JSON = new ObjectMapper()
             .registerModule(new JavaTimeModule());
 
     @BuildStep
@@ -103,4 +117,45 @@ public class AgenticYamlProcessor {
         }
     }
 
+
+    @BuildStep
+    @Record(STATIC_INIT)
+    SyntheticBeanBuildItem registerSpecsBean(
+            AgenticRecorder recorder,
+            AgenticPatternsBuildItem patterns,
+            CognitionConfigBuildItem cognition,
+            PromptOptimisationBuildItem promptOpt,
+            WorldConfigBuildItem world) throws Exception {
+
+        ObjectNode root = JSON.createObjectNode();
+
+        if (patterns.patterns().isEmpty()) {
+            root.putNull("patterns");
+        } else {
+            ArrayNode arr = root.putArray("patterns");
+            for (var p : patterns.patterns()) {
+                arr.add(JSON.valueToTree(p));
+            }
+        }
+
+        root.set("cognition", cognition.definition() != null
+                              ? JSON.valueToTree(cognition.definition()) : root.nullNode());
+        root.set("promptOptimisation", promptOpt.definition() != null
+                                       ? JSON.valueToTree(promptOpt.definition()) : root.nullNode());
+        root.set("world", world.definition() != null
+                          ? JSON.valueToTree(world.definition()) : root.nullNode());
+
+        String json = JSON.writeValueAsString(root);
+
+        RuntimeValue<AgencySpecsBean> runtimeValue = recorder.createSpecsBean(json);
+        return SyntheticBeanBuildItem.configure(AgencySpecsBean.class)
+                                     .scope(ApplicationScoped.class)
+                                     .runtimeValue(runtimeValue)
+                                     .done();
+    }
+
+    @BuildStep
+    AdditionalBeanBuildItem registerSpecsResource() {
+        return AdditionalBeanBuildItem.unremovableOf(AgencySpecsResource.class);
+    }
 }
