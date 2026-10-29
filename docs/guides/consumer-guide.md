@@ -66,6 +66,16 @@ Attestation write-path types and lifecycle observer SPI.
 | `LifecycleAttestationObserver<E>` | interface | `@FunctionalInterface` SPI: `List<AttestationIntent> observe(E event, AttestationContext)`. Domain repos implement per event type. |
 | `AttestationContext` | record | Ambient context for observers: tenancyId, caseId, capabilityTag. |
 
+### `io.casehub.agency.governance.triage`
+
+LLM-backed triage for intelligent failure recovery. When a coordinated execution (playbook, workflow, agent loop) fails after mechanical retry, this handler dispatches the failure context to an LLM that decides whether to retry with modifications or abandon.
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `LlmTriageHandler` | class | `@ApplicationScoped` `TriageHandler` impl. Serializes `TriageContext` into a structured prompt, invokes an LLM via `StructuredAgentInvoker`, and parses the response into `TriageDecision.Retry(modifications)` or `TriageDecision.Abandon(reason)`. Graceful fallback to `Abandon` on any LLM or parse error. Displaces platform's `NoOpTriageHandler` when agency is on the classpath. |
+
+**Progressive capability:** consumers get intelligent triage by adding `casehub-agency` to their classpath. No configuration needed -- the `@ApplicationScoped` bean displaces the platform's `@DefaultBean` `NoOpTriageHandler` automatically.
+
 ### `io.casehub.agency.deliberation.conversation`
 
 Structured conversation protocol -- reusable infrastructure for multi-agent deliberation channels. Extracted from drafthouse. 27 types covering projection, fold state, rendering, epistemic common ground, and convergence detection.

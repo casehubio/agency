@@ -63,6 +63,8 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agency/src/test/java/io/casehub/agency/core/invoke/` | Tests for agent utility |
 | `agency-core/src/main/java/io/casehub/agency/governance/attestation/` | Attestation write-path types — `AttestationIntent`, `AttestationIntentWriter` (+ `NoOpAttestationIntentWriter` `@DefaultBean`), `LifecycleAttestationObserver<E>` SPI, `AttestationContext` |
 | `agency/src/test/java/io/casehub/agency/governance/attestation/` | Tests for attestation types |
+| `agency-core/src/main/java/io/casehub/agency/governance/triage/` | LLM-backed triage — `LlmTriageHandler` (`@ApplicationScoped` `TriageHandler` impl, displaces platform's `NoOpTriageHandler`; serializes `TriageContext` to structured prompt, invokes LLM via `StructuredAgentInvoker`, parses `Retry(modifications)` or `Abandon(reason)`, graceful fallback to `Abandon` on any error) |
+| `agency/src/test/java/io/casehub/agency/governance/triage/` | Tests for LLM triage handler |
 | `agency-core/src/main/java/io/casehub/agency/governance/trust/` | Trust-lifecycle SPIs — `IntakeClassifier<S>`, `VouchService` with pluggable `VouchConstraint` chain |
 | `agency/src/test/java/io/casehub/agency/governance/trust/` | Tests for trust SPIs |
 | `agency-core/src/main/java/io/casehub/agency/communication/dispatch/` | Channel dispatch utilities — message meta, context tracking, bounded projection |
@@ -179,6 +181,14 @@ Trust-lifecycle SPIs with no compile-time attestation dependency. Intake classif
 | `VouchRequest` | Record: voucherId, voucheeId (UUID), capabilityTag, tenancyId, voucherActorType, voucherRole, namespace (nullable), attributes |
 | `VouchResult` | Sealed: `Accepted(UUID attestationEntryId)`, `Rejected(List<String> reasons)` |
 | `VouchService` | Orchestrator: runs all constraints (all-must-pass), writes ENDORSED attestation via `AttestationIntentWriter`. Not CDI-managed — consumer constructs with domain-specific constraints. |
+
+## Package: `io.casehub.agency.governance.triage`
+
+LLM-backed triage for intelligent failure recovery. Implements platform's `TriageHandler` SPI — when a coordinated execution fails after mechanical retry, this handler dispatches the failure context to an LLM that decides whether to retry with modifications or abandon.
+
+| Class | What it does |
+|-------|-------------|
+| `LlmTriageHandler` | `@ApplicationScoped` `TriageHandler` impl — serializes `TriageContext` (operation type, failure summary, detail map, execution context, attempt count) into a structured prompt, invokes LLM via `StructuredAgentInvoker.invokeRaw()`, parses JSON response into `TriageDecision.Retry(modifications)` or `TriageDecision.Abandon(reason)`. Graceful fallback to `Abandon` on any LLM or parse error. Displaces platform's `NoOpTriageHandler` `@DefaultBean` when agency is on the classpath. |
 
 ## Package: `io.casehub.agency.communication.dispatch`
 
