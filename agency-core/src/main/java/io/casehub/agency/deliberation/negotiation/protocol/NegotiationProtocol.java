@@ -1,14 +1,11 @@
 package io.casehub.agency.deliberation.negotiation.protocol;
 
-import io.casehub.agency.deliberation.protocol.PlaybookStateEvaluator;
 import io.casehub.agency.deliberation.protocol.ProtocolStateEvaluator;
-import io.casehub.platform.coordination.protocol.PlaybookProtocolEvaluator;
 import io.casehub.qhorus.api.channel.ChannelProjector;
 import io.casehub.qhorus.api.spi.ChannelProtocol;
 import io.casehub.qhorus.api.spi.DispatchAdvisory;
 import io.casehub.qhorus.api.spi.ProtocolContext;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
@@ -27,15 +24,6 @@ public class NegotiationProtocol implements ChannelProtocol {
     private final ProtocolStateEvaluator playbookEvaluator;
 
     @Inject
-    public NegotiationProtocol(ChannelProjector projector,
-                               Instance<PlaybookProtocolEvaluator> playbookRuntime) {
-        this.projectionEvaluator = new NegotiationProjectionEvaluator(
-                projector, NegotiationRules.defaults(), true);
-        this.playbookEvaluator = playbookRuntime.isUnsatisfied()
-                ? null
-                : new PlaybookStateEvaluator(playbookRuntime.get(), "NEGOTIATION");
-    }
-
     public NegotiationProtocol(ChannelProjector projector) {
         this.projectionEvaluator = new NegotiationProjectionEvaluator(
                 projector, NegotiationRules.defaults(), true);
@@ -69,7 +57,7 @@ public class NegotiationProtocol implements ChannelProtocol {
             if (playbookEvaluator != null) {
                 return playbookEvaluator.evaluate(ctx);
             }
-            LOG.warnf("Playbook mode requested but PlaybookProtocolEvaluator unavailable — falling back to projection");
+            LOG.warnf("Playbook mode requested but no playbook evaluator configured — falling back to projection");
         } else if (!PROJECTION_MODE.equals(backing)) {
             LOG.warnf("Unknown state-backing value '%s' for NEGOTIATION — falling back to projection", backing);
         }
