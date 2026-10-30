@@ -37,8 +37,8 @@ class LlmSwarmCoordinatorTest {
 
         assertThat(coordinator.routingStrategy()).isNotNull();
         assertThat(coordinator.aggregation()).isNotNull();
-        assertThat(coordinator.convergenceTermination()).isNotNull();
-        assertThat(coordinator.convergenceTermination().threshold()).isEqualTo(0.9);
+        assertThat(coordinator.terminationCondition()).isNotNull();
+        assertThat(coordinator.terminationCondition()).isInstanceOf(SwarmConvergenceTermination.class);
         assertThat(coordinator.eventSource()).isNotNull();
         assertThat(coordinator.invocationTracker()).isNotNull();
         assertThat(coordinator.fallbackStrategy()).isNotNull();

@@ -98,4 +98,21 @@ class SwarmOptimisedFewShotSectionTest {
 
         org.mockito.Mockito.verify(store).getActive(eq("custom-sig"), eq("control"));
     }
+
+    @Test
+    void usesProvidedVariantSlot_insteadOfSelector() {
+        var examples = List.of(
+                new FewShotExample("input", "output", "CONVERGED", 0.9, null));
+        var variant = new PromptVariant(
+                SwarmPromptSignatures.TEAM_FORMATION.id(), "v1",
+                examples, null, 0.8, Instant.now(), null, 0);
+        when(store.getActive(SwarmPromptSignatures.TEAM_FORMATION.id(), "experiment")).thenReturn(variant);
+
+        var section = new SwarmOptimisedFewShotSection(store, selector);
+        section.setVariantSlot("experiment");
+        var result = section.contribute(context);
+
+        assertThat(result).contains("input");
+        org.mockito.Mockito.verify(selector, org.mockito.Mockito.never()).selectSlot(any(), any());
+    }
 }

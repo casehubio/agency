@@ -1,11 +1,17 @@
 package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
+import io.casehub.agency.optimisation.prompt.VariantSelector;
+import io.casehub.agency.orchestration.swarm.prompt.SwarmOutcomeRecorder;
+import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
+import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class SwarmCoordinatorBuilder {
 
@@ -16,6 +22,8 @@ public class SwarmCoordinatorBuilder {
     private       int                      preFilterThreshold   = 12;
     private       double                   convergenceThreshold = 0.8;
     private       SystemPromptCustomiser   promptCustomiser;
+    private @Nullable VariantSelector      variantSelector;
+    private @Nullable SwarmPromptOutcomeProvider outcomeProvider;
 
 
     public SwarmCoordinatorBuilder agentProvider(AgentProvider agentProvider) {
@@ -60,17 +68,41 @@ public class SwarmCoordinatorBuilder {
         return this;
     }
 
+    public SwarmCoordinatorBuilder variantSelector(VariantSelector selector) {
+        this.variantSelector = selector;
+        return this;
+    }
+
+    public SwarmCoordinatorBuilder outcomeProvider(SwarmPromptOutcomeProvider provider) {
+        this.outcomeProvider = provider;
+        return this;
+    }
+
+
     public LlmSwarmCoordinator build() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
         var context           = new SwarmContext();
         var tracker           = new SwarmInvocationTracker(invocationPolicy);
         var experienceSection = new SwarmExperienceSection(experienceConfig);
-        var routingStrategy   = new SwarmRoutingStrategy(agentProvider, experienceSection, preFilterThreshold, tracker);
-        var aggregation       = new CollectiveReasoningAggregation(agentProvider, tracker, promptCustomiser);
-        var convergence       = new SwarmConvergenceTermination(convergenceThreshold);
-        var eventSource       = new SwarmEventSource(context);
-        var fallback          = new SwarmFallbackStrategy();
+        var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
+                                                       preFilterThreshold, tracker, promptCustomiser, additionalSections);
+        var                                aggregation = new CollectiveReasoningAggregation(agentProvider, tracker, promptCustomiser);
+        TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
+        var                                eventSource = new SwarmEventSource(context);
+        var                                fallback    = new SwarmFallbackStrategy();
+
+        String slot = variantSelector != null
+                      ? variantSelector.selectSlot(UUID.randomUUID(), "swarm-coordination")
+                      : "control";
+        routingStrategy.setVariantSlot(slot);
+        aggregation.setVariantSlot(slot);
+
+        if (outcomeProvider != null) {
+            var recorder = new SwarmOutcomeRecorder(termination, slot);
+            outcomeProvider.register(recorder);
+            termination = recorder;
+        }
 
         var sections = new ArrayList<SwarmPromptSection>();
         sections.add(experienceSection);
@@ -78,6 +110,6 @@ public class SwarmCoordinatorBuilder {
 
         return new LlmSwarmCoordinator(
                 agentProvider, context, routingStrategy, aggregation,
-                convergence, eventSource, tracker, fallback, sections);
+                termination, eventSource, tracker, fallback, sections);
     }
 }

@@ -15,6 +15,8 @@ public class SwarmOptimisedFewShotSection implements SwarmPromptSection {
     private final PromptVariantStore store;
     private final VariantSelector    selector;
     private final String             signatureId;
+    private volatile @Nullable String variantSlot;
+
 
     public SwarmOptimisedFewShotSection(PromptVariantStore store,
                                         VariantSelector selector,
@@ -28,9 +30,16 @@ public class SwarmOptimisedFewShotSection implements SwarmPromptSection {
         this(store, selector, SwarmPromptSignatures.TEAM_FORMATION.id());
     }
 
+
+    public void setVariantSlot(@Nullable String variantSlot) {
+        this.variantSlot = variantSlot;
+    }
+
     @Override
     public @Nullable String contribute(SwarmContext context) {
-        var slot    = selector.selectSlot(executionId(context), signatureId);
+        var slot = this.variantSlot != null
+                   ? this.variantSlot
+                   : selector.selectSlot(executionId(context), signatureId);
         var variant = store.getActive(signatureId, slot);
         if (variant == null || variant.examples().isEmpty()) {
             return null;

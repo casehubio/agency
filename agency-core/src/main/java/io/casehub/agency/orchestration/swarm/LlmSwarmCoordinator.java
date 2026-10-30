@@ -1,9 +1,8 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
-import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LlmSwarmCoordinator {
@@ -12,7 +11,7 @@ public class LlmSwarmCoordinator {
     private final SwarmContext context;
     private final SwarmRoutingStrategy routingStrategy;
     private final CollectiveReasoningAggregation aggregation;
-    private final SwarmConvergenceTermination convergenceTermination;
+    private final TerminationCondition<SwarmContext> terminationCondition;
     private final SwarmEventSource eventSource;
     private final SwarmInvocationTracker invocationTracker;
     private final SwarmFallbackStrategy fallbackStrategy;
@@ -22,7 +21,7 @@ public class LlmSwarmCoordinator {
                         SwarmContext context,
                         SwarmRoutingStrategy routingStrategy,
                         CollectiveReasoningAggregation aggregation,
-                        SwarmConvergenceTermination convergenceTermination,
+                        TerminationCondition<SwarmContext> terminationCondition,
                         SwarmEventSource eventSource,
                         SwarmInvocationTracker invocationTracker,
                         SwarmFallbackStrategy fallbackStrategy,
@@ -31,7 +30,7 @@ public class LlmSwarmCoordinator {
         this.context = context;
         this.routingStrategy = routingStrategy;
         this.aggregation = aggregation;
-        this.convergenceTermination = convergenceTermination;
+        this.terminationCondition = terminationCondition;
         this.eventSource = eventSource;
         this.invocationTracker = invocationTracker;
         this.fallbackStrategy = fallbackStrategy;
@@ -53,7 +52,8 @@ public class LlmSwarmCoordinator {
     public SwarmContext context() { return context; }
     public SwarmRoutingStrategy routingStrategy() { return routingStrategy; }
     public CollectiveReasoningAggregation aggregation() { return aggregation; }
-    public SwarmConvergenceTermination convergenceTermination() { return convergenceTermination; }
+
+    public TerminationCondition<SwarmContext> terminationCondition() {return terminationCondition;}
     public SwarmEventSource eventSource() { return eventSource; }
     public SwarmInvocationTracker invocationTracker() { return invocationTracker; }
     public SwarmFallbackStrategy fallbackStrategy() { return fallbackStrategy; }

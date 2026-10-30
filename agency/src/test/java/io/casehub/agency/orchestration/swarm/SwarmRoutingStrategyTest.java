@@ -1,25 +1,24 @@
 package io.casehub.agency.orchestration.swarm;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.RoutingCandidate;
-import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.orchestration.routing.RoutingContext;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
-import io.casehub.platform.agent.AgentSessionConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.List;
+
+import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptSignatures;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -92,6 +91,45 @@ class SwarmRoutingStrategyTest {
 
         assertThat(decision).isInstanceOf(RoutingDecision.SwarmAssignment.class);
     }
+
+    @Test
+    void route_appliesSystemPromptCustomiser() {
+        var customiser = mock(io.casehub.agency.optimisation.prompt.SystemPromptCustomiser.class);
+        when(customiser.customise(any(), eq(io.casehub.agency.orchestration.swarm.prompt.SwarmPromptSignatures.TEAM_FORMATION.id()), eq("control")))
+                .thenAnswer(inv -> inv.getArgument(0) + "\n## Optimised Instructions\nUse diversity.");
+
+        var strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, null, customiser, List.<SwarmPromptSection>of());
+        strategy.setVariantSlot("control");
+
+        mockLlmResponse("""
+                        {"agents": ["analyst"], "teams": {"t1": ["analyst"]}, "strategy": "solo"}
+                        """);
+
+        var configCaptor = org.mockito.ArgumentCaptor.forClass(io.casehub.platform.agent.AgentSessionConfig.class);
+        var context      = routingContext(List.of(candidate("analyst")));
+        strategy.route(context);
+
+        org.mockito.Mockito.verify(agentProvider).invoke(configCaptor.capture());
+        assertThat(configCaptor.getValue().systemPrompt()).contains("Optimised Instructions");
+    }
+
+    @Test
+    void route_includesAdditionalSections() {
+        SwarmPromptSection section  = ctx -> "## Few-Shot Examples\n1. Previous team: [a, b]";
+        var                strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, null, null, List.of(section));
+
+        mockLlmResponse("""
+                        {"agents": ["analyst"], "teams": {"t1": ["analyst"]}, "strategy": "solo"}
+                        """);
+
+        var configCaptor = org.mockito.ArgumentCaptor.forClass(io.casehub.platform.agent.AgentSessionConfig.class);
+        var context      = routingContext(List.of(candidate("analyst")));
+        strategy.route(context);
+
+        org.mockito.Mockito.verify(agentProvider).invoke(configCaptor.capture());
+        assertThat(configCaptor.getValue().systemPrompt()).contains("Few-Shot Examples");
+    }
+
 
     private void mockLlmResponse(String json) {
         when(agentProvider.invoke(any())).thenAnswer(inv -> {

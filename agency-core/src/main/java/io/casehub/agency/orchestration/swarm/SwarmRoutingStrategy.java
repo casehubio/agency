@@ -1,8 +1,9 @@
 package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.core.AgentRef;
-import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.core.RoutingCandidate;
+import io.casehub.agency.core.invoke.StructuredAgentInvoker;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.orchestration.routing.RoutingContext;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
 import io.casehub.agency.orchestration.routing.RoutingStrategy;
@@ -26,22 +27,43 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     private final SwarmExperienceSection experienceSection;
     private final int preFilterThreshold;
     private final @Nullable SwarmInvocationTracker invocationTracker;
+    private final @Nullable SystemPromptCustomiser promptCustomiser;
+    private final           List<SwarmPromptSection> additionalSections;
+    private volatile @Nullable String                variantSlot;
+
 
     public SwarmRoutingStrategy(AgentProvider agentProvider,
                                 SwarmExperienceSection experienceSection,
                                 int preFilterThreshold,
                                 @Nullable SwarmInvocationTracker invocationTracker) {
-        this.agentProvider = agentProvider;
-        this.experienceSection = experienceSection;
-        this.preFilterThreshold = preFilterThreshold;
-        this.invocationTracker = invocationTracker;
+        this(agentProvider, experienceSection, preFilterThreshold, invocationTracker, null, List.of());
     }
+
+    public SwarmRoutingStrategy(AgentProvider agentProvider,
+                                SwarmExperienceSection experienceSection,
+                                int preFilterThreshold,
+                                @Nullable SwarmInvocationTracker invocationTracker,
+                                @Nullable SystemPromptCustomiser promptCustomiser,
+                                List<SwarmPromptSection> additionalSections) {
+        this.agentProvider      = agentProvider;
+        this.experienceSection  = experienceSection;
+        this.preFilterThreshold = preFilterThreshold;
+        this.invocationTracker  = invocationTracker;
+        this.promptCustomiser   = promptCustomiser;
+        this.additionalSections = List.copyOf(additionalSections);
+    }
+
 
     public SwarmRoutingStrategy(AgentProvider agentProvider,
                                 SwarmExperienceSection experienceSection,
                                 int preFilterThreshold) {
         this(agentProvider, experienceSection, preFilterThreshold, null);
     }
+
+    public void setVariantSlot(@Nullable String variantSlot) {
+        this.variantSlot = variantSlot;
+    }
+
 
     @Override
     public RoutingDecision route(RoutingContext<SwarmContext> context) {
@@ -61,9 +83,22 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
         }
 
         var prompt = buildPrompt(candidatesToReason, context.state());
+
+        for (var section : additionalSections) {
+            var contribution = section.contribute(context.state());
+            if (contribution != null && !contribution.isEmpty()) {
+                prompt = prompt + "\n" + contribution;
+            }
+        }
+
+        if (promptCustomiser != null) {
+            prompt = promptCustomiser.customise(prompt,
+                                                "swarm-team-formation", variantSlot);
+        }
+
         var userMessage = "Select agents for the swarm team and assign roles. " +
-                "Respond in JSON: {\"agents\": [names], \"teams\": {\"teamName\": [names]}, " +
-                "\"strategy\": \"description\"}";
+                          "Respond in JSON: {\"agents\": [names], \"teams\": {\"teamName\": [names]}, " +
+                          "\"strategy\": \"description\"}";
         var config = AgentSessionConfig.of(prompt, userMessage);
 
         var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
