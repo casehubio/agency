@@ -69,12 +69,7 @@
             <artifactId>casehub-platform-agent-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-coordination-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-engine-ledger</artifactId>

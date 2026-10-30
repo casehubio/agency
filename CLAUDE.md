@@ -57,7 +57,6 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `agentic-yaml/src/test/java/io/casehub/agency/agentic/yaml/` | Tests for YAML agentic surface |
 | `agentic-yaml-deployment/src/main/java/io/casehub/agency/agentic/yaml/deployment/` | Quarkus deployment module — `AgenticYamlProcessor` (YAML discovery, validation), `AgenticRecorder` (runtime compiler registration) |
 | `agency-core/src/main/resources/playbook-templates/` | Protocol playbooks — standard playbook YAML for REQUEST_RESPONSE, TASK_COMPLETION, CONTRIBUTION_REQUIRED, and ROUND_ROBIN with counter-based exact tracking and sender state tracking |
-| `agency-core/src/main/resources/protocol-templates/` | Protocol state machine templates — YAML state maps for `CompiledProtocol.from()` (distinct from `playbook: "1.0"` step format in `playbook-templates/`). `negotiation.protocol.yaml` (MONITORING/PROPOSED/RESPONDING phases) |
 | `docs/summarisation/CAPABILITY-MATRIX.md` | Summarisation capability matrix — maps 29 capabilities across 11 examples |
 | `agency-core/src/main/java/io/casehub/agency/core/invoke/` | Shared LLM invocation utility — `StructuredAgentInvoker` (static: `invokeText()`, `invoke(Class<T>)`, `invokeRaw()` with sealed `InvocationResult<T>` and `InvocationMetadata`; markdown fence stripping, JSON extraction, `InvocationComplete` capture). `stripFences()` and `extractJson()` also available standalone. |
 | `agency/src/test/java/io/casehub/agency/core/invoke/` | Tests for agent utility |
@@ -318,9 +317,9 @@ Negotiation channel protocol — reusable `ChannelProjection<NegotiationState>` 
 | `DeadlineTermination` | `TerminationCondition<NegotiationState>` — Complete when latest proposal exceeds deadline |
 | `NegotiationCompositeTermination` | First-non-Continue-wins composition of termination conditions |
 | `NegotiationConstants` | Constants for negotiation outcome strings |
-| `agency-core/src/main/java/io/casehub/agency/deliberation/protocol/` | Dual-mode protocol infrastructure — `ProtocolStateEvaluator` (`@FunctionalInterface` strategy for state-source-agnostic protocol evaluation), `PlaybookStateEvaluator` (delegates to platform `PlaybookProtocolEvaluator`, maps `ProtocolAdvisory` → `DispatchAdvisory`), `AdvisoryMapper` (exhaustive severity/action mapping), `PlaybookProtocolLifecycleHandler` (`ProtocolLifecycleHandler` impl — template loading, recovery replay, instance eviction) |
-| `agency/src/test/java/io/casehub/agency/deliberation/protocol/` | Tests for dual-mode protocol infrastructure |
-| `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/protocol/` | Negotiation channel protocol — `NegotiationProtocol` (dual-mode `ChannelProtocol` impl dispatching to projection or playbook evaluator via `negotiation.state-backing` policyOverride), `NegotiationProjectionEvaluator` (`ProtocolStateEvaluator` with incremental `ChannelProjector` caching), `NegotiationRules` (builder-configurable pure rules function with `policyOverrides` mapping) |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/protocol/` | Protocol evaluation SPI — `ProtocolStateEvaluator` (`@FunctionalInterface` strategy for state-source-agnostic protocol evaluation) |
+| `agency/src/test/java/io/casehub/agency/deliberation/protocol/` | Tests for protocol evaluation SPI |
+| `agency-core/src/main/java/io/casehub/agency/deliberation/negotiation/protocol/` | Negotiation channel protocol — `NegotiationProtocol` (`ChannelProtocol` impl with pluggable `ProtocolStateEvaluator`, defaults to projection-based evaluation), `NegotiationProjectionEvaluator` (`ProtocolStateEvaluator` with incremental `ChannelProjector` caching), `NegotiationRules` (builder-configurable pure rules function with `policyOverrides` mapping) |
 | `agency/src/test/java/io/casehub/agency/deliberation/negotiation/protocol/` | Tests for negotiation channel protocol |
 | `agency-core/src/main/java/io/casehub/agency/deliberation/judgment/protocol/` | Judgment channel protocol — `JudgmentProtocol` (`ChannelProtocol` impl with incremental `ChannelProjector` caching), `JudgmentRules` (agreement, min-reviewers, escalation via `policyOverrides`), `JudgmentProjection` (`ChannelProjection<JudgmentState>` — DONE → approve, DECLINE → reject), `JudgmentState`, `JudgmentFold`, `JudgmentVerdict`, `JudgmentOutcome` |
 | `agency/src/test/java/io/casehub/agency/deliberation/judgment/protocol/` | Tests for judgment channel protocol |
@@ -592,7 +591,7 @@ sherpa-onnx speech implementation via Java FFM/Panama (JDK 22+). Provides `Speec
 ## Dependencies
 
 **Compile:** `casehub-qhorus-api`, `casehub-work-api`, `casehub-engine-api`, `casehub-eidos-api`, `casehub-worker-api`, `org.jspecify:jspecify`
-**Provided:** `io.smallrye.reactive:mutiny`, `casehub-platform-agent-api`, `casehub-platform-api`, `casehub-coordination-core`, `casehub-engine-ledger`, `casehub-ledger-api`, `casehub-neocortex-memory-api`, `casehub-neocortex-rag-api`, `casehub-work-progress-api`, `io.opentelemetry:opentelemetry-api`
+**Provided:** `io.smallrye.reactive:mutiny`, `casehub-platform-agent-api`, `casehub-platform-api`, `casehub-engine-ledger`, `casehub-ledger-api`, `casehub-neocortex-memory-api`, `casehub-neocortex-rag-api`, `casehub-work-progress-api`, `io.opentelemetry:opentelemetry-api`
 **Test:** `casehub-qhorus`, `casehub-qhorus-testing`, `casehub-engine`, `casehub-engine-testing`, `assertj`, `mockito`, `awaitility`, `io.opentelemetry:opentelemetry-sdk-testing`
 
 **No Jandex index.** agency does not include a Jandex index — its CDI beans are not auto-discovered by Quarkus. Consumers that need agency's CDI beans (routing strategies, channel summarisers) must opt in:
