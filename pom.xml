@@ -14,10 +14,6 @@
   <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <properties>
-    <spring-boot.version>4.1.0</spring-boot.version>
-  </properties>
-
   <name>casehub-agency-parent</name>
   <description>Parent POM for CaseHub Agency modules</description>
   <url>https://github.com/casehubio/agency</url>
@@ -62,13 +58,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.quarkus.platform</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${quarkus.platform.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring-boot.version}</version>
@@ -82,10 +71,9 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>3.27.3</version>
-        <scope>test</scope>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
