@@ -213,9 +213,7 @@ class NegotiationProtocolTest {
         when(projector.project(eq(channelId), any(NegotiationProjection.class)))
                 .thenReturn(new ProjectionResult<>(pendingState(), 1L));
 
-        var protocol = new NegotiationProtocol(
-                new NegotiationProjectionEvaluator(projector, NegotiationRules.defaults(), true),
-                null);
+        var protocol = new NegotiationProtocol(projector);
         protocol.evaluate(ctx(MessageType.PROPOSE, "alice",
                               List.of("alice", "bob"), Map.of("negotiation.state-backing", "playbook")));
 
