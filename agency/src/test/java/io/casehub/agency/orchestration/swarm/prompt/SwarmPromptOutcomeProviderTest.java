@@ -57,4 +57,17 @@ class SwarmPromptOutcomeProviderTest {
 
         return recorder;
     }
+
+    @Test
+    void deregister_removesRecorderOutcomes() {
+        var provider = new SwarmPromptOutcomeProvider();
+        var recorder = recorderWithOutcome("Swarm converged");
+        provider.register(recorder);
+
+        assertThat(provider.outcomes(SwarmPromptSignatures.TEAM_FORMATION.id())).hasSize(1);
+
+        provider.deregister(recorder);
+
+        assertThat(provider.outcomes(SwarmPromptSignatures.TEAM_FORMATION.id())).isEmpty();
+    }
 }

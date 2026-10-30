@@ -99,8 +99,7 @@ public class SwarmCoordinatorBuilder {
         aggregation.setVariantSlot(slot);
 
         if (outcomeProvider != null) {
-            var recorder = new SwarmOutcomeRecorder(termination, slot);
-            outcomeProvider.register(recorder);
+            var recorder = new SwarmOutcomeRecorder(termination, slot, outcomeProvider);
             termination = recorder;
         }
 

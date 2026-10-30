@@ -16,6 +16,11 @@ public class SwarmPromptOutcomeProvider implements PromptOutcomeProvider {
         recorders.add(recorder);
     }
 
+    public void deregister(SwarmOutcomeRecorder recorder) {
+        recorders.remove(recorder);
+    }
+
+
     @Override
     public List<VariantOutcome> outcomes(String signatureId) {
         return recorders.stream()

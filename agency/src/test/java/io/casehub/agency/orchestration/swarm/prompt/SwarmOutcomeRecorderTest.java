@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.swarm.prompt;
 
-import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.agency.orchestration.termination.TerminationContext;
@@ -94,5 +93,22 @@ class SwarmOutcomeRecorderTest {
         var result = recorder.evaluate(contextWithProgress(0.5, 0.3));
 
         assertThat(result).isSameAs(expected);
+    }
+
+    @Test
+    void close_deregistersFromProvider() {
+        var provider = new SwarmPromptOutcomeProvider();
+        var delegate = mockDelegate();
+        when(delegate.evaluate(any())).thenReturn(
+                new TerminationDecision.Complete("Swarm converged"));
+
+        var recorder = new SwarmOutcomeRecorder(delegate, "control", provider);
+        recorder.evaluate(contextWithProgress(0.9, 0.85));
+
+        assertThat(provider.outcomes(SwarmPromptSignatures.TEAM_FORMATION.id())).hasSize(1);
+
+        recorder.close();
+
+        assertThat(provider.outcomes(SwarmPromptSignatures.TEAM_FORMATION.id())).isEmpty();
     }
 }
