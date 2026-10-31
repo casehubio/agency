@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#475569"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#16a34a"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="380" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Engine ↔ Agency: Before and After the Bridge</text>
+
+  <!-- BEFORE section -->
+  <text x="190" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#64748b">BEFORE</text>
+
+  <!-- Engine box -->
+  <rect x="30" y="80" width="160" height="120" rx="8" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1.5"/>
+  <text x="110" y="105" text-anchor="middle" font-size="13" font-weight="600" fill="#0c4a6e">Engine Runtime</text>
+  <text x="110" y="125" text-anchor="middle" font-size="11" fill="#475569">SwarmProvisioner</text>
+  <text x="110" y="143" text-anchor="middle" font-size="10" fill="#64748b">roles detected</text>
+  <text x="110" y="157" text-anchor="middle" font-size="10" fill="#64748b">teams formed</text>
+  <text x="110" y="171" text-anchor="middle" font-size="10" fill="#64748b">progress updated</text>
+  <text x="110" y="185" text-anchor="middle" font-size="10" fill="#64748b">members provisioned</text>
+
+  <!-- Broken arrow -->
+  <line x1="190" y1="140" x2="230" y2="140" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="210" y="132" text-anchor="middle" font-size="18" fill="#dc2626">✕</text>
+
+  <!-- Agency box -->
+  <rect x="230" y="80" width="130" height="120" rx="8" fill="#fefce8" stroke="#fde047" stroke-width="1.5"/>
+  <text x="295" y="105" text-anchor="middle" font-size="13" font-weight="600" fill="#854d0e">Agency LLM</text>
+  <text x="295" y="125" text-anchor="middle" font-size="11" fill="#475569">SwarmContext</text>
+  <text x="295" y="148" text-anchor="middle" font-size="10" fill="#dc2626" font-style="italic">always stale</text>
+  <text x="295" y="165" text-anchor="middle" font-size="10" fill="#64748b">routing ← wrong</text>
+  <text x="295" y="179" text-anchor="middle" font-size="10" fill="#64748b">prompts ← wrong</text>
+
+  <!-- Divider -->
+  <line x1="385" y1="55" x2="385" y2="360" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- AFTER section -->
+  <text x="575" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#64748b">AFTER</text>
+
+  <!-- Engine box -->
+  <rect x="420" y="80" width="160" height="120" rx="8" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1.5"/>
+  <text x="500" y="105" text-anchor="middle" font-size="13" font-weight="600" fill="#0c4a6e">Engine Runtime</text>
+  <text x="500" y="125" text-anchor="middle" font-size="11" fill="#475569">SwarmProvisioner</text>
+  <text x="500" y="143" text-anchor="middle" font-size="10" fill="#64748b">roles detected</text>
+  <text x="500" y="157" text-anchor="middle" font-size="10" fill="#64748b">teams formed</text>
+  <text x="500" y="171" text-anchor="middle" font-size="10" fill="#64748b">progress updated</text>
+  <text x="500" y="185" text-anchor="middle" font-size="10" fill="#64748b">members provisioned</text>
+
+  <!-- Bridge box -->
+  <rect x="460" y="220" width="80" height="44" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="500" y="241" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">Bridge</text>
+  <text x="500" y="255" text-anchor="middle" font-size="9" fill="#475569">CDI bean</text>
+
+  <!-- Arrow: engine → bridge -->
+  <line x1="500" y1="200" x2="500" y2="218" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <text x="540" y="213" font-size="9" fill="#16a34a">listener SPI</text>
+
+  <!-- Agency box (after) -->
+  <rect x="610" y="80" width="130" height="120" rx="8" fill="#fefce8" stroke="#fde047" stroke-width="1.5"/>
+  <text x="675" y="105" text-anchor="middle" font-size="13" font-weight="600" fill="#854d0e">Agency LLM</text>
+  <text x="675" y="125" text-anchor="middle" font-size="11" fill="#475569">SwarmContext</text>
+  <text x="675" y="148" text-anchor="middle" font-size="10" fill="#16a34a" font-weight="500">live state ✓</text>
+  <text x="675" y="165" text-anchor="middle" font-size="10" fill="#64748b">routing ← current</text>
+  <text x="675" y="179" text-anchor="middle" font-size="10" fill="#64748b">prompts ← current</text>
+
+  <!-- Arrow: bridge → event source → context -->
+  <line x1="540" y1="242" x2="610" y2="170" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <text x="590" y="218" font-size="9" fill="#16a34a">events</text>
+
+  <!-- Bottom: what flows -->
+  <rect x="30" y="290" width="340" height="65" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="200" y="312" text-anchor="middle" font-size="11" font-weight="500" fill="#991b1b">Without bridge: prompts don't reflect role structure,</text>
+  <text x="200" y="328" text-anchor="middle" font-size="11" fill="#991b1b">routing doesn't know team composition,</text>
+  <text x="200" y="344" text-anchor="middle" font-size="11" fill="#991b1b">convergence check can't detect stability</text>
+
+  <rect x="420" y="290" width="320" height="65" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="580" y="312" text-anchor="middle" font-size="11" font-weight="500" fill="#166534">With bridge: engine lifecycle events flow</text>
+  <text x="580" y="328" text-anchor="middle" font-size="11" fill="#166534">through CDI → SwarmEventSource →</text>
+  <text x="580" y="344" text-anchor="middle" font-size="11" fill="#166534">SwarmContext → LLM prompt construction</text>
+</svg>
