@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 

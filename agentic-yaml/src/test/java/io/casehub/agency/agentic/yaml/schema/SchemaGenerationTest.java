@@ -11,8 +11,8 @@ import io.casehub.agency.core.yaml.spec.KokoroConfigSpec;
 import io.casehub.agency.core.yaml.spec.SherpaConfigSpec;
 import io.casehub.agency.core.yaml.spec.TrustRoutingPolicyKeysSpec;
 import io.casehub.agency.governance.routing.agent.DispositionProfile;
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.TranscriptionOptions;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

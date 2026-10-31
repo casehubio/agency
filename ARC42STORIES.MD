@@ -168,17 +168,17 @@ Speech capability SPIs — provider-agnostic interfaces for speech-to-text and t
 
 | Block | What it does |
 |-------|-------------|
-| `SpeechToTextService` | SPI: transcribes audio file (Path) to text with language detection and confidence score |
+| `SpeechToText` | SPI: transcribes audio file (Path) to text with language detection and confidence score |
 | `TranscriptionResult` | Record: transcription output (text, language, confidence) |
 | `TranscriptionOptions` | Record: audio format, language hint, model size |
-| `TextToSpeechService` | SPI: synthesises text to audio with optional phoneme timing |
+| `TextToSpeech` | SPI: synthesises text to audio with optional phoneme timing |
 | `SynthesisResult` | Record: audio data, format, phoneme timing list |
 | `PhonemeTiming` | Record: phoneme with start/end millisecond offsets |
 | `SynthesisOptions` | Record: voice, language, audio format, phoneme inclusion flag |
 
 ### Module: `agency-speech-sherpa` — sherpa-onnx FFM Implementation
 
-Default `SpeechToTextService` and `TextToSpeechService` implementation via sherpa-onnx native library using Java FFM/Panama (JDK 22+). Whisper for STT, VITS/Piper for TTS. Apple Silicon Metal acceleration via provider config.
+Default `SpeechToText` and `TextToSpeech` implementation via sherpa-onnx native library using Java FFM/Panama (JDK 22+). Whisper for STT, VITS/Piper for TTS. Apple Silicon Metal acceleration via provider config.
 
 | Block | What it does |
 |-------|-------------|

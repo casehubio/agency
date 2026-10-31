@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SpeechToTextService;
-import io.casehub.agency.speech.TranscriptionOptions;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionResult;
+import io.casehub.connectors.voice.spi.SpeechToText;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -11,11 +11,11 @@ import java.lang.foreign.MemorySegment;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public final class SherpaOnnxSpeechToText implements SpeechToTextService, AutoCloseable {
+public final class SherpaOnnxSpeechToText implements SpeechToText, AutoCloseable {
 
     private final SherpaConfig config;
     private final SherpaLibrary lib;
-    private io.casehub.agency.speech.SpeechDenoiser denoiser;
+    private io.casehub.connectors.voice.spi.SpeechDenoiser denoiser;
     private java.util.function.BooleanSupplier denoiserEnabled;
 
     private Arena cachedArena;
@@ -47,11 +47,29 @@ public final class SherpaOnnxSpeechToText implements SpeechToTextService, AutoCl
     }
 
     public SherpaOnnxSpeechToText withDenoiser(
-            io.casehub.agency.speech.SpeechDenoiser denoiser,
+            io.casehub.connectors.voice.spi.SpeechDenoiser denoiser,
             java.util.function.BooleanSupplier enabled) {
         this.denoiser = denoiser;
         this.denoiserEnabled = enabled;
         return this;
+    }
+
+
+    @Override
+    public TranscriptionResult transcribe(byte[] audio, TranscriptionOptions options) {
+        Objects.requireNonNull(audio, "audio");
+        Path tempFile = null;
+        try {
+            tempFile = java.nio.file.Files.createTempFile("stt-", ".audio");
+            java.nio.file.Files.write(tempFile, audio);
+            return transcribe(tempFile, options);
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        } finally {
+            if (tempFile != null) {
+                try {java.nio.file.Files.deleteIfExists(tempFile);} catch (java.io.IOException ignored) {}
+            }
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -110,7 +110,7 @@ class Audio8TextToSpeechTest {
 
         var chunks = new java.util.ArrayList<byte[]>();
         var seqs   = new java.util.ArrayList<Integer>();
-        tts.synthesiseStreaming("hello", io.casehub.agency.speech.SynthesisOptions.defaults(),
+        tts.synthesiseStreaming("hello", io.casehub.connectors.voice.model.SynthesisOptions.defaults(),
                                 (wav, seq) -> {
                                     chunks.add(wav);
                                     seqs.add(seq);
@@ -128,7 +128,7 @@ class Audio8TextToSpeechTest {
     void synthesiseStreamingThrowsWhenNotAvailable(@TempDir Path tempDir) throws Exception {
         var tts = createTestInstance(tempDir);
         assertThatThrownBy(() -> tts.synthesiseStreaming("hello",
-                                                         io.casehub.agency.speech.SynthesisOptions.defaults(), (wav, seq) -> {}))
+                                                         io.casehub.connectors.voice.model.SynthesisOptions.defaults(), (wav, seq) -> {}))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 

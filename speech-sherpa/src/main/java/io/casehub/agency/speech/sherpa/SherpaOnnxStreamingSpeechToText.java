@@ -1,10 +1,10 @@
 package io.casehub.agency.speech.sherpa;
 
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.TranscriptionOptions;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -12,16 +12,16 @@ import java.lang.foreign.ValueLayout;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public final class SherpaOnnxStreamingSpeechToText implements StreamingSpeechToTextService {
+public final class SherpaOnnxStreamingSpeechToText implements StreamingSpeechToText {
 
     private final SherpaConfig config;
     private final SherpaLibrary lib;
     private final MemorySegment recognizer;
     private final Arena recognizerArena;
     private final @org.jspecify.annotations.Nullable CleanupConfig cleanupConfig;
-    private io.casehub.agency.speech.StreamingSpeechDenoiserFactory denoiserFactory;
+    private io.casehub.connectors.voice.spi.StreamingSpeechDenoiserFactory denoiserFactory;
     private java.util.function.BooleanSupplier denoiserEnabled;
-    private io.casehub.agency.speech.VoiceActivityFilterFactory vadFactory;
+    private io.casehub.connectors.voice.spi.VoiceActivityFilterFactory vadFactory;
     private java.util.function.BooleanSupplier vadEnabled;
 
 
@@ -57,7 +57,7 @@ public final class SherpaOnnxStreamingSpeechToText implements StreamingSpeechToT
     }
 
     public SherpaOnnxStreamingSpeechToText withStreamingDenoiser(
-            io.casehub.agency.speech.StreamingSpeechDenoiserFactory factory,
+            io.casehub.connectors.voice.spi.StreamingSpeechDenoiserFactory factory,
             java.util.function.BooleanSupplier enabled) {
         this.denoiserFactory = factory;
         this.denoiserEnabled = enabled;
@@ -65,7 +65,7 @@ public final class SherpaOnnxStreamingSpeechToText implements StreamingSpeechToT
     }
 
     public SherpaOnnxStreamingSpeechToText withVoiceActivityFilter(
-            io.casehub.agency.speech.VoiceActivityFilterFactory factory,
+            io.casehub.connectors.voice.spi.VoiceActivityFilterFactory factory,
             java.util.function.BooleanSupplier enabled) {
         this.vadFactory = factory;
         this.vadEnabled = enabled;
@@ -171,8 +171,8 @@ public final class SherpaOnnxStreamingSpeechToText implements StreamingSpeechToT
         private final    Arena                                    streamArena;
         private final    java.util.concurrent.locks.ReentrantLock lock = new java.util.concurrent.locks.ReentrantLock();
         private volatile boolean                                  closed;
-        private final io.casehub.agency.speech.StreamingSpeechDenoiser denoiser;
-        private final io.casehub.agency.speech.VoiceActivityFilter vadFilter;
+        private final io.casehub.connectors.voice.spi.StreamingSpeechDenoiser denoiser;
+        private final io.casehub.connectors.voice.spi.VoiceActivityFilter vadFilter;
 
         SherpaRecognitionStream() {
             this.denoiser = (denoiserFactory != null) ? denoiserFactory.create() : null;

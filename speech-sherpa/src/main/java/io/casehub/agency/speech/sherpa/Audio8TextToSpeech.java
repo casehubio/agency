@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 
 import java.io.IOException;
 import java.lang.foreign.Arena;
@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
-public final class Audio8TextToSpeech implements TextToSpeechService, AutoCloseable {
+public final class Audio8TextToSpeech implements TextToSpeech, AutoCloseable {
 
     @FunctionalInterface
     interface Generator {

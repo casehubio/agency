@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -29,7 +29,7 @@ class KokoroTextToSpeechTest {
 
     @Test
     void implementsTextToSpeechService() {
-        assertThat(io.casehub.agency.speech.TextToSpeechService.class)
+        assertThat(io.casehub.connectors.voice.spi.TextToSpeech.class)
                 .isAssignableFrom(KokoroTextToSpeech.class);
     }
 }

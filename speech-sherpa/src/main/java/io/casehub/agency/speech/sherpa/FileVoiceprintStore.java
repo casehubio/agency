@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.casehub.agency.speech.SpeakerEmbedding;
-import io.casehub.agency.speech.VoiceprintStore;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.spi.VoiceprintStore;
 
 import java.io.IOException;
 import java.nio.file.Files;

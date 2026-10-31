@@ -1,9 +1,9 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.TranscriptionOptions;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.PhonemeAligner;
-import io.casehub.agency.speech.PhonemeTiming;
+import io.casehub.connectors.voice.spi.PhonemeAligner;
+import io.casehub.connectors.voice.model.PhonemeTiming;
 
 import java.io.IOException;
 import java.util.ArrayList;

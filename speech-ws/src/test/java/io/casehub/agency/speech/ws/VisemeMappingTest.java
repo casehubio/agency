@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.PhonemeTiming;
+import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.agency.speech.ws.protocol.VisemeFrame;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

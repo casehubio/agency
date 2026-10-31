@@ -25,11 +25,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.casehub</groupId>
-      <artifactId>casehub-connectors-voice-spi</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.jspecify</groupId>
       <artifactId>jspecify</artifactId>
     </dependency>

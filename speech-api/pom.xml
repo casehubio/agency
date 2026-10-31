@@ -14,8 +14,12 @@
   <name>casehub-agency-speech-api</name>
   <description>Speech capability SPIs — provider-agnostic STT and TTS interfaces</description>
 
-  <!-- Pure Java — zero foundation dependencies, zero CDI/Quarkus -->
   <dependencies>
+    <dependency>
+      <groupId>io.casehub</groupId>
+      <artifactId>casehub-connectors-voice-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.jspecify</groupId>
       <artifactId>jspecify</artifactId>

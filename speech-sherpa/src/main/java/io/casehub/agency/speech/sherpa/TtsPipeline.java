@@ -1,14 +1,14 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
 
-public final class TtsPipeline implements TextToSpeechService, AutoCloseable {
+public final class TtsPipeline implements TextToSpeech, AutoCloseable {
     private static final System.Logger LOG = System.getLogger("casehub-speech");
 
 

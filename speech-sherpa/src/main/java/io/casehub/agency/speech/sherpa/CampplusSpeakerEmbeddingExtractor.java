@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SpeakerEmbedding;
-import io.casehub.agency.speech.SpeakerEmbeddingExtractor;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;

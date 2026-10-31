@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SpeakerEmbedding;
-import io.casehub.agency.speech.SpeakerMatch;
-import io.casehub.agency.speech.VoiceprintStore;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.model.SpeakerMatch;
+import io.casehub.connectors.voice.spi.VoiceprintStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.demo;
 
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.casehub.agency.speech.sherpa.VitsTextToSpeech;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -14,17 +14,17 @@ public class SpeechProducers {
 
     @Produces
     @ApplicationScoped
-    TextToSpeechService tts() {
+    TextToSpeech tts() {
         return VitsTextToSpeech.withDefaults();
     }
 
     @Produces
     @jakarta.inject.Singleton
     io.casehub.agency.speech.ws.TtsModelRegistry ttsRegistry() {
-        var models = new java.util.LinkedHashMap<String, io.casehub.agency.speech.TextToSpeechService>();
+        var models = new java.util.LinkedHashMap<String, io.casehub.connectors.voice.spi.TextToSpeech>();
 
         // Shared lip-sync aligner — enriches any TTS engine that returns empty phonemes
-        io.casehub.agency.speech.PhonemeAligner aligner = null;
+        io.casehub.connectors.voice.spi.PhonemeAligner aligner = null;
         try {
             aligner = io.casehub.agency.speech.sherpa.EspeakPhonemeAligner.withDefaults();
         } catch (Exception e) {
@@ -82,19 +82,19 @@ public class SpeechProducers {
 
         return new io.casehub.agency.speech.ws.TtsModelRegistry(java.util.Collections.unmodifiableMap(models));}
 
-    private static io.casehub.agency.speech.TextToSpeechService wrapIfAvailable(
-            io.casehub.agency.speech.TextToSpeechService delegate,
-            io.casehub.agency.speech.PhonemeAligner aligner) {
+    private static io.casehub.connectors.voice.spi.TextToSpeech wrapIfAvailable(
+            io.casehub.connectors.voice.spi.TextToSpeech delegate,
+            io.casehub.connectors.voice.spi.PhonemeAligner aligner) {
         if (aligner == null) {
             return delegate;
         }
-        return io.casehub.agency.speech.LipSyncEnricher.wrap(delegate, aligner);
+        return io.casehub.connectors.voice.spi.LipSyncEnricher.wrap(delegate, aligner);
     }
 
 
     @Produces
     @ApplicationScoped
-    io.casehub.agency.speech.SpeakerEmbeddingExtractor embeddingExtractor() {
+    io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor embeddingExtractor() {
         java.nio.file.Path campplusPath = io.casehub.agency.speech.sherpa.Provisioner.ensureCampplusModel();
         io.casehub.agency.speech.sherpa.OnnxRuntimeLibrary.Session session =
                 io.casehub.agency.speech.sherpa.OnnxRuntimeLibrary.load()
@@ -104,13 +104,13 @@ public class SpeechProducers {
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.SpeakerRegistry speakerRegistry(io.casehub.agency.speech.VoiceprintStore store) {
+    io.casehub.connectors.voice.spi.SpeakerRegistry speakerRegistry(io.casehub.connectors.voice.spi.VoiceprintStore store) {
         return new io.casehub.agency.speech.sherpa.CosineDistanceSpeakerRegistry(store);
     }
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.VoiceprintStore voiceprintStore() {
+    io.casehub.connectors.voice.spi.VoiceprintStore voiceprintStore() {
         return new io.casehub.agency.speech.sherpa.FileVoiceprintStore(
                 java.nio.file.Path.of(System.getProperty("user.home"), ".casehub", "voiceprints"));
     }
@@ -221,7 +221,7 @@ public class SpeechProducers {
 
     @Produces
     @ApplicationScoped
-    io.casehub.agency.speech.StreamingSpeechToTextService stt() {
+    io.casehub.connectors.voice.spi.StreamingSpeechToText stt() {
         try {
             if (io.casehub.agency.speech.sherpa.WhisperLibrary.isAvailable()) {
                 LOG.log(System.Logger.Level.INFO, "Using WhisperSpeechToText");

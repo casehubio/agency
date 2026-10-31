@@ -1,10 +1,10 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 
-final class KokoroVoice implements TextToSpeechService {
+final class KokoroVoice implements TextToSpeech {
 
     private final KokoroTextToSpeech engine;
     private final int voiceId;

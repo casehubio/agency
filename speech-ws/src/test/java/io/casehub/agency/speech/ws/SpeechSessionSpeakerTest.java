@@ -1,14 +1,14 @@
 package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.SpeakerEmbedding;
-import io.casehub.agency.speech.SpeakerEmbeddingExtractor;
-import io.casehub.agency.speech.SpeakerMatch;
-import io.casehub.agency.speech.SpeakerRegistry;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.TextToSpeechService;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
+import io.casehub.connectors.voice.model.SpeakerMatch;
+import io.casehub.connectors.voice.spi.SpeakerRegistry;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ import static org.mockito.Mockito.when;
 
 class SpeechSessionSpeakerTest {
 
-    private StreamingSpeechToTextService sttService;
-    private TextToSpeechService ttsService;
+    private StreamingSpeechToText sttService;
+    private TextToSpeech ttsService;
     private CleanupConfig cleanupConfig;
     private RecognitionStream recognitionStream;
     private SpeakerEmbeddingExtractor extractor;
@@ -40,8 +40,8 @@ class SpeechSessionSpeakerTest {
 
     @BeforeEach
     void setUp() {
-        sttService = mock(StreamingSpeechToTextService.class);
-        ttsService = mock(TextToSpeechService.class);
+        sttService = mock(StreamingSpeechToText.class);
+        ttsService = mock(TextToSpeech.class);
         cleanupConfig = mock(CleanupConfig.class);
         recognitionStream = mock(RecognitionStream.class);
         extractor = mock(SpeakerEmbeddingExtractor.class);

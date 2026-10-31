@@ -646,8 +646,8 @@ Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `SpeechToTextService` | interface | `transcribe(Path audioFile, TranscriptionOptions) → TranscriptionResult` |
-| `TextToSpeechService` | interface | `synthesise(String text, SynthesisOptions) → SynthesisResult` |
+| `SpeechToText` | interface | `transcribe(Path audioFile, TranscriptionOptions) → TranscriptionResult` |
+| `TextToSpeech` | interface | `synthesise(String text, SynthesisOptions) → SynthesisResult` |
 | `TranscriptionResult` | record | `text`, `language`, `origin` |
 | `SynthesisResult` | record | `audioData` (byte[]), `audioFormat`, `phonemes` (List<PhonemeTiming>) |
 | `PhonemeTiming` | record | `phoneme`, `startMs`, `endMs` — for downstream lip-sync |

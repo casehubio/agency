@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.VoiceActivityFilter;
-import io.casehub.agency.speech.VoiceActivityFilterFactory;
+import io.casehub.connectors.voice.spi.VoiceActivityFilter;
+import io.casehub.connectors.voice.spi.VoiceActivityFilterFactory;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;

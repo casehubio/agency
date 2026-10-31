@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.StreamingSpeechDenoiser;
-import io.casehub.agency.speech.StreamingSpeechDenoiserFactory;
+import io.casehub.connectors.voice.spi.StreamingSpeechDenoiser;
+import io.casehub.connectors.voice.spi.StreamingSpeechDenoiserFactory;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;

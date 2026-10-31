@@ -1,9 +1,9 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.TranscriptionOptions;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.foreign.Arena;
@@ -12,7 +12,7 @@ import java.lang.foreign.ValueLayout;
 import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class WhisperSpeechToText implements StreamingSpeechToTextService, AutoCloseable {
+public final class WhisperSpeechToText implements StreamingSpeechToText, AutoCloseable {
 
     private static final int MAX_BUFFER_SAMPLES = 480_000; // 30s at 16kHz
     private static final long PARTIAL_THROTTLE_MS = 500;
@@ -21,9 +21,9 @@ public final class WhisperSpeechToText implements StreamingSpeechToTextService, 
     private final MemorySegment ctx;
     private final Arena ctxArena;
     private final ReentrantLock inferenceLock = new ReentrantLock();
-    private io.casehub.agency.speech.StreamingSpeechDenoiserFactory denoiserFactory;
+    private io.casehub.connectors.voice.spi.StreamingSpeechDenoiserFactory denoiserFactory;
     private java.util.function.BooleanSupplier denoiserEnabled;
-    private io.casehub.agency.speech.VoiceActivityFilterFactory vadFactory;
+    private io.casehub.connectors.voice.spi.VoiceActivityFilterFactory vadFactory;
     private java.util.function.BooleanSupplier vadEnabled;
 
     WhisperSpeechToText(WhisperLibrary lib, Path modelPath) {
@@ -62,7 +62,7 @@ public final class WhisperSpeechToText implements StreamingSpeechToTextService, 
     }
 
     public WhisperSpeechToText withStreamingDenoiser(
-            io.casehub.agency.speech.StreamingSpeechDenoiserFactory factory,
+            io.casehub.connectors.voice.spi.StreamingSpeechDenoiserFactory factory,
             java.util.function.BooleanSupplier enabled) {
         this.denoiserFactory = factory;
         this.denoiserEnabled = enabled;
@@ -70,7 +70,7 @@ public final class WhisperSpeechToText implements StreamingSpeechToTextService, 
     }
 
     public WhisperSpeechToText withVoiceActivityFilter(
-            io.casehub.agency.speech.VoiceActivityFilterFactory factory,
+            io.casehub.connectors.voice.spi.VoiceActivityFilterFactory factory,
             java.util.function.BooleanSupplier enabled) {
         this.vadFactory = factory;
         this.vadEnabled = enabled;
@@ -96,8 +96,8 @@ public final class WhisperSpeechToText implements StreamingSpeechToTextService, 
         private String lastPartial = "";
         private long lastPartialTime = 0;
         private boolean closed = false;
-        private final io.casehub.agency.speech.StreamingSpeechDenoiser denoiser;
-        private final io.casehub.agency.speech.VoiceActivityFilter vadFilter;
+        private final io.casehub.connectors.voice.spi.StreamingSpeechDenoiser denoiser;
+        private final io.casehub.connectors.voice.spi.VoiceActivityFilter vadFilter;
 
         WhisperRecognitionStream(TranscriptionOptions options) {
             this.vocabularyHint = options.vocabularyHint();

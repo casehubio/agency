@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,7 +20,7 @@ class SherpaOnnxSpeechToTextTest {
     void rejectsNullAudioFile() {
         var stt = new SherpaOnnxSpeechToText(SherpaConfig.defaults(tempDir), (SherpaLibrary) null);
 
-        assertThatThrownBy(() -> stt.transcribe(null, TranscriptionOptions.defaults()))
+        assertThatThrownBy(() -> stt.transcribe((Path) null, TranscriptionOptions.defaults()))
                 .isInstanceOf(NullPointerException.class);
     }
 

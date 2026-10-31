@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.AudioFormat;

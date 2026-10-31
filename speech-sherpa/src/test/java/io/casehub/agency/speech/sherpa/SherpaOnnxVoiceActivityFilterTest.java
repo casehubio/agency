@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.VoiceActivityFilter;
-import io.casehub.agency.speech.VoiceActivityFilterFactory;
+import io.casehub.connectors.voice.spi.VoiceActivityFilter;
+import io.casehub.connectors.voice.spi.VoiceActivityFilterFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 

@@ -1,9 +1,9 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.PhonemeTiming;
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.model.PhonemeTiming;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class VitsTextToSpeech implements TextToSpeechService, AutoCloseable {
+public final class VitsTextToSpeech implements TextToSpeech, AutoCloseable {
 
     private static final System.Logger LOG = System.getLogger("casehub-speech");
     private static final int HOP_LENGTH = 256;

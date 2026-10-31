@@ -2,13 +2,13 @@ package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.AssembledPrompt;
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.PhonemeTiming;
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.model.PhonemeTiming;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,8 @@ import static org.mockito.Mockito.when;
 
 class SpeechSessionTest {
 
-    private StreamingSpeechToTextService sttService;
-    private TextToSpeechService          ttsService;
+    private StreamingSpeechToText sttService;
+    private TextToSpeech          ttsService;
     private CleanupConfig                cleanupConfig;
     private RecognitionStream            recognitionStream;
     private List<String>                 sentTextMessages;
@@ -38,8 +38,8 @@ class SpeechSessionTest {
 
     @BeforeEach
     void setUp() {
-        sttService        = mock(StreamingSpeechToTextService.class);
-        ttsService        = mock(TextToSpeechService.class);
+        sttService        = mock(StreamingSpeechToText.class);
+        ttsService        = mock(TextToSpeech.class);
         cleanupConfig     = mock(CleanupConfig.class);
         recognitionStream = mock(RecognitionStream.class);
 
@@ -370,7 +370,7 @@ class SpeechSessionTest {
 
     @Test
     void handleTextUsesNamedTtsModelFromRegistry() {
-        var altTts = mock(TextToSpeechService.class);
+        var altTts = mock(TextToSpeech.class);
         when(altTts.synthesise(any(), any())).thenReturn(
                 new SynthesisResult(new byte[]{9, 8}, "wav", List.of()));
 
@@ -391,7 +391,7 @@ class SpeechSessionTest {
 
     @Test
     void handleTextFallsBackToDefaultTtsForUnknownModel() {
-        var altTts = mock(TextToSpeechService.class);
+        var altTts = mock(TextToSpeech.class);
         when(ttsService.synthesise(any(), any())).thenReturn(
                 new SynthesisResult(new byte[]{1}, "wav", List.of()));
 
@@ -411,7 +411,7 @@ class SpeechSessionTest {
 
     @Test
     void handleTextFallsBackToDefaultTtsForNullModel() {
-        var altTts = mock(TextToSpeechService.class);
+        var altTts = mock(TextToSpeech.class);
         when(ttsService.synthesise(any(), any())).thenReturn(
                 new SynthesisResult(new byte[]{1}, "wav", List.of()));
 
@@ -506,7 +506,7 @@ class SpeechSessionTest {
         session.handleStart(new AvatarMessage.Start(16000));
 
         var captor = org.mockito.ArgumentCaptor.forClass(
-                io.casehub.agency.speech.TranscriptionOptions.class);
+                io.casehub.connectors.voice.model.TranscriptionOptions.class);
         verify(sttService).startStream(captor.capture());
         assertThat(captor.getValue().vocabularyHint()).isEqualTo("limerick poetry nantucket");
         session.close();
@@ -664,7 +664,7 @@ class SpeechSessionTest {
         when(recognitionStream.finalResult()).thenReturn(
                 new TranscriptionResult("model test", "en", 0.9));
 
-        var altTts = mock(TextToSpeechService.class);
+        var altTts = mock(TextToSpeech.class);
         when(altTts.synthesise(any(), any())).thenReturn(
                 new SynthesisResult(new byte[]{9}, "wav", List.of()));
 
@@ -773,13 +773,13 @@ class SpeechSessionTest {
             return "Response with speaker.";
         };
 
-        var extractor = mock(io.casehub.agency.speech.SpeakerEmbeddingExtractor.class);
-        var registry  = mock(io.casehub.agency.speech.SpeakerRegistry.class);
+        var extractor = mock(io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor.class);
+        var registry  = mock(io.casehub.connectors.voice.spi.SpeakerRegistry.class);
         when(extractor.extract(any(), eq(16000))).thenReturn(
-                new io.casehub.agency.speech.SpeakerEmbedding(new float[192], 192));
+                new io.casehub.connectors.voice.model.SpeakerEmbedding(new float[192], 192));
         when(registry.identify(any(), org.mockito.ArgumentMatchers.anyDouble()))
                 .thenReturn(java.util.Optional.of(
-                        new io.casehub.agency.speech.SpeakerMatch("Mark", 0.85)));
+                        new io.casehub.connectors.voice.model.SpeakerMatch("Mark", 0.85)));
 
         session = new SpeechSession(
                 sttService, ttsService, cleanupConfig,

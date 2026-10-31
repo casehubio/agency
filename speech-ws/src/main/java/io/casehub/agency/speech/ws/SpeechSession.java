@@ -1,15 +1,16 @@
 package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.RecognitionStream;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
-import io.casehub.agency.speech.SpeakerEmbedding;
-import io.casehub.agency.speech.SpeakerEmbeddingExtractor;
-import io.casehub.agency.speech.SpeakerRegistry;
-import io.casehub.agency.speech.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
+import io.casehub.connectors.voice.spi.SpeakerRegistry;
+import io.casehub.connectors.voice.model.TranscriptionResult;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
@@ -31,8 +32,8 @@ public class SpeechSession {
     private static final System.Logger LOG = System.getLogger("speech-session");
 
 
-    private final           StreamingSpeechToTextService               sttService;
-    private final           TextToSpeechService                        ttsService;
+    private final           StreamingSpeechToText               sttService;
+    private final           TextToSpeech                        ttsService;
     private final           CleanupConfig                              cleanupConfig;
     private final @Nullable Function<AssembledPrompt, String>          responseGenerator;
     private final @Nullable StreamingResponseGenerator                 streamingGenerator;
@@ -40,7 +41,7 @@ public class SpeechSession {
     private final           Consumer<String>                           textSink;
     private final           Consumer<byte[]>                           binarySink;
     private final           List<ConversationTurn>                     history = new ArrayList<>();
-    private final           java.util.Map<String, TextToSpeechService> ttsModels;
+    private final           java.util.Map<String, TextToSpeech> ttsModels;
     private final java.util.function.UnaryOperator<String>   corrector;
     private final java.util.function.Consumer<String>        onResponse;
     private final java.util.function.Supplier<String>        vocabularyHintSupplier;
@@ -70,8 +71,8 @@ public class SpeechSession {
     private @Nullable String                    explicitEnrollmentName;
 
 
-    public SpeechSession(StreamingSpeechToTextService sttService,
-                         TextToSpeechService ttsService,
+    public SpeechSession(StreamingSpeechToText sttService,
+                         TextToSpeech ttsService,
                          CleanupConfig cleanupConfig,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
@@ -81,26 +82,26 @@ public class SpeechSession {
              textSink, binarySink, java.util.Map.of());
     }
 
-    public SpeechSession(StreamingSpeechToTextService sttService,
-                         TextToSpeechService ttsService,
+    public SpeechSession(StreamingSpeechToText sttService,
+                         TextToSpeech ttsService,
                          CleanupConfig cleanupConfig,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
-                         java.util.Map<String, TextToSpeechService> ttsModels) {
+                         java.util.Map<String, TextToSpeech> ttsModels) {
         this(sttService, ttsService, cleanupConfig, responseGenerator, promptAssembler,
              textSink, binarySink, ttsModels, null, null, null);
     }
 
-    public SpeechSession(StreamingSpeechToTextService sttService,
-                         TextToSpeechService ttsService,
+    public SpeechSession(StreamingSpeechToText sttService,
+                         TextToSpeech ttsService,
                          CleanupConfig cleanupConfig,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
-                         java.util.Map<String, TextToSpeechService> ttsModels,
+                         java.util.Map<String, TextToSpeech> ttsModels,
                          java.util.function.UnaryOperator<String> corrector,
                          java.util.function.Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
@@ -108,15 +109,15 @@ public class SpeechSession {
              promptAssembler, textSink, binarySink, ttsModels, corrector, onResponse, vocabularyHintSupplier);
     }
 
-    public SpeechSession(StreamingSpeechToTextService sttService,
-                         TextToSpeechService ttsService,
+    public SpeechSession(StreamingSpeechToText sttService,
+                         TextToSpeech ttsService,
                          CleanupConfig cleanupConfig,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          @Nullable StreamingResponseGenerator streamingGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
-                         java.util.Map<String, TextToSpeechService> ttsModels,
+                         java.util.Map<String, TextToSpeech> ttsModels,
                          java.util.function.UnaryOperator<String> corrector,
                          java.util.function.Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
@@ -143,7 +144,7 @@ public class SpeechSession {
         this.sampleRate     = msg.sampleRate();
         this.activeLlmModel = msg.llmModel();
         this.activeTtsModel = msg.ttsModel();
-        var opts = io.casehub.agency.speech.TranscriptionOptions.defaults();
+        var opts = TranscriptionOptions.defaults();
         if (vocabularyHintSupplier != null) {
             String hint = vocabularyHintSupplier.get();
             if (hint != null && !hint.isEmpty()) {
@@ -227,7 +228,7 @@ public class SpeechSession {
             String speakerLabel = identifySpeaker();
             history.add(new ConversationTurn("user", cleanText, speakerLabel));
 
-            TextToSpeechService tts           = resolveTts(activeTtsModel);
+            TextToSpeech tts           = resolveTts(activeTtsModel);
             int[]               sentenceCount = {0};
 
             if (streamingGenerator != null) {
@@ -347,7 +348,7 @@ public class SpeechSession {
             send(new AvatarMessage.Transcript(cleanText));
             history.add(new ConversationTurn("user", cleanText));
 
-            TextToSpeechService tts           = resolveTts(ttsModel);
+            TextToSpeech tts           = resolveTts(ttsModel);
             int[]               sentenceCount = {0};
 
             if (streamingGenerator != null) {
@@ -430,7 +431,7 @@ public class SpeechSession {
         return text + ".";
     }
 
-    private void synthesiseAndSend(TextToSpeechService tts, String sentence, int index) {
+    private void synthesiseAndSend(TextToSpeech tts, String sentence, int index) {
         long            start     = System.nanoTime();
         SynthesisResult synthesis = tts.synthesise(sentence, new SynthesisOptions(null, null, "wav", true));
         long            elapsed   = (System.nanoTime() - start) / 1_000_000;
@@ -452,7 +453,7 @@ public class SpeechSession {
                 l1, ns1 / 1_000_000, l2, ns2 / 1_000_000, l3, ns3 / 1_000_000, sentences, totalNs / 1_000_000);
     }
 
-    private TextToSpeechService resolveTts(@Nullable String modelKey) {
+    private TextToSpeech resolveTts(@Nullable String modelKey) {
         if (modelKey != null && ttsModels.containsKey(modelKey)) {
             return ttsModels.get(modelKey);
         }

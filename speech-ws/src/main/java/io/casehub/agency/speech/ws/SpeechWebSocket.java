@@ -2,8 +2,8 @@ package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.AssembledPrompt;
 import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.StreamingSpeechToTextService;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
 import io.quarkus.websockets.next.OnBinaryMessage;
@@ -20,10 +20,10 @@ import java.nio.ByteOrder;
 public class SpeechWebSocket {
 
     @Inject
-    StreamingSpeechToTextService sttService;
+    StreamingSpeechToText sttService;
 
     @Inject
-    TextToSpeechService ttsService;
+    TextToSpeech ttsService;
 
     @Inject
     CleanupConfig cleanupConfig;
@@ -41,10 +41,10 @@ public class SpeechWebSocket {
     jakarta.enterprise.inject.Instance<CorrectionHooks>  correctionHooks;
 
     @Inject
-    jakarta.enterprise.inject.Instance<io.casehub.agency.speech.SpeakerEmbeddingExtractor> embeddingExtractor;
+    jakarta.enterprise.inject.Instance<io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor> embeddingExtractor;
 
     @Inject
-    jakarta.enterprise.inject.Instance<io.casehub.agency.speech.SpeakerRegistry> speakerRegistryInstance;
+    jakarta.enterprise.inject.Instance<io.casehub.connectors.voice.spi.SpeakerRegistry> speakerRegistryInstance;
 
     @Inject
     jakarta.enterprise.inject.Instance<io.casehub.agency.speech.AvatarCognition> avatarCognition;

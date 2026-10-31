@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.SynthesisOptions;
-import io.casehub.agency.speech.SynthesisResult;
-import io.casehub.agency.speech.TextToSpeechService;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -32,7 +32,7 @@ class TtsPipelineTest {
         assertThat(result.phonemes()).isEmpty();
     }
 
-    @Test void implementsTextToSpeechService() {
+    @Test void implementsTextToSpeech() {
         var manifest = testManifest();
         TtsTokenizer tokenizer = text -> new int[]{1};
         TtsGenerator generator = (tokens, voice, config) ->
@@ -41,9 +41,9 @@ class TtsPipelineTest {
         var registry = new VoiceRegistry((audio, transcript) ->
                 new VoiceData.CodecVoiceData(new int[]{1}));
 
-        TextToSpeechService svc = new TtsPipeline(manifest, tokenizer, generator,
+        TextToSpeech svc = new TtsPipeline(manifest, tokenizer, generator,
                 decoder, registry, 24000);
-        assertThat(svc).isInstanceOf(TextToSpeechService.class);
+        assertThat(svc).isInstanceOf(TextToSpeech.class);
     }
 
     @Test void resolveVoiceUsesRegisteredVoice(@TempDir Path tempDir) throws Exception {
