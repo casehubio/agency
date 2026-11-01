@@ -48,8 +48,8 @@ public class PartitionedObservationService<E, K> {
 
         for (var entry : routing.entrySet()) {
             String observerId = entry.getKey();
-            ObserverState<E, K> state = observers.get(observerId);
-            if (state == null) continue;
+            ObserverState<E, K> state = observers.computeIfAbsent(observerId,
+                    id -> new ObserverState<>(entry.getValue().iterator().next(), renderer));
             for (K partition : entry.getValue()) {
                 state.accumulatorFor(partition).collect(levelEvent);
             }
