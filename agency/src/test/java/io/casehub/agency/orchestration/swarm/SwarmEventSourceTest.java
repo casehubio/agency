@@ -54,6 +54,31 @@ class SwarmEventSourceTest {
         assertThat(context.swarmProgress()).isSameAs(PROGRESS);
     }
 
+
+    @Test
+    void updatesContextOnProvisioningChanged() {
+        var context = new SwarmContext();
+        var source  = new SwarmEventSource(context);
+        source.subscribe(e -> {});
+
+        source.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(5, 10));
+
+        assertThat(context.currentSize()).isEqualTo(5);
+        assertThat(context.maxSize()).isEqualTo(10);
+    }
+
+    @Test
+    void updatesContextOnMemberCompleted() {
+        var context = new SwarmContext();
+        var source  = new SwarmEventSource(context);
+        source.subscribe(e -> {});
+
+        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-1", null));
+        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-2", null));
+
+        assertThat(context.completedMembers()).containsExactly("agent-1", "agent-2");
+    }
+
     @Test
     void cancellationRemovesSubscriber() {
         var context = new SwarmContext();

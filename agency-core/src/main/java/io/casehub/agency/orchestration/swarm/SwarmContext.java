@@ -15,6 +15,10 @@ public class SwarmContext {
     private volatile @Nullable SwarmProgress swarmProgress;
     private volatile @Nullable String activeStrategy;
     private volatile List<RetrievedExperience> experiences = List.of();
+    private volatile int                       currentSize;
+    private volatile int                       maxSize;
+    private volatile List<String>              completedMembers = List.of();
+
 
     public void onSwarmInitialised(List<RetrievedExperience> experiences, SwarmProgress progress) {
         this.swarmProgress = progress;
@@ -35,6 +39,18 @@ public class SwarmContext {
         this.swarmProgress = progress;
     }
 
+    public void onProvisioningChanged(int currentSize, int maxSize) {
+        this.currentSize = currentSize;
+        this.maxSize     = maxSize;
+    }
+
+    public void onMemberCompleted(String agentId) {
+        var current = new java.util.ArrayList<>(this.completedMembers);
+        current.add(agentId);
+        this.completedMembers = List.copyOf(current);
+    }
+
+
     public void setActiveStrategy(String strategy) {
         this.activeStrategy = strategy;
     }
@@ -48,4 +64,10 @@ public class SwarmContext {
     public @Nullable String activeStrategy() { return activeStrategy; }
 
     public List<RetrievedExperience> experiences() { return experiences; }
+
+    public int currentSize()               {return currentSize;}
+
+    public int maxSize()                   {return maxSize;}
+
+    public List<String> completedMembers() {return completedMembers;}
 }

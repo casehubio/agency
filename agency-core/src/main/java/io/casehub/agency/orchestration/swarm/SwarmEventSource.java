@@ -33,8 +33,8 @@ public class SwarmEventSource implements EventSource {
             case SwarmCoordinationEvent.RoleChanged e -> context.onRoleChanged(e.roles(), e.progress());
             case SwarmCoordinationEvent.TeamChanged e -> context.onTeamChanged(e.teams(), e.progress());
             case SwarmCoordinationEvent.ProgressUpdated e -> context.onProgressUpdated(e.progress());
-            case SwarmCoordinationEvent.MemberCompleted e -> {}
-            case SwarmCoordinationEvent.ProvisioningChanged e -> {}
+            case SwarmCoordinationEvent.MemberCompleted e -> context.onMemberCompleted(e.agentId());
+            case SwarmCoordinationEvent.ProvisioningChanged e -> context.onProvisioningChanged(e.currentSize(), e.maxSize());
         }
     }
 }
