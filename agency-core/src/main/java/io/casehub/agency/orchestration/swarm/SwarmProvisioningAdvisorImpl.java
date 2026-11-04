@@ -1,5 +1,9 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.agency.orchestration.budget.BudgetGrant;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
+
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
@@ -14,25 +18,26 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
 
     private final           AgentProvider          agentProvider;
     private final           SwarmContext           context;
-    private final           SwarmInvocationTracker invocationTracker;
     private final @Nullable SystemPromptCustomiser promptCustomiser;
     private @Nullable       String                 variantSlot;
+    private @Nullable       AutonomyBudgetPool     budgetPool;
 
 
     public SwarmProvisioningAdvisorImpl(AgentProvider agentProvider,
                                         SwarmContext context,
-                                        SwarmInvocationTracker invocationTracker,
                                         @Nullable SystemPromptCustomiser promptCustomiser) {
-        this.agentProvider     = agentProvider;
-        this.context           = context;
-        this.invocationTracker = invocationTracker;
-        this.promptCustomiser  = promptCustomiser;
+        this.agentProvider    = agentProvider;
+        this.context          = context;
+        this.promptCustomiser = promptCustomiser;
     }
 
     public SwarmProvisioningAdvisorImpl(AgentProvider agentProvider,
-                                        SwarmContext context,
-                                        SwarmInvocationTracker invocationTracker) {
-        this(agentProvider, context, invocationTracker, null);
+                                        SwarmContext context) {
+        this(agentProvider, context, null);
+    }
+
+    public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
+        this.budgetPool = pool;
     }
 
     public void setVariantSlot(@Nullable String variantSlot) {
@@ -42,9 +47,12 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
 
     @Override
     public ProvisioningAdvice advise(ProvisioningContext provisioningContext) {
-        if (!invocationTracker.tryAcquire("provisioning")) {
-            LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for provisioning — using heuristic");
-            return heuristicAdvice(provisioningContext);
+        if (budgetPool != null) {
+            var grant = budgetPool.tryAcquire(BudgetPriority.RESERVED);
+            if (grant instanceof BudgetGrant.Denied) {
+                LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for provisioning — using heuristic");
+                return heuristicAdvice(provisioningContext);
+            }
         }
 
         try {
@@ -60,7 +68,9 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
 
             var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
             if (result instanceof StructuredAgentInvoker.InvocationResult.Success<?> s) {
-                invocationTracker.recordTokens(s.metadata().inputTokens() + s.metadata().outputTokens());
+                if (budgetPool != null) {
+                    budgetPool.recordTokens("provisioning", s.metadata().inputTokens() + s.metadata().outputTokens());
+                }
                 var     json            = (com.fasterxml.jackson.databind.JsonNode) s.value();
                 boolean shouldProvision = json.has("shouldProvision") && json.get("shouldProvision").asBoolean();
                 String  reasoning       = json.has("reasoning") ? json.get("reasoning").asText() : null;

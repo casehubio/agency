@@ -973,20 +973,20 @@
         "invocationPolicy" : {
           "type" : "object",
           "properties" : {
-            "errorAfter" : {
-              "type" : "string"
-            },
             "maxCalls" : {
+              "type" : "integer"
+            },
+            "maxCallsPerAgent" : {
               "type" : "integer"
             },
             "maxTokens" : {
               "type" : "integer"
             },
-            "provisioningReserve" : {
+            "maxTokensPerAgent" : {
               "type" : "integer"
             },
-            "warnAfter" : {
-              "type" : "string"
+            "reserveFraction" : {
+              "type" : "number"
             }
           },
           "unevaluatedProperties" : false

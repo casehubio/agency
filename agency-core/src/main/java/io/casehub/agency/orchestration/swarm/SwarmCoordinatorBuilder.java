@@ -1,5 +1,7 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmOutcomeRecorder;
@@ -15,14 +17,14 @@ import java.util.UUID;
 
 public class SwarmCoordinatorBuilder {
 
-    private final List<SwarmPromptSection> additionalSections   = new ArrayList<>();
-    private       AgentProvider            agentProvider;
-    private       ExperienceReplayConfig   experienceConfig     = ExperienceReplayConfig.defaults();
-    private       SwarmInvocationPolicy    invocationPolicy     = SwarmInvocationPolicy.defaults();
-    private       int                      preFilterThreshold   = 12;
-    private       double                   convergenceThreshold = 0.8;
-    private       SystemPromptCustomiser   promptCustomiser;
-    private @Nullable VariantSelector      variantSelector;
+    private final     List<SwarmPromptSection>   additionalSections   = new ArrayList<>();
+    private           AgentProvider              agentProvider;
+    private           ExperienceReplayConfig     experienceConfig     = ExperienceReplayConfig.defaults();
+    private           AutonomyBudgetPolicy       budgetPolicy         = AutonomyBudgetPolicy.defaults();
+    private           int                        preFilterThreshold   = 12;
+    private           double                     convergenceThreshold = 0.8;
+    private           SystemPromptCustomiser     promptCustomiser;
+    private @Nullable VariantSelector            variantSelector;
     private @Nullable SwarmPromptOutcomeProvider outcomeProvider;
 
 
@@ -36,8 +38,8 @@ public class SwarmCoordinatorBuilder {
         return this;
     }
 
-    public SwarmCoordinatorBuilder invocationPolicy(SwarmInvocationPolicy policy) {
-        this.invocationPolicy = policy;
+    public SwarmCoordinatorBuilder budgetPolicy(AutonomyBudgetPolicy policy) {
+        this.budgetPolicy = policy;
         return this;
     }
 
@@ -83,11 +85,13 @@ public class SwarmCoordinatorBuilder {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
         var context           = new SwarmContext();
-        var tracker           = new SwarmInvocationTracker(invocationPolicy);
+        var pool              = new AutonomyBudgetPool(budgetPolicy, "swarm-" + UUID.randomUUID());
         var experienceSection = new SwarmExperienceSection(experienceConfig);
         var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
-                                                       preFilterThreshold, tracker, promptCustomiser, additionalSections);
-        var                                aggregation = new CollectiveReasoningAggregation(agentProvider, tracker, promptCustomiser);
+                                                       preFilterThreshold, promptCustomiser, additionalSections);
+        routingStrategy.setBudgetPool(pool);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        aggregation.setBudgetPool(pool);
         TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
         var                                eventSource = new SwarmEventSource(context);
         var                                fallback    = new SwarmFallbackStrategy();
@@ -109,6 +113,38 @@ public class SwarmCoordinatorBuilder {
 
         return new LlmSwarmCoordinator(
                 agentProvider, context, routingStrategy, aggregation,
-                termination, eventSource, tracker, fallback, sections);
+                termination, eventSource, pool, fallback, sections);
     }
+
+    public io.casehub.agency.orchestration.topology.CentralisedTopology buildTopology() {
+        Objects.requireNonNull(agentProvider, "agentProvider is required");
+
+        var experienceSection = new SwarmExperienceSection(experienceConfig);
+        var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
+                                                       preFilterThreshold, promptCustomiser, additionalSections);
+        var                                aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
+
+        String slot = variantSelector != null
+                      ? variantSelector.selectSlot(java.util.UUID.randomUUID(), "swarm-coordination")
+                      : "control";
+        routingStrategy.setVariantSlot(slot);
+        aggregation.setVariantSlot(slot);
+
+        if (outcomeProvider != null) {
+            var recorder = new io.casehub.agency.orchestration.swarm.prompt.SwarmOutcomeRecorder(termination, slot, outcomeProvider);
+            termination = recorder;
+        }
+
+        var sections = new java.util.ArrayList<String>();
+        sections.add("experience-replay");
+        for (var s : additionalSections) {
+            sections.add(s.getClass().getSimpleName());
+        }
+
+        return new io.casehub.agency.orchestration.topology.CentralisedTopology(
+                new SwarmContext(), routingStrategy, aggregation,
+                termination, new SwarmFallbackStrategy(), sections);
+    }
+
 }

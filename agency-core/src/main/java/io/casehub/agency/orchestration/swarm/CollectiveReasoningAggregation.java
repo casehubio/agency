@@ -1,5 +1,9 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.agency.orchestration.budget.BudgetGrant;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
+
 import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
@@ -19,27 +23,24 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
             System.getLogger(CollectiveReasoningAggregation.class.getName());
 
     private final           AgentProvider          agentProvider;
-    private final @Nullable SwarmInvocationTracker invocationTracker;
     private final @Nullable SystemPromptCustomiser promptCustomiser;
     private @Nullable       String                 variantSlot;
+    private @Nullable       AutonomyBudgetPool     budgetPool;
 
 
     public CollectiveReasoningAggregation(AgentProvider agentProvider,
-                                          @Nullable SwarmInvocationTracker invocationTracker,
                                           @Nullable SystemPromptCustomiser promptCustomiser) {
-        this.agentProvider     = agentProvider;
-        this.invocationTracker = invocationTracker;
-        this.promptCustomiser  = promptCustomiser;
+        this.agentProvider    = agentProvider;
+        this.promptCustomiser = promptCustomiser;
     }
 
-
-    public CollectiveReasoningAggregation(AgentProvider agentProvider,
-                                          @Nullable SwarmInvocationTracker invocationTracker) {
-        this(agentProvider, invocationTracker, null);
-    }
 
     public CollectiveReasoningAggregation(AgentProvider agentProvider) {
-        this(agentProvider, null, null);
+        this(agentProvider, null);
+    }
+
+    public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
+        this.budgetPool = pool;
     }
 
     public void setVariantSlot(@Nullable String variantSlot) {
@@ -55,9 +56,12 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
                     List.of(), List.of(), List.of(), 0.0, List.of()));
         }
 
-        if (invocationTracker != null && !invocationTracker.tryAcquire("aggregation")) {
-            LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for aggregation — collecting without synthesis");
-            return collectAllFallback(results);
+        if (budgetPool != null) {
+            var grant = budgetPool.tryAcquire(BudgetPriority.RESERVED);
+            if (grant instanceof BudgetGrant.Denied) {
+                LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for aggregation — collecting without synthesis");
+                return collectAllFallback(results);
+            }
         }
 
         var prompt = buildSynthesisPrompt(results);
@@ -74,8 +78,8 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
 
         var invResult = StructuredAgentInvoker.invoke(agentProvider, config, SwarmAggregationState.class);
         if (invResult instanceof StructuredAgentInvoker.InvocationResult.Success<SwarmAggregationState> s) {
-            if (invocationTracker != null) {
-                invocationTracker.recordTokens(s.metadata().inputTokens() + s.metadata().outputTokens());
+            if (budgetPool != null) {
+                budgetPool.recordTokens("aggregation", s.metadata().inputTokens() + s.metadata().outputTokens());
             }
             return new AggregationResult.Resolved(s.value());
         }

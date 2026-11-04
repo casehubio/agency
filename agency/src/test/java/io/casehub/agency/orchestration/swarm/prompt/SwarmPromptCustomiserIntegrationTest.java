@@ -40,7 +40,7 @@ class SwarmPromptCustomiserIntegrationTest {
         SystemPromptCustomiser customiser = (base, sigId, slot) ->
                 base + "\n\nADDITIONAL: focus on statistical patterns";
 
-        var aggregation = new CollectiveReasoningAggregation(agentProvider, null, customiser);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, customiser);
         var results = List.of(agentResult("analyst", "findings"));
         aggregation.aggregate(results, new AggregationContext<>(new SwarmContext()));
 
@@ -72,7 +72,7 @@ class SwarmPromptCustomiserIntegrationTest {
         SystemPromptCustomiser customiser = mock(SystemPromptCustomiser.class);
         when(customiser.customise(any(), any(), any())).thenAnswer(inv -> inv.getArgument(0));
 
-        var aggregation = new CollectiveReasoningAggregation(agentProvider, null, customiser);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, customiser);
         aggregation.aggregate(List.of(agentResult("a", "x")), new AggregationContext<>(new SwarmContext()));
 
         verify(customiser).customise(any(), eq("swarm-collective-reasoning"), eq("control"));
@@ -87,7 +87,7 @@ class SwarmPromptCustomiserIntegrationTest {
         SystemPromptCustomiser customiser = mock(SystemPromptCustomiser.class);
         when(customiser.customise(any(), any(), any())).thenAnswer(inv -> inv.getArgument(0));
 
-        var aggregation = new CollectiveReasoningAggregation(agentProvider, null, customiser);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, customiser);
         aggregation.setVariantSlot("experiment");
         aggregation.aggregate(List.of(agentResult("a", "x")), new AggregationContext<>(new SwarmContext()));
 

@@ -1,5 +1,9 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.agency.orchestration.budget.BudgetGrant;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
+
 import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
@@ -23,41 +27,35 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     private static final System.Logger LOG =
             System.getLogger(SwarmRoutingStrategy.class.getName());
 
-    private final AgentProvider agentProvider;
-    private final SwarmExperienceSection experienceSection;
-    private final int preFilterThreshold;
-    private final @Nullable SwarmInvocationTracker invocationTracker;
-    private final @Nullable SystemPromptCustomiser promptCustomiser;
-    private final           List<SwarmPromptSection> additionalSections;
-    private volatile @Nullable String                variantSlot;
-
-
-    public SwarmRoutingStrategy(AgentProvider agentProvider,
-                                SwarmExperienceSection experienceSection,
-                                int preFilterThreshold,
-                                @Nullable SwarmInvocationTracker invocationTracker) {
-        this(agentProvider, experienceSection, preFilterThreshold, invocationTracker, null, List.of());
-    }
-
-    public SwarmRoutingStrategy(AgentProvider agentProvider,
-                                SwarmExperienceSection experienceSection,
-                                int preFilterThreshold,
-                                @Nullable SwarmInvocationTracker invocationTracker,
-                                @Nullable SystemPromptCustomiser promptCustomiser,
-                                List<SwarmPromptSection> additionalSections) {
-        this.agentProvider      = agentProvider;
-        this.experienceSection  = experienceSection;
-        this.preFilterThreshold = preFilterThreshold;
-        this.invocationTracker  = invocationTracker;
-        this.promptCustomiser   = promptCustomiser;
-        this.additionalSections = List.copyOf(additionalSections);
-    }
+    private final              AgentProvider            agentProvider;
+    private final              SwarmExperienceSection   experienceSection;
+    private final              int                      preFilterThreshold;
+    private final @Nullable    SystemPromptCustomiser   promptCustomiser;
+    private final              List<SwarmPromptSection> additionalSections;
+    private volatile @Nullable String                   variantSlot;
+    private @Nullable          AutonomyBudgetPool       budgetPool;
 
 
     public SwarmRoutingStrategy(AgentProvider agentProvider,
                                 SwarmExperienceSection experienceSection,
                                 int preFilterThreshold) {
-        this(agentProvider, experienceSection, preFilterThreshold, null);
+        this(agentProvider, experienceSection, preFilterThreshold, null, List.of());
+    }
+
+    public SwarmRoutingStrategy(AgentProvider agentProvider,
+                                SwarmExperienceSection experienceSection,
+                                int preFilterThreshold,
+                                @Nullable SystemPromptCustomiser promptCustomiser,
+                                List<SwarmPromptSection> additionalSections) {
+        this.agentProvider      = agentProvider;
+        this.experienceSection  = experienceSection;
+        this.preFilterThreshold = preFilterThreshold;
+        this.promptCustomiser   = promptCustomiser;
+        this.additionalSections = List.copyOf(additionalSections);
+    }
+
+    public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
+        this.budgetPool = pool;
     }
 
     public void setVariantSlot(@Nullable String variantSlot) {
@@ -77,9 +75,12 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
             candidatesToReason = preFilter(candidates, context.task());
         }
 
-        if (invocationTracker != null && !invocationTracker.tryAcquire("routing")) {
-            LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for routing — using heuristic fallback");
-            return heuristicFallback(candidates);
+        if (budgetPool != null) {
+            var grant = budgetPool.tryAcquire(BudgetPriority.RESERVED);
+            if (grant instanceof BudgetGrant.Denied) {
+                LOG.log(System.Logger.Level.WARNING, "LLM budget exhausted for routing — using heuristic fallback");
+                return heuristicFallback(candidates);
+            }
         }
 
         var prompt = buildPrompt(candidatesToReason, context.state());
@@ -103,8 +104,8 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
 
         var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
         if (result instanceof StructuredAgentInvoker.InvocationResult.Success<?> s) {
-            if (invocationTracker != null) {
-                invocationTracker.recordTokens(s.metadata().inputTokens() + s.metadata().outputTokens());
+            if (budgetPool != null) {
+                budgetPool.recordTokens("routing", s.metadata().inputTokens() + s.metadata().outputTokens());
             }
             return parseAssignment(s, candidatesToReason);
         }
@@ -121,10 +122,10 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
         candidates.forEach(c -> allCaps.addAll(capabilityNames(c)));
 
         var bestCandidates = new ArrayList<RoutingCandidate>();
-        var uncovered = new java.util.LinkedHashSet<>(allCaps);
+        var uncovered      = new java.util.LinkedHashSet<>(allCaps);
 
         for (var candidate : candidates) {
-            if (bestCandidates.size() >= preFilterThreshold) break;
+            if (bestCandidates.size() >= preFilterThreshold) {break;}
             var caps = capabilityNames(candidate);
             if (caps.stream().anyMatch(uncovered::contains)) {
                 bestCandidates.add(candidate);
@@ -133,7 +134,7 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
         }
 
         for (var candidate : candidates) {
-            if (bestCandidates.size() >= preFilterThreshold) break;
+            if (bestCandidates.size() >= preFilterThreshold) {break;}
             if (!bestCandidates.contains(candidate)) {
                 bestCandidates.add(candidate);
             }
@@ -143,7 +144,7 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     }
 
     private static Set<String> capabilityNames(RoutingCandidate c) {
-        if (c.descriptor() == null || c.descriptor().capabilities() == null) return Set.of();
+        if (c.descriptor() == null || c.descriptor().capabilities() == null) {return Set.of();}
         return c.descriptor().capabilities().stream()
                 .map(cap -> cap.name())
                 .collect(Collectors.toSet());
@@ -176,7 +177,7 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
         if (!state.detectedRoles().isEmpty()) {
             sb.append("\n## Detected Roles\n");
             state.detectedRoles().forEach(r ->
-                    sb.append("- %s: %s\n".formatted(r.roleId(), r.memberAgents())));
+                                                  sb.append("- %s: %s\n".formatted(r.roleId(), r.memberAgents())));
         }
 
         return sb.toString();
@@ -186,20 +187,20 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     private RoutingDecision parseAssignment(StructuredAgentInvoker.InvocationResult.Success<?> success,
                                             List<RoutingCandidate> allCandidates) {
         try {
-            var json = (com.fasterxml.jackson.databind.JsonNode) success.value();
+            var json       = (com.fasterxml.jackson.databind.JsonNode) success.value();
             var agentNames = new ArrayList<String>();
             if (json.has("agents")) {
                 json.get("agents").forEach(n -> agentNames.add(n.asText()));
             }
 
             var agentMap = allCandidates.stream()
-                    .collect(Collectors.toMap(c -> c.ref().name(), c -> c.ref(), (a, b) -> a));
+                                        .collect(Collectors.toMap(c -> c.ref().name(), c -> c.ref(), (a, b) -> a));
 
             var agents = agentNames.stream()
-                    .filter(agentMap::containsKey)
-                    .map(agentMap::get)
-                    .map(AgentRef.class::cast)
-                    .toList();
+                                   .filter(agentMap::containsKey)
+                                   .map(agentMap::get)
+                                   .map(AgentRef.class::cast)
+                                   .toList();
 
             if (agents.isEmpty()) {
                 return heuristicFallback(allCandidates);
@@ -211,9 +212,9 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
                     var members = new ArrayList<AgentRef>();
                     entry.getValue().forEach(n -> {
                         var ref = agentMap.get(n.asText());
-                        if (ref != null) members.add(ref);
+                        if (ref != null) {members.add(ref);}
                     });
-                    if (!members.isEmpty()) teams.put(entry.getKey(), members);
+                    if (!members.isEmpty()) {teams.put(entry.getKey(), members);}
                 });
             }
 
@@ -227,8 +228,8 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
 
     private RoutingDecision heuristicFallback(List<RoutingCandidate> candidates) {
         var agents = candidates.stream()
-                .map(c -> (AgentRef) c.ref())
-                .toList();
+                               .map(c -> (AgentRef) c.ref())
+                               .toList();
         return new RoutingDecision.SwarmAssignment(agents, Map.of(), "heuristic-all", "LLM unavailable — all agents selected");
     }
 }

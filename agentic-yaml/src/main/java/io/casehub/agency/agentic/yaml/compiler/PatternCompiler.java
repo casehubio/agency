@@ -146,11 +146,13 @@ public class PatternCompiler {
                         ? new io.casehub.agency.orchestration.swarm.ExperienceReplayConfig(s.experience().maxTraces(), s.experience().minSimilarity())
                         : io.casehub.agency.orchestration.swarm.ExperienceReplayConfig.defaults();
                 var expSection = new io.casehub.agency.orchestration.swarm.SwarmExperienceSection(expConfig);
-                var invPolicy = s.invocationPolicy() != null
-                        ? new io.casehub.agency.orchestration.swarm.SwarmInvocationPolicy(s.invocationPolicy().maxCalls(), s.invocationPolicy().maxTokens(), s.invocationPolicy().provisioningReserve(), java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(30))
-                        : io.casehub.agency.orchestration.swarm.SwarmInvocationPolicy.defaults();
-                var invTracker = new io.casehub.agency.orchestration.swarm.SwarmInvocationTracker(invPolicy);
-                yield new io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy(agentProvider, expSection, s.preFilterThreshold() > 0 ? s.preFilterThreshold() : 12, invTracker);
+                var budgetPolicy = s.invocationPolicy() != null
+                        ? new io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy(s.invocationPolicy().maxCalls(), s.invocationPolicy().maxTokens(), s.invocationPolicy().reserveFraction(), s.invocationPolicy().maxCallsPerAgent(), s.invocationPolicy().maxTokensPerAgent())
+                        : io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy.defaults();
+                var pool = new io.casehub.agency.orchestration.budget.AutonomyBudgetPool(budgetPolicy, "swarm-yaml");
+                var routingStrategy = new io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy(agentProvider, expSection, s.preFilterThreshold() > 0 ? s.preFilterThreshold() : 12);
+                routingStrategy.setBudgetPool(pool);
+                yield routingStrategy;
             }
         };
     }

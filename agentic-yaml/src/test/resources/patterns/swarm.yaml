@@ -10,9 +10,9 @@ experience:
 invocationPolicy:
   maxCalls: 50
   maxTokens: 500000
-  provisioningReserve: 3
-  warnAfter: 5s
-  errorAfter: 30s
+  reserveFraction: 0.06
+  maxCallsPerAgent: 10
+  maxTokensPerAgent: 50000
 agents:
   - type: worker
     name: analyst

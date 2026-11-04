@@ -98,7 +98,7 @@ class SwarmRoutingStrategyTest {
         when(customiser.customise(any(), eq(io.casehub.agency.orchestration.swarm.prompt.SwarmPromptSignatures.TEAM_FORMATION.id()), eq("control")))
                 .thenAnswer(inv -> inv.getArgument(0) + "\n## Optimised Instructions\nUse diversity.");
 
-        var strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, null, customiser, List.<SwarmPromptSection>of());
+        var strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, customiser, List.<SwarmPromptSection>of());
         strategy.setVariantSlot("control");
 
         mockLlmResponse("""
@@ -116,7 +116,7 @@ class SwarmRoutingStrategyTest {
     @Test
     void route_includesAdditionalSections() {
         SwarmPromptSection section  = ctx -> "## Few-Shot Examples\n1. Previous team: [a, b]";
-        var                strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, null, null, List.of(section));
+        var                strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12, null, List.of(section));
 
         mockLlmResponse("""
                         {"agents": ["analyst"], "teams": {"t1": ["analyst"]}, "strategy": "solo"}

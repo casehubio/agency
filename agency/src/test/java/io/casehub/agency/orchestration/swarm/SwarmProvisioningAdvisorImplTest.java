@@ -19,14 +19,12 @@ import static org.mockito.Mockito.when;
 class SwarmProvisioningAdvisorImplTest {
 
     private AgentProvider agentProvider;
-    private SwarmContext context;
-    private SwarmInvocationTracker tracker;
+    private SwarmContext  context;
 
     @BeforeEach
     void setUp() {
         agentProvider = mock(AgentProvider.class);
-        context = new SwarmContext();
-        tracker = new SwarmInvocationTracker(SwarmInvocationPolicy.defaults());
+        context       = new SwarmContext();
     }
 
     @Test
@@ -34,14 +32,14 @@ class SwarmProvisioningAdvisorImplTest {
         when(agentProvider.invoke(any())).thenAnswer(inv -> {
             var events = new java.util.ArrayList<AgentEvent>();
             events.add(new AgentEvent.TextDelta("""
-                    {"shouldProvision": true, "reasoning": "Need more analysts"}
-                    """));
+                                                {"shouldProvision": true, "reasoning": "Need more analysts"}
+                                                """));
             events.add(new AgentEvent.InvocationComplete(10, 20, 0, 0, 0, 0.01, 100L, 80L, "s1", 1, false, null, null));
             return io.smallrye.mutiny.Multi.createFrom().iterable(events);
         });
 
-        var advisor = new SwarmProvisioningAdvisorImpl(agentProvider, context, tracker);
-        var advice = advisor.advise(provisioningContext());
+        var advisor = new SwarmProvisioningAdvisorImpl(agentProvider, context);
+        var advice  = advisor.advise(provisioningContext());
         assertThat(advice.shouldProvision()).isTrue();
         assertThat(advice.reasoning()).contains("analysts");
     }
@@ -50,8 +48,8 @@ class SwarmProvisioningAdvisorImplTest {
     void advise_fallsBackOnLlmFailure() {
         when(agentProvider.invoke(any())).thenThrow(new RuntimeException("LLM unavailable"));
 
-        var advisor = new SwarmProvisioningAdvisorImpl(agentProvider, context, tracker);
-        var advice = advisor.advise(provisioningContext());
+        var advisor = new SwarmProvisioningAdvisorImpl(agentProvider, context);
+        var advice  = advisor.advise(provisioningContext());
         assertThat(advice).isNotNull();
         assertThat(advice.reasoning()).contains("heuristic");
     }

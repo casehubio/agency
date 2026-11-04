@@ -30,7 +30,6 @@ class LlmSwarmCoordinatorTest {
         var coordinator = new SwarmCoordinatorBuilder()
                 .agentProvider(mock(AgentProvider.class))
                 .experienceConfig(new ExperienceReplayConfig(10, 0.5))
-                .invocationPolicy(SwarmInvocationPolicy.defaults())
                 .preFilterThreshold(8)
                 .convergenceThreshold(0.9)
                 .build();
@@ -40,7 +39,7 @@ class LlmSwarmCoordinatorTest {
         assertThat(coordinator.terminationCondition()).isNotNull();
         assertThat(coordinator.terminationCondition()).isInstanceOf(SwarmConvergenceTermination.class);
         assertThat(coordinator.eventSource()).isNotNull();
-        assertThat(coordinator.invocationTracker()).isNotNull();
+        assertThat(coordinator.budgetPool()).isNotNull();
         assertThat(coordinator.fallbackStrategy()).isNotNull();
         assertThat(coordinator.context()).isNotNull();
     }

@@ -196,9 +196,9 @@ class PatternDefinitionSerializationTest {
         assertThat(spec.invocationPolicy()).isNotNull();
         assertThat(spec.invocationPolicy().maxCalls()).isEqualTo(50);
         assertThat(spec.invocationPolicy().maxTokens()).isEqualTo(500_000);
-        assertThat(spec.invocationPolicy().provisioningReserve()).isEqualTo(3);
-        assertThat(spec.invocationPolicy().warnAfter()).isEqualTo("5s");
-        assertThat(spec.invocationPolicy().errorAfter()).isEqualTo("30s");
+        assertThat(spec.invocationPolicy().reserveFraction()).isEqualTo(0.06);
+        assertThat(spec.invocationPolicy().maxCallsPerAgent()).isEqualTo(10);
+        assertThat(spec.invocationPolicy().maxTokensPerAgent()).isEqualTo(50_000);
         assertThat(spec.termination()).hasSize(1);
         assertThat(spec.agents()).hasSize(2);
     }
