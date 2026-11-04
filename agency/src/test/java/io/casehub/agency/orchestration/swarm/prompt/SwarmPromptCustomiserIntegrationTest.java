@@ -6,7 +6,6 @@ import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.orchestration.aggregation.AggregationContext;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
-import io.casehub.agency.orchestration.swarm.SwarmAggregationState;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
@@ -20,7 +19,10 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SwarmPromptCustomiserIntegrationTest {
 
@@ -97,20 +99,20 @@ class SwarmPromptCustomiserIntegrationTest {
     @Test
     void builder_passesCustomiserToAggregation() {
         mockLlmResponse("""
-                {"agreements":["built"],"disagreements":[],"complementaryObservations":[],"confidence":0.8,"minorityViewpoints":[]}
-                """);
+                        {"agreements":["built"],"disagreements":[],"complementaryObservations":[],"confidence":0.8,"minorityViewpoints":[]}
+                        """);
 
         SystemPromptCustomiser customiser = mock(SystemPromptCustomiser.class);
         when(customiser.customise(any(), any(), any())).thenAnswer(inv ->
-                inv.getArgument(0) + "\n\nBUILDER_WIRED");
+                                                                           inv.getArgument(0) + "\n\nBUILDER_WIRED");
 
-        var coordinator = new io.casehub.agency.orchestration.swarm.SwarmCoordinatorBuilder()
-                .agentProvider(agentProvider)
-                .promptCustomiser(customiser)
-                .build();
+        var topology = new io.casehub.agency.orchestration.swarm.SwarmCoordinatorBuilder()
+                               .agentProvider(agentProvider)
+                               .promptCustomiser(customiser)
+                               .buildTopology();
 
         var results = List.of(agentResult("agent1", "output1"));
-        coordinator.aggregation().aggregate(results, new AggregationContext<>(new SwarmContext()));
+        topology.aggregation().aggregate(results, new AggregationContext<>(new SwarmContext()));
 
         var configCaptor = ArgumentCaptor.forClass(AgentSessionConfig.class);
         verify(agentProvider).invoke(configCaptor.capture());

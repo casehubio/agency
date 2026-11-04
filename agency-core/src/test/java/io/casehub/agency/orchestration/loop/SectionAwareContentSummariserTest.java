@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionAwareContentSummariserTest {
 
@@ -92,4 +92,28 @@ class SectionAwareContentSummariserTest {
         assertThat(summariser.assembledPromptContext())
             .isEqualTo("section-A\nsection-B\n");
     }
+
+    @Test
+    void summarise_prependsPromptContextAsObservation() {
+        LoopPromptSection section       = ctx -> "System instruction: coordinate agents";
+        var               capturedItems = new AtomicReference<List<ObservationEvent>>();
+        ContentSummariser<ObservationEvent, DecisionOutcome> delegate = (items, prev) -> {
+            capturedItems.set(items);
+            return CompletableFuture.completedFuture(
+                    new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()));
+        };
+
+        var summariser = new SectionAwareContentSummariser(delegate, List.of(section), CTX);
+        var event      = ObservationEvent.of("test", "value");
+        summariser.summarise(List.of(event), null).toCompletableFuture().join();
+
+        assertThat(capturedItems.get()).hasSizeGreaterThan(1);
+        var promptEvent = capturedItems.get().stream()
+                                       .filter(e -> "prompt-context".equals(e.key()))
+                                       .findFirst();
+        assertThat(promptEvent).isPresent();
+        assertThat((String) promptEvent.get().value())
+                .contains("System instruction: coordinate agents");
+    }
+
 }

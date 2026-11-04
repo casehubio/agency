@@ -4,7 +4,6 @@ import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.swarm.prompt.SwarmOutcomeRecorder;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
@@ -81,41 +80,6 @@ public class SwarmCoordinatorBuilder {
     }
 
 
-    public LlmSwarmCoordinator build() {
-        Objects.requireNonNull(agentProvider, "agentProvider is required");
-
-        var context           = new SwarmContext();
-        var pool              = new AutonomyBudgetPool(budgetPolicy, "swarm-" + UUID.randomUUID());
-        var experienceSection = new SwarmExperienceSection(experienceConfig);
-        var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
-                                                       preFilterThreshold, promptCustomiser, additionalSections);
-        routingStrategy.setBudgetPool(pool);
-        var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
-        aggregation.setBudgetPool(pool);
-        TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
-        var                                eventSource = new SwarmEventSource(context);
-        var                                fallback    = new SwarmFallbackStrategy();
-
-        String slot = variantSelector != null
-                      ? variantSelector.selectSlot(UUID.randomUUID(), "swarm-coordination")
-                      : "control";
-        routingStrategy.setVariantSlot(slot);
-        aggregation.setVariantSlot(slot);
-
-        if (outcomeProvider != null) {
-            var recorder = new SwarmOutcomeRecorder(termination, slot, outcomeProvider);
-            termination = recorder;
-        }
-
-        var sections = new ArrayList<SwarmPromptSection>();
-        sections.add(experienceSection);
-        sections.addAll(additionalSections);
-
-        return new LlmSwarmCoordinator(
-                agentProvider, context, routingStrategy, aggregation,
-                termination, eventSource, pool, fallback, sections);
-    }
-
     public io.casehub.agency.orchestration.topology.CentralisedTopology buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
@@ -145,9 +109,15 @@ public class SwarmCoordinatorBuilder {
             sections.add(s.getClass().getSimpleName());
         }
 
+        var swarmContext = new SwarmContext();
+        var provisioner = new SwarmProvisioningAdvisorImpl(agentProvider, swarmContext, promptCustomiser);
+        provisioner.setBudgetPool(pool);
+        provisioner.setVariantSlot(slot);
+
         return new io.casehub.agency.orchestration.topology.CentralisedTopology(
-                new SwarmContext(), routingStrategy, aggregation,
-                termination, new SwarmFallbackStrategy(), sections);
+                swarmContext, routingStrategy, aggregation,
+                termination, new SwarmFallbackStrategy(), sections,
+                provisioner, java.util.List::of);
     }
 
 }

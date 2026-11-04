@@ -32,7 +32,12 @@ class SectionAwareContentSummariser
                 promptContext.append(contribution).append("\n");
             }
         }
-        return delegate.summarise(items, previous);
+        if (promptContext.isEmpty()) {
+            return delegate.summarise(items, previous);
+        }
+        var enriched = new java.util.ArrayList<>(items);
+        enriched.addFirst(ObservationEvent.of("prompt-context", promptContext.toString()));
+        return delegate.summarise(List.copyOf(enriched), previous);
     }
 
     String assembledPromptContext() {

@@ -1,10 +1,10 @@
 package io.casehub.agency.orchestration.loop;
 
 import com.fasterxml.jackson.databind.node.TextNode;
-import io.casehub.api.model.coordination.DecisionType;
-import io.casehub.api.spi.observation.Observation;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
+import io.casehub.api.model.coordination.DecisionType;
+import io.casehub.api.spi.observation.Observation;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -12,8 +12,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 class DecisionOutcomeTest {
 
@@ -94,4 +96,20 @@ class DecisionOutcomeTest {
         var signal = new SignalDeposit("name", 0.5, null);
         assertThat(signal.halfLife()).isNull();
     }
+
+    @Test
+    void provision_wrapsAdvice() {
+        var advice = new io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor.ProvisioningAdvice(
+                true, Set.of("reasoning"), null, "scale up needed");
+        var provision = new DecisionOutcome.Provision(advice);
+        assertThat(provision.advice()).isEqualTo(advice);
+    }
+
+    @Test
+    void provision_nullAdvice_throws() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> new DecisionOutcome.Provision(null));
+    }
+
+
 }

@@ -18,6 +18,7 @@ import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
+import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 import io.casehub.platform.agent.AgentProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CentralisedTopologyTest {
 
-    SwarmContext swarmContext;
+    SwarmContext        swarmContext;
     CentralisedTopology topology;
-    TopologyContext topologyContext;
+    TopologyContext     topologyContext;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +43,8 @@ class CentralisedTopologyTest {
         var routingStrategy = new SwarmRoutingStrategy(
                 agentProvider, experienceSection, 12);
         var aggregation = new CollectiveReasoningAggregation(agentProvider, null);
+        SwarmProvisioningAdvisor advisor = ctx ->
+                                                   new SwarmProvisioningAdvisor.ProvisioningAdvice(false, null, null, "no-op");
 
         topology = new CentralisedTopology(
                 swarmContext,
@@ -49,7 +52,9 @@ class CentralisedTopologyTest {
                 aggregation,
                 ctx -> new io.casehub.agency.orchestration.termination.TerminationDecision.Continue(),
                 new SwarmFallbackStrategy(),
-                List.of("experience-replay"));
+                List.of("experience-replay"),
+                advisor,
+                List::of);
 
         topologyContext = new TopologyContext(
                 UUID.randomUUID(),
@@ -97,6 +102,41 @@ class CentralisedTopologyTest {
     }
 
     @Test
+    void configure_creates_three_loops() {
+        var plan = topology.configure(topologyContext);
+        assertThat(topology.loops()).hasSize(3);
+        assertThat(topology.loops().stream().map(l -> l.descriptor().name()))
+                .containsExactly(
+                        "centralised-team-formation",
+                        "centralised-collective-reasoning",
+                        "centralised-provisioning");
+    }
+
+    @Test
+    void onSwarmEvent_feeds_provisioning_observation_after_configure() {
+        topology.configure(topologyContext);
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(5, 10));
+        assertThat(swarmContext.currentSize()).isEqualTo(5);
+        assertThat(swarmContext.maxSize()).isEqualTo(10);
+    }
+
+    @Test
+    void onSwarmEvent_feeds_progress_to_all_loops_after_configure() {
+        topology.configure(topologyContext);
+        var progress = new SwarmProgress(0.5, 0.3, 0.8, java.time.Instant.now());
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(progress));
+        assertThat(swarmContext.swarmProgress()).isEqualTo(progress);
+    }
+
+    @Test
+    void onSwarmEvent_feeds_member_completed_after_configure() {
+        topology.configure(topologyContext);
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-x", null));
+        assertThat(swarmContext.completedMembers()).contains("agent-x");
+    }
+
+
+    @Test
     void onSwarmEvent_updates_context_on_progress() {
         var progress = new SwarmProgress(0.5, 0.3, 0.8, java.time.Instant.now());
         topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(progress));
@@ -119,9 +159,9 @@ class CentralisedTopologyTest {
     @Test
     void onFeedback_does_not_throw() {
         var feedback = new CoordinationFeedback(
-            "agent-1",
-            new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()),
-            FeedbackSignal.SUCCESS);
+                "agent-1",
+                new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()),
+                FeedbackSignal.SUCCESS);
         topology.onFeedback(feedback);
     }
 
@@ -129,14 +169,30 @@ class CentralisedTopologyTest {
     void executor_handles_scope_gated_outcome() throws Exception {
         var plan = topology.configure(topologyContext);
         var gated = new DecisionOutcome.ScopeGated(
-            io.casehub.api.model.coordination.DecisionType.PROVISIONING,
-            new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()));
+                io.casehub.api.model.coordination.DecisionType.PROVISIONING,
+                new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()));
 
         var feedback = plan.executor()
-            .execute("coordinator", gated, topologyContext)
-            .toCompletableFuture().get();
+                           .execute("coordinator", gated, topologyContext)
+                           .toCompletableFuture().get();
 
         assertThat(feedback.signal()).isEqualTo(FeedbackSignal.SCOPE_VIOLATION);
         assertThat(feedback.agentId()).isEqualTo("coordinator");
     }
+
+    @Test
+    void executor_handles_provision_outcome() throws Exception {
+        var plan = topology.configure(topologyContext);
+        var advice = new io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor.ProvisioningAdvice(
+                true, null, null, "scale up");
+        var provision = new DecisionOutcome.Provision(advice);
+
+        var feedback = plan.executor()
+                           .execute("coordinator", provision, topologyContext)
+                           .toCompletableFuture().get();
+
+        assertThat(feedback.signal()).isEqualTo(FeedbackSignal.SUCCESS);
+        assertThat(feedback.agentId()).isEqualTo("coordinator");
+    }
+
 }

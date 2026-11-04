@@ -1,9 +1,9 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.api.model.coordination.DecisionType;
-import io.casehub.api.spi.observation.Observation;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
+import io.casehub.api.model.coordination.DecisionType;
+import io.casehub.api.spi.observation.Observation;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,4 +40,13 @@ public sealed interface DecisionOutcome {
             Objects.requireNonNull(rejected, "rejected must not be null");
         }
     }
+
+    record Provision(
+            io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor.ProvisioningAdvice advice
+    ) implements DecisionOutcome {
+        public Provision {
+            Objects.requireNonNull(advice, "advice must not be null");
+        }
+    }
+
 }
