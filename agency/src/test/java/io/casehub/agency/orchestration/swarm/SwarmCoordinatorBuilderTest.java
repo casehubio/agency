@@ -64,4 +64,19 @@ class SwarmCoordinatorBuilderTest {
         assertThat(coordinator.terminationCondition())
                 .isInstanceOf(SwarmConvergenceTermination.class);
     }
+
+    @Test
+    void buildTopology_wiresBudgetPoolOnStrategies() {
+        var topology = new SwarmCoordinatorBuilder()
+                               .agentProvider(mock(AgentProvider.class))
+                               .buildTopology();
+
+        assertThat(topology.routingStrategy())
+                .extracting("budgetPool")
+                .isNotNull();
+        assertThat(topology.aggregation())
+                .extracting("budgetPool")
+                .isNotNull();
+    }
+
 }

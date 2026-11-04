@@ -1,9 +1,9 @@
 package io.casehub.agency.orchestration.swarm;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmOutcomeRecorder;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
@@ -119,10 +119,13 @@ public class SwarmCoordinatorBuilder {
     public io.casehub.agency.orchestration.topology.CentralisedTopology buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
+        var pool              = new AutonomyBudgetPool(budgetPolicy, "swarm-" + UUID.randomUUID());
         var experienceSection = new SwarmExperienceSection(experienceConfig);
         var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
                                                        preFilterThreshold, promptCustomiser, additionalSections);
-        var                                aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        routingStrategy.setBudgetPool(pool);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        aggregation.setBudgetPool(pool);
         TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
 
         String slot = variantSelector != null

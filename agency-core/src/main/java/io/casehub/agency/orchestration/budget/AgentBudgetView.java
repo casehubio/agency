@@ -55,6 +55,9 @@ public class AgentBudgetView {
 
     public String agentId() { return agentId; }
     public String topologyId() { return pool.topologyId(); }
+
+    public BudgetPriority priority() {return priority;}
+
     public int callsUsed() { return callCount.get(); }
     public long tokensUsed() { return tokenCount.get(); }
 

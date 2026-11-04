@@ -2,7 +2,8 @@ package io.casehub.agency.orchestration.budget;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class AgentBudgetViewTest {
 
@@ -88,6 +89,14 @@ class AgentBudgetViewTest {
         var view = p.createView("agent-42", BudgetPriority.NORMAL);
         assertThat(view.agentId()).isEqualTo("agent-42");
     }
+
+    @Test
+    void priority_preserved() {
+        var p    = new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "t");
+        var view = p.createView("agent-1", BudgetPriority.RESERVED);
+        assertThat(view.priority()).isEqualTo(BudgetPriority.RESERVED);
+    }
+
 
     @Test
     void localPressure_reflectsLocalUsage() {
