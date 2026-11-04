@@ -169,5 +169,27 @@ class BudgetAwareSummariserTest {
         assertThat(outcome.correlationId()).isEqualTo(acquisition.correlationId());
     }
 
+    @Test
+    void summarise_delegateFailure_recordsZeroTokens() throws Exception {
+        ContentSummariser<String, String> failing = (items, prev) ->
+                                                            CompletableFuture.failedFuture(new RuntimeException("boom"));
+        var p          = pool(10);
+        var view       = p.createView("agent-1", BudgetPriority.NORMAL);
+        var events     = new java.util.ArrayList<BudgetTelemetryEvent>();
+        var summariser = new BudgetAwareSummariser<>(failing, view, events::add, r -> 999L, "test");
+
+        var future = summariser.summarise(List.of("input"), null).toCompletableFuture();
+        assertThat(future).isCompletedExceptionally();
+
+        assertThat(view.callsUsed()).isEqualTo(1);
+        assertThat(view.tokensUsed()).isEqualTo(0L);
+
+        var outcome = events.stream()
+                            .filter(e -> e instanceof BudgetTelemetryEvent.Outcome)
+                            .map(e -> (BudgetTelemetryEvent.Outcome) e)
+                            .findFirst().orElseThrow();
+        assertThat(outcome.tokensConsumed()).isEqualTo(0L);
+    }
+
 
 }

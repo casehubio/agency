@@ -2,7 +2,9 @@ package io.casehub.agency.orchestration.budget;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.within;
 
 class AutonomyBudgetPoolTest {
 
@@ -120,4 +122,45 @@ class AutonomyBudgetPoolTest {
         pool.createView("agent-1", BudgetPriority.NORMAL);
         pool.releaseView("agent-1");
     }
+
+    @Test
+    void tryAcquire_concurrentAccess_neverExceedsLimit() throws Exception {
+        int maxCalls = 100;
+        var pool = new AutonomyBudgetPool(
+                new AutonomyBudgetPolicy(maxCalls, Long.MAX_VALUE, 0.0, maxCalls, Long.MAX_VALUE), "stress");
+
+        int threadCount = 20;
+        var latch       = new java.util.concurrent.CountDownLatch(1);
+        var granted     = new java.util.concurrent.atomic.AtomicInteger(0);
+        var threads     = new Thread[threadCount];
+
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new Thread(() -> {
+                try {latch.await();} catch (InterruptedException e) {return;}
+                for (int j = 0; j < 20; j++) {
+                    if (pool.tryAcquire(BudgetPriority.NORMAL) instanceof BudgetGrant.Granted) {
+                        granted.incrementAndGet();
+                    }
+                }
+            });
+            threads[i].start();
+        }
+
+        latch.countDown();
+        for (var t : threads) {t.join(5000);}
+
+        assertThat(granted.get()).isEqualTo(maxCalls);
+        assertThat(pool.callsUsed()).isEqualTo(maxCalls);
+    }
+
+    @Test
+    void createView_throwsOnDuplicate() {
+        var pool = new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "t");
+        pool.createView("agent-1", BudgetPriority.NORMAL);
+        assertThatThrownBy(() -> pool.createView("agent-1", BudgetPriority.NORMAL))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("agent-1");
+    }
+
+
 }

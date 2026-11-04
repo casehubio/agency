@@ -18,6 +18,8 @@ public class AutonomyBudgetPool {
         this.topologyId = topologyId;
     }
 
+    // Token check and call increment are not atomic together — a concurrent recordTokens() can push
+// tokens past the limit between the check and the grant. Acceptable for an advisory budget system.
     public BudgetGrant tryAcquire(BudgetPriority priority) {
         if (tokenCount.get() >= effectiveTokenLimit(priority)) {
             return new BudgetGrant.Denied("token budget exhausted", currentPressure(priority));
@@ -30,13 +32,17 @@ public class AutonomyBudgetPool {
         return new BudgetGrant.Granted(currentPressure(priority), UUID.randomUUID().toString());
     }
 
+    // correlationId reserved for telemetry correlation — passed through from AgentBudgetView
     public void recordTokens(String correlationId, long tokens) {
         tokenCount.addAndGet(tokens);
     }
 
     public AgentBudgetView createView(String agentId, BudgetPriority priority) {
-        var view = new AgentBudgetView(agentId, this, priority, policy);
-        views.put(agentId, view);
+        var view     = new AgentBudgetView(agentId, this, priority, policy);
+        var existing = views.putIfAbsent(agentId, view);
+        if (existing != null) {
+            throw new IllegalStateException("View already exists for agent: " + agentId);
+        }
         return view;
     }
 
