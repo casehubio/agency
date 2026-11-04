@@ -70,6 +70,12 @@ public class CentralisedTopology implements CoordinationTopology {
     public CoordinationPlan configure(TopologyContext context) {
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
 
+        routingStrategy.setTokenRecorder(t -> pool.recordTokens("routing", t));
+        aggregation.setTokenRecorder(t -> pool.recordTokens("aggregation", t));
+        if (provisioningAdvisor instanceof io.casehub.agency.orchestration.swarm.SwarmProvisioningAdvisorImpl impl) {
+            impl.setTokenRecorder(t -> pool.recordTokens("provisioning", t));
+        }
+
         var teamFormation = new DecisionLoopDescriptor(
                 "centralised-team-formation",
                 ObservationStrategy.EVENT_DRIVEN,

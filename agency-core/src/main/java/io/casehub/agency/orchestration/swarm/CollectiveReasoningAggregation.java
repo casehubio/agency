@@ -1,20 +1,20 @@
 package io.casehub.agency.orchestration.swarm;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetGrant;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
-
 import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.orchestration.aggregation.AggregationContext;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.agency.orchestration.budget.BudgetGrant;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.AgentSessionConfig;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
 public class CollectiveReasoningAggregation implements AggregationStrategy<SwarmContext> {
@@ -26,6 +26,7 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
     private final @Nullable SystemPromptCustomiser promptCustomiser;
     private @Nullable       String                 variantSlot;
     private @Nullable       AutonomyBudgetPool     budgetPool;
+    private @Nullable       LongConsumer tokenRecorder;
 
 
     public CollectiveReasoningAggregation(AgentProvider agentProvider,
@@ -42,6 +43,11 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
     public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
         this.budgetPool = pool;
     }
+
+    public void setTokenRecorder(@Nullable LongConsumer recorder) {
+        this.tokenRecorder = recorder;
+    }
+
 
     public void setVariantSlot(@Nullable String variantSlot) {
         this.variantSlot = variantSlot;
@@ -78,8 +84,11 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
 
         var invResult = StructuredAgentInvoker.invoke(agentProvider, config, SwarmAggregationState.class);
         if (invResult instanceof StructuredAgentInvoker.InvocationResult.Success<SwarmAggregationState> s) {
-            if (budgetPool != null) {
-                budgetPool.recordTokens("aggregation", s.metadata().inputTokens() + s.metadata().outputTokens());
+            long tokens = s.metadata().inputTokens() + s.metadata().outputTokens();
+            if (tokenRecorder != null) {
+                tokenRecorder.accept(tokens);
+            } else if (budgetPool != null) {
+                budgetPool.recordTokens("aggregation", tokens);
             }
             return new AggregationResult.Resolved(s.value());
         }

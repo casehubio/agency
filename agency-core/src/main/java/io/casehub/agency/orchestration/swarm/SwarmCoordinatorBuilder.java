@@ -3,7 +3,6 @@ package io.casehub.agency.orchestration.swarm;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
@@ -83,13 +82,10 @@ public class SwarmCoordinatorBuilder {
     public io.casehub.agency.orchestration.topology.CentralisedTopology buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
-        var pool              = new AutonomyBudgetPool(budgetPolicy, "swarm-" + UUID.randomUUID());
         var experienceSection = new SwarmExperienceSection(experienceConfig);
         var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
                                                        preFilterThreshold, promptCustomiser, additionalSections);
-        routingStrategy.setBudgetPool(pool);
         var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
-        aggregation.setBudgetPool(pool);
         TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
 
         String slot = variantSelector != null
@@ -111,7 +107,6 @@ public class SwarmCoordinatorBuilder {
 
         var swarmContext = new SwarmContext();
         var provisioner = new SwarmProvisioningAdvisorImpl(agentProvider, swarmContext, promptCustomiser);
-        provisioner.setBudgetPool(pool);
         provisioner.setVariantSlot(slot);
 
         return new io.casehub.agency.orchestration.topology.CentralisedTopology(

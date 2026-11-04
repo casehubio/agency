@@ -195,4 +195,22 @@ class CentralisedTopologyTest {
         assertThat(feedback.agentId()).isEqualTo("coordinator");
     }
 
+    @Test
+    void configure_wires_tokenRecorder_on_routing_strategy() {
+        topology.configure(topologyContext);
+
+        assertThat(topology.routingStrategy())
+                .extracting("tokenRecorder")
+                .isNotNull();
+    }
+
+    @Test
+    void configure_wires_tokenRecorder_on_aggregation() {
+        topology.configure(topologyContext);
+
+        assertThat(topology.aggregation())
+                .extracting("tokenRecorder")
+                .isNotNull();
+    }
+
 }

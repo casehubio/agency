@@ -9,17 +9,17 @@ import static org.mockito.Mockito.mock;
 class SwarmCoordinatorBuilderTest {
 
     @Test
-    void buildTopology_wiresBudgetPoolOnStrategies() {
+    void buildTopology_does_not_inject_budgetPool_on_strategies() {
         var topology = new SwarmCoordinatorBuilder()
                                .agentProvider(mock(AgentProvider.class))
                                .buildTopology();
 
         assertThat(topology.routingStrategy())
                 .extracting("budgetPool")
-                .isNotNull();
+                .isNull();
         assertThat(topology.aggregation())
                 .extracting("budgetPool")
-                .isNotNull();
+                .isNull();
     }
 
 }

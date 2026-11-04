@@ -1,15 +1,16 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.agency.core.invoke.StructuredAgentInvoker;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetGrant;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
-
-import io.casehub.agency.core.invoke.StructuredAgentInvoker;
-import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.AgentSessionConfig;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.LongConsumer;
 
 public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
 
@@ -21,6 +22,7 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
     private final @Nullable SystemPromptCustomiser promptCustomiser;
     private @Nullable       String                 variantSlot;
     private @Nullable       AutonomyBudgetPool     budgetPool;
+    private @Nullable       LongConsumer tokenRecorder;
 
 
     public SwarmProvisioningAdvisorImpl(AgentProvider agentProvider,
@@ -39,6 +41,11 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
     public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
         this.budgetPool = pool;
     }
+
+    public void setTokenRecorder(@Nullable LongConsumer recorder) {
+        this.tokenRecorder = recorder;
+    }
+
 
     public void setVariantSlot(@Nullable String variantSlot) {
         this.variantSlot = variantSlot;
@@ -68,8 +75,11 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
 
             var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
             if (result instanceof StructuredAgentInvoker.InvocationResult.Success<?> s) {
-                if (budgetPool != null) {
-                    budgetPool.recordTokens("provisioning", s.metadata().inputTokens() + s.metadata().outputTokens());
+                long tokens = s.metadata().inputTokens() + s.metadata().outputTokens();
+                if (tokenRecorder != null) {
+                    tokenRecorder.accept(tokens);
+                } else if (budgetPool != null) {
+                    budgetPool.recordTokens("provisioning", tokens);
                 }
                 var     json            = (com.fasterxml.jackson.databind.JsonNode) s.value();
                 boolean shouldProvision = json.has("shouldProvision") && json.get("shouldProvision").asBoolean();

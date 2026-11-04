@@ -1,13 +1,12 @@
 package io.casehub.agency.orchestration.swarm;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetGrant;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
-
 import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
+import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.agency.orchestration.budget.BudgetGrant;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.routing.RoutingContext;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
 import io.casehub.agency.orchestration.routing.RoutingStrategy;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
 public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
@@ -34,6 +34,7 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     private final              List<SwarmPromptSection> additionalSections;
     private volatile @Nullable String                   variantSlot;
     private @Nullable          AutonomyBudgetPool       budgetPool;
+    private @Nullable          LongConsumer tokenRecorder;
 
 
     public SwarmRoutingStrategy(AgentProvider agentProvider,
@@ -57,6 +58,11 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
     public void setBudgetPool(@Nullable AutonomyBudgetPool pool) {
         this.budgetPool = pool;
     }
+
+    public void setTokenRecorder(@Nullable LongConsumer recorder) {
+        this.tokenRecorder = recorder;
+    }
+
 
     public void setVariantSlot(@Nullable String variantSlot) {
         this.variantSlot = variantSlot;
@@ -104,8 +110,11 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
 
         var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
         if (result instanceof StructuredAgentInvoker.InvocationResult.Success<?> s) {
-            if (budgetPool != null) {
-                budgetPool.recordTokens("routing", s.metadata().inputTokens() + s.metadata().outputTokens());
+            long tokens = s.metadata().inputTokens() + s.metadata().outputTokens();
+            if (tokenRecorder != null) {
+                tokenRecorder.accept(tokens);
+            } else if (budgetPool != null) {
+                budgetPool.recordTokens("routing", tokens);
             }
             return parseAssignment(s, candidatesToReason);
         }
