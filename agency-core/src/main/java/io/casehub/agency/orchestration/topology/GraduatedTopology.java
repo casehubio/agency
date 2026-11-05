@@ -3,10 +3,16 @@ package io.casehub.agency.orchestration.topology;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
+import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
+import io.casehub.agency.orchestration.loop.ObservationEvent;
+import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
+import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.api.model.coordination.DecisionScope;
@@ -72,8 +78,16 @@ public class GraduatedTopology implements CoordinationTopology {
             loopPriorities.put(d.name(), d.budgetPriority());
         }
 
+        var defaultPolicy = LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10));
+        var triggers   = new LinkedHashMap<String, DegradationTrigger>();
+        var heuristics = new LinkedHashMap<String, ContentSummariser<ObservationEvent, DecisionOutcome>>();
+        for (var d : descriptors) {
+            triggers.put(d.name(), new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration()));
+            heuristics.put(d.name(), new NoOpHeuristicSummariser<>());
+        }
+
         DecisionOutcomeExecutor executor = this::executeGraduated;
-        return new CoordinationPlan(descriptors, executor, pool);
+        return new CoordinationPlan(descriptors, executor, pool, triggers, heuristics);
     }
 
     private CompletionStage<CoordinationFeedback> executeGraduated(
