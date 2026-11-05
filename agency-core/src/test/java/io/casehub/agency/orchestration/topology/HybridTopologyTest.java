@@ -1,13 +1,12 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -106,5 +105,13 @@ class HybridTopologyTest {
             .execute("worker-1", wb, topologyContext)
             .toCompletableFuture().get();
         assertThat(fb.signal()).isEqualTo(FeedbackSignal.SUCCESS);
+    }
+
+    @Test
+    void configure_pool_has_correct_topologyId_and_policy() {
+        var plan = topology.configure(topologyContext);
+        assertThat(plan.pool()).isNotNull();
+        assertThat(plan.pool().topologyId()).endsWith("-HYBRID");
+        assertThat(plan.pool().callsUsed()).isZero();
     }
 }

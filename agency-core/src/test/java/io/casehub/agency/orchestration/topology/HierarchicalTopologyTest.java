@@ -1,12 +1,11 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -95,5 +94,13 @@ class HierarchicalTopologyTest {
         assertThat(leaf.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(leaf.communicationMode()).isEqualTo(CommunicationMode.STIGMERGY);
         assertThat(leaf.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
+    }
+
+    @Test
+    void configure_pool_has_correct_topologyId_and_policy() {
+        var plan = topology.configure(topologyContext);
+        assertThat(plan.pool()).isNotNull();
+        assertThat(plan.pool().topologyId()).endsWith("-HIERARCHICAL");
+        assertThat(plan.pool().callsUsed()).isZero();
     }
 }

@@ -1,14 +1,13 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.DecisionType;
@@ -80,6 +79,15 @@ class DistributedTopologyTest {
         var plan = topology.configure(topologyContext);
         assertThat(plan.executor()).isNotNull();
     }
+
+    @Test
+    void configure_pool_has_correct_topologyId_and_policy() {
+        var plan = topology.configure(topologyContext);
+        assertThat(plan.pool()).isNotNull();
+        assertThat(plan.pool().topologyId()).endsWith("-DISTRIBUTED");
+        assertThat(plan.pool().callsUsed()).isZero();
+    }
+
 
     @Test
     void executor_handles_scope_gated() throws Exception {
