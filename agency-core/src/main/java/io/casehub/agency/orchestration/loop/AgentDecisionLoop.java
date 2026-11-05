@@ -4,7 +4,9 @@ import io.casehub.agency.orchestration.budget.AgentBudgetView;
 import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.agency.summarisation.SummarisationRunner;
 
+import java.time.Instant;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 public class AgentDecisionLoop {
 
@@ -15,18 +17,23 @@ public class AgentDecisionLoop {
     private final DecisionContext                                        context;
     private final SummarisationRunner<ObservationEvent, DecisionOutcome> runner;
     private final AgentBudgetView                                        budget;
+    private final Consumer<DecisionLoopEvent>                            eventSink;
 
     AgentDecisionLoop(DecisionLoopDescriptor descriptor,
                       DecisionContext context,
                       SummarisationRunner<ObservationEvent, DecisionOutcome> runner,
-                      AgentBudgetView budget) {
+                      AgentBudgetView budget,
+                      Consumer<DecisionLoopEvent> eventSink) {
         this.descriptor = descriptor;
         this.context    = context;
         this.runner     = runner;
         this.budget     = budget;
+        this.eventSink  = eventSink;
     }
 
     public void collect(ObservationEvent event) {
+        eventSink.accept(new DecisionLoopEvent.ObservationGathered(
+                context.caseId(), context.agentId(), event.key(), Instant.now()));
         runner.collect(new LevelEvent<>(event, event.timestamp().toEpochMilli(),
                                         DecisionLoopLevels.OBSERVATION, null));
     }
