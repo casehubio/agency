@@ -1,0 +1,26 @@
+type: swarm
+name: topology-test
+description: Swarm with topology, scope, and communication
+task: swarm-coordination
+coordinationModel: claude-sonnet-4-5
+preFilterThreshold: 12
+topology:
+  pattern: swarm
+  authority: hybrid
+scope:
+  type: full-autonomy
+communication:
+  type: stigmergy
+invocationPolicy:
+  maxCalls: 50
+  maxTokens: 500000
+  reserveFraction: 0.06
+  maxCallsPerAgent: 10
+  maxTokensPerAgent: 50000
+agents:
+  - type: worker
+    name: analyst
+    description: Analyses data
+termination:
+  - type: max-iterations
+    iterations: 20

@@ -203,6 +203,19 @@ class PatternDefinitionSerializationTest {
         assertThat(spec.agents()).hasSize(2);
     }
 
+    @Test
+    void swarmTopologyFields() throws IOException {
+        var spec = loadPattern("swarm-topology", PatternDefinition.Swarm.class);
+        assertThat(spec.name()).isEqualTo("topology-test");
+        assertThat(spec.topology()).isNotNull();
+        assertThat(spec.topology()).isInstanceOf(TopologySpec.Swarm.class);
+        assertThat(spec.topology().authority()).isEqualTo("hybrid");
+        assertThat(spec.scope()).isNotNull();
+        assertThat(spec.scope()).isInstanceOf(DecisionScopeSpec.FullAutonomy.class);
+        assertThat(spec.communication()).isNotNull();
+        assertThat(spec.communication()).isInstanceOf(CommunicationModeSpec.Stigmergy.class);
+    }
+
 
     @Test
     void composedAgentWithNestedPattern() throws IOException {

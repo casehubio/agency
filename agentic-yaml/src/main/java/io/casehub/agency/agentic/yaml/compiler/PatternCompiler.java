@@ -4,27 +4,6 @@ import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.core.FailurePolicy;
 import io.casehub.agency.core.RoutingCandidate;
-import io.casehub.agency.orchestration.activation.ActivationRule;
-import io.casehub.agency.orchestration.activation.OnExplicitDispatch;
-import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
-import io.casehub.agency.orchestration.aggregation.CollectAll;
-import io.casehub.agency.orchestration.aggregation.MajorityVote;
-import io.casehub.agency.orchestration.aggregation.PassThrough;
-import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
-import io.casehub.agency.deliberation.judgment.DirectJudgmentDispatcher;
-import io.casehub.agency.deliberation.judgment.JudgmentPhase;
-import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
-import io.casehub.agency.deliberation.judgment.NoOpVerifier;
-import io.casehub.agency.deliberation.judgment.RetryPolicy;
-import io.casehub.agency.orchestration.execution.ExecutionModel;
-import io.casehub.agency.orchestration.execution.PatternType;
-import io.casehub.agency.orchestration.routing.FirstMatchRouting;
-import io.casehub.agency.orchestration.routing.RoundRobinRouting;
-import io.casehub.agency.orchestration.routing.RoutingStrategy;
-import io.casehub.agency.orchestration.routing.SelectAllRouting;
-import io.casehub.agency.orchestration.routing.SequentialRouting;
-import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
-import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.agency.core.yaml.registry.ActivationRuleRegistry;
 import io.casehub.agency.core.yaml.registry.AggregationStrategyRegistry;
 import io.casehub.agency.core.yaml.registry.CallerStrategyRegistry;
@@ -35,6 +14,27 @@ import io.casehub.agency.core.yaml.registry.TerminationConditionRegistry;
 import io.casehub.agency.core.yaml.spec.AgentRefSpec;
 import io.casehub.agency.core.yaml.spec.JudgmentSpec;
 import io.casehub.agency.core.yaml.spec.TerminationSpec;
+import io.casehub.agency.deliberation.judgment.DirectJudgmentDispatcher;
+import io.casehub.agency.deliberation.judgment.JudgmentPhase;
+import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
+import io.casehub.agency.deliberation.judgment.NoOpVerifier;
+import io.casehub.agency.deliberation.judgment.RetryPolicy;
+import io.casehub.agency.orchestration.activation.ActivationRule;
+import io.casehub.agency.orchestration.activation.OnExplicitDispatch;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.aggregation.CollectAll;
+import io.casehub.agency.orchestration.aggregation.MajorityVote;
+import io.casehub.agency.orchestration.aggregation.PassThrough;
+import io.casehub.agency.orchestration.decomposition.IdentityDecomposition;
+import io.casehub.agency.orchestration.execution.ExecutionModel;
+import io.casehub.agency.orchestration.execution.PatternType;
+import io.casehub.agency.orchestration.routing.FirstMatchRouting;
+import io.casehub.agency.orchestration.routing.RoundRobinRouting;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
+import io.casehub.agency.orchestration.routing.SelectAllRouting;
+import io.casehub.agency.orchestration.routing.SequentialRouting;
+import io.casehub.agency.orchestration.termination.MaxIterationsTermination;
+import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.eidos.api.AgentCapability;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.engine.plan.DecompositionStrategy;
@@ -54,6 +54,10 @@ public class PatternCompiler {
     private final DecompositionStrategyRegistry decompositionRegistry = new DecompositionStrategyRegistry();
     private final JudgmentTriggerRegistry judgmentTriggerRegistry = new JudgmentTriggerRegistry();
     private final CallerStrategyRegistry callerStrategyRegistry = new CallerStrategyRegistry();
+    private final io.casehub.agency.core.yaml.registry.TopologySpecRegistry topologyRegistry = new io.casehub.agency.core.yaml.registry.TopologySpecRegistry();
+    private final io.casehub.agency.core.yaml.registry.DecisionScopeSpecRegistry scopeRegistry = new io.casehub.agency.core.yaml.registry.DecisionScopeSpecRegistry();
+    private final io.casehub.agency.core.yaml.registry.CommunicationModeSpecRegistry communicationRegistry = new io.casehub.agency.core.yaml.registry.CommunicationModeSpecRegistry();
+
 
     private final @Nullable ExpressionEngine expressionEngine;
     private final @Nullable AgentProvider agentProvider;
@@ -252,6 +256,19 @@ public class PatternCompiler {
             builder.modelFamily(spec.model());
         }
         return builder.build();
+    }
+
+
+    public io.casehub.api.model.coordination.TopologyType resolveTopology(io.casehub.agency.core.yaml.spec.TopologySpec spec) {
+        return topologyRegistry.resolve(spec);
+    }
+
+    public io.casehub.api.model.coordination.DecisionScope resolveScope(io.casehub.agency.core.yaml.spec.DecisionScopeSpec spec) {
+        return scopeRegistry.resolve(spec);
+    }
+
+    public io.casehub.api.model.coordination.CommunicationMode resolveCommunication(io.casehub.agency.core.yaml.spec.CommunicationModeSpec spec) {
+        return communicationRegistry.resolve(spec);
     }
 
     private AgentRef buildAgentRef(AgentRefSpec spec) {

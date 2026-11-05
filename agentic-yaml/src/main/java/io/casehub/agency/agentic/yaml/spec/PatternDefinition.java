@@ -178,7 +178,10 @@ public sealed interface PatternDefinition {
             @Nullable ExperienceReplaySpec experience,
             @Nullable String coordinationModel,
             @Nullable SwarmInvocationPolicySpec invocationPolicy,
-            int preFilterThreshold
+            int preFilterThreshold,
+            @Nullable TopologySpec topology,
+            @Nullable DecisionScopeSpec scope,
+            @Nullable CommunicationModeSpec communication
     ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {
         public Swarm {if (agents == null) {agents = List.of();}}
     }
