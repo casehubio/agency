@@ -32,9 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CentralisedTopologyTest {
 
-    SwarmContext        swarmContext;
-    CentralisedTopology topology;
-    TopologyContext     topologyContext;
+    SwarmContext                          swarmContext;
+    CentralisedTopology<SwarmContext>    topology;
+    TopologyContext                      topologyContext;
 
     @BeforeEach
     void setUp() {
@@ -47,15 +47,28 @@ class CentralisedTopologyTest {
         SwarmProvisioningAdvisor advisor = ctx ->
                                                    new SwarmProvisioningAdvisor.ProvisioningAdvice(false, null, null, "no-op");
 
-        topology = new CentralisedTopology(
+        var fallback = new SwarmFallbackStrategy();
+        topology = new CentralisedTopology<>(
                 swarmContext,
                 routingStrategy,
                 aggregation,
                 ctx -> new io.casehub.agency.orchestration.termination.TerminationDecision.Continue(),
-                new SwarmFallbackStrategy(),
                 List.of("experience-replay"),
                 advisor,
-                List::of);
+                List::of,
+                new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, List::of),
+                new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback),
+                new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10),
+                e -> {
+                    switch (e) {
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.TeamChanged t -> swarmContext.onTeamChanged(t.teams(), t.progress());
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.ProgressUpdated p -> swarmContext.onProgressUpdated(p.progress());
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
+                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
+                    }
+                });
 
         topologyContext = new TopologyContext(
                 UUID.randomUUID(),
@@ -222,7 +235,7 @@ class CentralisedTopologyTest {
     void configure_wires_tokenRecorder_on_aggregation() {
         topology.configure(topologyContext);
 
-        assertThat(topology.aggregation())
+        assertThat(topology.aggregationStrategy())
                 .extracting("tokenRecorder")
                 .isNotNull();
     }

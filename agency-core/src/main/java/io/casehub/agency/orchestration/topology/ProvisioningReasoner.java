@@ -2,7 +2,6 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor.ProvisioningContext;
@@ -17,14 +16,12 @@ import java.util.concurrent.CompletionStage;
 class ProvisioningReasoner implements ContentSummariser<ObservationEvent, DecisionOutcome> {
 
     private final SwarmProvisioningAdvisor advisor;
-    private final SwarmContext swarmContext;
     private final UUID caseId;
 
     ProvisioningReasoner(SwarmProvisioningAdvisor advisor,
-                         SwarmContext swarmContext,
+                         Object coordinationContext,
                          UUID caseId) {
         this.advisor = advisor;
-        this.swarmContext = swarmContext;
         this.caseId = caseId;
     }
 

@@ -5,7 +5,6 @@ import io.casehub.agency.orchestration.aggregation.AggregationContext;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.agency.summarisation.ContentSummariser;
 import org.jspecify.annotations.Nullable;
 
@@ -13,15 +12,15 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-class AggregationReasoner implements ContentSummariser<ObservationEvent, DecisionOutcome> {
+class AggregationReasoner<C> implements ContentSummariser<ObservationEvent, DecisionOutcome> {
 
-    private final AggregationStrategy<SwarmContext> strategy;
-    private final SwarmContext swarmContext;
+    private final AggregationStrategy<C> strategy;
+    private final C coordinationContext;
 
-    AggregationReasoner(AggregationStrategy<SwarmContext> strategy,
-                        SwarmContext swarmContext) {
+    AggregationReasoner(AggregationStrategy<C> strategy,
+                        C coordinationContext) {
         this.strategy = strategy;
-        this.swarmContext = swarmContext;
+        this.coordinationContext = coordinationContext;
     }
 
     @Override
@@ -31,7 +30,7 @@ class AggregationReasoner implements ContentSummariser<ObservationEvent, Decisio
                 .filter(e -> "member-completed".equals(e.key()))
                 .map(e -> (AgentResult) e.value())
                 .toList();
-        var ctx = new AggregationContext<>(swarmContext);
+        var ctx = new AggregationContext<>(coordinationContext);
         var result = strategy.aggregate(agentResults, ctx);
         return CompletableFuture.completedFuture(new DecisionOutcome.Aggregate(result));
     }

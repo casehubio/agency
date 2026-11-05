@@ -10,9 +10,6 @@ import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
 import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
-import io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser;
-import io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser;
-import io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
@@ -20,12 +17,11 @@ import io.casehub.agency.orchestration.loop.DecisionContext;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
-import io.casehub.agency.orchestration.swarm.SwarmContext;
+import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
+import io.casehub.agency.orchestration.routing.RoutingStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
-import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
-import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
@@ -33,6 +29,7 @@ import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
+import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,17 +44,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CentralisedTopology implements CoordinationTopology {
+public class CentralisedTopology<C> implements CoordinationTopology {
 
-    private final SwarmContext                       swarmContext;
-    private final SwarmRoutingStrategy               routingStrategy;
-    private final CollectiveReasoningAggregation     aggregation;
-    private final TerminationCondition<SwarmContext> terminationCondition;
-    private final SwarmFallbackStrategy              fallbackStrategy;
-    private final List<String>                       promptSectionNames;
-    private final SwarmProvisioningAdvisor           provisioningAdvisor;
-    private final Supplier<List<RoutingCandidate>>   candidateSupplier;
-    private       List<AgentDecisionLoop>            loops = List.of();
+    private final C                                                              coordinationContext;
+    private final RoutingStrategy<C>                                             routingStrategy;
+    private final AggregationStrategy<C>                                         aggregationStrategy;
+    private final TerminationCondition<C>                                        terminationCondition;
+    private final List<String>                                                   promptSectionNames;
+    private final SwarmProvisioningAdvisor                                       provisioningAdvisor;
+    private final Supplier<List<RoutingCandidate>>                               candidateSupplier;
+    private final ContentSummariser<ObservationEvent, DecisionOutcome>           routingHeuristic;
+    private final ContentSummariser<ObservationEvent, DecisionOutcome>           aggregationHeuristic;
+    private final ContentSummariser<ObservationEvent, DecisionOutcome>           provisioningHeuristic;
+    private final @Nullable Consumer<SwarmCoordinationEvent>                     swarmEventHandler;
+    private       List<AgentDecisionLoop>                                        loops = List.of();
 
     private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
@@ -65,24 +65,29 @@ public class CentralisedTopology implements CoordinationTopology {
     private Map<String, BudgetPriority> loopPriorities;
     private List<CascadeDegradationTrigger> cascadeTriggers;
 
-
     public CentralisedTopology(
-            SwarmContext swarmContext,
-            SwarmRoutingStrategy routingStrategy,
-            CollectiveReasoningAggregation aggregation,
-            TerminationCondition<SwarmContext> terminationCondition,
-            SwarmFallbackStrategy fallbackStrategy,
+            C coordinationContext,
+            RoutingStrategy<C> routingStrategy,
+            AggregationStrategy<C> aggregationStrategy,
+            TerminationCondition<C> terminationCondition,
             List<String> promptSectionNames,
             SwarmProvisioningAdvisor provisioningAdvisor,
-            Supplier<List<RoutingCandidate>> candidateSupplier) {
-        this.swarmContext         = Objects.requireNonNull(swarmContext);
+            Supplier<List<RoutingCandidate>> candidateSupplier,
+            ContentSummariser<ObservationEvent, DecisionOutcome> routingHeuristic,
+            ContentSummariser<ObservationEvent, DecisionOutcome> aggregationHeuristic,
+            ContentSummariser<ObservationEvent, DecisionOutcome> provisioningHeuristic,
+            @Nullable Consumer<SwarmCoordinationEvent> swarmEventHandler) {
+        this.coordinationContext  = Objects.requireNonNull(coordinationContext);
         this.routingStrategy      = Objects.requireNonNull(routingStrategy);
-        this.aggregation          = Objects.requireNonNull(aggregation);
+        this.aggregationStrategy  = Objects.requireNonNull(aggregationStrategy);
         this.terminationCondition = Objects.requireNonNull(terminationCondition);
-        this.fallbackStrategy     = Objects.requireNonNull(fallbackStrategy);
         this.promptSectionNames   = List.copyOf(promptSectionNames);
         this.provisioningAdvisor  = Objects.requireNonNull(provisioningAdvisor);
         this.candidateSupplier    = Objects.requireNonNull(candidateSupplier);
+        this.routingHeuristic     = Objects.requireNonNull(routingHeuristic);
+        this.aggregationHeuristic = Objects.requireNonNull(aggregationHeuristic);
+        this.provisioningHeuristic = Objects.requireNonNull(provisioningHeuristic);
+        this.swarmEventHandler    = swarmEventHandler;
     }
 
     @Override
@@ -94,8 +99,12 @@ public class CentralisedTopology implements CoordinationTopology {
     public CoordinationPlan configure(TopologyContext context) {
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
 
-        routingStrategy.setTokenRecorder(t -> pool.recordTokens("routing", t));
-        aggregation.setTokenRecorder(t -> pool.recordTokens("aggregation", t));
+        if (routingStrategy instanceof io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy srs) {
+            srs.setTokenRecorder(t -> pool.recordTokens("routing", t));
+        }
+        if (aggregationStrategy instanceof io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation cra) {
+            cra.setTokenRecorder(t -> pool.recordTokens("aggregation", t));
+        }
         if (provisioningAdvisor instanceof io.casehub.agency.orchestration.swarm.SwarmProvisioningAdvisorImpl impl) {
             impl.setTokenRecorder(t -> pool.recordTokens("provisioning", t));
         }
@@ -124,9 +133,9 @@ public class CentralisedTopology implements CoordinationTopology {
                 BudgetPriority.RESERVED,
                 List.of());
 
-        var routingReasoner      = new RoutingReasoner(routingStrategy, swarmContext, candidateSupplier);
-        var aggregationReasoner  = new AggregationReasoner(aggregation, swarmContext);
-        var provisioningReasoner = new ProvisioningReasoner(provisioningAdvisor, swarmContext, context.caseId());
+        var routingReasoner      = new RoutingReasoner<>(routingStrategy, coordinationContext, candidateSupplier);
+        var aggregationReasoner  = new AggregationReasoner<>(aggregationStrategy, coordinationContext);
+        var provisioningReasoner = new ProvisioningReasoner(provisioningAdvisor, coordinationContext, context.caseId());
 
         var topologyDesc = describeTopology(context.caseId());
         var factory      = context.loopFactory();
@@ -156,10 +165,6 @@ public class CentralisedTopology implements CoordinationTopology {
         DegradationTrigger routingAdditional      = new CompositeDegradationTrigger(List.of(routingCascade, routingLatency));
         DegradationTrigger aggregationAdditional   = new CompositeDegradationTrigger(List.of(aggregationCascade, aggregationLatency));
         DegradationTrigger provisioningAdditional  = new CompositeDegradationTrigger(List.of(provisioningCascade, provisioningLatency));
-
-        var routingHeuristic     = new HeuristicRoutingSummariser(fallbackStrategy, candidateSupplier);
-        var aggregationHeuristic = new HeuristicAggregationSummariser(fallbackStrategy);
-        var provisioningHeuristic = new HeuristicProvisioningSummariser(fallbackStrategy, swarmContext.currentSize(), swarmContext.maxSize());
 
         this.loops = List.of(
                 factory.create(teamFormation,
@@ -233,38 +238,23 @@ public class CentralisedTopology implements CoordinationTopology {
 
     @Override
     public void onSwarmEvent(SwarmCoordinationEvent event) {
+        if (swarmEventHandler != null) {
+            swarmEventHandler.accept(event);
+        }
         switch (event) {
-            case SwarmCoordinationEvent.SwarmInitialised e -> {
-                swarmContext.onSwarmInitialised(e.experiences(), e.progress());
-                feedLoop("centralised-team-formation",
-                         ObservationEvent.of("candidates-available", e));
-            }
-            case SwarmCoordinationEvent.RoleChanged e -> {
-                swarmContext.onRoleChanged(e.roles(), e.progress());
-                feedLoop("centralised-team-formation",
-                         ObservationEvent.of("roles-changed", e));
-            }
-            case SwarmCoordinationEvent.TeamChanged e -> {
-                swarmContext.onTeamChanged(e.teams(), e.progress());
-                feedLoop("centralised-collective-reasoning",
-                         ObservationEvent.of("team-changed", e));
-            }
+            case SwarmCoordinationEvent.SwarmInitialised e ->
+                feedLoop("centralised-team-formation", ObservationEvent.of("candidates-available", e));
+            case SwarmCoordinationEvent.RoleChanged e ->
+                feedLoop("centralised-team-formation", ObservationEvent.of("roles-changed", e));
+            case SwarmCoordinationEvent.TeamChanged e ->
+                feedLoop("centralised-collective-reasoning", ObservationEvent.of("team-changed", e));
             case SwarmCoordinationEvent.ProgressUpdated e -> {
-                swarmContext.onProgressUpdated(e.progress());
-                for (var loop : loops) {
-                    loop.collect(ObservationEvent.of("progress-updated", e));
-                }
+                for (var loop : loops) { loop.collect(ObservationEvent.of("progress-updated", e)); }
             }
-            case SwarmCoordinationEvent.MemberCompleted e -> {
-                swarmContext.onMemberCompleted(e.agentId());
-                feedLoop("centralised-collective-reasoning",
-                         ObservationEvent.of("member-completed", e));
-            }
-            case SwarmCoordinationEvent.ProvisioningChanged e -> {
-                swarmContext.onProvisioningChanged(e.currentSize(), e.maxSize());
-                feedLoop("centralised-provisioning",
-                         ObservationEvent.of("provisioning-changed", e));
-            }
+            case SwarmCoordinationEvent.MemberCompleted e ->
+                feedLoop("centralised-collective-reasoning", ObservationEvent.of("member-completed", e));
+            case SwarmCoordinationEvent.ProvisioningChanged e ->
+                feedLoop("centralised-provisioning", ObservationEvent.of("provisioning-changed", e));
         }
     }
 
@@ -296,16 +286,14 @@ public class CentralisedTopology implements CoordinationTopology {
     }
 
 
-    public SwarmContext swarmContext()                               {return swarmContext;}
+    public C coordinationContext()                       {return coordinationContext;}
 
-    public SwarmRoutingStrategy routingStrategy()                    {return routingStrategy;}
+    public RoutingStrategy<C> routingStrategy()           {return routingStrategy;}
 
-    public CollectiveReasoningAggregation aggregation()              {return aggregation;}
+    public AggregationStrategy<C> aggregationStrategy()   {return aggregationStrategy;}
 
-    public TerminationCondition<SwarmContext> terminationCondition() {return terminationCondition;}
+    public TerminationCondition<C> terminationCondition() {return terminationCondition;}
 
-    public SwarmFallbackStrategy fallbackStrategy()                  {return fallbackStrategy;}
-
-    public List<AgentDecisionLoop> loops()                           {return loops;}
+    public List<AgentDecisionLoop> loops()                {return loops;}
 
 }

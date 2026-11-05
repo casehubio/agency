@@ -9,6 +9,9 @@ import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.swarm.SwarmExperienceSection;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
+import io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser;
+import io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser;
+import io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser;
 import io.casehub.agency.orchestration.topology.CentralisedTopology;
 import io.casehub.platform.agent.AgentEvent;
 import io.casehub.platform.agent.AgentProvider;
@@ -33,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CentralisedTopologyCascadeTest {
 
-    CentralisedTopology topology;
+    CentralisedTopology<SwarmContext> topology;
     TopologyContext topologyContext;
 
     @BeforeEach
@@ -49,11 +52,16 @@ class CentralisedTopologyCascadeTest {
         SwarmProvisioningAdvisor advisor = ctx ->
                 new SwarmProvisioningAdvisor.ProvisioningAdvice(false, null, null, "no-op");
 
-        topology = new CentralisedTopology(
+        var fallback = new SwarmFallbackStrategy();
+        topology = new CentralisedTopology<>(
                 swarmContext, routingStrategy, aggregation,
                 ctx -> new io.casehub.agency.orchestration.termination.TerminationDecision.Continue(),
-                new SwarmFallbackStrategy(), List.of("experience-replay"),
-                advisor, List::of);
+                List.of("experience-replay"),
+                advisor, List::of,
+                new HeuristicRoutingSummariser(fallback, List::of),
+                new HeuristicAggregationSummariser(fallback),
+                new HeuristicProvisioningSummariser(fallback, 0, 10),
+                null);
 
         var degradationPolicy = DegradationPolicy.defaults();
         topologyContext = new TopologyContext(

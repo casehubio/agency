@@ -4,6 +4,7 @@ import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
+import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
@@ -79,7 +80,7 @@ public class SwarmCoordinatorBuilder {
     }
 
 
-    public io.casehub.agency.orchestration.topology.CentralisedTopology buildTopology() {
+    public io.casehub.agency.orchestration.topology.CentralisedTopology<SwarmContext> buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
         var experienceSection = new SwarmExperienceSection(experienceConfig);
@@ -109,10 +110,25 @@ public class SwarmCoordinatorBuilder {
         var provisioner = new SwarmProvisioningAdvisorImpl(agentProvider, swarmContext, promptCustomiser);
         provisioner.setVariantSlot(slot);
 
-        return new io.casehub.agency.orchestration.topology.CentralisedTopology(
+        var fallback = new SwarmFallbackStrategy();
+        var routingHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, java.util.List::of);
+        var aggregationHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback);
+        var provisioningHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10);
+
+        return new io.casehub.agency.orchestration.topology.CentralisedTopology<>(
                 swarmContext, routingStrategy, aggregation,
-                termination, new SwarmFallbackStrategy(), sections,
-                provisioner, java.util.List::of);
+                termination, sections, provisioner, java.util.List::of,
+                routingHeuristic, aggregationHeuristic, provisioningHeuristic,
+                e -> {
+                    switch (e) {
+                        case SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
+                        case SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
+                        case SwarmCoordinationEvent.TeamChanged t -> swarmContext.onTeamChanged(t.teams(), t.progress());
+                        case SwarmCoordinationEvent.ProgressUpdated p -> swarmContext.onProgressUpdated(p.progress());
+                        case SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
+                        case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
+                    }
+                });
     }
 
 }
