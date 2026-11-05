@@ -23,6 +23,10 @@ public class MetricsListener implements ExecutionEventListener {
     private static final AttributeKey<String> DECISION_TYPE = AttributeKey.stringKey("decision_type");
     private static final AttributeKey<String> ACTIVATED = AttributeKey.stringKey("activated");
     private static final AttributeKey<String> OUTCOME = AttributeKey.stringKey("outcome");
+    private static final AttributeKey<String> SCOPE   = AttributeKey.stringKey("scope");
+    private static final AttributeKey<String> EVENT_TYPE = AttributeKey.stringKey("event_type");
+    private static final AttributeKey<String> CAPABILITY = AttributeKey.stringKey("capability");
+
 
     private final DoubleHistogram agentDuration;
     private final LongCounter routingDecisions;
@@ -30,6 +34,12 @@ public class MetricsListener implements ExecutionEventListener {
     private final LongCounter agentFailures;
     private final DoubleHistogram executionDuration;
     private final DoubleHistogram executionIterations;
+    private final LongCounter     loopTriggers;
+    private final DoubleHistogram reasoningDuration;
+    private final DoubleHistogram reasoningTokens;
+    private final LongCounter     budgetExhaustions;
+    private final LongCounter     loopDegradations;
+
 
     public MetricsListener(Meter meter) {
         Objects.requireNonNull(meter, "meter");
@@ -59,6 +69,28 @@ public class MetricsListener implements ExecutionEventListener {
         this.executionIterations = meter.histogramBuilder("casehub.agentic.execution.iterations")
                 .setUnit("{iteration}")
                 .setDescription("Iteration count per execution")
+                .build();
+
+        this.loopTriggers = meter.counterBuilder("casehub.agentic.loop.triggers")
+                .setDescription("Decision loop trigger count by agent and scope")
+                .build();
+
+        this.reasoningDuration = meter.histogramBuilder("casehub.agentic.loop.reasoning.duration")
+                .setUnit("ms")
+                .setDescription("LLM reasoning latency per invocation")
+                .build();
+
+        this.reasoningTokens = meter.histogramBuilder("casehub.agentic.loop.reasoning.tokens")
+                .setUnit("{token}")
+                .setDescription("Tokens consumed per LLM reasoning invocation")
+                .build();
+
+        this.budgetExhaustions = meter.counterBuilder("casehub.agentic.loop.budget.exhaustions")
+                .setDescription("Budget exhaustion count by agent")
+                .build();
+
+        this.loopDegradations = meter.counterBuilder("casehub.agentic.loop.degradations")
+                .setDescription("Decision loop degradation count by agent and capability")
                 .build();
     }
 
@@ -97,4 +129,23 @@ public class MetricsListener implements ExecutionEventListener {
         this.executionIterations.record(iterationCount,
                 Attributes.of(OUTCOME, outcome));
     }
+
+    @Override
+    public void onDecisionLoopEvent(io.casehub.agency.orchestration.loop.DecisionLoopEvent event) {
+        switch (event) {
+            case io.casehub.agency.orchestration.loop.DecisionLoopEvent.LoopTriggered e -> loopTriggers.add(1, Attributes.of(
+                    AGENT, e.agentId(),
+                    SCOPE, e.scope().name()));
+            case io.casehub.agency.orchestration.loop.DecisionLoopEvent.ReasoningCompleted e -> {
+                reasoningDuration.record(e.latencyMs(), Attributes.of(AGENT, e.agentId()));
+                reasoningTokens.record(e.tokensConsumed(), Attributes.of(AGENT, e.agentId()));
+            }
+            case io.casehub.agency.orchestration.loop.DecisionLoopEvent.BudgetExhausted e -> budgetExhaustions.add(1, Attributes.of(AGENT, e.agentId()));
+            case io.casehub.agency.orchestration.loop.DecisionLoopEvent.Degraded e -> loopDegradations.add(1, Attributes.of(
+                    AGENT, e.agentId(),
+                    CAPABILITY, e.capability()));
+            default -> {}
+        }
+    }
+
 }
