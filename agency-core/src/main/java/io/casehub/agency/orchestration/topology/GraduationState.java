@@ -12,6 +12,8 @@ public class GraduationState {
     private final Map<String, DecisionScope> agentScopes;
     private final Map<String, List<FeedbackSignal>> recentSignals;
     private final int windowSize;
+    private volatile DecisionScope scopeFloor;
+
 
     public GraduationState(Map<String, DecisionScope> initialScopes, int windowSize) {
         this.agentScopes = new ConcurrentHashMap<>(initialScopes);
@@ -22,6 +24,12 @@ public class GraduationState {
     public DecisionScope scopeFor(String agentId) {
         return agentScopes.getOrDefault(agentId, DecisionScope.STIMULUS_DRIVEN);
     }
+
+    public void forceScope(String agentId, DecisionScope scope) {
+        this.scopeFloor = scope;
+        agentScopes.put(agentId, scope);
+    }
+
 
     public void recordFeedback(String agentId, FeedbackSignal signal) {
         recentSignals.computeIfAbsent(agentId, k -> new CopyOnWriteArrayList<>()).add(signal);
@@ -49,12 +57,17 @@ public class GraduationState {
     }
 
     public void upgrade(String agentId) {
-        agentScopes.compute(agentId, (id, scope) ->
-            switch (scope != null ? scope : DecisionScope.STIMULUS_DRIVEN) {
+        agentScopes.compute(agentId, (id, scope) -> {
+            var upgraded = switch (scope != null ? scope : DecisionScope.STIMULUS_DRIVEN) {
                 case STIMULUS_DRIVEN -> DecisionScope.TASK_ADAPTATION;
                 case TASK_ADAPTATION -> DecisionScope.FULL_AUTONOMY;
                 case FULL_AUTONOMY -> DecisionScope.FULL_AUTONOMY;
-            });
+            };
+            if (scopeFloor != null && upgraded.ordinal() > scopeFloor.ordinal()) {
+                return scopeFloor;
+            }
+            return upgraded;
+        });
     }
 
     public void downgrade(String agentId) {
