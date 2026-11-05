@@ -39,6 +39,25 @@ class TopologyContextTest {
     }
 
     @Test
+    void creates_with_group_context() {
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
+                "group-1", "tenant-1");
+        assertThat(ctx.groupId()).isEqualTo("group-1");
+        assertThat(ctx.tenancyId()).isEqualTo("tenant-1");
+    }
+
+    @Test
+    void creates_with_null_group_context() {
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
+                null, null);
+        assertThat(ctx.groupId()).isNull();
+        assertThat(ctx.tenancyId()).isNull();
+    }
+
+
+    @Test
     void rejects_null_caseId() {
         assertThatNullPointerException()
                 .isThrownBy(() -> new TopologyContext(null, DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY))
