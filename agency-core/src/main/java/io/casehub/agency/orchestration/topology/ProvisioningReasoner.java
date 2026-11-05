@@ -18,9 +18,7 @@ class ProvisioningReasoner implements ContentSummariser<ObservationEvent, Decisi
     private final SwarmProvisioningAdvisor advisor;
     private final UUID caseId;
 
-    ProvisioningReasoner(SwarmProvisioningAdvisor advisor,
-                         Object coordinationContext,
-                         UUID caseId) {
+    ProvisioningReasoner(SwarmProvisioningAdvisor advisor, UUID caseId) {
         this.advisor = advisor;
         this.caseId = caseId;
     }

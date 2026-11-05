@@ -23,8 +23,7 @@ public class MetricsListener implements ExecutionEventListener {
     private static final AttributeKey<String> DECISION_TYPE = AttributeKey.stringKey("decision_type");
     private static final AttributeKey<String> ACTIVATED = AttributeKey.stringKey("activated");
     private static final AttributeKey<String> OUTCOME = AttributeKey.stringKey("outcome");
-    private static final AttributeKey<String> SCOPE   = AttributeKey.stringKey("scope");
-    private static final AttributeKey<String> EVENT_TYPE = AttributeKey.stringKey("event_type");
+    private static final AttributeKey<String> SCOPE = AttributeKey.stringKey("scope");
     private static final AttributeKey<String> CAPABILITY = AttributeKey.stringKey("capability");
 
 

@@ -17,7 +17,7 @@ class SwarmCoordinatorBuilderTest {
         assertThat(topology.routingStrategy())
                 .extracting("budgetPool")
                 .isNull();
-        assertThat(topology.aggregation())
+        assertThat(topology.aggregationStrategy())
                 .extracting("budgetPool")
                 .isNull();
     }

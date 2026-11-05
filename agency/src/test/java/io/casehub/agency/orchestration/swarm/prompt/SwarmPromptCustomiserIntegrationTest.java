@@ -112,7 +112,7 @@ class SwarmPromptCustomiserIntegrationTest {
                                .buildTopology();
 
         var results = List.of(agentResult("agent1", "output1"));
-        topology.aggregation().aggregate(results, new AggregationContext<>(new SwarmContext()));
+        topology.aggregationStrategy().aggregate(results, new AggregationContext<>(new SwarmContext()));
 
         var configCaptor = ArgumentCaptor.forClass(AgentSessionConfig.class);
         verify(agentProvider).invoke(configCaptor.capture());

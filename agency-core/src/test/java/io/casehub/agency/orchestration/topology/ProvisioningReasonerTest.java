@@ -19,7 +19,7 @@ class ProvisioningReasonerTest {
         var advice = new ProvisioningAdvice(true, null, null, "scale needed");
         SwarmProvisioningAdvisor advisor = ctx -> advice;
 
-        var reasoner = new ProvisioningReasoner(advisor, new SwarmContext(), UUID.randomUUID());
+        var reasoner = new ProvisioningReasoner(advisor, UUID.randomUUID());
         var event = ObservationEvent.of("provisioning-changed", "trigger");
         var result = reasoner.summarise(List.of(event), null)
                 .toCompletableFuture().get();
@@ -33,7 +33,7 @@ class ProvisioningReasonerTest {
         var advice = new ProvisioningAdvice(false, null, null, "stable");
         SwarmProvisioningAdvisor advisor = ctx -> advice;
 
-        var reasoner = new ProvisioningReasoner(advisor, new SwarmContext(), UUID.randomUUID());
+        var reasoner = new ProvisioningReasoner(advisor, UUID.randomUUID());
         var result = reasoner.summarise(
                 List.of(ObservationEvent.of("tick", "poll")), null)
                 .toCompletableFuture().get();

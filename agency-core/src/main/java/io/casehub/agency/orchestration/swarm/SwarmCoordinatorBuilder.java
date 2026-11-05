@@ -119,7 +119,7 @@ public class SwarmCoordinatorBuilder {
                 swarmContext, routingStrategy, aggregation,
                 termination, sections, provisioner, java.util.List::of,
                 routingHeuristic, aggregationHeuristic, provisioningHeuristic,
-                e -> {
+                e -> {  // swarmEventHandler
                     switch (e) {
                         case SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
                         case SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
@@ -128,7 +128,8 @@ public class SwarmCoordinatorBuilder {
                         case SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
                         case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
-                });
+                },
+                e -> {});  // loopEventSink — wired at execution layer
     }
 
 }

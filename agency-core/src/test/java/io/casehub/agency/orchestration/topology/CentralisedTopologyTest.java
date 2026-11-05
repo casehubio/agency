@@ -59,7 +59,7 @@ class CentralisedTopologyTest {
                 new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, List::of),
                 new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback),
                 new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10),
-                e -> {
+                e -> {  // swarmEventHandler
                     switch (e) {
                         case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
                         case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
@@ -68,7 +68,8 @@ class CentralisedTopologyTest {
                         case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
                         case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
-                });
+                },
+                e -> {});  // loopEventSink
 
         topologyContext = new TopologyContext(
                 UUID.randomUUID(),

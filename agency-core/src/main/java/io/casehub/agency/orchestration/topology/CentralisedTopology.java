@@ -57,6 +57,7 @@ public class CentralisedTopology<C> implements CoordinationTopology {
     private final ContentSummariser<ObservationEvent, DecisionOutcome>           aggregationHeuristic;
     private final ContentSummariser<ObservationEvent, DecisionOutcome>           provisioningHeuristic;
     private final @Nullable Consumer<SwarmCoordinationEvent>                     swarmEventHandler;
+    private final Consumer<io.casehub.agency.orchestration.loop.DecisionLoopEvent> loopEventSink;
     private       List<AgentDecisionLoop>                                        loops = List.of();
 
     private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
@@ -76,7 +77,8 @@ public class CentralisedTopology<C> implements CoordinationTopology {
             ContentSummariser<ObservationEvent, DecisionOutcome> routingHeuristic,
             ContentSummariser<ObservationEvent, DecisionOutcome> aggregationHeuristic,
             ContentSummariser<ObservationEvent, DecisionOutcome> provisioningHeuristic,
-            @Nullable Consumer<SwarmCoordinationEvent> swarmEventHandler) {
+            @Nullable Consumer<SwarmCoordinationEvent> swarmEventHandler,
+            Consumer<io.casehub.agency.orchestration.loop.DecisionLoopEvent> loopEventSink) {
         this.coordinationContext  = Objects.requireNonNull(coordinationContext);
         this.routingStrategy      = Objects.requireNonNull(routingStrategy);
         this.aggregationStrategy  = Objects.requireNonNull(aggregationStrategy);
@@ -88,6 +90,7 @@ public class CentralisedTopology<C> implements CoordinationTopology {
         this.aggregationHeuristic = Objects.requireNonNull(aggregationHeuristic);
         this.provisioningHeuristic = Objects.requireNonNull(provisioningHeuristic);
         this.swarmEventHandler    = swarmEventHandler;
+        this.loopEventSink        = Objects.requireNonNull(loopEventSink);
     }
 
     @Override
@@ -135,7 +138,7 @@ public class CentralisedTopology<C> implements CoordinationTopology {
 
         var routingReasoner      = new RoutingReasoner<>(routingStrategy, coordinationContext, candidateSupplier);
         var aggregationReasoner  = new AggregationReasoner<>(aggregationStrategy, coordinationContext);
-        var provisioningReasoner = new ProvisioningReasoner(provisioningAdvisor, coordinationContext, context.caseId());
+        var provisioningReasoner = new ProvisioningReasoner(provisioningAdvisor, context.caseId());
 
         var topologyDesc = describeTopology(context.caseId());
         var factory      = context.loopFactory();
@@ -170,15 +173,15 @@ public class CentralisedTopology<C> implements CoordinationTopology {
                 factory.create(teamFormation,
                                new DecisionContext(context.caseId(), teamFormation.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               routingReasoner, routingHeuristic, pool, routingAdditional, degradationSink, routingLatency),
+                               routingReasoner, routingHeuristic, pool, routingAdditional, degradationSink, routingLatency, loopEventSink),
                 factory.create(collectiveReasoning,
                                new DecisionContext(context.caseId(), collectiveReasoning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               aggregationReasoner, aggregationHeuristic, pool, aggregationAdditional, degradationSink, aggregationLatency),
+                               aggregationReasoner, aggregationHeuristic, pool, aggregationAdditional, degradationSink, aggregationLatency, loopEventSink),
                 factory.create(provisioning,
                                new DecisionContext(context.caseId(), provisioning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               provisioningReasoner, provisioningHeuristic, pool, provisioningAdditional, degradationSink, provisioningLatency)
+                               provisioningReasoner, provisioningHeuristic, pool, provisioningAdditional, degradationSink, provisioningLatency, loopEventSink)
                             );
 
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->
