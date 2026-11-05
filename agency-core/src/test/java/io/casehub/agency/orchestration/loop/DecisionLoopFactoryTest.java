@@ -42,7 +42,7 @@ class DecisionLoopFactoryTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop).isNotNull();
         assertThat(loop.descriptor()).isEqualTo(descriptor);
         assertThat(loop.context()).isEqualTo(CTX);
@@ -58,7 +58,7 @@ class DecisionLoopFactoryTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop).isNotNull();
     }
 
@@ -72,7 +72,7 @@ class DecisionLoopFactoryTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop).isNotNull();
     }
 
@@ -87,7 +87,7 @@ class DecisionLoopFactoryTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of("test-section"));
 
-        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop).isNotNull();
     }
 
@@ -102,7 +102,7 @@ class DecisionLoopFactoryTest {
             BudgetPriority.NORMAL, List.of("nonexistent"));
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test")))
+            .isThrownBy(() -> factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {}))
             .withMessageContaining("nonexistent");
     }
 
@@ -116,7 +116,7 @@ class DecisionLoopFactoryTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop.budget().callsUsed()).isEqualTo(0);
     }
 }

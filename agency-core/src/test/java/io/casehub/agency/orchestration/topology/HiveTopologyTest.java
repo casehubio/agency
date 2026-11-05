@@ -42,7 +42,8 @@ class HiveTopologyTest {
             new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles),
             TestAgentProviders.noOp(),
             new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
-            AutonomyBudgetPolicy.defaults());
+            AutonomyBudgetPolicy.defaults(),
+            io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults());
     }
 
     @Test
@@ -92,7 +93,8 @@ class HiveTopologyTest {
             new TopologyDescriptor(TopologyType.HYBRID, noCoordRoles),
             TestAgentProviders.noOp(),
             new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
-            AutonomyBudgetPolicy.defaults());
+            AutonomyBudgetPolicy.defaults(),
+            io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults());
 
         assertThatIllegalStateException()
             .isThrownBy(() -> topology.configure(noCoordCtx))

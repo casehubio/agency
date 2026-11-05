@@ -107,19 +107,24 @@ public class CentralisedTopology implements CoordinationTopology {
         var topologyDesc = describeTopology(context.caseId());
         var factory      = context.loopFactory();
 
+        var noOpHeuristic = new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<ObservationEvent, DecisionOutcome>();
+        io.casehub.agency.orchestration.degradation.DegradationTrigger noTrigger = () -> false;
+        java.util.function.Consumer<io.casehub.agency.orchestration.swarm.SwarmDegradedEvent> noSink = e -> {};
+        java.util.function.Consumer<io.casehub.agency.orchestration.budget.BudgetTelemetryEvent> noBudgetSink = e -> {};
+
         this.loops = List.of(
                 factory.create(teamFormation,
                                new DecisionContext(context.caseId(), teamFormation.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               routingReasoner, pool),
+                               routingReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink),
                 factory.create(collectiveReasoning,
                                new DecisionContext(context.caseId(), collectiveReasoning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               aggregationReasoner, pool),
+                               aggregationReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink),
                 factory.create(provisioning,
                                new DecisionContext(context.caseId(), provisioning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               provisioningReasoner, pool)
+                               provisioningReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink)
                             );
 
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->

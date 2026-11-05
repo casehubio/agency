@@ -1,11 +1,9 @@
 package io.casehub.agency.orchestration.loop;
 
 import io.casehub.agency.orchestration.budget.AgentBudgetView;
-
 import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.agency.summarisation.SummarisationRunner;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class AgentDecisionLoop {
@@ -33,22 +31,9 @@ public class AgentDecisionLoop {
                                         DecisionLoopLevels.OBSERVATION, null));
     }
 
-    public CompletionStage<Void> tick(long now) {
-        if (budget.isBudgetExhausted()) {
-            LOG.log(System.Logger.Level.DEBUG,
-                    "Budget exhausted for {0} — skipping tick", context.agentId());
-            return CompletableFuture.completedFuture(null);
-        }
-        return runner.tick(now);
-    }
+    public CompletionStage<Void> tick(long now) {return runner.tick(now);}
 
-    public CompletionStage<Void> flush() {
-        if (budget.isBudgetExhausted()) {
-            return CompletableFuture.failedFuture(
-                    new BudgetExhaustedException(context.agentId()));
-        }
-        return runner.flush();
-    }
+    public CompletionStage<Void> flush() {return runner.flush();}
 
     public void close() {
         runner.clear();

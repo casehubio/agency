@@ -61,7 +61,8 @@ class CentralisedTopologyTest {
                 new TopologyDescriptor(TopologyType.CENTRALISED, Map.of()),
                 agentProvider,
                 new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
-                AutonomyBudgetPolicy.defaults());
+                AutonomyBudgetPolicy.defaults(),
+                io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults());
     }
 
     @Test

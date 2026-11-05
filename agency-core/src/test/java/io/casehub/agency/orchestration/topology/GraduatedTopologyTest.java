@@ -46,7 +46,8 @@ class GraduatedTopologyTest {
             new TopologyDescriptor(TopologyType.GRADUATED, agentRoles),
             TestAgentProviders.noOp(),
             new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
-            AutonomyBudgetPolicy.defaults());
+            AutonomyBudgetPolicy.defaults(),
+            io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults());
     }
 
     @Test

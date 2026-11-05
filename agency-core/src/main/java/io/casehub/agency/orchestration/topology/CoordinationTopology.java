@@ -10,4 +10,7 @@ public interface CoordinationTopology extends TopologyProvider {
     void onSwarmEvent(SwarmCoordinationEvent event);
 
     void onFeedback(CoordinationFeedback feedback);
+
+    default void onDegradation(io.casehub.agency.orchestration.swarm.SwarmDegradedEvent event) {}
+
 }

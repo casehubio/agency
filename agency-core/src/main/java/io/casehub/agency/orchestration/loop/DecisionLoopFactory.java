@@ -1,8 +1,6 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.agency.orchestration.budget.AgentBudgetView;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetAwareSummariser;
 import io.casehub.agency.stigmergy.llm.InFlightGate;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EmissionPolicy;
@@ -26,8 +24,11 @@ public class DecisionLoopFactory {
             DecisionLoopDescriptor descriptor,
             DecisionContext context,
             ContentSummariser<ObservationEvent, DecisionOutcome> reasoner,
-            AutonomyBudgetPool pool) {
-
+            ContentSummariser<ObservationEvent, DecisionOutcome> heuristic,
+            AutonomyBudgetPool pool,
+            io.casehub.agency.orchestration.degradation.DegradationTrigger trigger,
+            java.util.function.Consumer<io.casehub.agency.orchestration.swarm.SwarmDegradedEvent> degradationSink,
+            java.util.function.Consumer<io.casehub.agency.orchestration.budget.BudgetTelemetryEvent> budgetEventSink) {
         var sections = sectionRegistry.resolveAll(descriptor.promptSectionNames());
         var view     = pool.createView(context.agentId(), descriptor.budgetPriority());
 
@@ -35,9 +36,12 @@ public class DecisionLoopFactory {
                 new SectionAwareContentSummariser(reasoner, sections, context);
 
         ContentSummariser<ObservationEvent, DecisionOutcome> budgetAware =
-                new BudgetAwareSummariser<>(withSections, view);
+                new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetEventSink, r -> 0L, "unknown");
 
-        var gate = new InFlightGate<>(budgetAware);
+        var degradationAware = new io.casehub.agency.orchestration.degradation.DegradationAwareSummariser<>(
+                budgetAware, heuristic, trigger, degradationSink, descriptor.name());
+
+        var gate = new InFlightGate<>(degradationAware);
 
         EmissionPolicy<ObservationEvent, ?> emissionPolicy = buildEmissionPolicy(
                 descriptor.observationStrategy());

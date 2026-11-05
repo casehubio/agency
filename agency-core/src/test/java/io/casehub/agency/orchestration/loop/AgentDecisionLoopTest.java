@@ -47,7 +47,7 @@ class AgentDecisionLoopTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, reasoner, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         loop.collect(ObservationEvent.of("signal", 0.9));
         loop.tick(System.currentTimeMillis()).toCompletableFuture().join();
 
@@ -72,7 +72,7 @@ class AgentDecisionLoopTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, reasoner, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         loop.collect(ObservationEvent.of("signal", 0.9));
         loop.tick(System.currentTimeMillis()).toCompletableFuture().join();
         assertThat(captured).isEmpty();
@@ -101,7 +101,7 @@ class AgentDecisionLoopTest {
 
         var pool = new AutonomyBudgetPool(
             new AutonomyBudgetPolicy(50, 500_000, 0.0, 1, 50_000), "test");
-        var loop = factory.create(descriptor, CTX, reasoner, pool);
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), pool, () -> false, e -> {}, e -> {});
 
         loop.collect(ObservationEvent.of("s1", 1));
         loop.tick(System.currentTimeMillis()).toCompletableFuture().join();
@@ -113,12 +113,14 @@ class AgentDecisionLoopTest {
     }
 
     @Test
-    void budgetExhausted_flushReturnsFailed() {
+    void budgetExhausted_flushDoesNotThrow() {
         ContentSummariser<ObservationEvent, DecisionOutcome> reasoner =
             (items, prev) -> CompletableFuture.completedFuture(
                 new DecisionOutcome.WriteBack(List.of(), List.of(), List.of()));
 
         var bus = new EventStreamBus<DecisionOutcome>();
+        var captured = new ArrayList<DecisionOutcome>();
+        bus.subscribe(e -> true, e -> captured.add(e.payload()));
         var factory = new DecisionLoopFactory(
             new MapPromptSectionRegistry(Map.of()), bus);
         var descriptor = new DecisionLoopDescriptor(
@@ -129,12 +131,11 @@ class AgentDecisionLoopTest {
         var pool = new AutonomyBudgetPool(
             new AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
         pool.tryAcquire(BudgetPriority.NORMAL);
-        var loop = factory.create(descriptor, CTX, reasoner, pool);
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), pool, () -> false, e -> {}, e -> {});
         loop.collect(ObservationEvent.of("s", 1));
 
-        assertThatExceptionOfType(java.util.concurrent.CompletionException.class)
-            .isThrownBy(() -> loop.flush().toCompletableFuture().join())
-            .withCauseInstanceOf(BudgetExhaustedException.class);
+        loop.flush().toCompletableFuture().join();
+        assertThat(captured).isEmpty();
     }
 
     @Test
@@ -155,7 +156,7 @@ class AgentDecisionLoopTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, reasoner, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         loop.collect(ObservationEvent.of("s", 1));
         loop.close();
         loop.flush().toCompletableFuture().join();
@@ -180,7 +181,7 @@ class AgentDecisionLoopTest {
             DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
             BudgetPriority.NORMAL, List.of());
 
-        var loop = factory.create(descriptor, CTX, reasoner, new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"));
+        var loop = factory.create(descriptor, CTX, reasoner, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         loop.collect(ObservationEvent.of("s1", 1));
         loop.collect(ObservationEvent.of("s2", 2));
         loop.collect(ObservationEvent.of("s3", 3));
