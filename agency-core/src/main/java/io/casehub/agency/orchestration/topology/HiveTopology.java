@@ -2,12 +2,21 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
+import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
+import io.casehub.agency.orchestration.loop.DecisionOutcome;
+import io.casehub.agency.orchestration.loop.ObservationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
+import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
@@ -35,6 +44,7 @@ public class HiveTopology implements CoordinationTopology {
     private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
     private CascadeThreshold cascadeThreshold;
     private Map<String, BudgetPriority> loopPriorities;
+    private List<CascadeDegradationTrigger> cascadeTriggers;
 
     public HiveTopology(Map<String, AgentRole> agentRoles,
                         HivePatternAdapter patternAdapter,
@@ -62,6 +72,8 @@ public class HiveTopology implements CoordinationTopology {
             case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
             case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
         };
+
+        var defaultPolicy = LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10));
 
         var coordinatorDescriptor = new DecisionLoopDescriptor(
                 "hive-coordinator",
@@ -91,10 +103,30 @@ public class HiveTopology implements CoordinationTopology {
             loopPriorities.put(d.name(), d.budgetPriority());
         }
 
+        var triggers    = new LinkedHashMap<String, DegradationTrigger>();
+        var heuristics  = new LinkedHashMap<String, ContentSummariser<ObservationEvent, DecisionOutcome>>();
+        var cascadeList = new ArrayList<CascadeDegradationTrigger>();
+
+        // Coordinator: latency only, no cascade trigger
+        var coordLatency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        triggers.put(coordinatorDescriptor.name(), coordLatency);
+        heuristics.put(coordinatorDescriptor.name(), new NoOpHeuristicSummariser<>());
+
+        // Workers: cascade + latency triggers
+        for (var wd : workerDescriptors) {
+            var cascade = new CascadeDegradationTrigger();
+            cascadeList.add(cascade);
+            var latency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+            triggers.put(wd.name(), new CompositeDegradationTrigger(List.of(cascade, latency)));
+            heuristics.put(wd.name(), new NoOpHeuristicSummariser<>());
+        }
+
+        this.cascadeTriggers = List.copyOf(cascadeList);
+
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->
                                                    patternAdapter.execute(patternType, agentId, outcome, ctx);
 
-        return new CoordinationPlan(allDescriptors, executor, pool);
+        return new CoordinationPlan(allDescriptors, executor, pool, triggers, heuristics);
     }
 
     @Override
@@ -122,6 +154,7 @@ public class HiveTopology implements CoordinationTopology {
                 case VOTING -> OrchestrationPatternType.SUPERVISOR;
                 case SUPERVISOR -> OrchestrationPatternType.SUPERVISOR;
             };
+            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
         }
     }
 

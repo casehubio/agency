@@ -6,6 +6,10 @@ import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
+import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradationPolicy;
+import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser;
 import io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser;
 import io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser;
@@ -138,32 +142,38 @@ public class CentralisedTopology implements CoordinationTopology {
         loopPriorities.put(collectiveReasoning.name(), collectiveReasoning.budgetPriority());
         loopPriorities.put(provisioning.name(), provisioning.budgetPriority());
 
-        Consumer<SwarmDegradedEvent>   degradationSink = this::onDegradation;
-        Consumer<BudgetTelemetryEvent> budgetEventSink = e -> {};
+        Consumer<SwarmDegradedEvent> degradationSink = this::onDegradation;
 
         var routingCascade      = new CascadeDegradationTrigger();
         var aggregationCascade  = new CascadeDegradationTrigger();
         var provisioningCascade = new CascadeDegradationTrigger();
         this.cascadeTriggers = List.of(routingCascade, aggregationCascade, provisioningCascade);
 
+        var routingLatency      = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        var aggregationLatency  = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        var provisioningLatency = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+
+        DegradationTrigger routingAdditional      = new CompositeDegradationTrigger(List.of(routingCascade, routingLatency));
+        DegradationTrigger aggregationAdditional   = new CompositeDegradationTrigger(List.of(aggregationCascade, aggregationLatency));
+        DegradationTrigger provisioningAdditional  = new CompositeDegradationTrigger(List.of(provisioningCascade, provisioningLatency));
+
         var routingHeuristic     = new HeuristicRoutingSummariser(fallbackStrategy, candidateSupplier);
         var aggregationHeuristic = new HeuristicAggregationSummariser(fallbackStrategy);
-        var provisioningHeuristic = new HeuristicProvisioningSummariser(fallbackStrategy,
-                                                                        swarmContext.currentSize(), swarmContext.maxSize());
+        var provisioningHeuristic = new HeuristicProvisioningSummariser(fallbackStrategy, swarmContext.currentSize(), swarmContext.maxSize());
 
         this.loops = List.of(
                 factory.create(teamFormation,
                                new DecisionContext(context.caseId(), teamFormation.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               routingReasoner, routingHeuristic, pool, routingCascade, degradationSink, budgetEventSink),
+                               routingReasoner, routingHeuristic, pool, routingAdditional, degradationSink, routingLatency),
                 factory.create(collectiveReasoning,
                                new DecisionContext(context.caseId(), collectiveReasoning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               aggregationReasoner, aggregationHeuristic, pool, aggregationCascade, degradationSink, budgetEventSink),
+                               aggregationReasoner, aggregationHeuristic, pool, aggregationAdditional, degradationSink, aggregationLatency),
                 factory.create(provisioning,
                                new DecisionContext(context.caseId(), provisioning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               provisioningReasoner, provisioningHeuristic, pool, provisioningCascade, degradationSink, budgetEventSink)
+                               provisioningReasoner, provisioningHeuristic, pool, provisioningAdditional, degradationSink, provisioningLatency)
                             );
 
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->

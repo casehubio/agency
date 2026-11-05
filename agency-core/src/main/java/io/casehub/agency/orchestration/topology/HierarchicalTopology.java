@@ -2,13 +2,21 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
+import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
+import io.casehub.agency.orchestration.loop.ObservationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
+import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
@@ -36,6 +44,7 @@ public class HierarchicalTopology implements CoordinationTopology {
     private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
     private CascadeThreshold cascadeThreshold;
     private Map<String, BudgetPriority> loopPriorities;
+    private List<CascadeDegradationTrigger> cascadeTriggers;
 
     public HierarchicalTopology(Map<String, AgentRole> agentRoles,
                                 Map<String, String> parentMap) {
@@ -57,6 +66,8 @@ public class HierarchicalTopology implements CoordinationTopology {
             case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
             case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
         };
+
+        var defaultPolicy = LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10));
 
         var descriptors = new ArrayList<DecisionLoopDescriptor>();
         var roles       = context.descriptor().agentRoles();
@@ -96,8 +107,32 @@ public class HierarchicalTopology implements CoordinationTopology {
             loopPriorities.put(d.name(), d.budgetPriority());
         }
 
+        var triggers    = new LinkedHashMap<String, DegradationTrigger>();
+        var heuristics  = new LinkedHashMap<String, ContentSummariser<ObservationEvent, DecisionOutcome>>();
+        var cascadeList = new ArrayList<CascadeDegradationTrigger>();
+
+        for (var entry : roles.entrySet()) {
+            String  agentId  = entry.getKey();
+            String  loopName = "hierarchical-" + agentId;
+            boolean isLeaf   = isLeaf(agentId, roles.keySet());
+            int     depth    = computeDepth(agentId);
+
+            var latency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+
+            if (isLeaf) {
+                var cascade = new CascadeDegradationTrigger();
+                cascadeList.add(cascade);
+                triggers.put(loopName, new CompositeDegradationTrigger(List.of(cascade, latency)));
+            } else {
+                triggers.put(loopName, latency);
+            }
+            heuristics.put(loopName, new NoOpHeuristicSummariser<>());
+        }
+
+        this.cascadeTriggers = List.copyOf(cascadeList);
+
         DecisionOutcomeExecutor executor = this::executeDelegated;
-        return new CoordinationPlan(descriptors, executor, pool);
+        return new CoordinationPlan(descriptors, executor, pool, triggers, heuristics);
     }
 
     private int computeDepth(String agentId) {
@@ -146,8 +181,7 @@ public class HierarchicalTopology implements CoordinationTopology {
             && cascadeThreshold != null
             && cascadeThreshold.isBreached(degradedLoops, loopPriorities.size(), loopPriorities)
             && cascadeTriggered.compareAndSet(false, true)) {
-            // Cascade triggered — force-degrade of leaf loops deferred
-            // until HierarchicalTopology creates its own loops (follow-up issue)
+            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
         }
     }
 
