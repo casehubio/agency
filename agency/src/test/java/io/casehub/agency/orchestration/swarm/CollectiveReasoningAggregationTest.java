@@ -9,7 +9,6 @@ import io.casehub.platform.agent.AgentProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +61,28 @@ class CollectiveReasoningAggregationTest {
         assertThat(state.agreements()).isNotEmpty();
         assertThat(state.confidence()).isEqualTo(0.0);
     }
+
+    @Test
+    void aggregate_fallsBackWhenBudgetExhausted() {
+        var pool = new io.casehub.agency.orchestration.budget.AutonomyBudgetPool(
+                new io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
+        pool.tryAcquire(io.casehub.agency.orchestration.budget.BudgetPriority.RESERVED);
+
+        var aggregation = new CollectiveReasoningAggregation(agentProvider);
+        aggregation.setBudgetPool(pool);
+
+        var results = List.of(
+                agentResult("analyst", "Analysis: trend A"),
+                agentResult("responder", "Remediation: trend B"));
+
+        var result = aggregation.aggregate(results, new AggregationContext<>(new SwarmContext()));
+        assertThat(result).isInstanceOf(AggregationResult.Resolved.class);
+        var state = (SwarmAggregationState) ((AggregationResult.Resolved) result).value();
+        assertThat(state.confidence()).isEqualTo(0.0);
+        assertThat(state.agreements()).hasSize(2);
+        org.mockito.Mockito.verifyNoInteractions(agentProvider);
+    }
+
 
     @Test
     void aggregate_emptyResultsReturnsEmpty() {

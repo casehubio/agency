@@ -11,8 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-
-import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptSignatures;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -65,6 +63,26 @@ class SwarmRoutingStrategyTest {
         var assignment = (RoutingDecision.SwarmAssignment) decision;
         assertThat(assignment.strategy()).isEqualTo("heuristic-all");
     }
+
+    @Test
+    void route_fallsBackWhenBudgetExhausted() {
+        var pool = new io.casehub.agency.orchestration.budget.AutonomyBudgetPool(
+                new io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
+        pool.tryAcquire(io.casehub.agency.orchestration.budget.BudgetPriority.RESERVED);
+
+        var strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12);
+        strategy.setBudgetPool(pool);
+
+        var context  = routingContext(List.of(candidate("analyst"), candidate("responder")));
+        var decision = strategy.route(context);
+
+        assertThat(decision).isInstanceOf(RoutingDecision.SwarmAssignment.class);
+        var assignment = (RoutingDecision.SwarmAssignment) decision;
+        assertThat(assignment.strategy()).isEqualTo("heuristic-all");
+        assertThat(assignment.agents()).hasSize(2);
+        org.mockito.Mockito.verifyNoInteractions(agentProvider);
+    }
+
 
     @Test
     void route_unresolvableWhenNoCandidates() {

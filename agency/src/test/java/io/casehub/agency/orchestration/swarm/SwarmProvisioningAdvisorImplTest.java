@@ -54,6 +54,22 @@ class SwarmProvisioningAdvisorImplTest {
         assertThat(advice.reasoning()).contains("heuristic");
     }
 
+    @Test
+    void advise_fallsBackWhenBudgetExhausted() {
+        var pool = new io.casehub.agency.orchestration.budget.AutonomyBudgetPool(
+                new io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
+        pool.tryAcquire(io.casehub.agency.orchestration.budget.BudgetPriority.RESERVED);
+
+        var advisor = new SwarmProvisioningAdvisorImpl(agentProvider, context);
+        advisor.setBudgetPool(pool);
+
+        var advice = advisor.advise(provisioningContext());
+        assertThat(advice).isNotNull();
+        assertThat(advice.reasoning()).contains("heuristic");
+        org.mockito.Mockito.verifyNoInteractions(agentProvider);
+    }
+
+
     private ProvisioningContext provisioningContext() {
         return new ProvisioningContext(
                 UUID.randomUUID(),
