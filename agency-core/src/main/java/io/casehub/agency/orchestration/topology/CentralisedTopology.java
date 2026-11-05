@@ -3,6 +3,14 @@ package io.casehub.agency.orchestration.topology;
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.agency.orchestration.budget.BudgetTelemetryEvent;
+import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.CascadeThreshold;
+import io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser;
+import io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser;
+import io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser;
+import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
+import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionContext;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
@@ -11,6 +19,7 @@ import io.casehub.agency.orchestration.loop.ObservationEvent;
 import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
@@ -21,12 +30,17 @@ import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CentralisedTopology implements CoordinationTopology {
@@ -40,6 +54,12 @@ public class CentralisedTopology implements CoordinationTopology {
     private final SwarmProvisioningAdvisor           provisioningAdvisor;
     private final Supplier<List<RoutingCandidate>>   candidateSupplier;
     private       List<AgentDecisionLoop>            loops = List.of();
+
+    private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
+    private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
+    private CascadeThreshold cascadeThreshold;
+    private Map<String, BudgetPriority> loopPriorities;
+    private List<CascadeDegradationTrigger> cascadeTriggers;
 
 
     public CentralisedTopology(
@@ -106,25 +126,44 @@ public class CentralisedTopology implements CoordinationTopology {
 
         var topologyDesc = describeTopology(context.caseId());
         var factory      = context.loopFactory();
+        var dp           = context.degradationPolicy();
 
-        var noOpHeuristic = new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<ObservationEvent, DecisionOutcome>();
-        io.casehub.agency.orchestration.degradation.DegradationTrigger noTrigger = () -> false;
-        java.util.function.Consumer<io.casehub.agency.orchestration.swarm.SwarmDegradedEvent> noSink = e -> {};
-        java.util.function.Consumer<io.casehub.agency.orchestration.budget.BudgetTelemetryEvent> noBudgetSink = e -> {};
+        this.cascadeThreshold = switch (dp.thresholdType()) {
+            case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
+            case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
+        };
+
+        this.loopPriorities = new LinkedHashMap<>();
+        loopPriorities.put(teamFormation.name(), teamFormation.budgetPriority());
+        loopPriorities.put(collectiveReasoning.name(), collectiveReasoning.budgetPriority());
+        loopPriorities.put(provisioning.name(), provisioning.budgetPriority());
+
+        Consumer<SwarmDegradedEvent>   degradationSink = this::onDegradation;
+        Consumer<BudgetTelemetryEvent> budgetEventSink = e -> {};
+
+        var routingCascade      = new CascadeDegradationTrigger();
+        var aggregationCascade  = new CascadeDegradationTrigger();
+        var provisioningCascade = new CascadeDegradationTrigger();
+        this.cascadeTriggers = List.of(routingCascade, aggregationCascade, provisioningCascade);
+
+        var routingHeuristic     = new HeuristicRoutingSummariser(fallbackStrategy, candidateSupplier);
+        var aggregationHeuristic = new HeuristicAggregationSummariser(fallbackStrategy);
+        var provisioningHeuristic = new HeuristicProvisioningSummariser(fallbackStrategy,
+                                                                        swarmContext.currentSize(), swarmContext.maxSize());
 
         this.loops = List.of(
                 factory.create(teamFormation,
                                new DecisionContext(context.caseId(), teamFormation.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               routingReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink),
+                               routingReasoner, routingHeuristic, pool, routingCascade, degradationSink, budgetEventSink),
                 factory.create(collectiveReasoning,
                                new DecisionContext(context.caseId(), collectiveReasoning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               aggregationReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink),
+                               aggregationReasoner, aggregationHeuristic, pool, aggregationCascade, degradationSink, budgetEventSink),
                 factory.create(provisioning,
                                new DecisionContext(context.caseId(), provisioning.name(), DecisionScope.FULL_AUTONOMY,
                                                    CommunicationMode.BROADCAST, topologyDesc),
-                               provisioningReasoner, noOpHeuristic, pool, noTrigger, noSink, noBudgetSink)
+                               provisioningReasoner, provisioningHeuristic, pool, provisioningCascade, degradationSink, budgetEventSink)
                             );
 
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->
@@ -230,6 +269,22 @@ public class CentralisedTopology implements CoordinationTopology {
     @Override
     public void onFeedback(CoordinationFeedback feedback) {
     }
+
+    @Override
+    public void onDegradation(SwarmDegradedEvent event) {
+        if (event.fallbackActive()) {
+            degradedLoops.add(event.capability());
+        } else {
+            degradedLoops.remove(event.capability());
+        }
+        if (event.fallbackActive() && !cascadeTriggered.get()
+            && cascadeThreshold != null
+            && cascadeThreshold.isBreached(degradedLoops, loopPriorities.size(), loopPriorities)
+            && cascadeTriggered.compareAndSet(false, true)) {
+            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
+        }
+    }
+
 
     public SwarmContext swarmContext()                               {return swarmContext;}
 

@@ -26,11 +26,15 @@ public class DecisionLoopFactory {
             ContentSummariser<ObservationEvent, DecisionOutcome> reasoner,
             ContentSummariser<ObservationEvent, DecisionOutcome> heuristic,
             AutonomyBudgetPool pool,
-            io.casehub.agency.orchestration.degradation.DegradationTrigger trigger,
+            io.casehub.agency.orchestration.degradation.DegradationTrigger additionalTrigger,
             java.util.function.Consumer<io.casehub.agency.orchestration.swarm.SwarmDegradedEvent> degradationSink,
             java.util.function.Consumer<io.casehub.agency.orchestration.budget.BudgetTelemetryEvent> budgetEventSink) {
         var sections = sectionRegistry.resolveAll(descriptor.promptSectionNames());
         var view     = pool.createView(context.agentId(), descriptor.budgetPriority());
+
+        var budgetTrigger = new io.casehub.agency.orchestration.degradation.BudgetDegradationTrigger(view);
+        var compositeTrigger = new io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger(
+                java.util.List.of(budgetTrigger, additionalTrigger));
 
         ContentSummariser<ObservationEvent, DecisionOutcome> withSections =
                 new SectionAwareContentSummariser(reasoner, sections, context);
@@ -39,7 +43,7 @@ public class DecisionLoopFactory {
                 new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetEventSink, r -> 0L, "unknown");
 
         var degradationAware = new io.casehub.agency.orchestration.degradation.DegradationAwareSummariser<>(
-                budgetAware, heuristic, trigger, degradationSink, descriptor.name());
+                budgetAware, heuristic, compositeTrigger, degradationSink, descriptor.name());
 
         var gate = new InFlightGate<>(degradationAware);
 
