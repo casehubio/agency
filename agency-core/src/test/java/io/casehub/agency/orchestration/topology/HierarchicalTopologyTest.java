@@ -6,6 +6,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -69,6 +70,7 @@ class HierarchicalTopologyTest {
         assertThat(root.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
         assertThat(root.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(root.communicationMode()).isEqualTo(CommunicationMode.BROADCAST);
+        assertThat(root.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
     }
 
     @Test
@@ -80,6 +82,7 @@ class HierarchicalTopologyTest {
         assertThat(middle.scope()).isEqualTo(DecisionScope.TASK_ADAPTATION);
         assertThat(middle.observationStrategy()).isEqualTo(ObservationStrategy.TICK_DRIVEN);
         assertThat(middle.communicationMode()).isEqualTo(CommunicationMode.DIRECT_MESSAGING);
+        assertThat(middle.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
     }
 
     @Test
@@ -91,5 +94,6 @@ class HierarchicalTopologyTest {
         assertThat(leaf.scope()).isEqualTo(DecisionScope.STIMULUS_DRIVEN);
         assertThat(leaf.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(leaf.communicationMode()).isEqualTo(CommunicationMode.STIGMERGY);
+        assertThat(leaf.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
     }
 }

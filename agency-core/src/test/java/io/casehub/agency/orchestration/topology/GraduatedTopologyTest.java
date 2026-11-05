@@ -7,6 +7,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -82,6 +83,7 @@ class GraduatedTopologyTest {
         for (var d : plan.loopDescriptors()) {
             assertThat(d.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
             assertThat(d.communicationMode()).isEqualTo(CommunicationMode.STIGMERGY);
+            assertThat(d.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
         }
     }
 

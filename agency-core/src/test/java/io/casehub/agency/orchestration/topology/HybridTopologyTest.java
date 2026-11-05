@@ -7,6 +7,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -67,6 +68,7 @@ class HybridTopologyTest {
         assertThat(global.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
         assertThat(global.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(global.communicationMode()).isEqualTo(CommunicationMode.BROADCAST);
+        assertThat(global.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
     }
 
     @Test
@@ -80,6 +82,7 @@ class HybridTopologyTest {
             assertThat(d.scope()).isEqualTo(DecisionScope.TASK_ADAPTATION);
             assertThat(d.observationStrategy()).isEqualTo(ObservationStrategy.TICK_DRIVEN);
             assertThat(d.communicationMode()).isEqualTo(CommunicationMode.STIGMERGY);
+            assertThat(d.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
         }
     }
 

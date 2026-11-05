@@ -8,6 +8,7 @@ import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.DecisionType;
@@ -70,6 +71,7 @@ class DistributedTopologyTest {
             assertThat(d.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
             assertThat(d.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
             assertThat(d.communicationMode()).isEqualTo(CommunicationMode.STIGMERGY);
+            assertThat(d.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
         }
     }
 

@@ -12,6 +12,7 @@ import io.casehub.agency.orchestration.swarm.SwarmExperienceSection;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
 import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -83,17 +84,20 @@ class CentralisedTopologyTest {
         assertThat(teamFormation.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(teamFormation.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
         assertThat(teamFormation.communicationMode()).isEqualTo(CommunicationMode.BROADCAST);
+        assertThat(teamFormation.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
         assertThat(teamFormation.promptSectionNames()).containsExactly("experience-replay");
 
         DecisionLoopDescriptor reasoning = plan.loopDescriptors().stream()
                                                .filter(d -> d.name().equals("centralised-collective-reasoning"))
                                                .findFirst().orElseThrow();
         assertThat(reasoning.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
+        assertThat(reasoning.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
 
         DecisionLoopDescriptor provisioning = plan.loopDescriptors().stream()
                                                   .filter(d -> d.name().equals("centralised-provisioning"))
                                                   .findFirst().orElseThrow();
         assertThat(provisioning.observationStrategy()).isEqualTo(ObservationStrategy.TICK_DRIVEN);
+        assertThat(provisioning.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
     }
 
     @Test

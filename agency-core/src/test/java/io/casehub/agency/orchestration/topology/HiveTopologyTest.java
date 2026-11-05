@@ -6,6 +6,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -68,6 +69,7 @@ class HiveTopologyTest {
         assertThat(coord.scope()).isEqualTo(DecisionScope.FULL_AUTONOMY);
         assertThat(coord.observationStrategy()).isEqualTo(ObservationStrategy.EVENT_DRIVEN);
         assertThat(coord.communicationMode()).isEqualTo(CommunicationMode.BROADCAST);
+        assertThat(coord.budgetPriority()).isEqualTo(BudgetPriority.RESERVED);
     }
 
     @Test
@@ -81,6 +83,7 @@ class HiveTopologyTest {
             assertThat(d.scope()).isEqualTo(DecisionScope.TASK_ADAPTATION);
             assertThat(d.observationStrategy()).isEqualTo(ObservationStrategy.DEMAND_DRIVEN);
             assertThat(d.communicationMode()).isEqualTo(CommunicationMode.DIRECT_MESSAGING);
+            assertThat(d.budgetPriority()).isEqualTo(BudgetPriority.NORMAL);
         }
     }
 
