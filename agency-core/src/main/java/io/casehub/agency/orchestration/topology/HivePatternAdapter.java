@@ -17,6 +17,24 @@ import java.util.concurrent.CompletionStage;
 
 public class HivePatternAdapter {
 
+    private static final System.Logger LOG =
+            System.getLogger(HivePatternAdapter.class.getName());
+
+    static final String SUPERVISOR_PROMPT =
+            "You are a supervisor reviewing an agent's decision outcome in a multi-agent hive. "
+            + "Evaluate the quality and correctness of the decision. "
+            + "Approve if the reasoning is sound, or reject with specific feedback for improvement.";
+
+    static final String DEBATE_PROMPT =
+            "You are a debater in a multi-agent deliberation. "
+            + "Argue your position on the decision outcome with evidence-based reasoning. "
+            + "Challenge weak arguments and build on strong ones to reach a better conclusion.";
+
+    static final String VOTING_PROMPT =
+            "You are a voter evaluating a decision outcome. "
+            + "Cast your vote: APPROVE if the outcome is sound, REJECT if it has material flaws. "
+            + "Provide a brief rationale for your vote.";
+
     private final AgentProvider agentProvider;
 
     public HivePatternAdapter(AgentProvider agentProvider) {
@@ -44,7 +62,7 @@ public class HivePatternAdapter {
         var coordinatorId = ctx.descriptor().coordinatorAgentId()
                 .orElseThrow(() -> new IllegalStateException(
                         "Supervisor pattern requires a coordinator (INITIATOR role)"));
-        var coordinator = createAgentRef(coordinatorId, "supervisor reviewer");
+        var coordinator = createAgentRef(coordinatorId, SUPERVISOR_PROMPT);
 
         return Patterns.<DecisionOutcome>supervisor()
                 .agents(coordinator)
@@ -59,8 +77,10 @@ public class HivePatternAdapter {
 
     private CompletionStage<CoordinationFeedback> executeDebate(
             String agentId, DecisionOutcome outcome, TopologyContext ctx) {
-        var debaters = resolveParticipants(agentId, ctx);
+        var debaters = resolveParticipants(agentId, ctx, DEBATE_PROMPT);
         if (debaters.length == 0) {
+            LOG.log(System.Logger.Level.WARNING,
+                    "Debate pattern has no participants (excluding {0}) — returning SUCCESS", agentId);
             return CompletableFuture.completedFuture(
                     new CoordinationFeedback(agentId, outcome, FeedbackSignal.SUCCESS));
         }
@@ -78,8 +98,10 @@ public class HivePatternAdapter {
 
     private CompletionStage<CoordinationFeedback> executeVoting(
             String agentId, DecisionOutcome outcome, TopologyContext ctx) {
-        var voters = resolveAllParticipants(ctx);
+        var voters = resolveAllParticipants(ctx, VOTING_PROMPT);
         if (voters.length == 0) {
+            LOG.log(System.Logger.Level.WARNING,
+                    "Voting pattern has no participants — returning SUCCESS");
             return CompletableFuture.completedFuture(
                     new CoordinationFeedback(agentId, outcome, FeedbackSignal.SUCCESS));
         }
@@ -94,28 +116,21 @@ public class HivePatternAdapter {
                 .subscribeAsCompletionStage();
     }
 
-    private AgentRef[] resolveParticipants(String excludeId, TopologyContext ctx) {
+    private AgentRef[] resolveParticipants(String excludeId, TopologyContext ctx, String systemPrompt) {
         return ctx.descriptor().agentRoles().entrySet().stream()
                 .filter(e -> !e.getKey().equals(excludeId))
-                .map(e -> createAgentRef(e.getKey(),
-                        e.getValue().structuralRole() == StructuralRole.INITIATOR
-                                ? "coordinator" : "participant"))
+                .map(e -> createAgentRef(e.getKey(), systemPrompt))
                 .toArray(AgentRef[]::new);
     }
 
-    private AgentRef[] resolveAllParticipants(TopologyContext ctx) {
+    private AgentRef[] resolveAllParticipants(TopologyContext ctx, String systemPrompt) {
         return ctx.descriptor().agentRoles().entrySet().stream()
-                .map(e -> createAgentRef(e.getKey(),
-                        e.getValue().structuralRole() == StructuralRole.INITIATOR
-                                ? "coordinator" : "participant"))
+                .map(e -> createAgentRef(e.getKey(), systemPrompt))
                 .toArray(AgentRef[]::new);
     }
 
-    private AgentRef createAgentRef(String agentId, String roleDescription) {
+    private AgentRef createAgentRef(String agentId, String systemPrompt) {
         return AgentRef.external(agentId, (DecisionOutcome outcome) -> {
-            var systemPrompt = "You are a " + roleDescription
-                    + " in a multi-agent coordination hive. "
-                    + "Evaluate the decision outcome and provide your assessment.";
             var userPrompt = "## Decision Outcome\n\n" + renderOutcome(outcome);
             var config = AgentSessionConfig.of(systemPrompt, userPrompt);
             var result = StructuredAgentInvoker.invokeText(agentProvider, config);
