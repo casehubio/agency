@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BottomUpFormationOrchestrator {
 
@@ -101,11 +102,17 @@ public class BottomUpFormationOrchestrator {
                         + " requires: " + proposal.requiredCapabilities())
                 .build());
 
+        var handled = new AtomicBoolean(false);
+
         return Uni.createFrom().<FormationResult>emitter(emitter -> {
             var subscription = observer.subscribe(event -> {
                 var state = observer.currentState();
-                if (state.outcome().isTerminal()) {
-                    emitter.complete(handleOutcome(state, proposal));
+                if (state.outcome().isTerminal() && handled.compareAndSet(false, true)) {
+                    try {
+                        emitter.complete(handleOutcome(state, proposal));
+                    } catch (Exception e) {
+                        emitter.fail(e);
+                    }
                 }
             });
 
@@ -116,7 +123,7 @@ public class BottomUpFormationOrchestrator {
             });
         }).ifNoItem().after(timeout).recoverWithUni(() -> {
             var state = observer.currentState();
-            if (state.outcome().isTerminal()) {
+            if (state.outcome().isTerminal() && handled.compareAndSet(false, true)) {
                 return Uni.createFrom().item(handleOutcome(state, proposal));
             }
             return Uni.createFrom().item(FormationResult.timeout());

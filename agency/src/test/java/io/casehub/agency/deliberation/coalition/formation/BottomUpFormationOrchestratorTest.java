@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -238,6 +239,50 @@ class BottomUpFormationOrchestratorTest {
         var captor = ArgumentCaptor.forClass(ChannelCreateRequest.class);
         verify(channelManager).findOrCreate(captor.capture());
         assertThat(captor.getValue().name()).isEqualTo("formation/task-1/proposer-1");
+    }
+
+    @Test
+    void groupCreationFailure_propagatesAsUniFailure() {
+        stubViableCoalition();
+        var channelId = stubChannelCreation();
+        var observerRef = captureObserver();
+        when(groupLifecycle.proposeGroup(any(), any(), any()))
+                .thenThrow(new RuntimeException("group creation failed"));
+
+        var failureRef = new AtomicReference<Throwable>();
+        orchestrator().propose(proposal(), context())
+                .subscribe().with(r -> {}, failureRef::set);
+
+        var observer = observerRef.get();
+        observer.onMessage(event(channelId, "proposer-1", MessageType.PROPOSE, "task-1"));
+        observer.onMessage(event(channelId, "agent-a", MessageType.DONE, "task-1"));
+        observer.onMessage(event(channelId, "agent-b", MessageType.DONE, "task-1"));
+
+        assertThat(failureRef.get()).isNotNull();
+        assertThat(failureRef.get()).hasMessageContaining("group creation failed");
+        verify(channelManager).pause(channelId);
+    }
+
+    @Test
+    void handleOutcome_calledOnlyOnce_evenWithConcurrentTerminalMessages() {
+        stubViableCoalition();
+        var channelId = stubChannelCreation();
+        stubGroupCreation("group-1");
+        var observerRef = captureObserver();
+
+        var resultRef = new AtomicReference<FormationResult>();
+        orchestrator().propose(proposal(), context())
+                .subscribe().with(resultRef::set);
+
+        var observer = observerRef.get();
+        observer.onMessage(event(channelId, "proposer-1", MessageType.PROPOSE, "task-1"));
+        observer.onMessage(event(channelId, "agent-a", MessageType.DONE, "task-1"));
+        observer.onMessage(event(channelId, "agent-b", MessageType.DONE, "task-1"));
+        // Send a redundant terminal message — should not trigger duplicate group creation
+        observer.onMessage(event(channelId, "agent-a", MessageType.DONE, "task-1"));
+
+        assertThat(resultRef.get()).isInstanceOf(FormationResult.Accepted.class);
+        verify(groupLifecycle, times(1)).proposeGroup(any(), any(), any());
     }
 
     @Test
