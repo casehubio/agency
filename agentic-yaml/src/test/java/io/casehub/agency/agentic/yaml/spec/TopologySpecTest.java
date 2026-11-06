@@ -97,6 +97,71 @@ class TopologySpecTest {
     }
 
     @Test
+    void hive_withCardinality() throws Exception {
+        var spec = yaml.readValue("""
+                                  pattern: hive
+                                  roles:
+                                    - coordinator
+                                  policy:
+                                    coordinator:
+                                      obligations:
+                                        - review-output
+                                      permissions:
+                                        - provision-agent
+                                      minAgents: 1
+                                      maxAgents: 3
+                                  """, TopologySpec.class);
+        var hive   = (TopologySpec.Hive) spec;
+        var policy = hive.policy().get("coordinator");
+        assertThat(policy.minAgents()).isEqualTo(1);
+        assertThat(policy.maxAgents()).isEqualTo(3);
+    }
+
+    @Test
+    void rolePolicySpec_toRoleSpec_maps_all_fields() {
+        var policy = new TopologySpec.RolePolicySpec(
+                List.of("review-output", "report-status"),
+                List.of("provision-agent"),
+                2, 5);
+        var roleSpec = policy.toRoleSpec("coordinator");
+
+        assertThat(roleSpec.roleName()).isEqualTo("coordinator");
+        assertThat(roleSpec.minCardinality()).isEqualTo(2);
+        assertThat(roleSpec.maxCardinality()).isEqualTo(5);
+        assertThat(roleSpec.obligations()).containsExactly("review-output", "report-status");
+        assertThat(roleSpec.permissions()).containsExactly("provision-agent");
+        assertThat(roleSpec.policies()).hasSize(3);
+        assertThat(roleSpec.policies().get(0).capabilityName()).isEqualTo("review-output");
+        assertThat(roleSpec.policies().get(0).kind()).isEqualTo(io.casehub.eidos.org.api.PolicyKind.OBLIGATION);
+        assertThat(roleSpec.policies().get(1).capabilityName()).isEqualTo("report-status");
+        assertThat(roleSpec.policies().get(1).kind()).isEqualTo(io.casehub.eidos.org.api.PolicyKind.OBLIGATION);
+        assertThat(roleSpec.policies().get(2).capabilityName()).isEqualTo("provision-agent");
+        assertThat(roleSpec.policies().get(2).kind()).isEqualTo(io.casehub.eidos.org.api.PolicyKind.PERMISSION);
+    }
+
+    @Test
+    void rolePolicySpec_toRoleSpec_defaults_cardinality() {
+        var policy   = new TopologySpec.RolePolicySpec(List.of("task"), null, null, null);
+        var roleSpec = policy.toRoleSpec("worker");
+
+        assertThat(roleSpec.minCardinality()).isEqualTo(0);
+        assertThat(roleSpec.maxCardinality()).isEqualTo(-1);
+    }
+
+    @Test
+    void rolePolicySpec_toRoleSpec_empty_policies() {
+        var policy   = new TopologySpec.RolePolicySpec(null, null, 1, 1);
+        var roleSpec = policy.toRoleSpec("singleton");
+
+        assertThat(roleSpec.policies()).isEmpty();
+        assertThat(roleSpec.obligations()).isEmpty();
+        assertThat(roleSpec.permissions()).isEmpty();
+        assertThat(roleSpec.minCardinality()).isEqualTo(1);
+        assertThat(roleSpec.maxCardinality()).isEqualTo(1);
+    }
+
+
+    @Test
     void hive_rolesImmutable() {
         var mutableRoles = new java.util.ArrayList<>(List.of("coordinator"));
         var hive = new TopologySpec.Hive("centralised", mutableRoles, null, null);

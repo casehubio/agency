@@ -943,6 +943,41 @@
         "aggregation" : {
           "$ref" : "#/$defs/AggregationSpec"
         },
+        "communication" : {
+          "oneOf" : [ {
+            "properties" : {
+              "type" : {
+                "const" : "stigmergy"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "directMessaging"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "broadcast"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "groupChannel"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          } ]
+        },
         "coordinationModel" : {
           "type" : "string"
         },
@@ -1003,6 +1038,33 @@
         "routing" : {
           "$ref" : "#/$defs/RoutingSpec"
         },
+        "scope" : {
+          "oneOf" : [ {
+            "properties" : {
+              "type" : {
+                "const" : "reactive"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "taskAdaptation"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "fullAutonomy"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          } ]
+        },
         "task" : {
           "type" : "string"
         },
@@ -1011,6 +1073,44 @@
           "items" : {
             "$ref" : "#/$defs/TerminationSpec"
           }
+        },
+        "topology" : {
+          "oneOf" : [ {
+            "properties" : {
+              "type" : {
+                "const" : "swarm"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object",
+            "unevaluatedProperties" : false
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "hive"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object",
+            "unevaluatedProperties" : false
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "mesh"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object",
+            "unevaluatedProperties" : false
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "many"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          } ]
         }
       },
       "unevaluatedProperties" : false

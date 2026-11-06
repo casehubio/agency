@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import io.casehub.eidos.org.api.PolicyKind;
+import io.casehub.eidos.org.api.RolePolicy;
+import io.casehub.eidos.org.api.RoleSpec;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +46,38 @@ public sealed interface TopologySpec {
 
     record RolePolicySpec(
             @Nullable List<String> obligations,
-            @Nullable List<String> permissions
+            @Nullable List<String> permissions,
+            @Nullable Integer minAgents,
+            @Nullable Integer maxAgents
     ) {
         public RolePolicySpec {
             if (obligations != null) obligations = List.copyOf(obligations);
             if (permissions != null) permissions = List.copyOf(permissions);
+        }
+
+        public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions) {
+            this(obligations, permissions, null, null);
+        }
+
+        public RoleSpec toRoleSpec(String roleName) {
+            var policies = new ArrayList<RolePolicy>();
+            if (obligations != null) {
+                for (var o : obligations) {
+                    policies.add(new RolePolicy(o, PolicyKind.OBLIGATION, Map.of()));
+                }
+            }
+            if (permissions != null) {
+                for (var p : permissions) {
+                    policies.add(new RolePolicy(p, PolicyKind.PERMISSION, Map.of()));
+                }
+            }
+            return new RoleSpec(
+                    roleName, roleName,
+                    minAgents != null ? minAgents : 0,
+                    maxAgents != null ? maxAgents : -1,
+                    null, policies,
+                    obligations != null ? obligations : List.of(),
+                    permissions != null ? permissions : List.of());
         }
     }
 }
