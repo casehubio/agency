@@ -33,7 +33,7 @@ class CoalitionFormationTest {
 
         @Test
         void fullCoverageScoresOne() {
-            var proposal = new CoalitionProposal("task-1",
+            var proposal = new CoalitionProposal(agent("proposer"), "task-1",
                     Set.of("diagnosis", "vitals"),
                     List.of(agent("doctor"), agent("nurse")));
             var score = evaluator.evaluate(proposal, contextWithCapabilities());
@@ -45,7 +45,7 @@ class CoalitionFormationTest {
 
         @Test
         void partialCoverageScoresBelow() {
-            var proposal = new CoalitionProposal("task-1",
+            var proposal = new CoalitionProposal(agent("proposer"), "task-1",
                     Set.of("diagnosis", "vitals", "surgery"),
                     List.of(agent("doctor"), agent("nurse")));
             var score = evaluator.evaluate(proposal, contextWithCapabilities());
@@ -56,7 +56,7 @@ class CoalitionFormationTest {
 
         @Test
         void noRequiredCapabilitiesScoresOne() {
-            var proposal = new CoalitionProposal("task-1",
+            var proposal = new CoalitionProposal(agent("proposer"), "task-1",
                     Set.of(), List.of(agent("doctor")));
             var score = evaluator.evaluate(proposal, contextWithCapabilities());
             assertThat(score.score()).isEqualTo(1.0);
@@ -65,7 +65,7 @@ class CoalitionFormationTest {
 
         @Test
         void unknownAgentHasNoCapabilities() {
-            var proposal = new CoalitionProposal("task-1",
+            var proposal = new CoalitionProposal(agent("proposer"), "task-1",
                     Set.of("diagnosis"),
                     List.of(agent("unknown")));
             var score = evaluator.evaluate(proposal, contextWithCapabilities());
@@ -75,7 +75,7 @@ class CoalitionFormationTest {
 
         @Test
         void singleAgentCoversMultipleCapabilities() {
-            var proposal = new CoalitionProposal("task-1",
+            var proposal = new CoalitionProposal(agent("proposer"), "task-1",
                     Set.of("diagnosis", "prescription"),
                     List.of(agent("doctor")));
             var score = evaluator.evaluate(proposal, contextWithCapabilities());
@@ -89,7 +89,7 @@ class CoalitionFormationTest {
         @Test
         void defensiveCopies() {
             var members = new java.util.ArrayList<>(List.of(agent("a")));
-            var proposal = new CoalitionProposal("t1", Set.of("x"), members);
+            var proposal = new CoalitionProposal(agent("proposer"), "t1", Set.of("x"), members);
             members.clear();
             assertThat(proposal.proposedMembers()).hasSize(1);
         }

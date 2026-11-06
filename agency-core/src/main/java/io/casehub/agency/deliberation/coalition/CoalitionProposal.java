@@ -7,19 +7,15 @@ import java.util.Objects;
 import java.util.Set;
 
 public record CoalitionProposal(
+        AgentRef proposer,
         String taskId,
         Set<String> requiredCapabilities,
         List<AgentRef> proposedMembers
 ) {
     public CoalitionProposal {
-        Objects.requireNonNull(taskId);
+        Objects.requireNonNull(proposer, "proposer");
+        Objects.requireNonNull(taskId, "taskId");
         requiredCapabilities = Set.copyOf(requiredCapabilities);
         proposedMembers = List.copyOf(proposedMembers);
-    }
-
-    public Set<String> coveredCapabilities() {
-        // Delegates to AgentCardSupport or member metadata — here we return
-        // the member names as a proxy. Real implementations use worker capability tags.
-        return Set.copyOf(proposedMembers.stream().map(AgentRef::name).toList());
     }
 }
