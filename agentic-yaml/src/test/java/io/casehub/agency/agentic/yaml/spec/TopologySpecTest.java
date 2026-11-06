@@ -162,6 +162,44 @@ class TopologySpecTest {
 
 
     @Test
+    void rolePolicySpec_toRoleSpec_uses_vocabulary_when_present() {
+        var policy = new TopologySpec.RolePolicySpec(
+                List.of("diagnose"), null, 1, 3, "medical");
+        var roleSpec = policy.toRoleSpec("doctor");
+
+        assertThat(roleSpec.roleName()).isEqualTo("doctor");
+        assertThat(roleSpec.roleVocabulary()).isEqualTo("medical");
+    }
+
+    @Test
+    void rolePolicySpec_toRoleSpec_falls_back_to_roleName_when_no_vocabulary() {
+        var policy = new TopologySpec.RolePolicySpec(
+                List.of("diagnose"), null, 1, 3);
+        var roleSpec = policy.toRoleSpec("doctor");
+
+        assertThat(roleSpec.roleName()).isEqualTo("doctor");
+        assertThat(roleSpec.roleVocabulary()).isEqualTo("doctor");
+    }
+
+    @Test
+    void hive_withVocabulary_deserialises() throws Exception {
+        var spec = yaml.readValue("""
+                pattern: hive
+                roles:
+                  - doctor
+                policy:
+                  doctor:
+                    obligations:
+                      - diagnose
+                    vocabulary: medical
+                """, TopologySpec.class);
+        var hive = (TopologySpec.Hive) spec;
+        var policy = hive.policy().get("doctor");
+        assertThat(policy.vocabulary()).isEqualTo("medical");
+        assertThat(policy.toRoleSpec("doctor").roleVocabulary()).isEqualTo("medical");
+    }
+
+    @Test
     void hive_rolesImmutable() {
         var mutableRoles = new java.util.ArrayList<>(List.of("coordinator"));
         var hive = new TopologySpec.Hive("centralised", mutableRoles, null, null);
