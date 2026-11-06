@@ -22,4 +22,53 @@ final class TestAgentProviders {
             }
         };
     }
+
+    static AgentProvider returning(String response) {
+        return new AgentProvider() {
+            @Override
+            public Multi<AgentEvent> invoke(AgentSessionConfig config) {
+                return Multi.createFrom().items(
+                        new AgentEvent.TextDelta(response),
+                        new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 100L, 80L, null, 0, false, null, null));
+            }
+
+            @Override
+            public AgentSession openSession(AgentSessionInit init) {
+                throw new UnsupportedOperationException("test stub");
+            }
+        };
+    }
+
+    static AgentProvider failing() {
+        return new AgentProvider() {
+            @Override
+            public Multi<AgentEvent> invoke(AgentSessionConfig config) {
+                return Multi.createFrom().failure(new RuntimeException("LLM unavailable"));
+            }
+
+            @Override
+            public AgentSession openSession(AgentSessionInit init) {
+                throw new UnsupportedOperationException("test stub");
+            }
+        };
+    }
+
+    static AgentProvider counting(java.util.concurrent.atomic.AtomicInteger counter, String response) {
+        return new AgentProvider() {
+            @Override
+            public Multi<AgentEvent> invoke(AgentSessionConfig config) {
+                counter.incrementAndGet();
+                return Multi.createFrom().items(
+                        new AgentEvent.TextDelta(response),
+                        new AgentEvent.InvocationComplete(10, 5, 0, 0, 0, null, 100L, 80L, null, 0, false, null, null));
+            }
+
+            @Override
+            public AgentSession openSession(AgentSessionInit init) {
+                throw new UnsupportedOperationException("test stub");
+            }
+        };
+    }
+
+
 }
