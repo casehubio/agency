@@ -48,7 +48,8 @@ public sealed interface TopologySpec {
             @Nullable List<String> obligations,
             @Nullable List<String> permissions,
             @Nullable Integer minAgents,
-            @Nullable Integer maxAgents
+            @Nullable Integer maxAgents,
+            @Nullable String vocabulary
     ) {
         public RolePolicySpec {
             if (obligations != null) obligations = List.copyOf(obligations);
@@ -56,7 +57,12 @@ public sealed interface TopologySpec {
         }
 
         public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions) {
-            this(obligations, permissions, null, null);
+            this(obligations, permissions, null, null, null);
+        }
+
+        public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions,
+                              @Nullable Integer minAgents, @Nullable Integer maxAgents) {
+            this(obligations, permissions, minAgents, maxAgents, null);
         }
 
         public RoleSpec toRoleSpec(String roleName) {
@@ -72,7 +78,7 @@ public sealed interface TopologySpec {
                 }
             }
             return new RoleSpec(
-                    roleName, roleName,
+                    roleName, vocabulary != null ? vocabulary : roleName,
                     minAgents != null ? minAgents : 0,
                     maxAgents != null ? maxAgents : -1,
                     null, policies,
