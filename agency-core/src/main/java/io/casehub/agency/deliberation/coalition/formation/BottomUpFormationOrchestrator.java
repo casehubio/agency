@@ -18,6 +18,8 @@ import io.casehub.qhorus.api.message.MessageDispatcher;
 import io.casehub.qhorus.api.message.MessageType;
 import io.smallrye.mutiny.Uni;
 
+import org.jspecify.annotations.Nullable;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 public class BottomUpFormationOrchestrator {
 
@@ -37,6 +40,7 @@ public class BottomUpFormationOrchestrator {
     private final String tenancyId;
     private final AcceptancePolicy acceptancePolicy;
     private final Duration timeout;
+    private final @Nullable Predicate<CoalitionProposal> formationGuard;
 
     public BottomUpFormationOrchestrator(
             CoalitionEvaluator evaluator,
@@ -48,6 +52,21 @@ public class BottomUpFormationOrchestrator {
             String tenancyId,
             AcceptancePolicy acceptancePolicy,
             Duration timeout) {
+        this(evaluator, groupLifecycle, channelManager, messageDispatcher,
+                observerRegistrar, specId, tenancyId, acceptancePolicy, timeout, null);
+    }
+
+    public BottomUpFormationOrchestrator(
+            CoalitionEvaluator evaluator,
+            GroupLifecycleService groupLifecycle,
+            ChannelManager channelManager,
+            MessageDispatcher messageDispatcher,
+            MessageObserverRegistrar observerRegistrar,
+            String specId,
+            String tenancyId,
+            AcceptancePolicy acceptancePolicy,
+            Duration timeout,
+            @Nullable Predicate<CoalitionProposal> formationGuard) {
         this.evaluator = Objects.requireNonNull(evaluator);
         this.groupLifecycle = Objects.requireNonNull(groupLifecycle);
         this.channelManager = Objects.requireNonNull(channelManager);
@@ -57,9 +76,14 @@ public class BottomUpFormationOrchestrator {
         this.tenancyId = Objects.requireNonNull(tenancyId);
         this.acceptancePolicy = Objects.requireNonNull(acceptancePolicy);
         this.timeout = Objects.requireNonNull(timeout);
+        this.formationGuard = formationGuard;
     }
 
     public Uni<FormationResult> propose(CoalitionProposal proposal, CoalitionContext context) {
+        if (formationGuard != null && !formationGuard.test(proposal)) {
+            return Uni.createFrom().item(FormationResult.rejected("Formation guard rejected proposal"));
+        }
+
         var score = evaluator.evaluate(proposal, context);
         if (!score.isViable()) {
             return Uni.createFrom().item(FormationResult.rejected(score.reason()));

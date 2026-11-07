@@ -286,6 +286,65 @@ class BottomUpFormationOrchestratorTest {
     }
 
     @Test
+    void formationGuard_rejects_returnsRejected() {
+        var guarded = new BottomUpFormationOrchestrator(
+                evaluator, groupLifecycle, channelManager,
+                messageDispatcher, observerRegistrar,
+                SPEC_ID, TENANCY_ID, new UnanimousAcceptance(), TIMEOUT,
+                p -> false);
+
+        var result = guarded.propose(proposal(), context())
+                .await().atMost(java.time.Duration.ofSeconds(2));
+
+        assertThat(result).isInstanceOf(FormationResult.Rejected.class);
+        assertThat(((FormationResult.Rejected) result).reason())
+                .contains("Formation guard");
+        verifyNoInteractions(evaluator, channelManager, messageDispatcher, groupLifecycle, observerRegistrar);
+    }
+
+    @Test
+    void formationGuard_approves_proceedsNormally() {
+        stubViableCoalition();
+        var channelId = stubChannelCreation();
+        stubGroupCreation("group-1");
+        var observerRef = captureObserver();
+
+        var guarded = new BottomUpFormationOrchestrator(
+                evaluator, groupLifecycle, channelManager,
+                messageDispatcher, observerRegistrar,
+                SPEC_ID, TENANCY_ID, new UnanimousAcceptance(), TIMEOUT,
+                p -> true);
+
+        var resultRef = new AtomicReference<FormationResult>();
+        guarded.propose(proposal(), context())
+                .subscribe().with(resultRef::set);
+
+        var observer = observerRef.get();
+        observer.onMessage(event(channelId, "proposer-1", MessageType.PROPOSE, "task-1"));
+        observer.onMessage(event(channelId, "agent-a", MessageType.DONE, "task-1"));
+        observer.onMessage(event(channelId, "agent-b", MessageType.DONE, "task-1"));
+
+        assertThat(resultRef.get()).isInstanceOf(FormationResult.Accepted.class);
+    }
+
+    @Test
+    void nullFormationGuard_proceedsNormally() {
+        stubViableCoalition();
+        stubChannelCreation();
+        captureObserver();
+
+        var guarded = new BottomUpFormationOrchestrator(
+                evaluator, groupLifecycle, channelManager,
+                messageDispatcher, observerRegistrar,
+                SPEC_ID, TENANCY_ID, new UnanimousAcceptance(), TIMEOUT,
+                null);
+
+        guarded.propose(proposal(), context());
+
+        verify(evaluator).evaluate(any(), any());
+    }
+
+    @Test
     void channelRequest_includesProposerInParticipants() {
         stubViableCoalition();
         stubChannelCreation();
