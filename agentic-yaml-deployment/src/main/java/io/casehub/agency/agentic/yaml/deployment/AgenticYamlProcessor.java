@@ -7,12 +7,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsBean;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsResource;
 import io.casehub.agency.core.yaml.runtime.AgenticRecorder;
+import io.casehub.agency.agentic.yaml.topology.HiveTopologyCompiler;
 import io.casehub.agency.core.yaml.spec.PatternDefinition;
 import io.casehub.agency.core.yaml.spec.TopologySpec;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.yaml.jackson.YamlMappers;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
+import jakarta.inject.Singleton;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
 import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
 
 public class AgenticYamlProcessor {
@@ -129,6 +132,24 @@ public class AgenticYamlProcessor {
                         ((PatternDefinition.Swarm) p).topology())
                 .toList();
         return new TopologyBuildItem(hiveSpecs);
+    }
+
+    @BuildStep
+    @Record(RUNTIME_INIT)
+    List<SyntheticBeanBuildItem> registerHiveTopologies(
+            AgenticRecorder recorder,
+            TopologyBuildItem topologies) {
+        return topologies.hiveTopologies().stream()
+                .map(spec -> {
+                    RuntimeValue<HiveTopologyCompiler.CompiledHive> rv =
+                            recorder.compileHiveTopology(spec);
+                    return SyntheticBeanBuildItem
+                            .configure(HiveTopologyCompiler.CompiledHive.class)
+                            .scope(Singleton.class)
+                            .runtimeValue(rv)
+                            .done();
+                })
+                .toList();
     }
 
     @BuildStep

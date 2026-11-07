@@ -1,8 +1,10 @@
 package io.casehub.agency.core.yaml.runtime;
 
 import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
+import io.casehub.agency.agentic.yaml.topology.HiveTopologyCompiler;
 import io.casehub.agency.core.yaml.compiler.PatternCompiler;
 import io.casehub.agency.core.yaml.compiler.PromptOptimisationCompiler;
+import io.casehub.agency.core.yaml.spec.TopologySpec;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.api.expression.ExpressionEngine;
 import io.quarkus.runtime.RuntimeValue;
@@ -29,6 +31,11 @@ public class AgenticRecorder {
                 optimiserRegistry, scorerRegistry, agentProvider);
     }
 
+
+    public RuntimeValue<HiveTopologyCompiler.CompiledHive> compileHiveTopology(
+            TopologySpec.Hive spec) {
+        return new RuntimeValue<>(new HiveTopologyCompiler().compile(spec, null));
+    }
 
     public RuntimeValue<AgencySpecsBean> createSpecsBean(String preSerializedJson) {
         return new RuntimeValue<>(new AgencySpecsBean(preSerializedJson));
