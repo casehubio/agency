@@ -7,6 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsBean;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsResource;
 import io.casehub.agency.core.yaml.runtime.AgenticRecorder;
+import io.casehub.agency.core.yaml.spec.PatternDefinition;
+import io.casehub.agency.core.yaml.spec.TopologySpec;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.yaml.jackson.YamlMappers;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -117,6 +119,17 @@ public class AgenticYamlProcessor {
         }
     }
 
+
+    @BuildStep
+    TopologyBuildItem extractHiveTopologies(AgenticPatternsBuildItem patterns) {
+        var hiveSpecs = patterns.patterns().stream()
+                .filter(p -> p instanceof PatternDefinition.Swarm s
+                        && s.topology() instanceof TopologySpec.Hive)
+                .map(p -> (TopologySpec.Hive)
+                        ((PatternDefinition.Swarm) p).topology())
+                .toList();
+        return new TopologyBuildItem(hiveSpecs);
+    }
 
     @BuildStep
     @Record(STATIC_INIT)
