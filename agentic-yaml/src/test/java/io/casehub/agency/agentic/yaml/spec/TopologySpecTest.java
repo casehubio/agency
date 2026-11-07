@@ -200,6 +200,41 @@ class TopologySpecTest {
     }
 
     @Test
+    void rolePolicySpec_toRoleSpec_maps_incompatibleWith() {
+        var policy = new TopologySpec.RolePolicySpec(
+                List.of("review"), null, 1, 1, null, List.of("auditor", "observer"));
+        var roleSpec = policy.toRoleSpec("coordinator");
+
+        assertThat(roleSpec.incompatibleWith()).containsExactlyInAnyOrder("auditor", "observer");
+    }
+
+    @Test
+    void rolePolicySpec_toRoleSpec_nullIncompatibleWith_yieldsEmptySet() {
+        var policy = new TopologySpec.RolePolicySpec(List.of("task"), null);
+        var roleSpec = policy.toRoleSpec("worker");
+
+        assertThat(roleSpec.incompatibleWith()).isEmpty();
+    }
+
+    @Test
+    void hive_withIncompatibleWith_deserialises() throws Exception {
+        var spec = yaml.readValue("""
+                pattern: hive
+                roles:
+                  - coordinator
+                policy:
+                  coordinator:
+                    obligations:
+                      - review
+                    incompatibleWith:
+                      - auditor
+                """, TopologySpec.class);
+        var hive = (TopologySpec.Hive) spec;
+        var policy = hive.policy().get("coordinator");
+        assertThat(policy.incompatibleWith()).containsExactly("auditor");
+    }
+
+    @Test
     void hive_rolesImmutable() {
         var mutableRoles = new java.util.ArrayList<>(List.of("coordinator"));
         var hive = new TopologySpec.Hive("centralised", mutableRoles, null, null);

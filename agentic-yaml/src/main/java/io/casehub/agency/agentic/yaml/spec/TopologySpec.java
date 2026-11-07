@@ -49,20 +49,28 @@ public sealed interface TopologySpec {
             @Nullable List<String> permissions,
             @Nullable Integer minAgents,
             @Nullable Integer maxAgents,
-            @Nullable String vocabulary
+            @Nullable String vocabulary,
+            @Nullable List<String> incompatibleWith
     ) {
         public RolePolicySpec {
             if (obligations != null) obligations = List.copyOf(obligations);
             if (permissions != null) permissions = List.copyOf(permissions);
+            if (incompatibleWith != null) incompatibleWith = List.copyOf(incompatibleWith);
         }
 
         public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions) {
-            this(obligations, permissions, null, null, null);
+            this(obligations, permissions, null, null, null, null);
         }
 
         public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions,
                               @Nullable Integer minAgents, @Nullable Integer maxAgents) {
-            this(obligations, permissions, minAgents, maxAgents, null);
+            this(obligations, permissions, minAgents, maxAgents, null, null);
+        }
+
+        public RolePolicySpec(@Nullable List<String> obligations, @Nullable List<String> permissions,
+                              @Nullable Integer minAgents, @Nullable Integer maxAgents,
+                              @Nullable String vocabulary) {
+            this(obligations, permissions, minAgents, maxAgents, vocabulary, null);
         }
 
         public RoleSpec toRoleSpec(String roleName) {
@@ -81,7 +89,8 @@ public sealed interface TopologySpec {
                     roleName, vocabulary != null ? vocabulary : roleName,
                     minAgents != null ? minAgents : 0,
                     maxAgents != null ? maxAgents : -1,
-                    null, policies,
+                    incompatibleWith != null ? new java.util.LinkedHashSet<>(incompatibleWith) : null,
+                    policies,
                     obligations != null ? obligations : List.of(),
                     permissions != null ? permissions : List.of());
         }

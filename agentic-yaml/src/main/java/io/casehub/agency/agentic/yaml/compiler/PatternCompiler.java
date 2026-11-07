@@ -54,7 +54,6 @@ public class PatternCompiler {
     private final DecompositionStrategyRegistry decompositionRegistry = new DecompositionStrategyRegistry();
     private final JudgmentTriggerRegistry judgmentTriggerRegistry = new JudgmentTriggerRegistry();
     private final CallerStrategyRegistry callerStrategyRegistry = new CallerStrategyRegistry();
-    private final io.casehub.agency.core.yaml.registry.TopologySpecRegistry topologyRegistry = new io.casehub.agency.core.yaml.registry.TopologySpecRegistry();
     private final io.casehub.agency.core.yaml.registry.DecisionScopeSpecRegistry scopeRegistry = new io.casehub.agency.core.yaml.registry.DecisionScopeSpecRegistry();
     private final io.casehub.agency.core.yaml.registry.CommunicationModeSpecRegistry communicationRegistry = new io.casehub.agency.core.yaml.registry.CommunicationModeSpecRegistry();
 
@@ -258,10 +257,6 @@ public class PatternCompiler {
         return builder.build();
     }
 
-
-    public io.casehub.api.model.coordination.TopologyType resolveTopology(io.casehub.agency.core.yaml.spec.TopologySpec spec) {
-        return topologyRegistry.resolve(spec);
-    }
 
     public io.casehub.api.model.coordination.DecisionScope resolveScope(io.casehub.agency.core.yaml.spec.DecisionScopeSpec spec) {
         return scopeRegistry.resolve(spec);

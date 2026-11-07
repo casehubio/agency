@@ -116,6 +116,22 @@ class HivePatternAdapterTest {
     }
 
     @Test
+    void renderOutcome_includesGroupContext_whenPresent() {
+        var outcome = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of());
+        var rendered = HivePatternAdapter.renderOutcome(outcome, "group-42", "tenant-1");
+        assertThat(rendered).contains("group-42");
+        assertThat(rendered).contains("tenant-1");
+    }
+
+    @Test
+    void renderOutcome_omitsGroupContext_whenNull() {
+        var outcome = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of());
+        var rendered = HivePatternAdapter.renderOutcome(outcome, null, null);
+        assertThat(rendered).doesNotContain("Group:");
+        assertThat(rendered).doesNotContain("Tenant:");
+    }
+
+    @Test
     void onFeedback_does_not_throw() {
         var adapter = new HivePatternAdapter(TestAgentProviders.noOp());
         adapter.onFeedback(

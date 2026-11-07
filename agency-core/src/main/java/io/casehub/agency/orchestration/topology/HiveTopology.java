@@ -45,6 +45,8 @@ public class HiveTopology implements CoordinationTopology {
     private CascadeThreshold cascadeThreshold;
     private Map<String, BudgetPriority> loopPriorities;
     private List<CascadeDegradationTrigger> cascadeTriggers;
+    private volatile @org.jspecify.annotations.Nullable String groupId;
+    private volatile @org.jspecify.annotations.Nullable String tenancyId;
 
     public HiveTopology(Map<String, AgentRole> agentRoles,
                         HivePatternAdapter patternAdapter,
@@ -61,6 +63,9 @@ public class HiveTopology implements CoordinationTopology {
 
     @Override
     public CoordinationPlan configure(TopologyContext context) {
+        this.groupId = context.groupId();
+        this.tenancyId = context.tenancyId();
+
         context.descriptor().coordinatorAgentId()
                .orElseThrow(() -> new IllegalStateException(
                        "HiveTopology requires a coordinator agent (INITIATOR role)"));
@@ -160,4 +165,8 @@ public class HiveTopology implements CoordinationTopology {
 
 
     public OrchestrationPatternType patternType() {return patternType;}
+
+    public @org.jspecify.annotations.Nullable String groupId() { return groupId; }
+
+    public @org.jspecify.annotations.Nullable String tenancyId() { return tenancyId; }
 }

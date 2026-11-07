@@ -62,7 +62,8 @@ public class HivePatternAdapter {
         var coordinatorId = ctx.descriptor().coordinatorAgentId()
                 .orElseThrow(() -> new IllegalStateException(
                         "Supervisor pattern requires a coordinator (INITIATOR role)"));
-        var coordinator = createAgentRef(coordinatorId, SUPERVISOR_PROMPT);
+        var coordinator = createAgentRef(coordinatorId, SUPERVISOR_PROMPT,
+                ctx.groupId(), ctx.tenancyId());
 
         return Patterns.<DecisionOutcome>supervisor()
                 .agents(coordinator)
@@ -77,7 +78,8 @@ public class HivePatternAdapter {
 
     private CompletionStage<CoordinationFeedback> executeDebate(
             String agentId, DecisionOutcome outcome, TopologyContext ctx) {
-        var debaters = resolveParticipants(agentId, ctx, DEBATE_PROMPT);
+        var debaters = resolveParticipants(agentId, ctx, DEBATE_PROMPT,
+                ctx.groupId(), ctx.tenancyId());
         if (debaters.length == 0) {
             LOG.log(System.Logger.Level.WARNING,
                     "Debate pattern has no participants (excluding {0}) — returning SUCCESS", agentId);
@@ -98,7 +100,8 @@ public class HivePatternAdapter {
 
     private CompletionStage<CoordinationFeedback> executeVoting(
             String agentId, DecisionOutcome outcome, TopologyContext ctx) {
-        var voters = resolveAllParticipants(ctx, VOTING_PROMPT);
+        var voters = resolveAllParticipants(ctx, VOTING_PROMPT,
+                ctx.groupId(), ctx.tenancyId());
         if (voters.length == 0) {
             LOG.log(System.Logger.Level.WARNING,
                     "Voting pattern has no participants — returning SUCCESS");
@@ -116,22 +119,33 @@ public class HivePatternAdapter {
                 .subscribeAsCompletionStage();
     }
 
-    private AgentRef[] resolveParticipants(String excludeId, TopologyContext ctx, String systemPrompt) {
+    private AgentRef[] resolveParticipants(String excludeId, TopologyContext ctx,
+                                              String systemPrompt,
+                                              @org.jspecify.annotations.Nullable String groupId,
+                                              @org.jspecify.annotations.Nullable String tenancyId) {
         return ctx.descriptor().agentRoles().entrySet().stream()
                 .filter(e -> !e.getKey().equals(excludeId))
-                .map(e -> createAgentRef(e.getKey(), systemPrompt))
+                .map(e -> createAgentRef(e.getKey(), systemPrompt, groupId, tenancyId))
                 .toArray(AgentRef[]::new);
     }
 
-    private AgentRef[] resolveAllParticipants(TopologyContext ctx, String systemPrompt) {
+    private AgentRef[] resolveAllParticipants(TopologyContext ctx, String systemPrompt,
+                                                 @org.jspecify.annotations.Nullable String groupId,
+                                                 @org.jspecify.annotations.Nullable String tenancyId) {
         return ctx.descriptor().agentRoles().entrySet().stream()
-                .map(e -> createAgentRef(e.getKey(), systemPrompt))
+                .map(e -> createAgentRef(e.getKey(), systemPrompt, groupId, tenancyId))
                 .toArray(AgentRef[]::new);
     }
 
     private AgentRef createAgentRef(String agentId, String systemPrompt) {
+        return createAgentRef(agentId, systemPrompt, null, null);
+    }
+
+    private AgentRef createAgentRef(String agentId, String systemPrompt,
+                                    @org.jspecify.annotations.Nullable String groupId,
+                                    @org.jspecify.annotations.Nullable String tenancyId) {
         return AgentRef.external(agentId, (DecisionOutcome outcome) -> {
-            var userPrompt = "## Decision Outcome\n\n" + renderOutcome(outcome);
+            var userPrompt = "## Decision Outcome\n\n" + renderOutcome(outcome, groupId, tenancyId);
             var config = AgentSessionConfig.of(systemPrompt, userPrompt);
             var result = StructuredAgentInvoker.invokeText(agentProvider, config);
             return switch (result) {
@@ -146,7 +160,16 @@ public class HivePatternAdapter {
     }
 
     static String renderOutcome(DecisionOutcome outcome) {
-        return switch (outcome) {
+        return renderOutcome(outcome, null, null);
+    }
+
+    static String renderOutcome(DecisionOutcome outcome,
+                                @org.jspecify.annotations.Nullable String groupId,
+                                @org.jspecify.annotations.Nullable String tenancyId) {
+        var sb = new StringBuilder();
+        if (groupId != null) sb.append("Group: ").append(groupId).append('\n');
+        if (tenancyId != null) sb.append("Tenant: ").append(tenancyId).append('\n');
+        sb.append(switch (outcome) {
             case DecisionOutcome.WriteBack wb ->
                     "Type: WriteBack\nObservations: " + wb.observations().size()
                             + "\nSignals: " + wb.signals().size()
@@ -161,7 +184,8 @@ public class HivePatternAdapter {
                     "Type: ScopeGated\nAttempted: " + sg.attempted();
             case DecisionOutcome.Provision p ->
                     "Type: Provision\nAdvice: " + p.advice();
-        };
+        });
+        return sb.toString();
     }
 
     private static CoordinationFeedback mapToFeedback(
