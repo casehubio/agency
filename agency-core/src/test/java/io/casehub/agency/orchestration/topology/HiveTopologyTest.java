@@ -110,4 +110,29 @@ class HiveTopologyTest {
         assertThat(plan.pool().topologyId()).endsWith("-CENTRALISED");
         assertThat(plan.pool().callsUsed()).isZero();
     }
+
+    @Test
+    void configure_capturesGroupIdAndTenancyId() {
+        var ctxWithGroup = new TopologyContext(
+                UUID.randomUUID(),
+                new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles),
+                TestAgentProviders.noOp(),
+                new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
+                AutonomyBudgetPolicy.defaults(),
+                io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults(),
+                "group-42", "tenant-1");
+
+        topology.configure(ctxWithGroup);
+
+        assertThat(topology.groupId()).isEqualTo("group-42");
+        assertThat(topology.tenancyId()).isEqualTo("tenant-1");
+    }
+
+    @Test
+    void configure_withoutGroupId_storesNull() {
+        topology.configure(topologyContext);
+
+        assertThat(topology.groupId()).isNull();
+        assertThat(topology.tenancyId()).isNull();
+    }
 }
