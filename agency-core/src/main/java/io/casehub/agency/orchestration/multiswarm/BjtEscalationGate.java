@@ -27,7 +27,7 @@ public class BjtEscalationGate implements EscalationGate {
     @Override
     public double escalationProbability(double conflictLevel, double resourceContention,
                                         double dependencyStrength) {
-        var instance = updater.getInstance();
+        var instance = updater.getInstanceSnapshot();
         instance.setLikelyhood("ConflictIndicators", BjtRelevanceScorer.discretize(conflictLevel));
         instance.setLikelyhood("ResourceContention", new double[]{resourceContention, 1.0 - resourceContention});
         instance.setLikelyhood("DependencySignals", new double[]{dependencyStrength, 1.0 - dependencyStrength});

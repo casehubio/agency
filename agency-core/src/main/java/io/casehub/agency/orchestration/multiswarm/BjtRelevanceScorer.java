@@ -48,7 +48,7 @@ public class BjtRelevanceScorer implements RelevanceScorer {
     @Override
     public double score(double capabilityOverlap, double domainMatch,
                         double signalStrength, double historicalRelevance) {
-        var instance = updater.getInstance();
+        var instance = updater.getInstanceSnapshot();
         instance.setLikelyhood("CapabilityOverlap", discretize(capabilityOverlap));
         instance.setLikelyhood("DomainMatch", discretize(domainMatch));
         instance.setLikelyhood("SignalStrength", discretize(signalStrength));
