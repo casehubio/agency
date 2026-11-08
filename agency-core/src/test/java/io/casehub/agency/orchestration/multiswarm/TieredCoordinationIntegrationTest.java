@@ -35,11 +35,8 @@ class TieredCoordinationIntegrationTest {
 
         topology = MultiSwarmTopology.builder()
                 .registry(registry)
-                .relevanceNetwork(RelevanceNetworks.standard())
-                .escalationNetwork(EscalationNetworks.standard())
+                .weightedScoring(0.3, 0.6)
                 .consistencyChecker(new DomainConsistencyChecker())
-                .relevanceThreshold(0.3)
-                .escalationThreshold(0.6)
                 .build();
 
         registry.register(new SwarmDescriptor(analysisSwarmId, caseId, TopologyType.CENTRALISED,
@@ -65,7 +62,7 @@ class TieredCoordinationIntegrationTest {
     }
 
     @Test
-    void l1_bjt_scores_signal_relevance() {
+    void l1_scorer_scores_signal_relevance() {
         var scorer = topology.getScorer(remediationSwarmId);
         assertThat(scorer).isNotNull();
         double score = scorer.score(0.5, 0.8, 0.9, 0.0);
