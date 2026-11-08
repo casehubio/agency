@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -63,15 +64,14 @@ class MultiSwarmBehavioralTest {
     }
 
     void publishAndAwait(MultiSwarmTopology topology, MultiSwarmSignal signal) throws InterruptedException {
-        var                                           latch    = new CountDownLatch(1);
-        java.util.function.Consumer<MultiSwarmSignal> callback = s -> latch.countDown();
+        var latch = new CountDownLatch(1);
+        Consumer<MultiSwarmSignal> callback = s -> latch.countDown();
         topology.signalBus().subscribe(s -> true, callback);
         topology.signalBus().publish(signal);
         assertThat(latch.await(2, TimeUnit.SECONDS)).as("Signal delivery timed out").isTrue();
         topology.signalBus().unsubscribe(callback);
         Thread.sleep(500);
     }
-
 
     static class RecordingConvergenceEvaluator implements CrossSwarmConvergenceEvaluator {
         private final List<Map<UUID, SwarmProgress>> calls =
@@ -210,14 +210,17 @@ class MultiSwarmBehavioralTest {
                     .weightedScoring(0.3, 0.6)
                     .consistencyChecker(new DomainConsistencyChecker())
                     .build();
-            soloRegistry.register(descriptor(soloSwarmId, ANALYSIS_CAPS));
+            try {
+                soloRegistry.register(descriptor(soloSwarmId, ANALYSIS_CAPS));
 
-            soloTopology.signalBus().publish(finding(soloSwarmId, ANALYSIS_CAPS,
-                    "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
+                soloTopology.signalBus().publish(finding(soloSwarmId, ANALYSIS_CAPS,
+                        "system-health", "node-7:degraded", 0.9));
+                Thread.sleep(500);
 
-            assertThat(soloTopology.currentBeliefs().isEmpty()).isTrue();
-            soloTopology.close();
+                assertThat(soloTopology.currentBeliefs().isEmpty()).isTrue();
+            } finally {
+                soloTopology.close();
+            }
         }
     }
 
@@ -272,14 +275,17 @@ class MultiSwarmBehavioralTest {
                     .consistencyChecker(new DomainConsistencyChecker())
                     .convergenceEvaluator(soloEvaluator)
                     .build();
-            var soloSwarmId = UUID.randomUUID();
-            soloRegistry.register(descriptor(soloSwarmId, ANALYSIS_CAPS));
+            try {
+                var soloSwarmId = UUID.randomUUID();
+                soloRegistry.register(descriptor(soloSwarmId, ANALYSIS_CAPS));
 
-            soloTopology.signalBus().publish(progress(soloSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
-            Thread.sleep(500);
+                soloTopology.signalBus().publish(progress(soloSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
+                Thread.sleep(500);
 
-            assertThat(soloEvaluator.calls()).isEmpty();
-            soloTopology.close();
+                assertThat(soloEvaluator.calls()).isEmpty();
+            } finally {
+                soloTopology.close();
+            }
         }
 
         @Test
@@ -383,14 +389,17 @@ class MultiSwarmBehavioralTest {
                                              .weightedScoring(0.3, 0.6)
                                              .consistencyChecker(new DomainConsistencyChecker())
                                              .build();
-            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
-            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+            try {
+                registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
-            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
-                                                 "system-health", "node-7:degraded", 0.9));
+                publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                     "system-health", "node-7:degraded", 0.9));
 
-            assertThat(topology.currentBeliefs().isEmpty()).isFalse();
-            topology.close();
+                assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+            } finally {
+                topology.close();
+            }
         }
 
         @Test
@@ -401,16 +410,19 @@ class MultiSwarmBehavioralTest {
                                              .bjtScoring(0.3, 0.6)
                                              .consistencyChecker(new DomainConsistencyChecker())
                                              .build();
-            var caps = Set.of("analysis", "monitoring");
-            bjtRegistry.register(descriptor(analysisSwarmId, caps));
-            bjtRegistry.register(descriptor(remediationSwarmId, caps));
+            try {
+                var caps = Set.of("analysis", "monitoring");
+                bjtRegistry.register(descriptor(analysisSwarmId, caps));
+                bjtRegistry.register(descriptor(remediationSwarmId, caps));
 
-            topology.signalBus().publish(finding(analysisSwarmId, caps,
-                                                 "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
+                topology.signalBus().publish(finding(analysisSwarmId, caps,
+                                                     "system-health", "node-7:degraded", 0.9));
+                Thread.sleep(500);
 
-            assertThat(topology.currentBeliefs().isEmpty()).isFalse();
-            topology.close();
+                assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+            } finally {
+                topology.close();
+            }
         }
 
         @Test
@@ -423,31 +435,32 @@ class MultiSwarmBehavioralTest {
                                                      .weightedScoring(0.3, 0.6)
                                                      .consistencyChecker(new DomainConsistencyChecker())
                                                      .build();
-            weightedRegistry.register(descriptor(analysisSwarmId, caps));
-            weightedRegistry.register(descriptor(remediationSwarmId, caps));
-
             var bjtRegistry = new TestMultiSwarmRegistry();
             var bjtTopology = MultiSwarmTopology.builder()
                                                 .registry(bjtRegistry)
                                                 .bjtScoring(0.3, 0.6)
                                                 .consistencyChecker(new DomainConsistencyChecker())
                                                 .build();
-            bjtRegistry.register(descriptor(analysisSwarmId, caps));
-            bjtRegistry.register(descriptor(remediationSwarmId, caps));
+            try {
+                weightedRegistry.register(descriptor(analysisSwarmId, caps));
+                weightedRegistry.register(descriptor(remediationSwarmId, caps));
+                bjtRegistry.register(descriptor(analysisSwarmId, caps));
+                bjtRegistry.register(descriptor(remediationSwarmId, caps));
 
-            var signal = finding(analysisSwarmId, caps,
-                                 "system-health", "node-7:degraded", 0.95);
-            weightedTopology.signalBus().publish(signal);
-            bjtTopology.signalBus().publish(signal);
-            Thread.sleep(500);
+                var signal = finding(analysisSwarmId, caps,
+                                     "system-health", "node-7:degraded", 0.95);
+                weightedTopology.signalBus().publish(signal);
+                bjtTopology.signalBus().publish(signal);
+                Thread.sleep(500);
 
-            assertThat(weightedTopology.currentBeliefs().isEmpty())
-                    .as("Weighted strategy: clear signal should produce beliefs").isFalse();
-            assertThat(bjtTopology.currentBeliefs().isEmpty())
-                    .as("BJT strategy: clear signal should produce beliefs").isFalse();
-
-            weightedTopology.close();
-            bjtTopology.close();
+                assertThat(weightedTopology.currentBeliefs().isEmpty())
+                        .as("Weighted strategy: clear signal should produce beliefs").isFalse();
+                assertThat(bjtTopology.currentBeliefs().isEmpty())
+                        .as("BJT strategy: clear signal should produce beliefs").isFalse();
+            } finally {
+                weightedTopology.close();
+                bjtTopology.close();
+            }
         }
 
         @Test
@@ -457,14 +470,17 @@ class MultiSwarmBehavioralTest {
                                              .registry(defaultRegistry)
                                              .consistencyChecker(new DomainConsistencyChecker())
                                              .build();
-            defaultRegistry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
-            defaultRegistry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+            try {
+                defaultRegistry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                defaultRegistry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
-            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
-                                                 "system-health", "node-7:degraded", 0.9));
+                publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                     "system-health", "node-7:degraded", 0.9));
 
-            assertThat(topology.currentBeliefs().isEmpty()).isFalse();
-            topology.close();
+                assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+            } finally {
+                topology.close();
+            }
         }
     }
 
