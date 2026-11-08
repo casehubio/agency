@@ -522,7 +522,7 @@ class MultiSwarmBehavioralTest {
         }
 
         @Test
-        void drain_notifications_is_idempotent() throws InterruptedException {
+        void drain_notifications_returns_empty_when_beliefs_resolved() throws InterruptedException {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
@@ -533,10 +533,11 @@ class MultiSwarmBehavioralTest {
                                                  "system-health", "node-7:degraded", 0.8));
             Thread.sleep(300);
 
-            var first  = topology.drainNotifications();
-            var second = topology.drainNotifications();
-
-            assertThat(second).isEmpty();
+            assertThat(topology.drainNotifications())
+                    .as("AGM revision resolves contradictions — no CONFLICT notifications produced")
+                    .isEmpty();
+            assertThat(topology.drainNotifications())
+                    .as("Subsequent drain also empty").isEmpty();
         }
 
         @Test
