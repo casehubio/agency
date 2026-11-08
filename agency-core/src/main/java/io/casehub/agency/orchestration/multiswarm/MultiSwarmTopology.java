@@ -55,6 +55,8 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private final ConcurrentHashMap<UUID, Set<String>>         completedDomains     = new ConcurrentHashMap<>();
 
     private final @Nullable AgentProvider agentProvider;
+    private final           boolean       evictBeliefsOnCompletion;
+
 
     MultiSwarmTopology(MultiSwarmRegistry registry,
                        Supplier<RelevanceScorer> scorerFactory,
@@ -62,14 +64,16 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
                        ConsistencyChecker<SwarmConclusion> consistencyChecker,
                        @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator,
                        int replayBufferSize,
-                       @Nullable AgentProvider agentProvider) {
-        this.registry = registry;
-        this.bus = new CoordinationBus<>(replayBufferSize);
-        this.scorerFactory = scorerFactory;
-        this.gateFactory = gateFactory;
-        this.consistencyChecker = consistencyChecker;
-        this.convergenceEvaluator = convergenceEvaluator;
-        this.agentProvider = agentProvider;
+                       @Nullable AgentProvider agentProvider,
+                       boolean evictBeliefsOnCompletion) {
+        this.registry                 = registry;
+        this.bus                      = new CoordinationBus<>(replayBufferSize);
+        this.scorerFactory            = scorerFactory;
+        this.gateFactory              = gateFactory;
+        this.consistencyChecker       = consistencyChecker;
+        this.convergenceEvaluator     = convergenceEvaluator;
+        this.agentProvider            = agentProvider;
+        this.evictBeliefsOnCompletion = evictBeliefsOnCompletion;
         bus.subscribe(s -> true, this::processSignal);
     }
 
@@ -162,6 +166,19 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private void processCompletion(MultiSwarmSignal.Completion completion) {
         completedDomains.computeIfAbsent(completion.sourceSwarmId(),
                                          k -> ConcurrentHashMap.newKeySet()).add(completion.domain());
+
+        if (evictBeliefsOnCompletion) {
+            String beliefKeyPrefix = completion.sourceSwarmId() + ":" + completion.domain();
+            beliefSet.updateAndGet(current -> {
+                var updated = current;
+                for (var belief : current.all()) {
+                    if (belief.key().equals(beliefKeyPrefix)) {
+                        updated = updated.contract(belief.key());
+                    }
+                }
+                return updated;
+            });
+        }
     }
 
 

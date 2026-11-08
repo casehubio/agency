@@ -754,5 +754,47 @@ class MultiSwarmBehavioralTest {
         void completed_domains_empty_for_unknown_swarm() {
             assertThat(topology.completedDomains(UUID.randomUUID())).isEmpty();
         }
+
+        @Test
+        void belief_eviction_when_enabled() throws InterruptedException {
+            var evictingTopology = MultiSwarmTopology.builder()
+                                                     .registry(registry)
+                                                     .weightedScoring(0.3, 0.6)
+                                                     .consistencyChecker(new DomainConsistencyChecker())
+                                                     .evictBeliefsOnCompletion(true)
+                                                     .build();
+            try {
+                registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+                publishAndAwait(evictingTopology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                          "risk", "node-7:healthy", 0.9));
+                assertThat(evictingTopology.currentBeliefs().all()).isNotEmpty();
+
+                publishAndAwait(evictingTopology, new MultiSwarmSignal.Completion(
+                        analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                        "risk", "done"));
+
+                assertThat(evictingTopology.currentBeliefs().all()).isEmpty();
+            } finally {
+                evictingTopology.close();
+            }
+        }
+
+        @Test
+        void belief_retained_when_eviction_disabled() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "risk", "node-7:healthy", 0.9));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk", "done"));
+
+            assertThat(topology.currentBeliefs().all()).isNotEmpty();
+        }
+
     }
 }
