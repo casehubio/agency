@@ -13,12 +13,16 @@ import java.util.Objects;
  * <p><b>Generalised, not domain-specific.</b> The CPT encodes structural
  * relevance principles (capability overlap, domain match, signal strength,
  * history) that apply across all use cases. No per-domain training needed.
- * The 54-row CPT is validated across 14,641 input points for calibration,
- * monotonicity, dimensional independence, and discrimination quality.
  *
- * <p>Online learning adapts the CPT via {@link OnlineParameterUpdater}
- * with configurable decay factor. The updater initialises pseudo-counts
- * from the existing CPT so updates refine rather than destroy the prior.
+ * <p>Maintains a single inference instance per scorer, reusing calibrated
+ * clique potentials across calls. Each scorer is per-swarm (created by the
+ * topology on registration). Evidence is set fresh each call and full
+ * propagation is forced — the five-variable network is small enough that
+ * forced propagation is sub-microsecond, and this avoids dirty-tracking
+ * edge cases while the instance is retained across calls.
+ *
+ * <p>Online learning adapts the CPT via {@link OnlineParameterUpdater}.
+ * After learning, the instance is refreshed from the rebuilt junction tree.
  */
 public class BjtRelevanceScorer implements RelevanceScorer {
 
@@ -35,7 +39,8 @@ public class BjtRelevanceScorer implements RelevanceScorer {
     }
 
     @Override
-    public double score(double capabilityOverlap, double domainMatch, double signalStrength, double historicalRelevance) {
+    public synchronized double score(double capabilityOverlap, double domainMatch,
+                                     double signalStrength, double historicalRelevance) {
         var instance = updater.getInstance();
         instance.setLikelyhood("CapabilityOverlap", discretize(capabilityOverlap));
         instance.setLikelyhood("DomainMatch", discretize(domainMatch));
@@ -51,7 +56,7 @@ public class BjtRelevanceScorer implements RelevanceScorer {
     }
 
     @Override
-    public void learnRelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
+    public synchronized void learnRelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
         updater.update(Map.of(
                 "CapabilityOverlap", categorize(capabilityOverlap),
                 "DomainMatch", categorize(domainMatch),
@@ -61,7 +66,7 @@ public class BjtRelevanceScorer implements RelevanceScorer {
     }
 
     @Override
-    public void learnIrrelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
+    public synchronized void learnIrrelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
         updater.update(Map.of(
                 "CapabilityOverlap", categorize(capabilityOverlap),
                 "DomainMatch", categorize(domainMatch),

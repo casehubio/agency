@@ -7,9 +7,8 @@ import java.util.Objects;
 
 /**
  * Bayesian junction tree escalation gate — uses conditional independence
- * structure for multi-factor escalation decisions.
- *
- * <p>Online learning adapts the CPT via {@link OnlineParameterUpdater}.
+ * structure for multi-factor escalation decisions. Per-swarm instance
+ * with synchronized access.
  */
 public class BjtEscalationGate implements EscalationGate {
 
@@ -26,7 +25,8 @@ public class BjtEscalationGate implements EscalationGate {
     }
 
     @Override
-    public double escalationProbability(double conflictLevel, double resourceContention, double dependencyStrength) {
+    public synchronized double escalationProbability(double conflictLevel, double resourceContention,
+                                                     double dependencyStrength) {
         var instance = updater.getInstance();
         instance.setLikelyhood("ConflictIndicators", BjtRelevanceScorer.discretize(conflictLevel));
         instance.setLikelyhood("ResourceContention", new double[]{resourceContention, 1.0 - resourceContention});
@@ -41,7 +41,8 @@ public class BjtEscalationGate implements EscalationGate {
     }
 
     @Override
-    public void learnEscalated(double conflictLevel, double resourceContention, double dependencyStrength) {
+    public synchronized void learnEscalated(double conflictLevel, double resourceContention,
+                                            double dependencyStrength) {
         updater.update(Map.of(
                 "ConflictIndicators", BjtRelevanceScorer.categorize(conflictLevel),
                 "ResourceContention", resourceContention > 0.5 ? "high" : "low",
@@ -50,7 +51,8 @@ public class BjtEscalationGate implements EscalationGate {
     }
 
     @Override
-    public void learnNotEscalated(double conflictLevel, double resourceContention, double dependencyStrength) {
+    public synchronized void learnNotEscalated(double conflictLevel, double resourceContention,
+                                               double dependencyStrength) {
         updater.update(Map.of(
                 "ConflictIndicators", BjtRelevanceScorer.categorize(conflictLevel),
                 "ResourceContention", resourceContention > 0.5 ? "high" : "low",
