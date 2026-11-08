@@ -542,7 +542,7 @@ class MultiSwarmBehavioralTest {
         }
 
         @Test
-        void drain_notifications_returns_empty_when_beliefs_resolved() throws InterruptedException {
+        void contradictory_findings_produce_conflict_notification() throws InterruptedException {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
@@ -551,11 +551,30 @@ class MultiSwarmBehavioralTest {
             publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
                                                  "system-health", "node-7:degraded", 0.8));
 
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .as("Contradictory findings should produce CONFLICT notification")
+                    .isNotEmpty();
+            assertThat(notifications).allSatisfy(n ->
+                    assertThat(n.type()).isEqualTo(NotificationType.CONFLICT));
+
             assertThat(topology.drainNotifications())
-                    .as("AGM revision resolves contradictions — no CONFLICT notifications produced")
+                    .as("Drain is one-shot — subsequent drain returns empty").isEmpty();
+        }
+
+        @Test
+        void consistent_findings_produce_no_conflict_notification() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                 "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                                 "system-health", "node-7:healthy", 0.8));
+
+            assertThat(topology.drainNotifications())
+                    .as("Consistent findings should not produce CONFLICT notifications")
                     .isEmpty();
-            assertThat(topology.drainNotifications())
-                    .as("Subsequent drain also empty").isEmpty();
         }
 
         @Test

@@ -169,11 +169,13 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         var conclusion = new SwarmConclusion(
                 finding.sourceSwarmId(), finding.domain(), finding.conclusion(), finding.confidence());
         var beliefKey = finding.sourceSwarmId() + ":" + finding.domain();
+        var newBelief = Belief.of(beliefKey, conclusion, (int) (finding.confidence() * 100));
 
-        var updated = beliefSet.updateAndGet(current ->
-                current.revise(Belief.of(beliefKey, conclusion, (int) (finding.confidence() * 100)), consistencyChecker));
+        boolean contradicted = !consistencyChecker.isConsistent(beliefSet.get().expand(newBelief));
 
-        if (!consistencyChecker.isConsistent(updated)) {
+        beliefSet.updateAndGet(current -> current.revise(newBelief, consistencyChecker));
+
+        if (contradicted) {
             var notification = new CrossSwarmNotification(
                     finding.sourceSwarmId(), targetSwarmId,
                     NotificationType.CONFLICT, finding, finding.confidence());
