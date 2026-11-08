@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.multiswarm;
 
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
@@ -22,6 +23,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 class MultiSwarmBehavioralTest {
 
@@ -462,6 +464,89 @@ class MultiSwarmBehavioralTest {
 
             assertThat(topology.currentBeliefs().isEmpty()).isFalse();
             topology.close();
+        }
+    }
+
+    @Nested
+    class ErrorPaths {
+
+        MultiSwarmTopology topology;
+
+        @BeforeEach
+        void setUp() {
+            topology = MultiSwarmTopology.builder()
+                                         .registry(registry)
+                                         .weightedScoring(0.3, 0.6)
+                                         .consistencyChecker(new DomainConsistencyChecker())
+                                         .build();
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void unknown_swarm_event_silently_ignored() {
+            topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(
+                    UUID.randomUUID(),
+                    new SwarmProgress(0.5, 0.5, 0.5, Instant.now())));
+            assertThat(topology.signalBus().replayBuffer()).isEmpty();
+        }
+
+        @Test
+        void finding_from_unknown_source_does_not_crash() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+
+            topology.signalBus().publish(finding(UUID.randomUUID(),
+                                                 Set.of("unknown"), "unknown-domain", "something", 0.5));
+            Thread.sleep(300);
+        }
+
+        @Test
+        void builder_rejects_null_registry() {
+            assertThatNullPointerException().isThrownBy(() ->
+                                                                MultiSwarmTopology.builder()
+                                                                                  .weightedScoring(0.3, 0.6)
+                                                                                  .consistencyChecker(new DomainConsistencyChecker())
+                                                                                  .build());
+        }
+
+        @Test
+        void builder_rejects_null_consistency_checker() {
+            assertThatNullPointerException().isThrownBy(() ->
+                                                                MultiSwarmTopology.builder()
+                                                                                  .registry(registry)
+                                                                                  .weightedScoring(0.3, 0.6)
+                                                                                  .build());
+        }
+
+        @Test
+        void drain_notifications_is_idempotent() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                 "system-health", "node-7:healthy", 0.9));
+            Thread.sleep(300);
+            topology.signalBus().publish(finding(remediationSwarmId, REMEDIATION_CAPS,
+                                                 "system-health", "node-7:degraded", 0.8));
+            Thread.sleep(300);
+
+            var first  = topology.drainNotifications();
+            var second = topology.drainNotifications();
+
+            assertThat(second).isEmpty();
+        }
+
+        @Test
+        void close_then_queries_do_not_throw() {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            topology.close();
+
+            assertThat(topology.currentBeliefs()).isNotNull();
+            assertThat(topology.drainNotifications()).isEmpty();
+            assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
         }
     }
 
