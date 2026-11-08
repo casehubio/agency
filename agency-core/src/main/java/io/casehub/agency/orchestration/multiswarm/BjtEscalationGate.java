@@ -1,30 +1,33 @@
 package io.casehub.agency.orchestration.multiswarm;
 
 import io.quarkmind.inference.bayes.BayesNetwork;
-import io.quarkmind.inference.bayes.JunctionTree;
-import io.quarkmind.inference.bayes.JunctionTreeBuilder;
-import io.quarkmind.inference.bayes.BayesInstance;
+import io.quarkmind.inference.bayes.OnlineParameterUpdater;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Bayesian junction tree escalation gate — uses conditional independence
  * structure for multi-factor escalation decisions.
  *
- * <p>Online learning is disabled pending neocortex#856.
+ * <p>Online learning adapts the CPT via {@link OnlineParameterUpdater}.
  */
 public class BjtEscalationGate implements EscalationGate {
 
-    private final JunctionTree tree;
+    private final OnlineParameterUpdater updater;
     private final double threshold;
 
-    public BjtEscalationGate(BayesNetwork network, double threshold) {
-        this.tree = new JunctionTreeBuilder(Objects.requireNonNull(network)).build();
+    public BjtEscalationGate(OnlineParameterUpdater updater, double threshold) {
+        this.updater = Objects.requireNonNull(updater);
         this.threshold = threshold;
+    }
+
+    public BjtEscalationGate(BayesNetwork network, double threshold) {
+        this(OnlineParameterUpdater.create(network, 0.95), threshold);
     }
 
     @Override
     public double escalationProbability(double conflictLevel, double resourceContention, double dependencyStrength) {
-        var instance = new BayesInstance<>(tree);
+        var instance = updater.getInstance();
         instance.setLikelyhood("ConflictIndicators", BjtRelevanceScorer.discretize(conflictLevel));
         instance.setLikelyhood("ResourceContention", new double[]{resourceContention, 1.0 - resourceContention});
         instance.setLikelyhood("DependencySignals", new double[]{dependencyStrength, 1.0 - dependencyStrength});
@@ -39,11 +42,19 @@ public class BjtEscalationGate implements EscalationGate {
 
     @Override
     public void learnEscalated(double conflictLevel, double resourceContention, double dependencyStrength) {
-        // no-op: blocked by neocortex#856
+        updater.update(Map.of(
+                "ConflictIndicators", BjtRelevanceScorer.categorize(conflictLevel),
+                "ResourceContention", resourceContention > 0.5 ? "high" : "low",
+                "DependencySignals", dependencyStrength > 0.5 ? "present" : "absent",
+                "EscalateNeeded", "yes"));
     }
 
     @Override
     public void learnNotEscalated(double conflictLevel, double resourceContention, double dependencyStrength) {
-        // no-op: blocked by neocortex#856
+        updater.update(Map.of(
+                "ConflictIndicators", BjtRelevanceScorer.categorize(conflictLevel),
+                "ResourceContention", resourceContention > 0.5 ? "high" : "low",
+                "DependencySignals", dependencyStrength > 0.5 ? "present" : "absent",
+                "EscalateNeeded", "no"));
     }
 }
