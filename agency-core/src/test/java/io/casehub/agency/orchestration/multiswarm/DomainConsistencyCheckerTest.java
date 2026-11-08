@@ -12,6 +12,19 @@ class DomainConsistencyCheckerTest {
     DomainConsistencyChecker checker = new DomainConsistencyChecker();
 
     @Test
+    void consistent_when_empty_belief_set() {
+        assertThat(checker.isConsistent(new BeliefSet<>())).isTrue();
+    }
+
+    @Test
+    void consistent_when_single_belief() {
+        var set = new BeliefSet<SwarmConclusion>()
+                .expand(Belief.of("a:health",
+                        new SwarmConclusion(UUID.randomUUID(), "health", "node-7:ok", 0.9), 90));
+        assertThat(checker.isConsistent(set)).isTrue();
+    }
+
+    @Test
     void consistent_when_no_contradictions() {
         var swarmA = UUID.randomUUID();
         var swarmB = UUID.randomUUID();

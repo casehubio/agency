@@ -7,18 +7,12 @@ import io.casehub.agency.deliberation.belief.BeliefSet;
 import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
-import io.casehub.api.spi.coordination.MultiSwarmRegistry;
-import io.casehub.api.spi.coordination.RegistryListener;
-import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 class TieredCoordinationIntegrationTest {
 
-    TestRegistry registry;
+    TestMultiSwarmRegistry registry;
     MultiSwarmTopology topology;
     UUID caseId;
     UUID analysisSwarmId;
@@ -34,7 +28,7 @@ class TieredCoordinationIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        registry = new TestRegistry();
+        registry = new TestMultiSwarmRegistry();
         caseId = UUID.randomUUID();
         analysisSwarmId = UUID.randomUUID();
         remediationSwarmId = UUID.randomUUID();
@@ -44,7 +38,7 @@ class TieredCoordinationIntegrationTest {
                 .relevanceNetwork(RelevanceNetworks.standard())
                 .escalationNetwork(EscalationNetworks.standard())
                 .consistencyChecker(new DomainConsistencyChecker())
-                .relevanceThreshold(0.5)
+                .relevanceThreshold(0.3)
                 .escalationThreshold(0.6)
                 .build();
 
@@ -59,7 +53,7 @@ class TieredCoordinationIntegrationTest {
         var received = new ArrayList<MultiSwarmSignal>();
         var latch = new CountDownLatch(1);
         topology.signalBus().subscribe(
-                s -> s.domainTags().contains("analysis") && !s.sourceSwarmId().equals(remediationSwarmId),
+                s -> s instanceof MultiSwarmSignal.Finding && !s.sourceSwarmId().equals(remediationSwarmId),
                 s -> { received.add(s); latch.countDown(); });
 
         topology.signalBus().publish(new MultiSwarmSignal.Finding(analysisSwarmId,
@@ -122,16 +116,16 @@ class TieredCoordinationIntegrationTest {
         assertThat(high).isGreaterThan(low);
     }
 
-    static class TestRegistry implements MultiSwarmRegistry {
-        private final ConcurrentHashMap<UUID, SwarmDescriptor> swarms = new ConcurrentHashMap<>();
-        private final CopyOnWriteArrayList<RegistryListener> listeners = new CopyOnWriteArrayList<>();
-        @Override public void register(SwarmDescriptor d) { swarms.put(d.swarmId(), d); listeners.forEach(l -> l.onRegistered(d)); }
-        @Override public void deregister(UUID id) { if (swarms.remove(id) != null) listeners.forEach(l -> l.onDeregistered(id)); }
-        @Override public void updateInterests(UUID id, Set<String> caps) { listeners.forEach(l -> l.onInterestsUpdated(id, caps)); }
-        @Override public List<SwarmDescriptor> activeSwarms(UUID caseId) { return swarms.values().stream().filter(d -> d.caseId().equals(caseId)).toList(); }
-        @Override public List<SwarmDescriptor> allActive() { return List.copyOf(swarms.values()); }
-        @Override public List<SwarmDescriptor> children(UUID parentId) { return swarms.values().stream().filter(d -> parentId.equals(d.parentSwarmId())).toList(); }
-        @Override public @Nullable SwarmDescriptor get(UUID id) { return swarms.get(id); }
-        @Override public void addListener(RegistryListener l) { listeners.add(l); }
+    @Test
+    void end_to_end_finding_populates_beliefs() throws InterruptedException {
+        topology.signalBus().publish(new MultiSwarmSignal.Finding(analysisSwarmId,
+                Set.of("analysis"), System.currentTimeMillis(),
+                "system-health", "node-7:degraded", 0.9, Map.of()));
+
+        Thread.sleep(300);
+
+        assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+        assertThat(topology.currentBeliefs().all().stream()
+                .anyMatch(b -> b.value().domain().equals("system-health"))).isTrue();
     }
 }

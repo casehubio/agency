@@ -7,34 +7,30 @@ import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
-import io.casehub.api.spi.coordination.MultiSwarmRegistry;
-import io.casehub.api.spi.coordination.RegistryListener;
-import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MultiSwarmTopologyTest {
 
-    TestRegistry registry;
+    TestMultiSwarmRegistry registry;
     MultiSwarmTopology topology;
     UUID caseId;
 
     @BeforeEach
     void setUp() {
-        registry = new TestRegistry();
+        registry = new TestMultiSwarmRegistry();
         caseId = UUID.randomUUID();
         topology = MultiSwarmTopology.builder()
                 .registry(registry)
                 .relevanceNetwork(RelevanceNetworks.standard())
                 .escalationNetwork(EscalationNetworks.standard())
                 .consistencyChecker(new DomainConsistencyChecker())
+                .relevanceThreshold(0.3)
                 .build();
     }
 
@@ -96,24 +92,46 @@ class MultiSwarmTopologyTest {
         assertThat(topology.getScorer(swarmId)).isNotNull();
     }
 
-    static class TestRegistry implements MultiSwarmRegistry {
-        private final ConcurrentHashMap<UUID, SwarmDescriptor> swarms = new ConcurrentHashMap<>();
-        private final CopyOnWriteArrayList<RegistryListener> listeners = new CopyOnWriteArrayList<>();
+    @Test
+    void finding_signal_expands_belief_set() throws InterruptedException {
+        var swarmA = UUID.randomUUID();
+        var swarmB = UUID.randomUUID();
+        registry.register(new SwarmDescriptor(swarmA, caseId, TopologyType.CENTRALISED,
+                Set.of("analysis"), Set.of("a1"), null));
+        registry.register(new SwarmDescriptor(swarmB, caseId, TopologyType.CENTRALISED,
+                Set.of("analysis"), Set.of("b1"), null));
 
-        @Override public void register(SwarmDescriptor d) {
-            swarms.put(d.swarmId(), d);
-            listeners.forEach(l -> l.onRegistered(d));
-        }
-        @Override public void deregister(UUID id) {
-            if (swarms.remove(id) != null) listeners.forEach(l -> l.onDeregistered(id));
-        }
-        @Override public void updateInterests(UUID id, Set<String> caps) {
-            listeners.forEach(l -> l.onInterestsUpdated(id, caps));
-        }
-        @Override public List<SwarmDescriptor> activeSwarms(UUID caseId) { return List.of(); }
-        @Override public List<SwarmDescriptor> allActive() { return List.of(); }
-        @Override public List<SwarmDescriptor> children(UUID parentId) { return List.of(); }
-        @Override public @Nullable SwarmDescriptor get(UUID id) { return swarms.get(id); }
-        @Override public void addListener(RegistryListener l) { listeners.add(l); }
+        topology.signalBus().publish(new MultiSwarmSignal.Finding(swarmA,
+                Set.of("analysis"), System.currentTimeMillis(),
+                "system-health", "node-7:degraded", 0.9, Map.of()));
+
+        Thread.sleep(200);
+        assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+    }
+
+    @Test
+    void deregistration_cleans_up_beliefs() throws InterruptedException {
+        var swarmA = UUID.randomUUID();
+        var swarmB = UUID.randomUUID();
+        registry.register(new SwarmDescriptor(swarmA, caseId, TopologyType.CENTRALISED,
+                Set.of("analysis"), Set.of("a1"), null));
+        registry.register(new SwarmDescriptor(swarmB, caseId, TopologyType.CENTRALISED,
+                Set.of("analysis"), Set.of("b1"), null));
+
+        topology.signalBus().publish(new MultiSwarmSignal.Finding(swarmA,
+                Set.of("analysis"), System.currentTimeMillis(),
+                "system-health", "node-7:degraded", 0.9, Map.of()));
+
+        Thread.sleep(200);
+        assertThat(topology.currentBeliefs().isEmpty()).isFalse();
+
+        registry.deregister(swarmA);
+        assertThat(topology.currentBeliefs().all().stream()
+                .noneMatch(b -> b.value().swarmId().equals(swarmA))).isTrue();
+    }
+
+    @Test
+    void close_does_not_throw() {
+        topology.close();
     }
 }

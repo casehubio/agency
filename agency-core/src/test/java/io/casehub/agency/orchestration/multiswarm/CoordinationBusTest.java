@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -76,5 +77,22 @@ class CoordinationBusTest {
                     System.currentTimeMillis(), new SwarmProgress(0.5, 0.5, 0.5, Instant.now())));
         }
         assertThat(smallBus.replayBuffer()).hasSize(3);
+    }
+
+    @Test
+    void subscriber_exception_does_not_prevent_other_subscribers() throws InterruptedException {
+        var received = new ArrayList<MultiSwarmSignal>();
+        var latch = new CountDownLatch(1);
+        bus.subscribe(s -> true, s -> { throw new RuntimeException("boom"); });
+        bus.subscribe(s -> true, s -> { received.add(s); latch.countDown(); });
+        bus.publish(new MultiSwarmSignal.Progress(UUID.randomUUID(), Set.of("x"),
+                System.currentTimeMillis(), new SwarmProgress(0.5, 0.5, 0.5, Instant.now())));
+        assertThat(latch.await(2, TimeUnit.SECONDS)).isTrue();
+        assertThat(received).hasSize(1);
+    }
+
+    @Test
+    void close_does_not_throw() {
+        bus.close();
     }
 }
