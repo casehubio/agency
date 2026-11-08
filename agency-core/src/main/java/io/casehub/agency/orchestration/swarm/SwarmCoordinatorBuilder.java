@@ -4,7 +4,7 @@ import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;

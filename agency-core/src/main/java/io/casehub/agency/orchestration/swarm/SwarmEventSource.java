@@ -2,6 +2,7 @@ package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.orchestration.execution.DriverEvent;
 import io.casehub.agency.orchestration.execution.EventSource;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;

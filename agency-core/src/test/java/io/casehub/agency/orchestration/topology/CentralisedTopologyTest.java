@@ -8,7 +8,7 @@ import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
 import io.casehub.agency.orchestration.swarm.ExperienceReplayConfig;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmExperienceSection;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
@@ -61,12 +61,12 @@ class CentralisedTopologyTest {
                 new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10),
                 e -> {  // swarmEventHandler
                     switch (e) {
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.TeamChanged t -> swarmContext.onTeamChanged(t.teams(), t.progress());
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.ProgressUpdated p -> swarmContext.onProgressUpdated(p.progress());
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
-                        case io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
+                        case SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());
+                        case SwarmCoordinationEvent.RoleChanged r -> swarmContext.onRoleChanged(r.roles(), r.progress());
+                        case SwarmCoordinationEvent.TeamChanged t -> swarmContext.onTeamChanged(t.teams(), t.progress());
+                        case SwarmCoordinationEvent.ProgressUpdated p -> swarmContext.onProgressUpdated(p.progress());
+                        case SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
+                        case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
                 },
                 e -> {});  // loopEventSink
@@ -143,7 +143,7 @@ class CentralisedTopologyTest {
     @Test
     void onSwarmEvent_feeds_provisioning_observation_after_configure() {
         topology.configure(topologyContext);
-        topology.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(5, 10));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(UUID.randomUUID(), 5, 10));
         assertThat(swarmContext.currentSize()).isEqualTo(5);
         assertThat(swarmContext.maxSize()).isEqualTo(10);
     }
@@ -152,14 +152,14 @@ class CentralisedTopologyTest {
     void onSwarmEvent_feeds_progress_to_all_loops_after_configure() {
         topology.configure(topologyContext);
         var progress = new SwarmProgress(0.5, 0.3, 0.8, java.time.Instant.now());
-        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(progress));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(UUID.randomUUID(), progress));
         assertThat(swarmContext.swarmProgress()).isEqualTo(progress);
     }
 
     @Test
     void onSwarmEvent_feeds_member_completed_after_configure() {
         topology.configure(topologyContext);
-        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-x", null));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(UUID.randomUUID(), "agent-x", null));
         assertThat(swarmContext.completedMembers()).contains("agent-x");
     }
 
@@ -167,19 +167,19 @@ class CentralisedTopologyTest {
     @Test
     void onSwarmEvent_updates_context_on_progress() {
         var progress = new SwarmProgress(0.5, 0.3, 0.8, java.time.Instant.now());
-        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(progress));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(UUID.randomUUID(), progress));
         assertThat(swarmContext.swarmProgress()).isEqualTo(progress);
     }
 
     @Test
     void onSwarmEvent_updates_context_on_member_completed() {
-        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-x", null));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(UUID.randomUUID(), "agent-x", null));
         assertThat(swarmContext.completedMembers()).contains("agent-x");
     }
 
     @Test
     void onSwarmEvent_updates_context_on_provisioning_changed() {
-        topology.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(3, 10));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(UUID.randomUUID(), 3, 10));
         assertThat(swarmContext.currentSize()).isEqualTo(3);
         assertThat(swarmContext.maxSize()).isEqualTo(10);
     }

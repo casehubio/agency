@@ -5,7 +5,7 @@ import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.CommunicationMode;
@@ -115,7 +115,7 @@ class DistributedTopologyTest {
 
     @Test
     void onSwarmEvent_does_not_throw() {
-        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(UUID.randomUUID(),
             new SwarmProgress(0.5, 0.3, 0.8, Instant.now())));
     }
 

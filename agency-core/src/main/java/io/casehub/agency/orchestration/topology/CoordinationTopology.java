@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.spi.coordination.TopologyProvider;
 

@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.execution.DriverEvent;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class SwarmEventSourceTest {
         var received = new ArrayList<DriverEvent>();
         source.subscribe(received::add);
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(PROGRESS));
+        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(java.util.UUID.randomUUID(), PROGRESS));
 
         assertThat(received).hasSize(1);
         assertThat(received.get(0).source()).isEqualTo("swarm");
@@ -36,7 +37,7 @@ class SwarmEventSourceTest {
         var source = new SwarmEventSource(context);
         source.subscribe(e -> {});
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(List.of(), PROGRESS));
+        source.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(java.util.UUID.randomUUID(), List.of(), PROGRESS));
 
         assertThat(context.detectedRoles()).isEmpty();
         assertThat(context.swarmProgress()).isSameAs(PROGRESS);
@@ -48,7 +49,7 @@ class SwarmEventSourceTest {
         var source = new SwarmEventSource(context);
         source.subscribe(e -> {});
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.SwarmInitialised(List.of(), PROGRESS));
+        source.onSwarmEvent(new SwarmCoordinationEvent.SwarmInitialised(java.util.UUID.randomUUID(), List.of(), PROGRESS));
 
         assertThat(context.experiences()).isEmpty();
         assertThat(context.swarmProgress()).isSameAs(PROGRESS);
@@ -61,7 +62,7 @@ class SwarmEventSourceTest {
         var source  = new SwarmEventSource(context);
         source.subscribe(e -> {});
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(5, 10));
+        source.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(java.util.UUID.randomUUID(), 5, 10));
 
         assertThat(context.currentSize()).isEqualTo(5);
         assertThat(context.maxSize()).isEqualTo(10);
@@ -73,8 +74,8 @@ class SwarmEventSourceTest {
         var source  = new SwarmEventSource(context);
         source.subscribe(e -> {});
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-1", null));
-        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted("agent-2", null));
+        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(java.util.UUID.randomUUID(), "agent-1", null));
+        source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(java.util.UUID.randomUUID(), "agent-2", null));
 
         assertThat(context.completedMembers()).containsExactly("agent-1", "agent-2");
     }
@@ -86,11 +87,11 @@ class SwarmEventSourceTest {
         var received = new ArrayList<DriverEvent>();
         var cancellation = source.subscribe(received::add);
 
-        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(PROGRESS));
+        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(java.util.UUID.randomUUID(), PROGRESS));
         assertThat(received).hasSize(1);
 
         cancellation.cancel();
-        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(PROGRESS));
+        source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(java.util.UUID.randomUUID(), PROGRESS));
         assertThat(received).hasSize(1);
     }
 }
