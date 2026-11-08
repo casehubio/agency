@@ -14,15 +14,22 @@ import java.util.Objects;
  * relevance principles (capability overlap, domain match, signal strength,
  * history) that apply across all use cases. No per-domain training needed.
  *
- * <p>Maintains a single inference instance per scorer, reusing calibrated
- * clique potentials across calls. Each scorer is per-swarm (created by the
- * topology on registration). Evidence is set fresh each call and full
- * propagation is forced — the five-variable network is small enough that
- * forced propagation is sub-microsecond, and this avoids dirty-tracking
- * edge cases while the instance is retained across calls.
+ * <p>Each score call creates a fresh {@code BayesInstance} from the cached
+ * junction tree via {@code getInstance()}. This is correct by design for
+ * the current 5-variable network: all four evidence variables change on
+ * every call (no partial evidence reuse), and the tree has ~3 cliques
+ * (incremental subtree propagation saves nothing at this size). The
+ * instance creation copies ~20 doubles — sub-microsecond.
  *
- * <p>Online learning adapts the CPT via {@link OnlineParameterUpdater}.
- * After learning, the instance is refreshed from the rebuilt junction tree.
+ * <p>For larger networks (20+ variables, 200+ cliques), the architecture
+ * supports stored instances with evidence retraction for incremental
+ * subtree-only re-propagation. That path becomes valuable when the copy
+ * cost and full-propagation cost outweigh the retract+set+partial-propagate
+ * path.
+ *
+ * <p>Thread safety: each {@code score()} call is independent (no shared
+ * mutable state). {@code learnRelevant/learnIrrelevant} are synchronized
+ * because they modify the shared {@link OnlineParameterUpdater}.
  */
 public class BjtRelevanceScorer implements RelevanceScorer {
 
@@ -39,8 +46,8 @@ public class BjtRelevanceScorer implements RelevanceScorer {
     }
 
     @Override
-    public synchronized double score(double capabilityOverlap, double domainMatch,
-                                     double signalStrength, double historicalRelevance) {
+    public double score(double capabilityOverlap, double domainMatch,
+                        double signalStrength, double historicalRelevance) {
         var instance = updater.getInstance();
         instance.setLikelyhood("CapabilityOverlap", discretize(capabilityOverlap));
         instance.setLikelyhood("DomainMatch", discretize(domainMatch));
