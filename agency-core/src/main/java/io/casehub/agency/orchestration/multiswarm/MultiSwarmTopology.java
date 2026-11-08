@@ -137,7 +137,10 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     }
 
     @Override
-    public void onInterestsUpdated(UUID swarmId, Set<String> capabilities) {}
+    public void onInterestsUpdated(UUID swarmId, Set<String> capabilities) {
+        relevanceScorers.computeIfPresent(swarmId, (k, old) -> scorerFactory.get());
+        escalationGates.computeIfPresent(swarmId, (k, old) -> gateFactory.get());
+    }
 
     private void processSignal(MultiSwarmSignal signal) {
         switch (signal) {

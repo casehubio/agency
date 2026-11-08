@@ -411,6 +411,19 @@ class MultiSwarmBehavioralTest {
         }
 
         @Test
+        void interests_update_resets_scorer_and_gate() {
+            assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
+            var scorerBefore = topology.getScorer(analysisSwarmId);
+
+            registry.updateInterests(analysisSwarmId, Set.of("billing", "invoicing"));
+
+            assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
+            assertThat(topology.getScorer(analysisSwarmId))
+                    .as("Scorer should be replaced after capability change")
+                    .isNotSameAs(scorerBefore);
+        }
+
+        @Test
         void re_registration_restores_scoring() throws InterruptedException {
             registry.deregister(analysisSwarmId);
             assertThat(topology.hasScorer(analysisSwarmId)).isFalse();
