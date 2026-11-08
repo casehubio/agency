@@ -25,8 +25,6 @@ import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.api.spi.coordination.RegistryListener;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.platform.agent.AgentProvider;
-import io.quarkmind.inference.bayes.BayesNetwork;
-import io.quarkmind.inference.bayes.OnlineParameterUpdater;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -38,6 +36,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class MultiSwarmTopology implements CoordinationTopology, RegistryListener, AutoCloseable {
 
@@ -45,31 +44,27 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private final CoordinationBus<MultiSwarmSignal> bus;
     private final ConcurrentHashMap<UUID, RelevanceScorer> relevanceScorers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, EscalationGate> escalationGates = new ConcurrentHashMap<>();
-    private final BayesNetwork relevanceNetworkTemplate;
-    private final BayesNetwork escalationNetworkTemplate;
+    private final Supplier<RelevanceScorer> scorerFactory;
+    private final Supplier<EscalationGate> gateFactory;
     private final AtomicReference<BeliefSet<SwarmConclusion>> beliefSet = new AtomicReference<>(new BeliefSet<>());
     private final ConsistencyChecker<SwarmConclusion> consistencyChecker;
-    private final double relevanceThreshold;
-    private final double escalationThreshold;
     private final @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator;
     private final ConcurrentHashMap<UUID, SwarmProgress> latestProgress = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<CrossSwarmNotification> pendingNotifications = new CopyOnWriteArrayList<>();
     private final @Nullable AgentProvider agentProvider;
 
     MultiSwarmTopology(MultiSwarmRegistry registry,
-                       BayesNetwork relevanceNetwork, BayesNetwork escalationNetwork,
+                       Supplier<RelevanceScorer> scorerFactory,
+                       Supplier<EscalationGate> gateFactory,
                        ConsistencyChecker<SwarmConclusion> consistencyChecker,
-                       double relevanceThreshold, double escalationThreshold,
                        @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator,
                        int replayBufferSize,
                        @Nullable AgentProvider agentProvider) {
         this.registry = registry;
         this.bus = new CoordinationBus<>(replayBufferSize);
-        this.relevanceNetworkTemplate = relevanceNetwork;
-        this.escalationNetworkTemplate = escalationNetwork;
+        this.scorerFactory = scorerFactory;
+        this.gateFactory = gateFactory;
         this.consistencyChecker = consistencyChecker;
-        this.relevanceThreshold = relevanceThreshold;
-        this.escalationThreshold = escalationThreshold;
         this.convergenceEvaluator = convergenceEvaluator;
         this.agentProvider = agentProvider;
         bus.subscribe(s -> true, this::processSignal);
@@ -119,10 +114,8 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
 
     @Override
     public void onRegistered(SwarmDescriptor descriptor) {
-        var relevanceUpdater = OnlineParameterUpdater.create(relevanceNetworkTemplate);
-        relevanceScorers.put(descriptor.swarmId(), new RelevanceScorer(relevanceUpdater, relevanceThreshold));
-        var escalationUpdater = OnlineParameterUpdater.create(escalationNetworkTemplate);
-        escalationGates.put(descriptor.swarmId(), new EscalationGate(escalationUpdater, escalationThreshold));
+        relevanceScorers.put(descriptor.swarmId(), scorerFactory.get());
+        escalationGates.put(descriptor.swarmId(), gateFactory.get());
     }
 
     @Override
