@@ -63,6 +63,12 @@ class MultiSwarmBehavioralTest {
                 new SwarmProgress(consensus, stability, consensus, Instant.now()));
     }
 
+    MultiSwarmSignal.ResourceClaim resourceClaim(UUID sourceSwarmId, Set<String> domainTags,
+            Set<String> agentIds, Set<String> capabilities) {
+        return new MultiSwarmSignal.ResourceClaim(sourceSwarmId, domainTags,
+                System.currentTimeMillis(), agentIds, capabilities);
+    }
+
     void publishAndAwait(MultiSwarmTopology topology, MultiSwarmSignal signal) throws InterruptedException {
         var latch = new CountDownLatch(1);
         Consumer<MultiSwarmSignal> callback = s -> latch.countDown();
@@ -220,6 +226,61 @@ class MultiSwarmBehavioralTest {
                 assertThat(soloTopology.currentBeliefs().isEmpty()).isTrue();
             } finally {
                 soloTopology.close();
+            }
+        }
+
+        @Test
+        void resource_contention_feeds_escalation_gate() throws InterruptedException {
+            var lowThresholdRegistry = new TestMultiSwarmRegistry();
+            var lowThresholdTopology = MultiSwarmTopology.builder()
+                    .registry(lowThresholdRegistry)
+                    .weightedScoring(0.3, 0.2)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .build();
+            try {
+                lowThresholdRegistry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                lowThresholdRegistry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+                publishAndAwait(lowThresholdTopology, resourceClaim(analysisSwarmId, ANALYSIS_CAPS,
+                        Set.of("agent-1", "agent-2", "agent-3"), ANALYSIS_CAPS));
+                publishAndAwait(lowThresholdTopology, resourceClaim(remediationSwarmId, REMEDIATION_CAPS,
+                        Set.of("agent-2", "agent-3", "agent-4"), REMEDIATION_CAPS));
+
+                publishAndAwait(lowThresholdTopology, progress(analysisSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
+
+                assertThat(lowThresholdTopology.drainNotifications())
+                        .as("Overlapping resource claims should feed escalation gate")
+                        .anyMatch(n -> n.type() == NotificationType.DEPENDENCY);
+            } finally {
+                lowThresholdTopology.close();
+            }
+        }
+
+        @Test
+        void non_overlapping_claims_produce_no_contention() throws InterruptedException {
+            var lowThresholdRegistry = new TestMultiSwarmRegistry();
+            var caps = Set.of("analysis", "monitoring");
+            var lowThresholdTopology = MultiSwarmTopology.builder()
+                    .registry(lowThresholdRegistry)
+                    .weightedScoring(0.01, 0.4)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .build();
+            try {
+                lowThresholdRegistry.register(descriptor(analysisSwarmId, caps));
+                lowThresholdRegistry.register(descriptor(remediationSwarmId, caps));
+
+                publishAndAwait(lowThresholdTopology, resourceClaim(analysisSwarmId, caps,
+                        Set.of("agent-1", "agent-2"), caps));
+                publishAndAwait(lowThresholdTopology, resourceClaim(remediationSwarmId, caps,
+                        Set.of("agent-3", "agent-4"), caps));
+
+                publishAndAwait(lowThresholdTopology, progress(analysisSwarmId, caps, 0.5, 0.5));
+
+                assertThat(lowThresholdTopology.drainNotifications())
+                        .as("Non-overlapping claims should not trigger escalation")
+                        .noneMatch(n -> n.type() == NotificationType.DEPENDENCY);
+            } finally {
+                lowThresholdTopology.close();
             }
         }
     }

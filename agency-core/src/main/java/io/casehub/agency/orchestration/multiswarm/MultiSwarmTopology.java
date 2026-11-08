@@ -50,6 +50,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private final ConsistencyChecker<SwarmConclusion> consistencyChecker;
     private final @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator;
     private final ConcurrentHashMap<UUID, SwarmProgress> latestProgress = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Set<String>> resourceClaims = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<CrossSwarmNotification> pendingNotifications = new CopyOnWriteArrayList<>();
     private final @Nullable AgentProvider agentProvider;
 
@@ -123,6 +124,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         relevanceScorers.remove(swarmId);
         escalationGates.remove(swarmId);
         latestProgress.remove(swarmId);
+        resourceClaims.remove(swarmId);
         beliefSet.updateAndGet(current -> {
             var updated = current;
             for (var belief : current.all()) {
@@ -142,9 +144,13 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
             case MultiSwarmSignal.Finding finding -> processL1Finding(finding);
             case MultiSwarmSignal.Progress progress -> processL1Progress(progress);
             case MultiSwarmSignal.Completion ignored -> {}
-            case MultiSwarmSignal.ResourceClaim ignored -> {}
+            case MultiSwarmSignal.ResourceClaim claim -> processResourceClaim(claim);
             case MultiSwarmSignal.Handoff ignored -> {}
         }
+    }
+
+    private void processResourceClaim(MultiSwarmSignal.ResourceClaim claim) {
+        resourceClaims.put(claim.sourceSwarmId(), Set.copyOf(claim.agentIds()));
     }
 
     private void processL1Finding(MultiSwarmSignal.Finding finding) {
@@ -197,7 +203,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
             var gate = entry.getValue();
             double conflictLevel = pendingNotifications.isEmpty() ? 0.0 :
                     (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
-            double resourceContention = 0.0;
+            double resourceContention = computeResourceContention(progress.sourceSwarmId(), swarmId);
             double dependencyStrength = computeDependencyStrength(progress.sourceSwarmId(), swarmId);
 
             if (gate.shouldEscalate(conflictLevel, resourceContention, dependencyStrength)) {
@@ -221,6 +227,16 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         var targetDesc = registry.get(targetSwarmId);
         if (sourceDesc == null || targetDesc == null) return 0.0;
         return computeCapabilityOverlap(sourceDesc.capabilities(), targetDesc.capabilities());
+    }
+
+    private double computeResourceContention(UUID sourceSwarmId, UUID targetSwarmId) {
+        var sourceClaims = resourceClaims.get(sourceSwarmId);
+        var targetClaims = resourceClaims.get(targetSwarmId);
+        if (sourceClaims == null || targetClaims == null) return 0.0;
+        if (sourceClaims.isEmpty() || targetClaims.isEmpty()) return 0.0;
+        long intersection = sourceClaims.stream().filter(targetClaims::contains).count();
+        long union = sourceClaims.size() + targetClaims.size() - intersection;
+        return union == 0 ? 0.0 : (double) intersection / union;
     }
 
     public boolean hasScorer(UUID swarmId) {
