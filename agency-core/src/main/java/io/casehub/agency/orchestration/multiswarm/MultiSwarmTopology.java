@@ -225,13 +225,17 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
             convergenceEvaluator.evaluate(Map.copyOf(latestProgress));
         }
 
+        if (completedDomains.containsKey(progress.sourceSwarmId())) {
+            return;
+        }
+
         for (var entry : escalationGates.entrySet()) {
             UUID swarmId = entry.getKey();
-            if (swarmId.equals(progress.sourceSwarmId())) continue;
+            if (swarmId.equals(progress.sourceSwarmId())) {continue;}
 
             var gate = entry.getValue();
             double conflictLevel = pendingNotifications.isEmpty() ? 0.0 :
-                    (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
+                                   (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
             double resourceContention = computeResourceContention(progress.sourceSwarmId(), swarmId);
             double dependencyStrength = computeDependencyStrength(progress.sourceSwarmId(), swarmId);
 

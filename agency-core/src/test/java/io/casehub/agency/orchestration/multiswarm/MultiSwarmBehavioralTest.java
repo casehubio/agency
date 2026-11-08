@@ -797,4 +797,72 @@ class MultiSwarmBehavioralTest {
         }
 
     }
+
+    @Nested
+    class CompletionEscalation {
+
+        MultiSwarmTopology topology;
+
+        @BeforeEach
+        void setUp() {
+            topology = MultiSwarmTopology.builder()
+                                         .registry(registry)
+                                         .weightedScoring(0.3, 0.1)
+                                         .consistencyChecker(new DomainConsistencyChecker())
+                                         .build();
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void progress_from_completed_swarm_does_not_trigger_escalation() throws InterruptedException {
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                              "system-health", "node-7:degraded", 0.9));
+            topology.drainNotifications();
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "system-health", "done"));
+
+            publishAndAwait(topology, progress(analysisSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .noneMatch(n -> n.type() == NotificationType.DEPENDENCY);
+        }
+
+        @Test
+        void progress_from_non_completed_swarm_can_trigger_escalation() throws InterruptedException {
+            // Create conflict notifications (don't drain — leave them as gate input)
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                              "system-health", "node-7:degraded", 0.9));
+
+            // Add resource contention
+            publishAndAwait(topology, resourceClaim(analysisSwarmId, ANALYSIS_CAPS,
+                                                    Set.of("agent-1", "agent-2"), Set.of()));
+            publishAndAwait(topology, resourceClaim(remediationSwarmId, REMEDIATION_CAPS,
+                                                    Set.of("agent-1", "agent-2"), Set.of()));
+
+            // Drain existing notifications to isolate the DEPENDENCY check
+            topology.drainNotifications();
+
+            // Progress from non-completed swarm with high gate inputs
+            publishAndAwait(topology, progress(remediationSwarmId, REMEDIATION_CAPS, 0.5, 0.5));
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .as("Non-completed swarm progress should evaluate escalation gate")
+                    .anyMatch(n -> n.type() == NotificationType.DEPENDENCY);
+        }
+    }
+
 }
