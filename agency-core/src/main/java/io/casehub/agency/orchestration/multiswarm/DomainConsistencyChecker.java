@@ -4,6 +4,22 @@ import io.casehub.agency.deliberation.belief.BeliefSet;
 import io.casehub.agency.deliberation.belief.ConsistencyChecker;
 import java.util.stream.Collectors;
 
+/**
+ * Detects contradictions between swarm conclusions via structural negation.
+ *
+ * <p>Conclusions must follow the {@code entity:state} convention — e.g.
+ * {@code "node-7:healthy"} and {@code "node-7:degraded"} are a structural
+ * negation (same entity, different state). Conclusions without a colon
+ * separator are never considered contradictory.
+ *
+ * <p>This convention is the default. Domains that use different conclusion
+ * formats (e.g. free-text descriptions, structured objects, or different
+ * delimiters) should implement their own {@link ConsistencyChecker} and
+ * pass it to {@link MultiSwarmTopologyBuilder#consistencyChecker}.
+ *
+ * @see ConsistencyChecker
+ * @see MultiSwarmTopologyBuilder#consistencyChecker
+ */
 public class DomainConsistencyChecker implements ConsistencyChecker<SwarmConclusion> {
 
     @Override
