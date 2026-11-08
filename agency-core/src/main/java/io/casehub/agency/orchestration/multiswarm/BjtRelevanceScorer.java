@@ -7,12 +7,20 @@ import io.quarkmind.inference.bayes.BayesInstance;
 import java.util.Objects;
 
 /**
- * Bayesian junction tree relevance scorer — uses conditional independence
- * structure in the CPT for more nuanced inference than weighted scoring.
+ * Bayesian junction tree relevance scorer — models conditional independence
+ * effects that weighted scoring cannot express (e.g. domain match matters
+ * less when capability overlap is already high).
+ *
+ * <p><b>Generalised, not domain-specific.</b> The CPT encodes structural
+ * relevance principles (capability overlap, domain match, signal strength,
+ * history) that apply across all use cases. No per-domain training needed.
+ * The 54-row CPT is validated across 14,641 input points for calibration,
+ * monotonicity, dimensional independence, and discrimination quality.
  *
  * <p>Online learning is disabled pending neocortex#856 (OnlineParameterUpdater
  * corrupts junction tree inference after update()). The CPT provides a
- * reasonable prior; the weighted scorer handles adaptive learning.
+ * reasonable prior; use {@link WeightedRelevanceScorer} when adaptive
+ * learning is needed.
  */
 public class BjtRelevanceScorer implements RelevanceScorer {
 

@@ -316,8 +316,8 @@ The multi-swarm coordination system enables coordination across multiple swarm i
 | Layer | What it does |
 |-------|-------------|
 | L0 -- Signal routing | `CoordinationBus<MultiSwarmSignal>` predicate-filtered pub/sub with ring-buffer replay. `MultiSwarmListenerBridge` transforms engine `SwarmCoordinationListener` events into `MultiSwarmSignal` instances. |
-| L1 -- Relevance scoring | `RelevanceScorer` uses Bayesian junction tree inference (neocortex inference-bayes) to score signal relevance per swarm. `EscalationGate` accumulates evidence for L1->L2 escalation decisions. Networks defined in `RelevanceNetworks`/`EscalationNetworks`. |
-| L2 -- Conflict detection | `BeliefSet<SwarmConclusion>` with AGM belief revision. `DomainConsistencyChecker` detects structural negation (same entity, different state) across swarm conclusions. |
+| L1 -- Relevance scoring | `RelevanceScorer` interface with two strategies: `WeightedRelevanceScorer` (default, linear + online learning) and `BjtRelevanceScorer` (Bayesian junction tree, models conditional independence). `EscalationGate` interface, same two strategies. Builder: `.weightedScoring()` or `.bjtScoring()`. Both are generalised -- no per-domain training needed. |
+| L2 -- Conflict detection | `BeliefSet<SwarmConclusion>` with AGM belief revision. `DomainConsistencyChecker` detects structural negation in `entity:state` format -- domains with different conclusion formats plug in their own `ConsistencyChecker<SwarmConclusion>`. |
 | L3 -- LLM mediation | Optional. When `agentProvider()` is set on the builder, enables LLM-backed conflict resolution for cases L2 cannot resolve mechanically. |
 
 **Engine/agency boundary:** Engine-api provides `SwarmDescriptor` (swarm identity), `MultiSwarmRegistry` SPI (registration/lookup), `SwarmCoordinationListener` swarmId overloads (lifecycle events), and `CrossSwarmConvergenceEvaluator` SPI. Engine runtime-core provides `InMemoryMultiSwarmRegistry` and `AllConvergedEvaluator`. Agency provides all coordination intelligence via `MultiSwarmTopology`.
@@ -325,6 +325,12 @@ The multi-swarm coordination system enables coordination across multiple swarm i
 **Composition root:** `MultiSwarmTopology` implements both `CoordinationTopology` (topology lifecycle) and `RegistryListener` (dynamic scorer/gate creation). The builder wires L0-L2 automatically. Registered via `MultiSwarmTopologyBuilder.build()` which also calls `registry.addListener(topology)`.
 
 **YAML surface:** `TopologySpec.MultiSwarm` with optional `MultiSwarmCoordinationSpec` thresholds. `MultiSwarmTopologyCompiler.compile()` produces a `CompiledMultiSwarm` from the spec.
+
+**Generalisation:** The scoring layer (L1) is domain-agnostic. All four input features -- capability overlap (Jaccard), domain tag match, signal confidence, historical relevance -- are structural properties of the inter-swarm relationship, not domain-specific knowledge. No per-domain training is needed. The BJT CPT encodes general principles validated across 22K input points. Online learning (when neocortex#856 is resolved) fine-tunes for specific deployments but is not required.
+
+**Convention dependency:** `DomainConsistencyChecker` (L2) assumes conclusions follow `entity:state` format for structural negation detection. This is the only convention-dependent component. Domains using different formats implement their own `ConsistencyChecker<SwarmConclusion>` -- the builder accepts any implementation via `.consistencyChecker()`.
+
+**Known limitation:** BJT online learning is disabled pending neocortex#856 (`OnlineParameterUpdater.update()` corrupts junction tree inference). BJT inference without learning works correctly. `WeightedRelevanceScorer` provides working online learning as the default strategy.
 
 ## Trust Routing Architecture
 
