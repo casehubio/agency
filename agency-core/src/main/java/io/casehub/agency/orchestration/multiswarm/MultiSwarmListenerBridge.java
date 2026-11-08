@@ -1,10 +1,8 @@
 package io.casehub.agency.orchestration.multiswarm;
 
-import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.DetectedTeam;
 import io.casehub.api.model.stigmergy.SwarmProgress;
-import io.casehub.api.model.stigmergy.SwarmTelemetry;
 import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.api.spi.stigmergy.SwarmCoordinationListener;
 

@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.multiswarm;
 
+import io.casehub.agency.deliberation.belief.Belief;
 import io.casehub.agency.deliberation.belief.BeliefSet;
 import io.casehub.agency.deliberation.belief.ConsistencyChecker;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
@@ -19,8 +20,10 @@ import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.api.spi.coordination.CrossSwarmConvergenceEvaluator;
 import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.api.spi.coordination.RegistryListener;
+import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.platform.agent.AgentProvider;
 import io.quarkmind.inference.bayes.BayesNetwork;
 import io.quarkmind.inference.bayes.OnlineParameterUpdater;
@@ -33,8 +36,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class MultiSwarmTopology implements CoordinationTopology, RegistryListener {
+public class MultiSwarmTopology implements CoordinationTopology, RegistryListener, AutoCloseable {
 
     private final MultiSwarmRegistry registry;
     private final CoordinationBus<MultiSwarmSignal> bus;
@@ -42,18 +47,21 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private final ConcurrentHashMap<UUID, EscalationGate> escalationGates = new ConcurrentHashMap<>();
     private final BayesNetwork relevanceNetworkTemplate;
     private final BayesNetwork escalationNetworkTemplate;
-    private volatile BeliefSet<SwarmConclusion> beliefSet = new BeliefSet<>();
+    private final AtomicReference<BeliefSet<SwarmConclusion>> beliefSet = new AtomicReference<>(new BeliefSet<>());
     private final ConsistencyChecker<SwarmConclusion> consistencyChecker;
     private final double relevanceThreshold;
     private final double escalationThreshold;
-    private final double convergenceThreshold;
+    private final @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator;
+    private final ConcurrentHashMap<UUID, SwarmProgress> latestProgress = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<CrossSwarmNotification> pendingNotifications = new CopyOnWriteArrayList<>();
     private final @Nullable AgentProvider agentProvider;
 
     MultiSwarmTopology(MultiSwarmRegistry registry,
                        BayesNetwork relevanceNetwork, BayesNetwork escalationNetwork,
                        ConsistencyChecker<SwarmConclusion> consistencyChecker,
                        double relevanceThreshold, double escalationThreshold,
-                       double convergenceThreshold, int replayBufferSize,
+                       @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator,
+                       int replayBufferSize,
                        @Nullable AgentProvider agentProvider) {
         this.registry = registry;
         this.bus = new CoordinationBus<>(replayBufferSize);
@@ -62,8 +70,9 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         this.consistencyChecker = consistencyChecker;
         this.relevanceThreshold = relevanceThreshold;
         this.escalationThreshold = escalationThreshold;
-        this.convergenceThreshold = convergenceThreshold;
+        this.convergenceEvaluator = convergenceEvaluator;
         this.agentProvider = agentProvider;
+        bus.subscribe(s -> true, this::processSignal);
     }
 
     public static MultiSwarmTopologyBuilder builder() {
@@ -120,17 +129,104 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     public void onDeregistered(UUID swarmId) {
         relevanceScorers.remove(swarmId);
         escalationGates.remove(swarmId);
-        var current = beliefSet;
-        for (var belief : current.all()) {
-            if (belief.value().swarmId().equals(swarmId)) {
-                current = current.contract(belief.key());
+        latestProgress.remove(swarmId);
+        beliefSet.updateAndGet(current -> {
+            var updated = current;
+            for (var belief : current.all()) {
+                if (belief.value().swarmId().equals(swarmId)) {
+                    updated = updated.contract(belief.key());
+                }
             }
-        }
-        beliefSet = current;
+            return updated;
+        });
     }
 
     @Override
     public void onInterestsUpdated(UUID swarmId, Set<String> capabilities) {}
+
+    private void processSignal(MultiSwarmSignal signal) {
+        switch (signal) {
+            case MultiSwarmSignal.Finding finding -> processL1Finding(finding);
+            case MultiSwarmSignal.Progress progress -> processL1Progress(progress);
+            case MultiSwarmSignal.Completion ignored -> {}
+            case MultiSwarmSignal.ResourceClaim ignored -> {}
+            case MultiSwarmSignal.Handoff ignored -> {}
+        }
+    }
+
+    private void processL1Finding(MultiSwarmSignal.Finding finding) {
+        for (var entry : relevanceScorers.entrySet()) {
+            UUID targetSwarmId = entry.getKey();
+            if (targetSwarmId.equals(finding.sourceSwarmId())) continue;
+
+            var scorer = entry.getValue();
+            var targetDescriptor = registry.get(targetSwarmId);
+            if (targetDescriptor == null) continue;
+
+            double capabilityOverlap = computeCapabilityOverlap(finding.domainTags(), targetDescriptor.capabilities());
+            double domainMatch = finding.domainTags().stream().anyMatch(targetDescriptor.capabilities()::contains) ? 0.8 : 0.2;
+
+            if (scorer.isRelevant(capabilityOverlap, domainMatch, finding.confidence(), 0.0)) {
+                processL2Finding(finding, targetSwarmId);
+            }
+        }
+    }
+
+    private void processL2Finding(MultiSwarmSignal.Finding finding, UUID targetSwarmId) {
+        var conclusion = new SwarmConclusion(
+                finding.sourceSwarmId(), finding.domain(), finding.conclusion(), finding.confidence());
+        var beliefKey = finding.sourceSwarmId() + ":" + finding.domain();
+
+        var updated = beliefSet.updateAndGet(current ->
+                current.revise(Belief.of(beliefKey, conclusion, (int) (finding.confidence() * 100)), consistencyChecker));
+
+        if (!consistencyChecker.isConsistent(updated)) {
+            var notification = new CrossSwarmNotification(
+                    finding.sourceSwarmId(), targetSwarmId,
+                    NotificationType.CONFLICT, finding, finding.confidence());
+            pendingNotifications.add(notification);
+        }
+    }
+
+    private void processL1Progress(MultiSwarmSignal.Progress progress) {
+        latestProgress.put(progress.sourceSwarmId(), progress.progress());
+
+        if (convergenceEvaluator != null && latestProgress.size() > 1) {
+            convergenceEvaluator.evaluate(Map.copyOf(latestProgress));
+        }
+
+        for (var entry : escalationGates.entrySet()) {
+            UUID swarmId = entry.getKey();
+            if (swarmId.equals(progress.sourceSwarmId())) continue;
+
+            var gate = entry.getValue();
+            double conflictLevel = pendingNotifications.isEmpty() ? 0.0 :
+                    (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
+            double resourceContention = 0.0;
+            double dependencyStrength = computeDependencyStrength(progress.sourceSwarmId(), swarmId);
+
+            if (gate.shouldEscalate(conflictLevel, resourceContention, dependencyStrength)) {
+                var notification = new CrossSwarmNotification(
+                        progress.sourceSwarmId(), swarmId,
+                        NotificationType.DEPENDENCY, progress, 0.5);
+                pendingNotifications.add(notification);
+            }
+        }
+    }
+
+    private static double computeCapabilityOverlap(Set<String> a, Set<String> b) {
+        if (a.isEmpty() || b.isEmpty()) return 0.0;
+        long intersection = a.stream().filter(b::contains).count();
+        long union = a.size() + b.size() - intersection;
+        return union == 0 ? 0.0 : (double) intersection / union;
+    }
+
+    private double computeDependencyStrength(UUID sourceSwarmId, UUID targetSwarmId) {
+        var sourceDesc = registry.get(sourceSwarmId);
+        var targetDesc = registry.get(targetSwarmId);
+        if (sourceDesc == null || targetDesc == null) return 0.0;
+        return computeCapabilityOverlap(sourceDesc.capabilities(), targetDesc.capabilities());
+    }
 
     public boolean hasScorer(UUID swarmId) {
         return relevanceScorers.containsKey(swarmId);
@@ -142,6 +238,21 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
 
     public CoordinationBus<MultiSwarmSignal> signalBus() {
         return bus;
+    }
+
+    public BeliefSet<SwarmConclusion> currentBeliefs() {
+        return beliefSet.get();
+    }
+
+    public List<CrossSwarmNotification> drainNotifications() {
+        var drained = List.copyOf(pendingNotifications);
+        pendingNotifications.clear();
+        return drained;
+    }
+
+    @Override
+    public void close() {
+        bus.close();
     }
 
     private static @Nullable MultiSwarmSignal toSignal(SwarmCoordinationEvent event, SwarmDescriptor descriptor) {

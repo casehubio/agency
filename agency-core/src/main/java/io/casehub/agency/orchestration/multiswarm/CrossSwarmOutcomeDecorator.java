@@ -43,7 +43,7 @@ public class CrossSwarmOutcomeDecorator implements DecisionOutcomeExecutor {
         for (var obs : wb.observations()) {
             bus.publish(new MultiSwarmSignal.Finding(swarmId, descriptor.capabilities(),
                     System.currentTimeMillis(), obs.patternId(),
-                    String.valueOf(obs.confidence()), obs.confidence(), Map.of()));
+                    obs.patternId() + ":detected", obs.confidence(), Map.of()));
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.casehub.agency.orchestration.multiswarm;
 
 import io.casehub.agency.deliberation.belief.ConsistencyChecker;
+import io.casehub.api.spi.coordination.CrossSwarmConvergenceEvaluator;
 import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.platform.agent.AgentProvider;
 import io.quarkmind.inference.bayes.BayesNetwork;
@@ -15,7 +16,7 @@ public class MultiSwarmTopologyBuilder {
     private ConsistencyChecker<SwarmConclusion> consistencyChecker;
     private double relevanceThreshold = 0.7;
     private double escalationThreshold = 0.8;
-    private double convergenceThreshold = 0.85;
+    private @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator;
     private int replayBufferSize = 100;
     private @Nullable AgentProvider agentProvider;
 
@@ -49,8 +50,8 @@ public class MultiSwarmTopologyBuilder {
         return this;
     }
 
-    public MultiSwarmTopologyBuilder convergenceThreshold(double threshold) {
-        this.convergenceThreshold = threshold;
+    public MultiSwarmTopologyBuilder convergenceEvaluator(CrossSwarmConvergenceEvaluator evaluator) {
+        this.convergenceEvaluator = evaluator;
         return this;
     }
 
@@ -71,7 +72,7 @@ public class MultiSwarmTopologyBuilder {
         Objects.requireNonNull(consistencyChecker, "consistencyChecker is required");
         var topology = new MultiSwarmTopology(registry,
                 relevanceNetwork, escalationNetwork, consistencyChecker,
-                relevanceThreshold, escalationThreshold, convergenceThreshold,
+                relevanceThreshold, escalationThreshold, convergenceEvaluator,
                 replayBufferSize, agentProvider);
         registry.addListener(topology);
         return topology;

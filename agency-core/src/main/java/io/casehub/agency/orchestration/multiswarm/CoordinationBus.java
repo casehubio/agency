@@ -9,13 +9,13 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class CoordinationBus<S> {
+public class CoordinationBus<S> implements AutoCloseable {
 
     private record Subscription<S>(Predicate<S> filter, Consumer<S> callback) {}
 
     private final CopyOnWriteArrayList<Subscription<S>> subscriptions = new CopyOnWriteArrayList<>();
     private final Object[] ringBuffer;
-    private int writeIndex;
+    private long writeIndex;
     private int count;
     private final int capacity;
     private final ExecutorService executor;
@@ -37,7 +37,7 @@ public class CoordinationBus<S> {
         Objects.requireNonNull(signal);
         synchronized (ringBuffer) {
             if (capacity > 0) {
-                ringBuffer[writeIndex % capacity] = signal;
+                ringBuffer[(int) (writeIndex % capacity)] = signal;
                 writeIndex++;
                 if (count < capacity) count++;
             }
@@ -57,11 +57,16 @@ public class CoordinationBus<S> {
     public List<S> replayBuffer() {
         synchronized (ringBuffer) {
             var result = new ArrayList<S>(count);
-            int start = count < capacity ? 0 : writeIndex % capacity;
+            int start = count < capacity ? 0 : (int) (writeIndex % capacity);
             for (int i = 0; i < count; i++) {
                 result.add((S) ringBuffer[(start + i) % capacity]);
             }
             return result;
         }
+    }
+
+    @Override
+    public void close() {
+        executor.close();
     }
 }

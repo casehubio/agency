@@ -30,7 +30,22 @@ public class MultiSwarmTopologyCompiler {
         if (coord != null) {
             if (coord.relevanceThreshold() != null) builder.relevanceThreshold(coord.relevanceThreshold());
             if (coord.escalationThreshold() != null) builder.escalationThreshold(coord.escalationThreshold());
-            if (coord.convergenceThreshold() != null) builder.convergenceThreshold(coord.convergenceThreshold());
+            if (coord.convergenceThreshold() != null) {
+                double threshold = coord.convergenceThreshold();
+                builder.convergenceEvaluator(progress -> {
+                    if (progress.isEmpty()) {
+                        return new io.casehub.api.spi.stigmergy.ConvergenceSignal(
+                                io.casehub.api.spi.stigmergy.ConvergenceState.CONSENSUS, 1.0, "No swarms");
+                    }
+                    boolean all = progress.values().stream()
+                            .allMatch(p -> p.consensusScore() >= threshold && p.stabilityScore() >= threshold);
+                    return all
+                            ? new io.casehub.api.spi.stigmergy.ConvergenceSignal(
+                                    io.casehub.api.spi.stigmergy.ConvergenceState.CONSENSUS, 1.0, "All converged")
+                            : new io.casehub.api.spi.stigmergy.ConvergenceSignal(
+                                    io.casehub.api.spi.stigmergy.ConvergenceState.PROGRESSING, 0.0, "Still progressing");
+                });
+            }
         }
         if (agentProvider != null) {
             builder.agentProvider(agentProvider);
