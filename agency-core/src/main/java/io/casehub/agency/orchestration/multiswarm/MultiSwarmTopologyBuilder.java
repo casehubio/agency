@@ -37,9 +37,9 @@ public class MultiSwarmTopologyBuilder {
 
     public MultiSwarmTopologyBuilder bjtScoring(double relevanceThreshold, double escalationThreshold) {
         this.scorerFactory = () -> new BjtRelevanceScorer(
-                RelevanceNetworks.updaterWithDecay(0.95), relevanceThreshold);
+                RelevanceNetworks.standard(), relevanceThreshold);
         this.gateFactory = () -> new BjtEscalationGate(
-                EscalationNetworks.updaterWithDecay(0.95), escalationThreshold);
+                EscalationNetworks.standard(), escalationThreshold);
         return this;
     }
 

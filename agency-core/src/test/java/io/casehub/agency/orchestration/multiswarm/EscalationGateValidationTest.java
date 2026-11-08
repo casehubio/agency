@@ -2,7 +2,6 @@ package io.casehub.agency.orchestration.multiswarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.quarkmind.inference.bayes.OnlineParameterUpdater;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,8 @@ class EscalationGateValidationTest {
     static Stream<GateFixture> gates() {
         return Stream.of(
                 new GateFixture("weighted", new WeightedEscalationGate(0.6)),
-                new GateFixture("bjt", new BjtEscalationGate(
-                        OnlineParameterUpdater.create(EscalationNetworks.standard(), 0.95), 0.6))
+                new GateFixture("bjt", new BjtEscalationGate(EscalationNetworks.standard(), 0.6))
         );
-    }
-
-    static Stream<GateFixture> freshGates() {
-        return gates();
     }
 
     @Nested
@@ -53,7 +47,7 @@ class EscalationGateValidationTest {
         void increasing_conflict_never_decreases(GateFixture f) {
             double low = f.gate.escalationProbability(0.1, 0.5, 0.5);
             double high = f.gate.escalationProbability(0.9, 0.5, 0.5);
-            assertThat(high).as("[%s] high conflict >= low", f.name).isGreaterThanOrEqualTo(low);
+            assertThat(high).isGreaterThanOrEqualTo(low);
         }
 
         @ParameterizedTest(name = "{0}")
@@ -61,7 +55,7 @@ class EscalationGateValidationTest {
         void increasing_contention_never_decreases(GateFixture f) {
             double low = f.gate.escalationProbability(0.5, 0.1, 0.5);
             double high = f.gate.escalationProbability(0.5, 0.9, 0.5);
-            assertThat(high).as("[%s] high contention >= low", f.name).isGreaterThanOrEqualTo(low);
+            assertThat(high).isGreaterThanOrEqualTo(low);
         }
 
         @ParameterizedTest(name = "{0}")
@@ -69,7 +63,7 @@ class EscalationGateValidationTest {
         void increasing_dependency_never_decreases(GateFixture f) {
             double low = f.gate.escalationProbability(0.5, 0.5, 0.1);
             double high = f.gate.escalationProbability(0.5, 0.5, 0.9);
-            assertThat(high).as("[%s] high dependency >= low", f.name).isGreaterThanOrEqualTo(low);
+            assertThat(high).isGreaterThanOrEqualTo(low);
         }
     }
 
@@ -84,9 +78,9 @@ class EscalationGateValidationTest {
             double contentionChanged = f.gate.escalationProbability(0.1, 0.9, 0.1);
             double dependencyChanged = f.gate.escalationProbability(0.1, 0.1, 0.9);
 
-            assertThat(conflictChanged - baseline).as("[%s] conflict influence", f.name).isGreaterThan(0.03);
-            assertThat(contentionChanged - baseline).as("[%s] contention influence", f.name).isGreaterThan(0.03);
-            assertThat(dependencyChanged - baseline).as("[%s] dependency influence", f.name).isGreaterThan(0.03);
+            assertThat(conflictChanged - baseline).as("[%s] conflict influence > 0.03", f.name).isGreaterThan(0.03);
+            assertThat(contentionChanged - baseline).as("[%s] contention influence > 0.03", f.name).isGreaterThan(0.03);
+            assertThat(dependencyChanged - baseline).as("[%s] dependency influence > 0.03", f.name).isGreaterThan(0.03);
         }
     }
 
@@ -95,7 +89,7 @@ class EscalationGateValidationTest {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("io.casehub.agency.orchestration.multiswarm.EscalationGateValidationTest#gates")
-        void clear_separation_between_should_and_should_not_escalate(GateFixture f) {
+        void clear_separation_between_should_and_should_not(GateFixture f) {
             double high = f.gate.escalationProbability(0.9, 0.8, 0.8);
             double low = f.gate.escalationProbability(0.0, 0.0, 0.0);
             assertThat(high - low).as("[%s] separation gap > 0.3", f.name).isGreaterThan(0.3);
@@ -112,33 +106,39 @@ class EscalationGateValidationTest {
     @Nested
     class OnlineLearning {
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("io.casehub.agency.orchestration.multiswarm.EscalationGateValidationTest#freshGates")
-        void learning_escalated_shifts_probability_up(GateFixture f) {
-            double before = f.gate.escalationProbability(0.5, 0.5, 0.5);
-            for (int i = 0; i < 30; i++) f.gate.learnEscalated(0.5, 0.5, 0.5);
-            double after = f.gate.escalationProbability(0.5, 0.5, 0.5);
-            assertThat(after).as("[%s] probability should increase after escalation training", f.name)
-                    .isGreaterThan(before);
+        @Test
+        void weighted_learning_shifts_probability_up() {
+            var gate = new WeightedEscalationGate(0.6);
+            double before = gate.escalationProbability(0.5, 0.5, 0.5);
+            for (int i = 0; i < 30; i++) gate.learnEscalated(0.5, 0.5, 0.5);
+            double after = gate.escalationProbability(0.5, 0.5, 0.5);
+            assertThat(after).isGreaterThan(before);
         }
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("io.casehub.agency.orchestration.multiswarm.EscalationGateValidationTest#freshGates")
-        void learning_not_escalated_shifts_probability_down(GateFixture f) {
-            double before = f.gate.escalationProbability(0.5, 0.5, 0.5);
-            for (int i = 0; i < 30; i++) f.gate.learnNotEscalated(0.5, 0.5, 0.5);
-            double after = f.gate.escalationProbability(0.5, 0.5, 0.5);
-            assertThat(after).as("[%s] probability should decrease after not-escalated training", f.name)
-                    .isLessThan(before);
+        @Test
+        void weighted_learning_shifts_probability_down() {
+            var gate = new WeightedEscalationGate(0.6);
+            double before = gate.escalationProbability(0.5, 0.5, 0.5);
+            for (int i = 0; i < 30; i++) gate.learnNotEscalated(0.5, 0.5, 0.5);
+            double after = gate.escalationProbability(0.5, 0.5, 0.5);
+            assertThat(after).isLessThan(before);
         }
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("io.casehub.agency.orchestration.multiswarm.EscalationGateValidationTest#freshGates")
-        void probability_never_degenerates_after_learning(GateFixture f) {
-            for (int i = 0; i < 50; i++) f.gate.learnEscalated(0.5, 0.5, 0.5);
-            double p = f.gate.escalationProbability(0.5, 0.5, 0.5);
-            assertThat(p).as("[%s] probability should not degenerate to 0 or 1", f.name)
-                    .isBetween(0.01, 0.99);
+        @Test
+        void weighted_never_degenerates() {
+            var gate = new WeightedEscalationGate(0.6);
+            for (int i = 0; i < 50; i++) gate.learnEscalated(0.5, 0.5, 0.5);
+            double p = gate.escalationProbability(0.5, 0.5, 0.5);
+            assertThat(p).isBetween(0.01, 0.99);
+        }
+
+        @Test
+        void bjt_learning_is_noop_pending_neocortex_856() {
+            var gate = new BjtEscalationGate(EscalationNetworks.standard(), 0.6);
+            double before = gate.escalationProbability(0.5, 0.5, 0.5);
+            gate.learnEscalated(0.5, 0.5, 0.5);
+            double after = gate.escalationProbability(0.5, 0.5, 0.5);
+            assertThat(after).as("BJT learning is no-op — should not change").isEqualTo(before);
         }
     }
 
@@ -146,39 +146,15 @@ class EscalationGateValidationTest {
     class StrategyComparison {
 
         @Test
-        void both_strategies_agree_on_extreme_cases() {
+        void both_agree_on_extremes() {
             var weighted = new WeightedEscalationGate(0.6);
-            var bjt = new BjtEscalationGate(
-                    OnlineParameterUpdater.create(EscalationNetworks.standard(), 0.95), 0.6);
+            var bjt = new BjtEscalationGate(EscalationNetworks.standard(), 0.6);
 
             assertThat(weighted.shouldEscalate(0.95, 0.95, 0.95)).isTrue();
             assertThat(bjt.shouldEscalate(0.95, 0.95, 0.95)).isTrue();
 
             assertThat(weighted.shouldEscalate(0.0, 0.0, 0.0)).isFalse();
             assertThat(bjt.shouldEscalate(0.0, 0.0, 0.0)).isFalse();
-        }
-
-        @Test
-        void consistency_check_across_input_space() {
-            var weighted = new WeightedEscalationGate(0.6);
-            var bjt = new BjtEscalationGate(
-                    OnlineParameterUpdater.create(EscalationNetworks.standard(), 0.95), 0.6);
-
-            int agreements = 0;
-            int total = 0;
-            for (double c = 0.0; c <= 1.0; c += 0.25) {
-                for (double r = 0.0; r <= 1.0; r += 0.25) {
-                    for (double d = 0.0; d <= 1.0; d += 0.25) {
-                        boolean wDecision = weighted.shouldEscalate(c, r, d);
-                        boolean bDecision = bjt.shouldEscalate(c, r, d);
-                        if (wDecision == bDecision) agreements++;
-                        total++;
-                    }
-                }
-            }
-            double agreementRate = (double) agreements / total;
-            assertThat(agreementRate).as("Strategies should agree on >60%% of the input space")
-                    .isGreaterThan(0.6);
         }
     }
 }

@@ -1,22 +1,32 @@
 package io.casehub.agency.orchestration.multiswarm;
 
-import io.quarkmind.inference.bayes.OnlineParameterUpdater;
-import java.util.Map;
+import io.quarkmind.inference.bayes.BayesNetwork;
+import io.quarkmind.inference.bayes.JunctionTree;
+import io.quarkmind.inference.bayes.JunctionTreeBuilder;
+import io.quarkmind.inference.bayes.BayesInstance;
 import java.util.Objects;
 
+/**
+ * Bayesian junction tree relevance scorer — uses conditional independence
+ * structure in the CPT for more nuanced inference than weighted scoring.
+ *
+ * <p>Online learning is disabled pending neocortex#856 (OnlineParameterUpdater
+ * corrupts junction tree inference after update()). The CPT provides a
+ * reasonable prior; the weighted scorer handles adaptive learning.
+ */
 public class BjtRelevanceScorer implements RelevanceScorer {
 
-    private final OnlineParameterUpdater updater;
+    private final JunctionTree tree;
     private final double threshold;
 
-    public BjtRelevanceScorer(OnlineParameterUpdater updater, double threshold) {
-        this.updater = Objects.requireNonNull(updater);
+    public BjtRelevanceScorer(BayesNetwork network, double threshold) {
+        this.tree = new JunctionTreeBuilder(Objects.requireNonNull(network)).build();
         this.threshold = threshold;
     }
 
     @Override
     public double score(double capabilityOverlap, double domainMatch, double signalStrength, double historicalRelevance) {
-        var instance = updater.getInstance();
+        var instance = new BayesInstance<>(tree);
         instance.setLikelyhood("CapabilityOverlap", discretize(capabilityOverlap));
         instance.setLikelyhood("DomainMatch", discretize(domainMatch));
         instance.setLikelyhood("SignalStrength", discretize(signalStrength));
@@ -32,35 +42,17 @@ public class BjtRelevanceScorer implements RelevanceScorer {
 
     @Override
     public void learnRelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
-        updater.update(Map.of(
-                "CapabilityOverlap", categorize(capabilityOverlap),
-                "DomainMatch", categorize(domainMatch),
-                "SignalStrength", categorize(signalStrength),
-                "Relevant", "yes"));
+        // no-op: blocked by neocortex#856
     }
 
     @Override
     public void learnIrrelevant(double capabilityOverlap, double domainMatch, double signalStrength) {
-        updater.update(Map.of(
-                "CapabilityOverlap", categorize(capabilityOverlap),
-                "DomainMatch", categorize(domainMatch),
-                "SignalStrength", categorize(signalStrength),
-                "Relevant", "no"));
+        // no-op: blocked by neocortex#856
     }
-
-    // Consistent thresholds used by BOTH score() and learn() — fixes the mismatch
-    private static final double HIGH_THRESHOLD = 0.6;
-    private static final double LOW_THRESHOLD = 0.3;
 
     static double[] discretize(double value) {
-        if (value > HIGH_THRESHOLD) return new double[]{0.8, 0.15, 0.05};
-        if (value > LOW_THRESHOLD) return new double[]{0.15, 0.7, 0.15};
+        if (value > 0.6) return new double[]{0.8, 0.15, 0.05};
+        if (value > 0.3) return new double[]{0.15, 0.7, 0.15};
         return new double[]{0.05, 0.15, 0.8};
-    }
-
-    static String categorize(double value) {
-        if (value > HIGH_THRESHOLD) return "high";
-        if (value > LOW_THRESHOLD) return "medium";
-        return "low";
     }
 }
