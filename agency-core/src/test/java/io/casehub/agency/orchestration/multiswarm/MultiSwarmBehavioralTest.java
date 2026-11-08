@@ -663,4 +663,300 @@ class MultiSwarmBehavioralTest {
     }
 
 
+    @Nested
+    class CompletionLifecycle {
+
+        MultiSwarmTopology topology;
+
+        @BeforeEach
+        void setUp() {
+            topology = MultiSwarmTopology.builder()
+                                         .registry(registry)
+                                         .weightedScoring(0.3, 0.6)
+                                         .consistencyChecker(new DomainConsistencyChecker())
+                                         .build();
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void completion_signal_tracks_domain() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", "completed successfully"));
+
+            assertThat(topology.completedDomains(analysisSwarmId))
+                    .containsExactly("risk-assessment");
+            assertThat(topology.completedDomains(remediationSwarmId)).isEmpty();
+        }
+
+        @Test
+        void multiple_completions_accumulate_domains() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", "done"));
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "compliance-check", "done"));
+
+            assertThat(topology.completedDomains(analysisSwarmId))
+                    .containsExactlyInAnyOrder("risk-assessment", "compliance-check");
+        }
+
+        @Test
+        void all_complete_false_with_partial_completions() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", "done"));
+
+            assertThat(topology.isAllComplete()).isFalse();
+        }
+
+        @Test
+        void all_complete_true_when_all_swarms_complete() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", "done"));
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    remediationSwarmId, REMEDIATION_CAPS, System.currentTimeMillis(),
+                    "health-check", "done"));
+
+            assertThat(topology.isAllComplete()).isTrue();
+        }
+
+        @Test
+        void deregistration_removes_completion_state() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", "done"));
+
+            topology.onDeregistered(analysisSwarmId);
+
+            assertThat(topology.completedDomains(analysisSwarmId)).isEmpty();
+        }
+
+        @Test
+        void completed_domains_empty_for_unknown_swarm() {
+            assertThat(topology.completedDomains(UUID.randomUUID())).isEmpty();
+        }
+
+        @Test
+        void belief_eviction_when_enabled() throws InterruptedException {
+            var evictingTopology = MultiSwarmTopology.builder()
+                                                     .registry(registry)
+                                                     .weightedScoring(0.3, 0.6)
+                                                     .consistencyChecker(new DomainConsistencyChecker())
+                                                     .evictBeliefsOnCompletion(true)
+                                                     .build();
+            try {
+                registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+                publishAndAwait(evictingTopology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                          "risk", "node-7:healthy", 0.9));
+                assertThat(evictingTopology.currentBeliefs().all()).isNotEmpty();
+
+                publishAndAwait(evictingTopology, new MultiSwarmSignal.Completion(
+                        analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                        "risk", "done"));
+
+                assertThat(evictingTopology.currentBeliefs().all()).isEmpty();
+            } finally {
+                evictingTopology.close();
+            }
+        }
+
+        @Test
+        void belief_retained_when_eviction_disabled() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "risk", "node-7:healthy", 0.9));
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk", "done"));
+
+            assertThat(topology.currentBeliefs().all()).isNotEmpty();
+        }
+
+    }
+
+    @Nested
+    class CompletionEscalation {
+
+        MultiSwarmTopology topology;
+
+        @BeforeEach
+        void setUp() {
+            topology = MultiSwarmTopology.builder()
+                                         .registry(registry)
+                                         .weightedScoring(0.3, 0.1)
+                                         .consistencyChecker(new DomainConsistencyChecker())
+                                         .build();
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void progress_from_completed_swarm_does_not_trigger_escalation() throws InterruptedException {
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                              "system-health", "node-7:degraded", 0.9));
+            topology.drainNotifications();
+
+            publishAndAwait(topology, new MultiSwarmSignal.Completion(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "system-health", "done"));
+
+            publishAndAwait(topology, progress(analysisSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .noneMatch(n -> n.type() == NotificationType.DEPENDENCY);
+        }
+
+        @Test
+        void progress_from_non_completed_swarm_can_trigger_escalation() throws InterruptedException {
+            // Create conflict notifications (don't drain — leave them as gate input)
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                              "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                              "system-health", "node-7:degraded", 0.9));
+
+            // Add resource contention
+            publishAndAwait(topology, resourceClaim(analysisSwarmId, ANALYSIS_CAPS,
+                                                    Set.of("agent-1", "agent-2"), Set.of()));
+            publishAndAwait(topology, resourceClaim(remediationSwarmId, REMEDIATION_CAPS,
+                                                    Set.of("agent-1", "agent-2"), Set.of()));
+
+            // Drain existing notifications to isolate the DEPENDENCY check
+            topology.drainNotifications();
+
+            // Progress from non-completed swarm with high gate inputs
+            publishAndAwait(topology, progress(remediationSwarmId, REMEDIATION_CAPS, 0.5, 0.5));
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .as("Non-completed swarm progress should evaluate escalation gate")
+                    .anyMatch(n -> n.type() == NotificationType.DEPENDENCY);
+        }
+    }
+
+    @Nested
+    class HandoffRouting {
+
+        static final Set<String> MONITORING_CAPS = Set.of("monitoring", "alerting");
+        static final Set<String> MIXED_CAPS      = Set.of("analysis", "monitoring");
+
+        MultiSwarmTopology topology;
+        UUID               monitoringSwarmId;
+
+        @BeforeEach
+        void setUp() {
+            topology          = MultiSwarmTopology.builder()
+                                                  .registry(registry)
+                                                  .weightedScoring(0.3, 0.6)
+                                                  .consistencyChecker(new DomainConsistencyChecker())
+                                                  .build();
+            monitoringSwarmId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void handoff_routed_to_best_capability_match() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+            registry.register(descriptor(monitoringSwarmId, MONITORING_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", Map.of("finding", "elevated-risk"),
+                    Set.of("monitoring", "alerting"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).hasSize(1);
+            var notification = notifications.get(0);
+            assertThat(notification.type()).isEqualTo(NotificationType.HANDOFF);
+            assertThat(notification.sourceSwarmId()).isEqualTo(analysisSwarmId);
+            assertThat(notification.targetSwarmId()).isEqualTo(monitoringSwarmId);
+            assertThat(notification.trigger()).isEqualTo(handoff);
+            assertThat(notification.confidence()).isGreaterThan(0.0);
+        }
+
+        @Test
+        void handoff_excludes_source_swarm() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("analysis", "pattern-detection"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .noneMatch(n -> n.targetSwarmId().equals(analysisSwarmId));
+        }
+
+        @Test
+        void no_notification_when_no_capability_match() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("billing", "invoicing"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).isEmpty();
+        }
+
+        @Test
+        void handoff_confidence_reflects_capability_overlap() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(monitoringSwarmId, MONITORING_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("monitoring"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).hasSize(1);
+            // Jaccard: intersection=1 (monitoring), union=2 (monitoring, alerting)
+            assertThat(notifications.get(0).confidence())
+                    .isCloseTo(0.5, org.assertj.core.data.Offset.offset(0.01));
+        }
+    }
+
+
 }

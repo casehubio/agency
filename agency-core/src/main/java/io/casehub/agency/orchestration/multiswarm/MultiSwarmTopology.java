@@ -20,10 +20,10 @@ import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.SwarmDescriptor;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.api.spi.coordination.CrossSwarmConvergenceEvaluator;
 import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.api.spi.coordination.RegistryListener;
-import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
 
@@ -52,7 +52,11 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     private final ConcurrentHashMap<UUID, SwarmProgress> latestProgress = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, Set<String>> resourceClaims = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<CrossSwarmNotification> pendingNotifications = new CopyOnWriteArrayList<>();
+    private final ConcurrentHashMap<UUID, Set<String>>         completedDomains     = new ConcurrentHashMap<>();
+
     private final @Nullable AgentProvider agentProvider;
+    private final           boolean       evictBeliefsOnCompletion;
+
 
     MultiSwarmTopology(MultiSwarmRegistry registry,
                        Supplier<RelevanceScorer> scorerFactory,
@@ -60,14 +64,16 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
                        ConsistencyChecker<SwarmConclusion> consistencyChecker,
                        @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator,
                        int replayBufferSize,
-                       @Nullable AgentProvider agentProvider) {
-        this.registry = registry;
-        this.bus = new CoordinationBus<>(replayBufferSize);
-        this.scorerFactory = scorerFactory;
-        this.gateFactory = gateFactory;
-        this.consistencyChecker = consistencyChecker;
-        this.convergenceEvaluator = convergenceEvaluator;
-        this.agentProvider = agentProvider;
+                       @Nullable AgentProvider agentProvider,
+                       boolean evictBeliefsOnCompletion) {
+        this.registry                 = registry;
+        this.bus                      = new CoordinationBus<>(replayBufferSize);
+        this.scorerFactory            = scorerFactory;
+        this.gateFactory              = gateFactory;
+        this.consistencyChecker       = consistencyChecker;
+        this.convergenceEvaluator     = convergenceEvaluator;
+        this.agentProvider            = agentProvider;
+        this.evictBeliefsOnCompletion = evictBeliefsOnCompletion;
         bus.subscribe(s -> true, this::processSignal);
     }
 
@@ -125,6 +131,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         escalationGates.remove(swarmId);
         latestProgress.remove(swarmId);
         resourceClaims.remove(swarmId);
+        completedDomains.remove(swarmId);
         beliefSet.updateAndGet(current -> {
             var updated = current;
             for (var belief : current.all()) {
@@ -146,15 +153,59 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         switch (signal) {
             case MultiSwarmSignal.Finding finding -> processL1Finding(finding);
             case MultiSwarmSignal.Progress progress -> processL1Progress(progress);
-            case MultiSwarmSignal.Completion ignored -> {}
+            case MultiSwarmSignal.Completion completion -> processCompletion(completion);
             case MultiSwarmSignal.ResourceClaim claim -> processResourceClaim(claim);
-            case MultiSwarmSignal.Handoff ignored -> {}
+            case MultiSwarmSignal.Handoff handoff -> processHandoff(handoff);
         }
     }
 
     private void processResourceClaim(MultiSwarmSignal.ResourceClaim claim) {
         resourceClaims.put(claim.sourceSwarmId(), Set.copyOf(claim.agentIds()));
     }
+
+    private void processCompletion(MultiSwarmSignal.Completion completion) {
+        completedDomains.computeIfAbsent(completion.sourceSwarmId(),
+                                         k -> ConcurrentHashMap.newKeySet()).add(completion.domain());
+
+        if (evictBeliefsOnCompletion) {
+            String beliefKeyPrefix = completion.sourceSwarmId() + ":" + completion.domain();
+            beliefSet.updateAndGet(current -> {
+                var updated = current;
+                for (var belief : current.all()) {
+                    if (belief.key().equals(beliefKeyPrefix)) {
+                        updated = updated.contract(belief.key());
+                    }
+                }
+                return updated;
+            });
+        }
+    }
+
+    private void processHandoff(MultiSwarmSignal.Handoff handoff) {
+        UUID   bestTarget  = null;
+        double bestOverlap = 0.0;
+
+        for (UUID swarmId : relevanceScorers.keySet()) {
+            if (swarmId.equals(handoff.sourceSwarmId())) {continue;}
+
+            var descriptor = registry.get(swarmId);
+            if (descriptor == null) {continue;}
+
+            double overlap = computeCapabilityOverlap(
+                    handoff.requiredCapabilities(), descriptor.capabilities());
+            if (overlap > bestOverlap) {
+                bestOverlap = overlap;
+                bestTarget  = swarmId;
+            }
+        }
+
+        if (bestTarget != null) {
+            pendingNotifications.add(new CrossSwarmNotification(
+                    handoff.sourceSwarmId(), bestTarget,
+                    NotificationType.HANDOFF, handoff, bestOverlap));
+        }
+    }
+
 
     private void processL1Finding(MultiSwarmSignal.Finding finding) {
         for (var entry : relevanceScorers.entrySet()) {
@@ -199,13 +250,17 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
             convergenceEvaluator.evaluate(Map.copyOf(latestProgress));
         }
 
+        if (completedDomains.containsKey(progress.sourceSwarmId())) {
+            return;
+        }
+
         for (var entry : escalationGates.entrySet()) {
             UUID swarmId = entry.getKey();
-            if (swarmId.equals(progress.sourceSwarmId())) continue;
+            if (swarmId.equals(progress.sourceSwarmId())) {continue;}
 
             var gate = entry.getValue();
             double conflictLevel = pendingNotifications.isEmpty() ? 0.0 :
-                    (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
+                                   (double) pendingNotifications.size() / Math.max(relevanceScorers.size(), 1);
             double resourceContention = computeResourceContention(progress.sourceSwarmId(), swarmId);
             double dependencyStrength = computeDependencyStrength(progress.sourceSwarmId(), swarmId);
 
@@ -257,6 +312,21 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
     public BeliefSet<SwarmConclusion> currentBeliefs() {
         return beliefSet.get();
     }
+
+    public Set<String> completedDomains(UUID swarmId) {
+        var domains = completedDomains.get(swarmId);
+        return domains == null ? Set.of() : Set.copyOf(domains);
+    }
+
+    public boolean isAllComplete() {
+        if (relevanceScorers.isEmpty()) {return false;}
+        for (UUID swarmId : relevanceScorers.keySet()) {
+            var domains = completedDomains.get(swarmId);
+            if (domains == null || domains.isEmpty()) {return false;}
+        }
+        return true;
+    }
+
 
     public List<CrossSwarmNotification> drainNotifications() {
         var drained = List.copyOf(pendingNotifications);
