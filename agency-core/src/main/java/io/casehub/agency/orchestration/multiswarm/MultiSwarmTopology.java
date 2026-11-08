@@ -155,7 +155,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
             case MultiSwarmSignal.Progress progress -> processL1Progress(progress);
             case MultiSwarmSignal.Completion completion -> processCompletion(completion);
             case MultiSwarmSignal.ResourceClaim claim -> processResourceClaim(claim);
-            case MultiSwarmSignal.Handoff ignored -> {}
+            case MultiSwarmSignal.Handoff handoff -> processHandoff(handoff);
         }
     }
 
@@ -178,6 +178,31 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
                 }
                 return updated;
             });
+        }
+    }
+
+    private void processHandoff(MultiSwarmSignal.Handoff handoff) {
+        UUID   bestTarget  = null;
+        double bestOverlap = 0.0;
+
+        for (UUID swarmId : relevanceScorers.keySet()) {
+            if (swarmId.equals(handoff.sourceSwarmId())) {continue;}
+
+            var descriptor = registry.get(swarmId);
+            if (descriptor == null) {continue;}
+
+            double overlap = computeCapabilityOverlap(
+                    handoff.requiredCapabilities(), descriptor.capabilities());
+            if (overlap > bestOverlap) {
+                bestOverlap = overlap;
+                bestTarget  = swarmId;
+            }
+        }
+
+        if (bestTarget != null) {
+            pendingNotifications.add(new CrossSwarmNotification(
+                    handoff.sourceSwarmId(), bestTarget,
+                    NotificationType.HANDOFF, handoff, bestOverlap));
         }
     }
 

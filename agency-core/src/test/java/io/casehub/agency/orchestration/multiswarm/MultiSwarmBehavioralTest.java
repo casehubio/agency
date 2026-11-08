@@ -865,4 +865,98 @@ class MultiSwarmBehavioralTest {
         }
     }
 
+    @Nested
+    class HandoffRouting {
+
+        static final Set<String> MONITORING_CAPS = Set.of("monitoring", "alerting");
+        static final Set<String> MIXED_CAPS      = Set.of("analysis", "monitoring");
+
+        MultiSwarmTopology topology;
+        UUID               monitoringSwarmId;
+
+        @BeforeEach
+        void setUp() {
+            topology          = MultiSwarmTopology.builder()
+                                                  .registry(registry)
+                                                  .weightedScoring(0.3, 0.6)
+                                                  .consistencyChecker(new DomainConsistencyChecker())
+                                                  .build();
+            monitoringSwarmId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            topology.close();
+        }
+
+        @Test
+        void handoff_routed_to_best_capability_match() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+            registry.register(descriptor(monitoringSwarmId, MONITORING_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "risk-assessment", Map.of("finding", "elevated-risk"),
+                    Set.of("monitoring", "alerting"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).hasSize(1);
+            var notification = notifications.get(0);
+            assertThat(notification.type()).isEqualTo(NotificationType.HANDOFF);
+            assertThat(notification.sourceSwarmId()).isEqualTo(analysisSwarmId);
+            assertThat(notification.targetSwarmId()).isEqualTo(monitoringSwarmId);
+            assertThat(notification.trigger()).isEqualTo(handoff);
+            assertThat(notification.confidence()).isGreaterThan(0.0);
+        }
+
+        @Test
+        void handoff_excludes_source_swarm() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("analysis", "pattern-detection"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .noneMatch(n -> n.targetSwarmId().equals(analysisSwarmId));
+        }
+
+        @Test
+        void no_notification_when_no_capability_match() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("billing", "invoicing"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).isEmpty();
+        }
+
+        @Test
+        void handoff_confidence_reflects_capability_overlap() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(monitoringSwarmId, MONITORING_CAPS));
+
+            var handoff = new MultiSwarmSignal.Handoff(
+                    analysisSwarmId, ANALYSIS_CAPS, System.currentTimeMillis(),
+                    "task", Map.of(), Set.of("monitoring"));
+            publishAndAwait(topology, handoff);
+
+            var notifications = topology.drainNotifications();
+            assertThat(notifications).hasSize(1);
+            // Jaccard: intersection=1 (monitoring), union=2 (monitoring, alerting)
+            assertThat(notifications.get(0).confidence())
+                    .isCloseTo(0.5, org.assertj.core.data.Offset.offset(0.01));
+        }
+    }
+
+
 }
