@@ -62,6 +62,17 @@ class MultiSwarmBehavioralTest {
                 new SwarmProgress(consensus, stability, consensus, Instant.now()));
     }
 
+    void publishAndAwait(MultiSwarmTopology topology, MultiSwarmSignal signal) throws InterruptedException {
+        var                                           latch    = new CountDownLatch(1);
+        java.util.function.Consumer<MultiSwarmSignal> callback = s -> latch.countDown();
+        topology.signalBus().subscribe(s -> true, callback);
+        topology.signalBus().publish(signal);
+        assertThat(latch.await(2, TimeUnit.SECONDS)).as("Signal delivery timed out").isTrue();
+        topology.signalBus().unsubscribe(callback);
+        Thread.sleep(500);
+    }
+
+
     static class RecordingConvergenceEvaluator implements CrossSwarmConvergenceEvaluator {
         private final List<Map<UUID, SwarmProgress>> calls =
                 Collections.synchronizedList(new ArrayList<>());
@@ -149,10 +160,8 @@ class MultiSwarmBehavioralTest {
 
         @Test
         void finding_from_overlapping_swarm_reaches_beliefs() throws InterruptedException {
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                     "system-health", "node-7:degraded", 0.9));
-
-            Thread.sleep(500);
 
             assertThat(topology.currentBeliefs().all().stream()
                     .anyMatch(b -> b.value().domain().equals("system-health"))).isTrue();
@@ -160,16 +169,14 @@ class MultiSwarmBehavioralTest {
 
         @Test
         void contradictory_findings_resolved_by_belief_revision() throws InterruptedException {
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                     "system-health", "node-7:healthy", 0.9));
-            Thread.sleep(300);
 
             assertThat(topology.currentBeliefs().all().stream()
                     .anyMatch(b -> b.value().conclusion().equals("node-7:healthy"))).isTrue();
 
-            topology.signalBus().publish(finding(remediationSwarmId, REMEDIATION_CAPS,
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
                     "system-health", "node-7:degraded", 0.8));
-            Thread.sleep(300);
 
             var beliefs = topology.currentBeliefs();
             assertThat(beliefs.all().stream()
@@ -244,12 +251,10 @@ class MultiSwarmBehavioralTest {
         @Test
         void convergence_evaluator_receives_progress_from_all_swarms()
                 throws InterruptedException {
-            topology.signalBus().publish(progress(analysisSwarmId, ANALYSIS_CAPS, 0.3, 0.3));
-            topology.signalBus().publish(progress(remediationSwarmId, REMEDIATION_CAPS, 0.5, 0.5));
-            topology.signalBus().publish(progress(thirdSwarmId,
+            publishAndAwait(topology, progress(analysisSwarmId, ANALYSIS_CAPS, 0.3, 0.3));
+            publishAndAwait(topology, progress(remediationSwarmId, REMEDIATION_CAPS, 0.5, 0.5));
+            publishAndAwait(topology, progress(thirdSwarmId,
                     Set.of("monitoring", "analysis"), 0.7, 0.7));
-
-            Thread.sleep(500);
 
             assertThat(evaluator.calls()).anySatisfy(progressMap ->
                     assertThat(progressMap).containsKeys(
@@ -315,9 +320,8 @@ class MultiSwarmBehavioralTest {
 
         @Test
         void deregistration_cleans_beliefs_for_that_swarm() throws InterruptedException {
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                                                  "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
             assertThat(topology.currentBeliefs().isEmpty()).isFalse();
 
             registry.deregister(analysisSwarmId);
@@ -347,9 +351,8 @@ class MultiSwarmBehavioralTest {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
 
-            topology.signalBus().publish(finding(remediationSwarmId, REMEDIATION_CAPS,
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
                                                  "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
 
             assertThat(topology.currentBeliefs().isEmpty()).isFalse();
         }
@@ -383,9 +386,8 @@ class MultiSwarmBehavioralTest {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                                                  "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
 
             assertThat(topology.currentBeliefs().isEmpty()).isFalse();
             topology.close();
@@ -458,9 +460,8 @@ class MultiSwarmBehavioralTest {
             defaultRegistry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             defaultRegistry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                                                  "system-health", "node-7:degraded", 0.9));
-            Thread.sleep(500);
 
             assertThat(topology.currentBeliefs().isEmpty()).isFalse();
             topology.close();
@@ -498,9 +499,12 @@ class MultiSwarmBehavioralTest {
         void finding_from_unknown_source_does_not_crash() throws InterruptedException {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
 
-            topology.signalBus().publish(finding(UUID.randomUUID(),
+            publishAndAwait(topology, finding(UUID.randomUUID(),
                                                  Set.of("unknown"), "unknown-domain", "something", 0.5));
-            Thread.sleep(300);
+
+            assertThat(topology.currentBeliefs().isEmpty())
+                    .as("Unknown source finding should not produce beliefs").isTrue();
+            assertThat(topology.signalBus().replayBuffer()).hasSize(1);
         }
 
         @Test
@@ -526,12 +530,10 @@ class MultiSwarmBehavioralTest {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
-            topology.signalBus().publish(finding(analysisSwarmId, ANALYSIS_CAPS,
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
                                                  "system-health", "node-7:healthy", 0.9));
-            Thread.sleep(300);
-            topology.signalBus().publish(finding(remediationSwarmId, REMEDIATION_CAPS,
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
                                                  "system-health", "node-7:degraded", 0.8));
-            Thread.sleep(300);
 
             assertThat(topology.drainNotifications())
                     .as("AGM revision resolves contradictions — no CONFLICT notifications produced")
