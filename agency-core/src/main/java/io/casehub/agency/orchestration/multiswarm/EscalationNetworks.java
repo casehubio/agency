@@ -2,6 +2,7 @@ package io.casehub.agency.orchestration.multiswarm;
 
 import io.quarkmind.inference.bayes.BayesNetwork;
 import io.quarkmind.inference.bayes.BayesNetworkBuilder;
+import io.quarkmind.inference.bayes.OnlineParameterUpdater;
 
 public final class EscalationNetworks {
 
@@ -20,5 +21,9 @@ public final class EscalationNetworks {
                         {0.40, 0.60}, {0.20, 0.80}, {0.25, 0.75}, {0.10, 0.90}
                     })
                 .build();
+    }
+
+    public static OnlineParameterUpdater updaterWithDecay(double decayFactor) {
+        return OnlineParameterUpdater.create(standard(), decayFactor);
     }
 }

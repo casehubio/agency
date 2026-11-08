@@ -4,18 +4,17 @@ import io.casehub.agency.deliberation.belief.ConsistencyChecker;
 import io.casehub.api.spi.coordination.CrossSwarmConvergenceEvaluator;
 import io.casehub.api.spi.coordination.MultiSwarmRegistry;
 import io.casehub.platform.agent.AgentProvider;
-import io.quarkmind.inference.bayes.BayesNetwork;
 import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class MultiSwarmTopologyBuilder {
 
     private MultiSwarmRegistry registry;
-    private BayesNetwork relevanceNetwork;
-    private BayesNetwork escalationNetwork;
     private ConsistencyChecker<SwarmConclusion> consistencyChecker;
-    private double relevanceThreshold = 0.7;
-    private double escalationThreshold = 0.8;
+    private @Nullable Supplier<RelevanceScorer> scorerFactory;
+    private @Nullable Supplier<EscalationGate> gateFactory;
     private @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator;
     private int replayBufferSize = 100;
     private @Nullable AgentProvider agentProvider;
@@ -25,28 +24,32 @@ public class MultiSwarmTopologyBuilder {
         return this;
     }
 
-    public MultiSwarmTopologyBuilder relevanceNetwork(BayesNetwork network) {
-        this.relevanceNetwork = network;
-        return this;
-    }
-
-    public MultiSwarmTopologyBuilder escalationNetwork(BayesNetwork network) {
-        this.escalationNetwork = network;
-        return this;
-    }
-
     public MultiSwarmTopologyBuilder consistencyChecker(ConsistencyChecker<SwarmConclusion> checker) {
         this.consistencyChecker = checker;
         return this;
     }
 
-    public MultiSwarmTopologyBuilder relevanceThreshold(double threshold) {
-        this.relevanceThreshold = threshold;
+    public MultiSwarmTopologyBuilder weightedScoring(double relevanceThreshold, double escalationThreshold) {
+        this.scorerFactory = () -> new WeightedRelevanceScorer(relevanceThreshold);
+        this.gateFactory = () -> new WeightedEscalationGate(escalationThreshold);
         return this;
     }
 
-    public MultiSwarmTopologyBuilder escalationThreshold(double threshold) {
-        this.escalationThreshold = threshold;
+    public MultiSwarmTopologyBuilder bjtScoring(double relevanceThreshold, double escalationThreshold) {
+        this.scorerFactory = () -> new BjtRelevanceScorer(
+                RelevanceNetworks.updaterWithDecay(0.95), relevanceThreshold);
+        this.gateFactory = () -> new BjtEscalationGate(
+                EscalationNetworks.updaterWithDecay(0.95), escalationThreshold);
+        return this;
+    }
+
+    public MultiSwarmTopologyBuilder scorerFactory(Supplier<RelevanceScorer> factory) {
+        this.scorerFactory = factory;
+        return this;
+    }
+
+    public MultiSwarmTopologyBuilder gateFactory(Supplier<EscalationGate> factory) {
+        this.gateFactory = factory;
         return this;
     }
 
@@ -67,13 +70,14 @@ public class MultiSwarmTopologyBuilder {
 
     public MultiSwarmTopology build() {
         Objects.requireNonNull(registry, "registry is required");
-        Objects.requireNonNull(relevanceNetwork, "relevanceNetwork is required");
-        Objects.requireNonNull(escalationNetwork, "escalationNetwork is required");
         Objects.requireNonNull(consistencyChecker, "consistencyChecker is required");
+        Supplier<RelevanceScorer> sf = scorerFactory != null ? scorerFactory
+                : () -> new WeightedRelevanceScorer(0.5);
+        Supplier<EscalationGate> gf = gateFactory != null ? gateFactory
+                : () -> new WeightedEscalationGate(0.6);
         var topology = new MultiSwarmTopology(registry,
-                relevanceNetwork, escalationNetwork, consistencyChecker,
-                relevanceThreshold, escalationThreshold, convergenceEvaluator,
-                replayBufferSize, agentProvider);
+                sf, gf, consistencyChecker,
+                convergenceEvaluator, replayBufferSize, agentProvider);
         registry.addListener(topology);
         return topology;
     }

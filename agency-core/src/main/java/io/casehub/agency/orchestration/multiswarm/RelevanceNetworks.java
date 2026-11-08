@@ -2,13 +2,13 @@ package io.casehub.agency.orchestration.multiswarm;
 
 import io.quarkmind.inference.bayes.BayesNetwork;
 import io.quarkmind.inference.bayes.BayesNetworkBuilder;
+import io.quarkmind.inference.bayes.OnlineParameterUpdater;
 
 public final class RelevanceNetworks {
 
     private RelevanceNetworks() {}
 
     public static BayesNetwork standard() {
-        // Parents: CO(3) × DM(3) × SS(3) × HR(2) = 54 rows, each {P(yes), P(no)}
         return BayesNetworkBuilder.create("relevance")
                 .variable("CapabilityOverlap", "high", "medium", "low").prior(0.2, 0.3, 0.5)
                 .variable("DomainMatch", "match", "partial", "none").prior(0.2, 0.3, 0.5)
@@ -18,42 +18,46 @@ public final class RelevanceNetworks {
                     .given("CapabilityOverlap", "DomainMatch", "SignalStrength", "HistoricalRelevance")
                     .cpt(new double[][] {
                         // CO=high, DM=match
-                        {0.95, 0.05}, {0.85, 0.15},  // SS=strong, HR=high/low
-                        {0.90, 0.10}, {0.80, 0.20},  // SS=moderate
-                        {0.80, 0.20}, {0.70, 0.30},  // SS=weak
+                        {0.98, 0.02}, {0.90, 0.10},
+                        {0.93, 0.07}, {0.83, 0.17},
+                        {0.83, 0.17}, {0.73, 0.27},
                         // CO=high, DM=partial
-                        {0.85, 0.15}, {0.75, 0.25},
-                        {0.75, 0.25}, {0.65, 0.35},
-                        {0.65, 0.35}, {0.50, 0.50},
+                        {0.88, 0.12}, {0.78, 0.22},
+                        {0.78, 0.22}, {0.68, 0.32},
+                        {0.68, 0.32}, {0.53, 0.47},
                         // CO=high, DM=none
-                        {0.70, 0.30}, {0.55, 0.45},
-                        {0.60, 0.40}, {0.45, 0.55},
-                        {0.45, 0.55}, {0.30, 0.70},
+                        {0.73, 0.27}, {0.58, 0.42},
+                        {0.63, 0.37}, {0.48, 0.52},
+                        {0.48, 0.52}, {0.33, 0.67},
                         // CO=medium, DM=match
-                        {0.80, 0.20}, {0.70, 0.30},
-                        {0.70, 0.30}, {0.55, 0.45},
-                        {0.55, 0.45}, {0.40, 0.60},
+                        {0.83, 0.17}, {0.73, 0.27},
+                        {0.73, 0.27}, {0.58, 0.42},
+                        {0.58, 0.42}, {0.43, 0.57},
                         // CO=medium, DM=partial
-                        {0.65, 0.35}, {0.50, 0.50},
-                        {0.50, 0.50}, {0.35, 0.65},
-                        {0.35, 0.65}, {0.20, 0.80},
+                        {0.68, 0.32}, {0.53, 0.47},
+                        {0.53, 0.47}, {0.38, 0.62},
+                        {0.38, 0.62}, {0.23, 0.77},
                         // CO=medium, DM=none
-                        {0.45, 0.55}, {0.30, 0.70},
-                        {0.30, 0.70}, {0.20, 0.80},
-                        {0.20, 0.80}, {0.10, 0.90},
+                        {0.48, 0.52}, {0.33, 0.67},
+                        {0.33, 0.67}, {0.23, 0.77},
+                        {0.23, 0.77}, {0.13, 0.87},
                         // CO=low, DM=match
-                        {0.60, 0.40}, {0.45, 0.55},
-                        {0.45, 0.55}, {0.30, 0.70},
-                        {0.30, 0.70}, {0.15, 0.85},
+                        {0.63, 0.37}, {0.48, 0.52},
+                        {0.48, 0.52}, {0.33, 0.67},
+                        {0.33, 0.67}, {0.18, 0.82},
                         // CO=low, DM=partial
-                        {0.40, 0.60}, {0.25, 0.75},
-                        {0.25, 0.75}, {0.15, 0.85},
-                        {0.15, 0.85}, {0.05, 0.95},
+                        {0.43, 0.57}, {0.28, 0.72},
+                        {0.28, 0.72}, {0.18, 0.82},
+                        {0.18, 0.82}, {0.08, 0.92},
                         // CO=low, DM=none
-                        {0.20, 0.80}, {0.10, 0.90},
-                        {0.10, 0.90}, {0.05, 0.95},
-                        {0.05, 0.95}, {0.02, 0.98}
+                        {0.23, 0.77}, {0.13, 0.87},
+                        {0.13, 0.87}, {0.08, 0.92},
+                        {0.08, 0.92}, {0.03, 0.97}
                     })
                 .build();
+    }
+
+    public static OnlineParameterUpdater updaterWithDecay(double decayFactor) {
+        return OnlineParameterUpdater.create(standard(), decayFactor);
     }
 }
