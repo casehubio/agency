@@ -8,7 +8,7 @@ import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;

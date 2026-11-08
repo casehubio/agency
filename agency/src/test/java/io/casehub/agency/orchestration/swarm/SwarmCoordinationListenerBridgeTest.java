@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.execution.DriverEvent;
 import io.casehub.api.model.stigmergy.BehavioralFingerprint;
 import io.casehub.api.model.stigmergy.DetectedRole;

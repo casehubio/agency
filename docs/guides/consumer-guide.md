@@ -766,6 +766,8 @@ Protocol playbooks execute as `ChannelProtocol` implementations via the playbook
 
 **Pattern DSL**: `Patterns.supervisor().agents(a, b, c).task("route claim").execute(state)` for quick multi-agent setups. HTN pattern via `Patterns.htn().rootTask(compound(...)).execute(state)`. Swarm pattern via `Patterns.swarm().agentProvider(provider).experienceConfig(config).build()` — LLM-driven team formation with experience replay, collective reasoning, and adaptive coordination.
 
+**Multi-swarm coordination**: `MultiSwarmTopology.builder().registry(registry).relevanceNetwork(RelevanceNetworks.standard()).escalationNetwork(EscalationNetworks.standard()).consistencyChecker(new DomainConsistencyChecker()).build()` — coordinates across multiple swarm instances via a tiered protocol: L0 rule-based signal routing (`CoordinationBus`), L1 Bayesian junction tree relevance scoring (`RelevanceScorer`/`EscalationGate`), and L2 AGM belief revision conflict detection (`BeliefSet<SwarmConclusion>`). Optional L3 LLM mediation via `agentProvider()`. YAML surface via `TopologySpec.MultiSwarm`. Requires engine-api `MultiSwarmRegistry` SPI for swarm identity and lifecycle management.
+
 ## Configuration
 
 No runtime configuration -- agency is a pure library, not a Quarkus extension. All configuration happens via code (SPI implementations, CDI beans).

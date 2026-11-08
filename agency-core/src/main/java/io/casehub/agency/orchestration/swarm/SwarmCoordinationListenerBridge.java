@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.swarm;
 
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.DetectedTeam;
 import io.casehub.api.model.stigmergy.SwarmProgress;
@@ -31,7 +32,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.SwarmInitialised(List.of(), progress));
+            source.onSwarmEvent(new SwarmCoordinationEvent.SwarmInitialised(new UUID(0, 0), List.of(), progress));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge SwarmInitialised event", e);
         }
@@ -42,7 +43,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(roles, progress));
+            source.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(new UUID(0, 0), roles, progress));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge RoleChanged event", e);
         }
@@ -53,7 +54,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.TeamChanged(teams, progress));
+            source.onSwarmEvent(new SwarmCoordinationEvent.TeamChanged(new UUID(0, 0), teams, progress));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge TeamChanged event", e);
         }
@@ -64,7 +65,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(progress));
+            source.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(new UUID(0, 0), progress));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge ProgressUpdated event", e);
         }
@@ -75,7 +76,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(agentId, null));
+            source.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(new UUID(0, 0), agentId, null));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge MemberCompleted event", e);
         }
@@ -86,7 +87,7 @@ public class SwarmCoordinationListenerBridge implements SwarmCoordinationListene
         var source = this.eventSource;
         if (source == null) return;
         try {
-            source.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(currentSize, maxSize));
+            source.onSwarmEvent(new SwarmCoordinationEvent.ProvisioningChanged(new UUID(0, 0), currentSize, maxSize));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Failed to bridge ProvisioningChanged event", e);
         }

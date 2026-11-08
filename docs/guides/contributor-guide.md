@@ -309,6 +309,23 @@ When adding a new `SignalCategory` in neocortex, add it to the appropriate `Atte
 
 **Proactive speech:** `ProactiveSpeechSupport` wraps `InnerLifeOrchestrator.tick()` and extracts the `content` field from `InnerLifeTick.Initiated`. The proactive path in speech-ws differs from user-initiated turns: no second LLM call (content is the utterance), no signal recording (self-initiated, not user interaction), content added to history as "assistant" role.
 
+## Multi-Swarm Coordination Architecture
+
+The multi-swarm coordination system enables coordination across multiple swarm instances via a tiered protocol. Engine owns identity and lifecycle; agency owns coordination intelligence.
+
+| Layer | What it does |
+|-------|-------------|
+| L0 -- Signal routing | `CoordinationBus<MultiSwarmSignal>` predicate-filtered pub/sub with ring-buffer replay. `MultiSwarmListenerBridge` transforms engine `SwarmCoordinationListener` events into `MultiSwarmSignal` instances. |
+| L1 -- Relevance scoring | `RelevanceScorer` uses Bayesian junction tree inference (neocortex inference-bayes) to score signal relevance per swarm. `EscalationGate` accumulates evidence for L1->L2 escalation decisions. Networks defined in `RelevanceNetworks`/`EscalationNetworks`. |
+| L2 -- Conflict detection | `BeliefSet<SwarmConclusion>` with AGM belief revision. `DomainConsistencyChecker` detects structural negation (same entity, different state) across swarm conclusions. |
+| L3 -- LLM mediation | Optional. When `agentProvider()` is set on the builder, enables LLM-backed conflict resolution for cases L2 cannot resolve mechanically. |
+
+**Engine/agency boundary:** Engine-api provides `SwarmDescriptor` (swarm identity), `MultiSwarmRegistry` SPI (registration/lookup), `SwarmCoordinationListener` swarmId overloads (lifecycle events), and `CrossSwarmConvergenceEvaluator` SPI. Engine runtime-core provides `InMemoryMultiSwarmRegistry` and `AllConvergedEvaluator`. Agency provides all coordination intelligence via `MultiSwarmTopology`.
+
+**Composition root:** `MultiSwarmTopology` implements both `CoordinationTopology` (topology lifecycle) and `RegistryListener` (dynamic scorer/gate creation). The builder wires L0-L2 automatically. Registered via `MultiSwarmTopologyBuilder.build()` which also calls `registry.addListener(topology)`.
+
+**YAML surface:** `TopologySpec.MultiSwarm` with optional `MultiSwarmCoordinationSpec` thresholds. `MultiSwarmTopologyCompiler.compile()` produces a `CompiledMultiSwarm` from the spec.
+
 ## Trust Routing Architecture
 
 The trust routing system spans four layers -- agency owns AI-powered routing strategies and compliance audit types.

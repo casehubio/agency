@@ -20,7 +20,7 @@ import io.casehub.agency.orchestration.loop.ObservationEvent;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 import io.casehub.agency.orchestration.routing.RoutingStrategy;
-import io.casehub.agency.orchestration.swarm.SwarmCoordinationEvent;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.api.model.coordination.CommunicationMode;

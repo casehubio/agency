@@ -18,7 +18,8 @@ import java.util.Map;
         @Type(value = TopologySpec.Swarm.class, name = "swarm"),
         @Type(value = TopologySpec.Hive.class, name = "hive"),
         @Type(value = TopologySpec.Mesh.class, name = "mesh"),
-        @Type(value = TopologySpec.Many.class, name = "many")
+        @Type(value = TopologySpec.Many.class, name = "many"),
+        @Type(value = TopologySpec.MultiSwarm.class, name = "multi-swarm")
 })
 public sealed interface TopologySpec {
 
@@ -43,6 +44,17 @@ public sealed interface TopologySpec {
     record Many() implements TopologySpec {
         @Override public @Nullable String authority() { return null; }
     }
+
+    record MultiSwarm(
+            @Nullable String authority,
+            Map<String, TopologySpec> swarms,
+            @Nullable MultiSwarmCoordinationSpec coordination
+    ) implements TopologySpec {
+        public MultiSwarm {
+            if (swarms != null) {swarms = Map.copyOf(swarms);}
+        }
+    }
+
 
     record RolePolicySpec(
             @Nullable List<String> obligations,
