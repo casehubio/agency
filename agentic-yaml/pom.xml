@@ -45,6 +45,12 @@
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
+      <artifactId>casehub-neocortex-inference-bayes</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.casehub</groupId>
       <artifactId>casehub-platform-schema-generator</artifactId>
       <version>${project.version}</version>
     </dependency>
