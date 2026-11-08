@@ -63,6 +63,12 @@ class MultiSwarmBehavioralTest {
                 new SwarmProgress(consensus, stability, consensus, Instant.now()));
     }
 
+    MultiSwarmSignal.ResourceClaim resourceClaim(UUID sourceSwarmId, Set<String> domainTags,
+            Set<String> agentIds, Set<String> capabilities) {
+        return new MultiSwarmSignal.ResourceClaim(sourceSwarmId, domainTags,
+                System.currentTimeMillis(), agentIds, capabilities);
+    }
+
     void publishAndAwait(MultiSwarmTopology topology, MultiSwarmSignal signal) throws InterruptedException {
         var latch = new CountDownLatch(1);
         Consumer<MultiSwarmSignal> callback = s -> latch.countDown();
@@ -222,6 +228,61 @@ class MultiSwarmBehavioralTest {
                 soloTopology.close();
             }
         }
+
+        @Test
+        void resource_contention_feeds_escalation_gate() throws InterruptedException {
+            var lowThresholdRegistry = new TestMultiSwarmRegistry();
+            var lowThresholdTopology = MultiSwarmTopology.builder()
+                    .registry(lowThresholdRegistry)
+                    .weightedScoring(0.3, 0.2)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .build();
+            try {
+                lowThresholdRegistry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+                lowThresholdRegistry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+                publishAndAwait(lowThresholdTopology, resourceClaim(analysisSwarmId, ANALYSIS_CAPS,
+                        Set.of("agent-1", "agent-2", "agent-3"), ANALYSIS_CAPS));
+                publishAndAwait(lowThresholdTopology, resourceClaim(remediationSwarmId, REMEDIATION_CAPS,
+                        Set.of("agent-2", "agent-3", "agent-4"), REMEDIATION_CAPS));
+
+                publishAndAwait(lowThresholdTopology, progress(analysisSwarmId, ANALYSIS_CAPS, 0.5, 0.5));
+
+                assertThat(lowThresholdTopology.drainNotifications())
+                        .as("Overlapping resource claims should feed escalation gate")
+                        .anyMatch(n -> n.type() == NotificationType.DEPENDENCY);
+            } finally {
+                lowThresholdTopology.close();
+            }
+        }
+
+        @Test
+        void non_overlapping_claims_produce_no_contention() throws InterruptedException {
+            var lowThresholdRegistry = new TestMultiSwarmRegistry();
+            var caps = Set.of("analysis", "monitoring");
+            var lowThresholdTopology = MultiSwarmTopology.builder()
+                    .registry(lowThresholdRegistry)
+                    .weightedScoring(0.01, 0.4)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .build();
+            try {
+                lowThresholdRegistry.register(descriptor(analysisSwarmId, caps));
+                lowThresholdRegistry.register(descriptor(remediationSwarmId, caps));
+
+                publishAndAwait(lowThresholdTopology, resourceClaim(analysisSwarmId, caps,
+                        Set.of("agent-1", "agent-2"), caps));
+                publishAndAwait(lowThresholdTopology, resourceClaim(remediationSwarmId, caps,
+                        Set.of("agent-3", "agent-4"), caps));
+
+                publishAndAwait(lowThresholdTopology, progress(analysisSwarmId, caps, 0.5, 0.5));
+
+                assertThat(lowThresholdTopology.drainNotifications())
+                        .as("Non-overlapping claims should not trigger escalation")
+                        .noneMatch(n -> n.type() == NotificationType.DEPENDENCY);
+            } finally {
+                lowThresholdTopology.close();
+            }
+        }
     }
 
     @Nested
@@ -347,6 +408,19 @@ class MultiSwarmBehavioralTest {
             assertThat(topology.currentBeliefs().isEmpty())
                     .as("No remaining scorer to evaluate analysis signal (self-scoring skipped)")
                     .isTrue();
+        }
+
+        @Test
+        void interests_update_resets_scorer_and_gate() {
+            assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
+            var scorerBefore = topology.getScorer(analysisSwarmId);
+
+            registry.updateInterests(analysisSwarmId, Set.of("billing", "invoicing"));
+
+            assertThat(topology.hasScorer(analysisSwarmId)).isTrue();
+            assertThat(topology.getScorer(analysisSwarmId))
+                    .as("Scorer should be replaced after capability change")
+                    .isNotSameAs(scorerBefore);
         }
 
         @Test
@@ -542,7 +616,7 @@ class MultiSwarmBehavioralTest {
         }
 
         @Test
-        void drain_notifications_returns_empty_when_beliefs_resolved() throws InterruptedException {
+        void contradictory_findings_produce_conflict_notification() throws InterruptedException {
             registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
             registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
 
@@ -551,11 +625,30 @@ class MultiSwarmBehavioralTest {
             publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
                                                  "system-health", "node-7:degraded", 0.8));
 
+            var notifications = topology.drainNotifications();
+            assertThat(notifications)
+                    .as("Contradictory findings should produce CONFLICT notification")
+                    .isNotEmpty();
+            assertThat(notifications).allSatisfy(n ->
+                    assertThat(n.type()).isEqualTo(NotificationType.CONFLICT));
+
             assertThat(topology.drainNotifications())
-                    .as("AGM revision resolves contradictions — no CONFLICT notifications produced")
+                    .as("Drain is one-shot — subsequent drain returns empty").isEmpty();
+        }
+
+        @Test
+        void consistent_findings_produce_no_conflict_notification() throws InterruptedException {
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                                                 "system-health", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                                                 "system-health", "node-7:healthy", 0.8));
+
+            assertThat(topology.drainNotifications())
+                    .as("Consistent findings should not produce CONFLICT notifications")
                     .isEmpty();
-            assertThat(topology.drainNotifications())
-                    .as("Subsequent drain also empty").isEmpty();
         }
 
         @Test
