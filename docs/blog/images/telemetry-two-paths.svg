@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="420" fill="#fafafa" rx="8"/>
+
+  <!-- Title -->
+  <text x="360" y="32" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Two Execution Paths — Why They Don't Intersect</text>
+
+  <!-- Path A: Standard Driver -->
+  <rect x="30" y="60" width="310" height="320" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="185" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Standard Driver Path</text>
+
+  <rect x="55" y="100" width="260" height="36" rx="4" fill="#dbeafe" stroke="#60a5fa"/>
+  <text x="185" y="123" text-anchor="middle" font-size="11" fill="#1e3a5f">ExecutionModel → OrchestratedDriver</text>
+
+  <line x1="185" y1="136" x2="185" y2="158" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="55" y="160" width="260" height="36" rx="4" fill="#dbeafe" stroke="#60a5fa"/>
+  <text x="185" y="183" text-anchor="middle" font-size="11" fill="#1e3a5f">AbstractExecutionDriver.notifyXxx()</text>
+
+  <line x1="185" y1="196" x2="185" y2="218" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="55" y="220" width="260" height="36" rx="4" fill="#dbeafe" stroke="#60a5fa"/>
+  <text x="185" y="243" text-anchor="middle" font-size="11" fill="#1e3a5f">ExecutionEventListener callbacks</text>
+
+  <line x1="185" y1="256" x2="185" y2="278" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="55" y="280" width="260" height="36" rx="4" fill="#dbeafe" stroke="#60a5fa"/>
+  <text x="185" y="303" text-anchor="middle" font-size="11" fill="#1e3a5f">CheckpointingListener (engine-adapter)</text>
+
+  <text x="185" y="345" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">No DecisionLoopEvent here</text>
+
+  <!-- Path B: Coordination Topology -->
+  <rect x="380" y="60" width="310" height="320" rx="6" fill="#fef3c7" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="535" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">Coordination Topology Path</text>
+
+  <rect x="405" y="100" width="260" height="36" rx="4" fill="#fef9c3" stroke="#facc15"/>
+  <text x="535" y="123" text-anchor="middle" font-size="11" fill="#713f12">CentralisedTopology → CoordinationPlan</text>
+
+  <line x1="535" y1="136" x2="535" y2="158" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="405" y="160" width="260" height="36" rx="4" fill="#fef9c3" stroke="#facc15"/>
+  <text x="535" y="183" text-anchor="middle" font-size="11" fill="#713f12">DecisionLoopFactory → AgentDecisionLoop</text>
+
+  <line x1="535" y1="196" x2="535" y2="218" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="405" y="220" width="260" height="36" rx="4" fill="#fef9c3" stroke="#facc15"/>
+  <text x="535" y="243" text-anchor="middle" font-size="11" fill="#713f12">BudgetTelemetryEvent.Outcome</text>
+
+  <line x1="535" y1="256" x2="535" y2="278" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="405" y="280" width="260" height="36" rx="4" fill="#fef9c3" stroke="#facc15"/>
+  <text x="535" y="303" text-anchor="middle" font-size="11" fill="#713f12">DecisionLoopEvent.ReasoningCompleted</text>
+
+  <line x1="535" y1="316" x2="535" y2="338" stroke="#64748b" marker-end="url(#arr)"/>
+
+  <rect x="405" y="340" width="260" height="30" rx="4" fill="#fee2e2" stroke="#f87171"/>
+  <text x="535" y="360" text-anchor="middle" font-size="11" fill="#991b1b" font-weight="600">loopEventSink: e → { }</text>
+
+  <!-- Cross: no connection -->
+  <line x1="315" y1="250" x2="380" y2="250" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="348" y="242" text-anchor="middle" font-size="20" fill="#dc2626" font-weight="bold">✕</text>
+
+  <!-- Footer -->
+  <text x="360" y="405" text-anchor="middle" font-size="10" fill="#94a3b8">onDecisionLoopEvent() exists on ExecutionEventListener but is never called — it's on the wrong path</text>
+</svg>
