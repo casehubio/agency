@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Bayesian junction tree escalation gate — uses conditional independence
- * structure for multi-factor escalation decisions. Per-swarm instance
- * with synchronized access.
+ * Bayesian junction tree escalation gate. Same per-call instance pattern
+ * as {@link BjtRelevanceScorer} — appropriate for the current 4-variable
+ * network where all evidence changes every call.
  */
 public class BjtEscalationGate implements EscalationGate {
 
@@ -25,8 +25,8 @@ public class BjtEscalationGate implements EscalationGate {
     }
 
     @Override
-    public synchronized double escalationProbability(double conflictLevel, double resourceContention,
-                                                     double dependencyStrength) {
+    public double escalationProbability(double conflictLevel, double resourceContention,
+                                        double dependencyStrength) {
         var instance = updater.getInstance();
         instance.setLikelyhood("ConflictIndicators", BjtRelevanceScorer.discretize(conflictLevel));
         instance.setLikelyhood("ResourceContention", new double[]{resourceContention, 1.0 - resourceContention});
