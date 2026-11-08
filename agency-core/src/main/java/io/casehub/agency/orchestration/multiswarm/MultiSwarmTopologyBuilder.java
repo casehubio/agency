@@ -37,9 +37,11 @@ public class MultiSwarmTopologyBuilder {
 
     public MultiSwarmTopologyBuilder bjtScoring(double relevanceThreshold, double escalationThreshold) {
         this.scorerFactory = () -> new BjtRelevanceScorer(
-                RelevanceNetworks.standard(), relevanceThreshold);
+                io.quarkmind.inference.bayes.OnlineParameterUpdater.create(RelevanceNetworks.standard(), 0.95),
+                relevanceThreshold);
         this.gateFactory = () -> new BjtEscalationGate(
-                EscalationNetworks.standard(), escalationThreshold);
+                io.quarkmind.inference.bayes.OnlineParameterUpdater.create(EscalationNetworks.standard(), 0.95),
+                escalationThreshold);
         return this;
     }
 
