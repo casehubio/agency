@@ -19,6 +19,7 @@ public class MultiSwarmTopologyBuilder {
     private int replayBufferSize = 100;
     private @Nullable AgentProvider agentProvider;
     private           boolean       evictBeliefsOnCompletion = false;
+    private @Nullable ConflictMediator conflictMediator;
 
 
     public MultiSwarmTopologyBuilder registry(MultiSwarmRegistry registry) {
@@ -78,6 +79,12 @@ public class MultiSwarmTopologyBuilder {
         return this;
     }
 
+    public MultiSwarmTopologyBuilder conflictMediator(ConflictMediator mediator) {
+        this.conflictMediator = mediator;
+        return this;
+    }
+
+
     public MultiSwarmTopology build() {
         Objects.requireNonNull(registry, "registry is required");
         Objects.requireNonNull(consistencyChecker, "consistencyChecker is required");
@@ -85,10 +92,16 @@ public class MultiSwarmTopologyBuilder {
                                                              : () -> new WeightedRelevanceScorer(0.5);
         Supplier<EscalationGate> gf = gateFactory != null ? gateFactory
                                                           : () -> new WeightedEscalationGate(0.6);
+        ConflictMediator mediator = this.conflictMediator;
+        if (mediator == null && agentProvider != null) {
+            mediator = new BudgetGatedConflictMediator(
+                    new LlmConflictMediator(agentProvider),
+                    new HeuristicConflictMediator());
+        }
         var topology = new MultiSwarmTopology(registry,
                                               sf, gf, consistencyChecker,
                                               convergenceEvaluator, replayBufferSize, agentProvider,
-                                              evictBeliefsOnCompletion);
+                                              evictBeliefsOnCompletion, mediator);
         registry.addListener(topology);
         return topology;
     }

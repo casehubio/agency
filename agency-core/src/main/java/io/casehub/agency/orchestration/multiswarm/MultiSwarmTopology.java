@@ -27,6 +27,9 @@ import io.casehub.api.spi.coordination.RegistryListener;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +37,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -56,6 +60,8 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
 
     private final @Nullable AgentProvider agentProvider;
     private final           boolean       evictBeliefsOnCompletion;
+    private final @Nullable ConflictMediator conflictMediator;
+    private final ConcurrentLinkedQueue<ConflictContext> pendingConflicts = new ConcurrentLinkedQueue<>();
 
 
     MultiSwarmTopology(MultiSwarmRegistry registry,
@@ -65,7 +71,8 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
                        @Nullable CrossSwarmConvergenceEvaluator convergenceEvaluator,
                        int replayBufferSize,
                        @Nullable AgentProvider agentProvider,
-                       boolean evictBeliefsOnCompletion) {
+                       boolean evictBeliefsOnCompletion,
+                       @Nullable ConflictMediator conflictMediator) {
         this.registry                 = registry;
         this.bus                      = new CoordinationBus<>(replayBufferSize);
         this.scorerFactory            = scorerFactory;
@@ -74,6 +81,7 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         this.convergenceEvaluator     = convergenceEvaluator;
         this.agentProvider            = agentProvider;
         this.evictBeliefsOnCompletion = evictBeliefsOnCompletion;
+        this.conflictMediator         = conflictMediator;
         bus.subscribe(s -> true, this::processSignal);
     }
 
@@ -96,6 +104,9 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
                 CommunicationMode.BROADCAST,
                 BudgetPriority.RESERVED,
                 List.of("cross-swarm-signals", "conflict-state", "convergence-progress"));
+        if (conflictMediator instanceof BudgetGatedConflictMediator bgm) {
+            bgm.bindPool(pool);
+        }
         return new CoordinationPlan(List.of(coordinator), this::executeCoordination, pool);
     }
 
@@ -161,6 +172,19 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
 
     private void processResourceClaim(MultiSwarmSignal.ResourceClaim claim) {
         resourceClaims.put(claim.sourceSwarmId(), Set.copyOf(claim.agentIds()));
+
+        if (conflictMediator != null) {
+            for (var entry : resourceClaims.entrySet()) {
+                if (entry.getKey().equals(claim.sourceSwarmId())) continue;
+                if (!Collections.disjoint(entry.getValue(), claim.agentIds())) {
+                    var notification = new CrossSwarmNotification(
+                            claim.sourceSwarmId(), entry.getKey(),
+                            NotificationType.RESOURCE_CONTENTION, claim, 0.8);
+                    pendingNotifications.add(notification);
+                    pendingConflicts.add(buildConflictContext(notification, List.of()));
+                }
+            }
+        }
     }
 
     private void processCompletion(MultiSwarmSignal.Completion completion) {
@@ -231,15 +255,27 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         var beliefKey = finding.sourceSwarmId() + ":" + finding.domain();
         var newBelief = Belief.of(beliefKey, conclusion, (int) (finding.confidence() * 100));
 
-        boolean contradicted = !consistencyChecker.isConsistent(beliefSet.get().expand(newBelief));
-
-        beliefSet.updateAndGet(current -> current.revise(newBelief, consistencyChecker));
+        BeliefSet<SwarmConclusion> before, after;
+        List<Belief<SwarmConclusion>> contracted;
+        do {
+            before = beliefSet.get();
+            after = before.revise(newBelief, consistencyChecker);
+            var revised = after;
+            contracted = before.all().stream()
+                    .filter(b -> !revised.contains(b.key()))
+                    .toList();
+        } while (!beliefSet.compareAndSet(before, after));
+        boolean contradicted = !contracted.isEmpty();
 
         if (contradicted) {
             var notification = new CrossSwarmNotification(
                     finding.sourceSwarmId(), targetSwarmId,
                     NotificationType.CONFLICT, finding, finding.confidence());
             pendingNotifications.add(notification);
+
+            if (conflictMediator != null) {
+                pendingConflicts.add(buildConflictContext(notification, contracted));
+            }
         }
     }
 
@@ -327,6 +363,39 @@ public class MultiSwarmTopology implements CoordinationTopology, RegistryListene
         return true;
     }
 
+
+    public List<MediationResult> resolveConflicts() {
+        if (conflictMediator == null) return List.of();
+
+        var results = new ArrayList<MediationResult>();
+        ConflictContext ctx;
+        while ((ctx = pendingConflicts.poll()) != null) {
+            var result = conflictMediator.mediate(ctx);
+            applyResult(result);
+            results.add(result);
+        }
+        return List.copyOf(results);
+    }
+
+    private void applyResult(MediationResult result) {
+        if (result instanceof MediationResult.Resolved resolved && resolved.updatedBelief() != null) {
+            beliefSet.updateAndGet(current -> current.expand(resolved.updatedBelief()));
+        }
+    }
+
+    private ConflictContext buildConflictContext(CrossSwarmNotification notification,
+                                                 List<Belief<SwarmConclusion>> contracted) {
+        var descriptors = new HashMap<UUID, SwarmDescriptor>();
+        var sourceDesc = registry.get(notification.sourceSwarmId());
+        var targetDesc = registry.get(notification.targetSwarmId());
+        if (sourceDesc != null) descriptors.put(notification.sourceSwarmId(), sourceDesc);
+        if (targetDesc != null) descriptors.put(notification.targetSwarmId(), targetDesc);
+
+        return new ConflictContext(
+                notification, beliefSet.get(), contracted,
+                Map.copyOf(latestProgress), Map.copyOf(resourceClaims),
+                Map.copyOf(descriptors));
+    }
 
     public List<CrossSwarmNotification> drainNotifications() {
         var drained = List.copyOf(pendingNotifications);

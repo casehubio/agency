@@ -958,5 +958,140 @@ class MultiSwarmBehavioralTest {
         }
     }
 
+    @Nested
+    class L3ConflictResolution {
+
+        @Test
+        void conflict_detection_enqueues_and_heuristic_mediator_resolves() throws InterruptedException {
+            var heuristicMediator = new HeuristicConflictMediator();
+            var topology = MultiSwarmTopology.builder()
+                    .registry(registry)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .conflictMediator(heuristicMediator)
+                    .build();
+
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                    "domain", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                    "domain", "node-7:degraded", 0.8));
+
+            var results = topology.resolveConflicts();
+            assertThat(results).isNotEmpty();
+            assertThat(results.get(0)).isInstanceOf(MediationResult.FallbackApplied.class);
+
+            topology.close();
+        }
+
+        @Test
+        void no_mediator_returns_empty_results() throws InterruptedException {
+            var topology = MultiSwarmTopology.builder()
+                    .registry(registry)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .build();
+
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                    "domain", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                    "domain", "node-7:degraded", 0.8));
+
+            var results = topology.resolveConflicts();
+            assertThat(results).isEmpty();
+            assertThat(topology.drainNotifications()).isNotEmpty();
+
+            topology.close();
+        }
+
+        @Test
+        void resolved_result_updates_belief_set() throws InterruptedException {
+            ConflictMediator resolvingMediator = ctx -> {
+                var conclusion = new SwarmConclusion(
+                        ctx.notification().sourceSwarmId(), "domain", "node-7:healthy", 0.95);
+                var belief = io.casehub.agency.deliberation.belief.Belief.of(
+                        ctx.notification().sourceSwarmId() + ":domain", conclusion, 95);
+                return new MediationResult.Resolved("resolved", belief, List.of());
+            };
+
+            var topology = MultiSwarmTopology.builder()
+                    .registry(registry)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .conflictMediator(resolvingMediator)
+                    .build();
+
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, finding(analysisSwarmId, ANALYSIS_CAPS,
+                    "domain", "node-7:healthy", 0.9));
+            publishAndAwait(topology, finding(remediationSwarmId, REMEDIATION_CAPS,
+                    "domain", "node-7:degraded", 0.8));
+
+            topology.resolveConflicts();
+
+            var beliefs = topology.currentBeliefs();
+            assertThat(beliefs.all()).anyMatch(b ->
+                    b.value().conclusion().equals("node-7:healthy") && b.entrenchment() == 95);
+
+            topology.close();
+        }
+
+        @Test
+        void resource_contention_detected_on_overlapping_claims() throws InterruptedException {
+            var heuristicMediator = new HeuristicConflictMediator();
+            var topology = MultiSwarmTopology.builder()
+                    .registry(registry)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .conflictMediator(heuristicMediator)
+                    .build();
+
+            registry.register(descriptor(analysisSwarmId, ANALYSIS_CAPS));
+            registry.register(descriptor(remediationSwarmId, REMEDIATION_CAPS));
+
+            publishAndAwait(topology, resourceClaim(analysisSwarmId, ANALYSIS_CAPS,
+                    Set.of("agent-shared"), Set.of("analysis")));
+            publishAndAwait(topology, resourceClaim(remediationSwarmId, REMEDIATION_CAPS,
+                    Set.of("agent-shared"), Set.of("remediation")));
+
+            var results = topology.resolveConflicts();
+            assertThat(results).isNotEmpty();
+            assertThat(results).anyMatch(r ->
+                    r instanceof MediationResult.FallbackApplied fa
+                            && fa.fallbackAction().equals("first_claimer_wins"));
+
+            topology.close();
+        }
+
+        @Test
+        void builder_auto_creates_mediator_from_agent_provider() {
+            var agentProvider = new io.casehub.platform.agent.AgentProvider() {
+                @Override
+                public io.smallrye.mutiny.Multi<io.casehub.platform.agent.AgentEvent> invoke(
+                        io.casehub.platform.agent.AgentSessionConfig config) {
+                    return io.smallrye.mutiny.Multi.createFrom().empty();
+                }
+                @Override
+                public io.casehub.platform.agent.AgentSession openSession(
+                        io.casehub.platform.agent.AgentSessionInit init) {
+                    throw new UnsupportedOperationException("test stub");
+                }
+            };
+            var topology = MultiSwarmTopology.builder()
+                    .registry(registry)
+                    .consistencyChecker(new DomainConsistencyChecker())
+                    .agentProvider(agentProvider)
+                    .build();
+
+            var results = topology.resolveConflicts();
+            assertThat(results).isEmpty();
+
+            topology.close();
+        }
+    }
+
 
 }
