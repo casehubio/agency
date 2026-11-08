@@ -27,10 +27,8 @@ class MultiSwarmTopologyTest {
         caseId = UUID.randomUUID();
         topology = MultiSwarmTopology.builder()
                 .registry(registry)
-                .relevanceNetwork(RelevanceNetworks.standard())
-                .escalationNetwork(EscalationNetworks.standard())
+                .weightedScoring(0.3, 0.6)
                 .consistencyChecker(new DomainConsistencyChecker())
-                .relevanceThreshold(0.3)
                 .build();
     }
 
@@ -44,8 +42,7 @@ class MultiSwarmTopologyTest {
     void builder_rejects_null_registry() {
         assertThatNullPointerException().isThrownBy(() ->
                 MultiSwarmTopology.builder()
-                        .relevanceNetwork(RelevanceNetworks.standard())
-                        .escalationNetwork(EscalationNetworks.standard())
+                        .weightedScoring(0.5, 0.6)
                         .consistencyChecker(new DomainConsistencyChecker())
                         .build());
     }
