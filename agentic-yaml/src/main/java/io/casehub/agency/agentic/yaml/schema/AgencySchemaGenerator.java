@@ -2,6 +2,7 @@ package io.casehub.agency.core.yaml.schema;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
@@ -10,6 +11,8 @@ import io.casehub.schema.generator.module.EnumInliningModule;
 import io.casehub.schema.generator.module.SealedHierarchyModule;
 import io.casehub.schema.generator.module.UnevaluatedPropertiesModule;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import java.util.Map;
 public class AgencySchemaGenerator {
 
     private final SchemaGenerator generator;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public AgencySchemaGenerator() {
         var overrides = buildDiscriminatorOverrides();
@@ -72,6 +76,11 @@ public class AgencySchemaGenerator {
     }
 
     public JsonNode generate(Class<?> rootType) {
-        return generator.generateSchema(rootType);
+        var generated = generator.generateSchema(rootType);
+        try {
+            return mapper.readTree(generated.toString());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to convert schema", e);
+        }
     }
 }
