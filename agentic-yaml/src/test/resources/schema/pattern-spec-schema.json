@@ -1110,6 +1110,15 @@
             },
             "required" : [ "type" ],
             "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "multiSwarm"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object",
+            "unevaluatedProperties" : false
           } ]
         }
       },
