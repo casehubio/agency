@@ -1,6 +1,8 @@
 package io.casehub.agency.speech.demo;
 
-import io.casehub.agency.speech.CleanupConfig;
+import io.casehub.connectors.voice.spi.CleanupConfig;
+import io.casehub.connectors.voice.spi.SpeakerDiarizationService;
+import io.casehub.connectors.voice.spi.TextFilter;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.casehub.agency.speech.sherpa.VitsTextToSpeech;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -117,7 +119,7 @@ public class SpeechProducers {
 
     @Produces
     @ApplicationScoped
-    io.casehub.agency.speech.SpeakerDiarizationService diarizer() {
+    SpeakerDiarizationService diarizer() {
         java.nio.file.Path segModelDir = io.casehub.agency.speech.sherpa.Provisioner.ensureDiarizationModels();
         java.nio.file.Path campplusDir = io.casehub.agency.speech.sherpa.Provisioner.ensureCampplusModel();
         return new io.casehub.agency.speech.sherpa.SherpaOnnxDiarizationService(
@@ -236,7 +238,7 @@ public class SpeechProducers {
     @Produces
     @jakarta.inject.Singleton
     CleanupConfig cleanupConfig() {
-        var filters = new java.util.ArrayList<io.casehub.agency.speech.TextFilter>();
+        var filters = new java.util.ArrayList<TextFilter>();
         filters.add(new io.casehub.agency.speech.sherpa.FillerRemovalFilter());
         filters.add(new io.casehub.agency.speech.sherpa.CasingFilter());
         try {
@@ -249,7 +251,7 @@ public class SpeechProducers {
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "GECToR unavailable: " + e.getMessage());
         }
-        return CleanupConfig.of(filters.toArray(io.casehub.agency.speech.TextFilter[]::new));}
+        return CleanupConfig.of(filters.toArray(TextFilter[]::new));}
 
     @Produces
     @jakarta.inject.Singleton

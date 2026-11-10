@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.CleanupConfig;
-import io.casehub.agency.speech.TextFilter;
+import io.casehub.connectors.voice.spi.CleanupConfig;
+import io.casehub.connectors.voice.spi.TextFilter;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

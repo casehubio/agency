@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.CleanupConfig;
+import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.model.TranscriptionOptions;

@@ -1,7 +1,7 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.DiarizedSegment;
-import io.casehub.agency.speech.DiarizationOptions;
+import io.casehub.connectors.voice.model.DiarizedSegment;
+import io.casehub.connectors.voice.model.DiarizationOptions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

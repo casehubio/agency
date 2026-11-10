@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.CleanupConfig;
+import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.model.SpeakerEmbedding;
 import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;

@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa.correction;
 
-import io.casehub.agency.speech.CorrectionStrategy;
-import io.casehub.agency.speech.CorrectionStrategy.Candidate;
-import io.casehub.agency.speech.CorrectionStrategy.CorrectionContext;
+import io.casehub.connectors.voice.spi.CorrectionStrategy;
+import io.casehub.connectors.voice.spi.CorrectionStrategy.Candidate;
+import io.casehub.connectors.voice.spi.CorrectionStrategy.CorrectionContext;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;

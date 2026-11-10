@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.TextFilter;
+import io.casehub.connectors.voice.spi.TextFilter;
 
 import java.io.IOException;
 import java.lang.foreign.Arena;

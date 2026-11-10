@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa.correction;
 
-import io.casehub.agency.speech.CorrectionStrategy;
+import io.casehub.connectors.voice.spi.CorrectionStrategy;
 
 import java.util.List;
 

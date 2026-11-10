@@ -1,8 +1,8 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.DiarizedSegment;
-import io.casehub.agency.speech.DiarizationOptions;
-import io.casehub.agency.speech.SpeakerDiarizationService;
+import io.casehub.connectors.voice.model.DiarizedSegment;
+import io.casehub.connectors.voice.model.DiarizationOptions;
+import io.casehub.connectors.voice.spi.SpeakerDiarizationService;
 
 import java.io.IOException;
 import java.lang.foreign.Arena;

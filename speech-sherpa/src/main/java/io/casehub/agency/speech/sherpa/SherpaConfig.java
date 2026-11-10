@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.sherpa;
 
-import io.casehub.agency.speech.CleanupConfig;
+import io.casehub.connectors.voice.spi.CleanupConfig;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
