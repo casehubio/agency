@@ -8,7 +8,7 @@
 { "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
-    "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.7/modules/talkinghead.mjs"
+    "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.8/modules/talkinghead.mjs"
 } }
 </script>
 <style>
@@ -16,7 +16,7 @@
   body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
   header { padding: 1rem; text-align: center; border-bottom: 1px solid #333; }
   header h1 { font-size: 1.2rem; font-weight: 500; }
-  #avatar-container { width: 100%; height: 300px; background: #111; position: relative; border-bottom: 1px solid #333; display: none; }
+  #avatar-container { width: 100%; height: 450px; background: #111; position: relative; border-bottom: 1px solid #333; display: none; }
   #avatar-container.active { display: block; }
   #toggle-avatar { font-size: 0.8rem; color: #999; cursor: pointer; text-decoration: underline; }
   #chat { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
@@ -80,6 +80,26 @@
       <option value="kokoro:bf_emma">Emma (UK) · 4.3</option>
       <option value="kokoro:bm_george">George (UK) · 4.2</option>
     </optgroup>
+    <optgroup label="Qwen3-TTS 0.6B — MOS ~4.5">
+      <option value="qwen3:ryan">Ryan (EN) · 4.5</option>
+      <option value="qwen3:aiden">Aiden (EN) · 4.5</option>
+      <option value="qwen3:eric">Eric · 4.3</option>
+      <option value="qwen3:dylan">Dylan · 4.3</option>
+      <option value="qwen3:serena">Serena · 4.5</option>
+      <option value="qwen3:vivian">Vivian · 4.5</option>
+    </optgroup>
+    <optgroup label="Qwen3-TTS Cloned Voices">
+      <option value="qwen3:clone:young_girl">Young Girl</option>
+      <option value="qwen3:clone:jodi_krangle">Jodi Krangle</option>
+      <option value="qwen3:clone:cori_samuel">Cori Samuel</option>
+      <option value="qwen3:clone:emily_cripps">Emily Cripps</option>
+      <option value="qwen3:clone:jared_hess">Jared Hess</option>
+      <option value="qwen3:clone:mark_f_smith">Mark F Smith</option>
+      <option value="qwen3:clone:karen_savage">Karen Savage</option>
+      <option value="qwen3:clone:peter_yearsley">Peter Yearsley</option>
+      <option value="qwen3:clone:david_clark">David Clark</option>
+      <option value="qwen3:clone:alan_davis_drake">Alan Davis Drake</option>
+    </optgroup>
     <optgroup label="Experimental (slow)">
       <option value="audio8">Audio8 0.1B · ~2.8</option>
       <option value="audio8:0.6b">Audio8 0.6B · ~3.2</option>
@@ -87,6 +107,15 @@
     </optgroup>
   </select></label>
   <label>Speed: <input id="speed" type="range" min="0.6" max="1.4" step="0.05" value="0.9" style="width:80px;vertical-align:middle"> <span id="speedVal">0.9x</span></label>
+  <label>Avatar: <select id="avatarModel">
+    <option value="avatar.glb">Current</option>
+    <option value="avatar-brunette.glb">Brunette</option>
+    <option value="avatar-brunette-t.glb">Brunette (light)</option>
+    <option value="avatar-avatarsdk.glb">Avatar SDK</option>
+    <option value="avatar-avaturn.glb">Avaturn</option>
+    <option value="avatar-vroid.glb">VRoid (anime)</option>
+    <option value="avatar-mpfb.glb">MakeHuman</option>
+  </select></label>
 </div>
 <div style="text-align:center;padding:0.25rem"><span id="toggle-avatar">Show 3D Avatar</span></div>
 <div id="avatar-container"></div>
@@ -150,6 +179,14 @@ function connect() {
           break;
         case 'response':
           addMessage(msg.text, 'avatar');
+          if (head) {
+            head.setMood('happy');
+            var text = msg.text.toLowerCase();
+            if (text.includes('?') || text.includes('not sure')) head.playGesture('shrug', 2);
+            else if (text.includes('hello') || text.includes('hi') || text.includes('hey')) head.playGesture('handup', 2);
+            else if (text.includes('great') || text.includes('yes') || text.includes('right')) head.playGesture('thumbup', 2);
+            setTimeout(function() { if (head) head.setMood('neutral'); }, 5000);
+          }
           break;
         case 'phonemes':
           var count = msg.data ? msg.data.length : 0;
@@ -448,6 +485,16 @@ function pollModelStatus() {
 modelPollTimer = setInterval(pollModelStatus, 2000);
 pollModelStatus();
 
+document.getElementById('avatarModel').addEventListener('change', async function() {
+  if (!head || !avatarContainer.classList.contains('active')) return;
+  try {
+    addMessage('Loading avatar...', 'system');
+    visemeMeshes = null;
+    await head.showAvatar({ url: './' + this.value, body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
+    addMessage('Avatar loaded.', 'system');
+  } catch (e) { addMessage('Avatar load error: ' + e.message, 'system'); }
+});
+
 toggleAvatar.addEventListener('click', async function() {
   if (avatarContainer.classList.contains('active')) {
     avatarContainer.classList.remove('active');
@@ -462,10 +509,15 @@ toggleAvatar.addEventListener('click', async function() {
       head = new TalkingHead(avatarContainer, {
         ttsEndpoint: null,
         lipsyncModules: ['en'],
-        cameraView: 'head',
+        cameraView: 'upper',
         cameraRotateEnable: true,
         cameraZoomEnable: true,
-        cameraPanEnable: true
+        cameraPanEnable: true,
+        avatarIdleEyeContact: 0.4,
+        avatarIdleHeadMove: 0.6,
+        avatarSpeakingEyeContact: 0.7,
+        avatarSpeakingHeadMove: 0.7,
+        modelMovementFactor: 0.8
       });
       await head.showAvatar({
         url: './avatar.glb',
@@ -485,7 +537,9 @@ toggleAvatar.addEventListener('click', async function() {
           }
         });
       }
-      addMessage('3D avatar ready. Morph targets: ' + (visemeTargets.length ? visemeTargets.join(' | ') : 'none found (scene=' + !!scene + ')'), 'system');
+      addMessage('3D avatar ready.', 'system');
+      head.setMood('neutral');
+      head.playGesture('handup', 3);
     } catch (e) {
       addMessage('Avatar load error: ' + e.message, 'system');
       head = null;

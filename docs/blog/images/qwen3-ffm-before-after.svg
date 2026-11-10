@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Before side -->
+  <text x="200" y="24" text-anchor="middle" font-size="15" font-weight="bold" fill="#333">Before: HTTP subprocess</text>
+
+  <!-- Java process -->
+  <rect x="30" y="45" width="160" height="120" rx="6" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="110" y="65" text-anchor="middle" font-weight="600" fill="#1a73e8">JVM</text>
+  <text x="110" y="85" text-anchor="middle" font-size="11" fill="#555">Qwen3TextToSpeech</text>
+  <text x="110" y="102" text-anchor="middle" font-size="11" fill="#555">HttpClient</text>
+  <text x="110" y="119" text-anchor="middle" font-size="11" fill="#555">ProcessBuilder</text>
+  <text x="110" y="136" text-anchor="middle" font-size="11" fill="#555">JSON serialize</text>
+
+  <!-- Arrow: Java → Server -->
+  <line x1="190" y1="100" x2="210" y2="100" stroke="#666" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Server process -->
+  <rect x="215" y="45" width="160" height="120" rx="6" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="295" y="65" text-anchor="middle" font-weight="600" fill="#c5221f">Subprocess</text>
+  <text x="295" y="85" text-anchor="middle" font-size="11" fill="#555">qwen_tts binary</text>
+  <text x="295" y="102" text-anchor="middle" font-size="11" fill="#555">HTTP server :8790</text>
+  <text x="295" y="119" text-anchor="middle" font-size="11" fill="#555">JSON deserialize</text>
+  <text x="295" y="136" text-anchor="middle" font-size="11" fill="#555">health checks</text>
+
+  <!-- Overhead labels -->
+  <rect x="60" y="180" width="280" height="75" rx="4" fill="#fff3e0" stroke="#f9a825" stroke-width="1"/>
+  <text x="200" y="198" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Overhead per synthesis call</text>
+  <text x="200" y="215" text-anchor="middle" font-size="11" fill="#795548">HTTP round-trip: ~5-10ms</text>
+  <text x="200" y="232" text-anchor="middle" font-size="11" fill="#795548">JSON serialize + deserialize</text>
+  <text x="200" y="249" text-anchor="middle" font-size="11" fill="#795548">Process lifecycle management</text>
+
+  <!-- After side -->
+  <text x="600" y="24" text-anchor="middle" font-size="15" font-weight="bold" fill="#333">After: FFM native call</text>
+
+  <!-- Java process with FFM -->
+  <rect x="460" y="45" width="280" height="120" rx="6" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="600" y="65" text-anchor="middle" font-weight="600" fill="#137333">JVM</text>
+  <text x="600" y="85" text-anchor="middle" font-size="11" fill="#555">Qwen3TextToSpeech</text>
+  <text x="530" y="107" text-anchor="middle" font-size="11" fill="#555">Qwen3Library</text>
+  <text x="530" y="124" text-anchor="middle" font-size="11" fill="#555">MethodHandle</text>
+  <text x="530" y="141" text-anchor="middle" font-size="11" fill="#555">downcall</text>
+
+  <!-- libqwen inside JVM -->
+  <rect x="610" y="95" width="120" height="60" rx="4" fill="#d2e3fc" stroke="#4285f4" stroke-width="1"/>
+  <text x="670" y="115" text-anchor="middle" font-size="11" font-weight="600" fill="#1a73e8">libqwen.dylib</text>
+  <text x="670" y="132" text-anchor="middle" font-size="11" fill="#555">GGML + Metal</text>
+  <text x="670" y="149" text-anchor="middle" font-size="11" fill="#555">qt_synthesize()</text>
+
+  <!-- Arrow: MethodHandle → libqwen -->
+  <line x1="572" y1="120" x2="607" y2="120" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Benefits -->
+  <rect x="480" y="180" width="260" height="75" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="610" y="198" text-anchor="middle" font-size="11" font-weight="600" fill="#1b5e20">What you get</text>
+  <text x="610" y="215" text-anchor="middle" font-size="11" fill="#2e7d32">Zero-copy native call: ~0.1ms</text>
+  <text x="610" y="232" text-anchor="middle" font-size="11" fill="#2e7d32">No process management</text>
+  <text x="610" y="249" text-anchor="middle" font-size="11" fill="#2e7d32">Streaming via upcall callback</text>
+
+  <!-- Bottom: GGUF vs safetensors -->
+  <rect x="30" y="290" width="340" height="110" rx="6" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1"/>
+  <text x="200" y="312" text-anchor="middle" font-weight="600" font-size="12" fill="#424242">Model format</text>
+  <text x="50" y="335" font-size="11" fill="#757575">Before: HuggingFace safetensors (~1.8 GB)</text>
+  <text x="50" y="355" font-size="11" fill="#757575">Separate tokenizer + model + config files</text>
+  <text x="50" y="375" font-size="11" fill="#2e7d32" font-weight="600">After: GGUF Q4_K_M (~860 MB pair)</text>
+  <text x="50" y="395" font-size="11" fill="#2e7d32">Two files: talker + tokenizer, quantized</text>
+
+  <!-- Voice cloning comparison -->
+  <rect x="400" y="290" width="370" height="110" rx="6" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1"/>
+  <text x="585" y="312" text-anchor="middle" font-weight="600" font-size="12" fill="#424242">Voice cloning</text>
+  <text x="420" y="335" font-size="11" fill="#757575">Before: .qvoice files + server per voice</text>
+  <text x="420" y="355" font-size="11" fill="#757575">LRU process pool, port allocation, health checks</text>
+  <text x="420" y="375" font-size="11" fill="#2e7d32" font-weight="600">After: qt_extract_voice_ref() in-process</text>
+  <text x="420" y="395" font-size="11" fill="#2e7d32">ConcurrentHashMap cache, sub-second extraction</text>
+</svg>

@@ -1,12 +1,13 @@
 package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.AssembledPrompt;
-import io.casehub.agency.speech.CleanupConfig;
+import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.model.SynthesisOptions;
 import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.spi.TextFilter;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.casehub.connectors.voice.model.TranscriptionResult;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
@@ -116,21 +117,21 @@ class SpeechSessionTest {
         when(recognitionStream.finalResult()).thenReturn(
                 new TranscriptionResult("UM HELLO WORLD UH THIS IS A TEST", "en", 0.9));
 
-        io.casehub.agency.speech.TextFilter lowercaseFilter = new io.casehub.agency.speech.TextFilter() {
+        TextFilter lowercaseFilter = new TextFilter() {
             public String apply(String t) {return t.toLowerCase();}
 
             public String name()          {return "lowercase";}
 
             public int destructiveness()  {return 0;}
         };
-        io.casehub.agency.speech.TextFilter fillerFilter = new io.casehub.agency.speech.TextFilter() {
+        TextFilter fillerFilter = new TextFilter() {
             public String apply(String t) {return t.replaceAll("(?i)\\bum\\b|\\buh\\b", "").replaceAll("\\s+", " ").trim();}
 
             public String name()          {return "filler";}
 
             public int destructiveness()  {return 1;}
         };
-        var realCleanup = io.casehub.agency.speech.CleanupConfig.of(lowercaseFilter, fillerFilter);
+        var realCleanup = CleanupConfig.of(lowercaseFilter, fillerFilter);
 
         session = new SpeechSession(
                 sttService, ttsService, realCleanup,

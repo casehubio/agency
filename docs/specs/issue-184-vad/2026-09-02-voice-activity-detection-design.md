@@ -213,7 +213,7 @@ availability.
 - GE-20260826-51c700 — sherpa-onnx FFM struct layout gotcha
 - GE-20260826-190329 — oversized zero-filled allocation technique
 - `speech-api/src/main/java/io/casehub/agency/speech/StreamingSpeechDenoiser.java` — pattern reference
-- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/WhisperSpeechToText.java` — integration point
-- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/SherpaOnnxStreamingSpeechToText.java` — integration point
+- `../../../../connectors/voice-sherpa/src/main/java/io/casehub/connectors/voice/sherpa/WhisperSpeechToText.java` — integration point
+- `../../../../connectors/voice-sherpa/src/main/java/io/casehub/connectors/voice/sherpa/SherpaOnnxStreamingSpeechToText.java` — integration point
 - `speech-ws/src/main/java/io/casehub/agency/speech/ws/SpeechSession.java` — unchanged by this spec
 - 2026-09-02-speech-denoising-design.md — denoiser spec (establishes the pattern)

@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.demo;
 
-import io.casehub.agency.speech.sherpa.VitsTextToSpeech;
+import io.casehub.connectors.voice.sherpa.VitsTextToSpeech;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -36,7 +36,9 @@ public class ModelProvisioningService {
     void init() {
         MODELS.keySet().forEach(key -> statuses.put(key, ModelStatus.PENDING));
         KOKORO_MODELS.keySet().forEach(key -> statuses.put(key, ModelStatus.PENDING));
-        statuses.put("streaming-stt", ModelStatus.PENDING);}
+        statuses.put("streaming-stt", ModelStatus.PENDING);
+        statuses.put("qwen3-lib", ModelStatus.PENDING);
+        statuses.put("qwen3-model", ModelStatus.PENDING);}
 
     void provisionAll() {
         for (var entry : MODELS.entrySet()) {
@@ -45,11 +47,19 @@ public class ModelProvisioningService {
         for (var entry : KOKORO_MODELS.entrySet()) {
             provisionEntry(entry.getKey(), () -> provisionKokoro(entry.getValue()));
         }
-        provisionEntry("streaming-stt", this::provisionStreamingStt);}
+        provisionEntry("streaming-stt", this::provisionStreamingStt);
+        provisionEntry("qwen3-lib", this::provisionQwen3SharedLibrary);
+        provisionEntry("qwen3-model", this::provisionQwen3Model);}
 
     void provision(String modelName) {
         VitsTextToSpeech.ensureProvisioned(modelName);
     }
+
+    void provisionQwen3SharedLibrary() {
+        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3SharedLibrary();
+    }
+
+    void provisionQwen3Model() {io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Model("0.6b-customvoice-q4");}
 
     private void provisionEntry(String key, Runnable provisioner) {
         statuses.put(key, ModelStatus.DOWNLOADING);
@@ -65,11 +75,11 @@ public class ModelProvisioningService {
     }
 
     void provisionKokoro(String modelName) {
-        io.casehub.agency.speech.sherpa.KokoroTextToSpeech.ensureProvisioned();
+        io.casehub.connectors.voice.sherpa.KokoroTextToSpeech.ensureProvisioned();
     }
 
     void provisionStreamingStt() {
-        io.casehub.agency.speech.sherpa.SherpaOnnxStreamingSpeechToText.ensureProvisioned();
+        io.casehub.connectors.voice.sherpa.SherpaOnnxStreamingSpeechToText.ensureProvisioned();
     }
 
 

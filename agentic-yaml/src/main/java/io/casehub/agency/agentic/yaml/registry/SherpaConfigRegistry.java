@@ -1,7 +1,7 @@
 package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.agency.core.yaml.spec.SherpaConfigSpec;
-import io.casehub.agency.speech.sherpa.SherpaConfig;
+import io.casehub.connectors.voice.sherpa.SherpaConfig;
 
 import java.nio.file.Path;
 

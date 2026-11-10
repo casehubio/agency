@@ -87,6 +87,65 @@ public final class VisemeMapping {
         return result;
     }
 
+    public static List<VisemeFrame> estimateFromText(String text, long estimatedDurationMs) {
+        var chars = text.toLowerCase().replaceAll("[^a-z ]", "").toCharArray();
+        if (chars.length == 0) return List.of();
+
+        var phonemeGuesses = new ArrayList<String>();
+        for (char c : chars) {
+            String viseme = switch (c) {
+                case 'a', 'á' -> "aa";
+                case 'e', 'é' -> "E";
+                case 'i', 'í' -> "I";
+                case 'o', 'ó' -> "O";
+                case 'u', 'ú' -> "U";
+                case 'p', 'b', 'm' -> "PP";
+                case 'f', 'v' -> "FF";
+                case 't', 'd', 'l' -> "DD";
+                case 'k', 'g' -> "kk";
+                case 's', 'z' -> "SS";
+                case 'r' -> "RR";
+                case 'n' -> "nn";
+                case 'w' -> "U";
+                case 'h' -> "E";
+                case 'c' -> "kk";
+                case 'j' -> "CH";
+                case 'x' -> "kk";
+                case 'y' -> "I";
+                case 'q' -> "kk";
+                case ' ' -> "sil";
+                default -> "sil";
+            };
+            phonemeGuesses.add(viseme);
+        }
+
+        long msPerChar = estimatedDurationMs > 0
+                ? estimatedDurationMs / phonemeGuesses.size()
+                : 80;
+        msPerChar = Math.max(msPerChar, 40);
+
+        var result = new ArrayList<VisemeFrame>();
+        String current = null;
+        long currentStart = 0;
+        long pos = 0;
+        for (String viseme : phonemeGuesses) {
+            if (viseme.equals(current)) {
+                pos += msPerChar;
+            } else {
+                if (current != null) {
+                    result.add(new VisemeFrame(current, currentStart, pos, weightFor(current)));
+                }
+                current = viseme;
+                currentStart = pos;
+                pos += msPerChar;
+            }
+        }
+        if (current != null) {
+            result.add(new VisemeFrame(current, currentStart, pos, weightFor(current)));
+        }
+        return enforceMinDuration(result);
+    }
+
     private static List<VisemeFrame> enforceMinDuration(List<VisemeFrame> frames) {
         if (frames.size() <= 1) {
             if (frames.size() == 1 && frames.getFirst().durationMs() < MIN_DURATION_MS) {
