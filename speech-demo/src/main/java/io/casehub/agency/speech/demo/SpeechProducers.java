@@ -4,7 +4,7 @@ import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.SpeakerDiarizationService;
 import io.casehub.connectors.voice.spi.TextFilter;
 import io.casehub.connectors.voice.spi.TextToSpeech;
-import io.casehub.agency.speech.sherpa.VitsTextToSpeech;
+import io.casehub.connectors.voice.sherpa.VitsTextToSpeech;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
@@ -28,7 +28,7 @@ public class SpeechProducers {
         // Shared lip-sync aligner — enriches any TTS engine that returns empty phonemes
         io.casehub.connectors.voice.spi.PhonemeAligner aligner = null;
         try {
-            aligner = io.casehub.agency.speech.sherpa.EspeakPhonemeAligner.withDefaults();
+            aligner = io.casehub.connectors.voice.sherpa.EspeakPhonemeAligner.withDefaults();
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "EspeakPhonemeAligner unavailable — lip-sync disabled: " + e.getMessage());
         }
@@ -41,14 +41,14 @@ public class SpeechProducers {
         models.put("jenny", VitsTextToSpeech.withDefaults("vits-piper-en_GB-jenny_dioco-medium"));
 
         // SherpaOnnx models — wrap with LipSyncEnricher for lip-sync
-        models.put("sherpa:lessac-medium", wrapIfAvailable(io.casehub.agency.speech.sherpa.SherpaOnnxTextToSpeech.withDefaults(), aligner));
-        models.put("sherpa:lessac-high", wrapIfAvailable(io.casehub.agency.speech.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-lessac-high"), aligner));
-        models.put("sherpa:amy", wrapIfAvailable(io.casehub.agency.speech.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-amy-medium"), aligner));
-        models.put("sherpa:ryan", wrapIfAvailable(io.casehub.agency.speech.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-ryan-high"), aligner));
-        models.put("sherpa:jenny", wrapIfAvailable(io.casehub.agency.speech.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_GB-jenny_dioco-medium"), aligner));
+        models.put("sherpa:lessac-medium", wrapIfAvailable(io.casehub.connectors.voice.sherpa.SherpaOnnxTextToSpeech.withDefaults(), aligner));
+        models.put("sherpa:lessac-high", wrapIfAvailable(io.casehub.connectors.voice.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-lessac-high"), aligner));
+        models.put("sherpa:amy", wrapIfAvailable(io.casehub.connectors.voice.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-amy-medium"), aligner));
+        models.put("sherpa:ryan", wrapIfAvailable(io.casehub.connectors.voice.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_US-ryan-high"), aligner));
+        models.put("sherpa:jenny", wrapIfAvailable(io.casehub.connectors.voice.sherpa.SherpaOnnxTextToSpeech.withDefaults("vits-piper-en_GB-jenny_dioco-medium"), aligner));
 
         // Kokoro v1.0 — one shared engine, 53 voice wrappers
-        var kokoro = io.casehub.agency.speech.sherpa.KokoroTextToSpeech.withDefaults(0);
+        var kokoro = io.casehub.connectors.voice.sherpa.KokoroTextToSpeech.withDefaults(0);
         for (var entry : java.util.Map.ofEntries(
                 java.util.Map.entry("kokoro:af_alloy", 0), java.util.Map.entry("kokoro:af_aoede", 1),
                 java.util.Map.entry("kokoro:af_bella", 2), java.util.Map.entry("kokoro:af_heart", 3),
@@ -97,33 +97,33 @@ public class SpeechProducers {
     @Produces
     @ApplicationScoped
     io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor embeddingExtractor() {
-        java.nio.file.Path campplusPath = io.casehub.agency.speech.sherpa.Provisioner.ensureCampplusModel();
-        io.casehub.agency.speech.sherpa.OnnxRuntimeLibrary.Session session =
-                io.casehub.agency.speech.sherpa.OnnxRuntimeLibrary.load()
+        java.nio.file.Path campplusPath = io.casehub.connectors.voice.sherpa.Provisioner.ensureCampplusModel();
+        io.casehub.connectors.voice.sherpa.OnnxRuntimeLibrary.Session session =
+                io.casehub.connectors.voice.sherpa.OnnxRuntimeLibrary.load()
                                                                   .createSession(campplusPath.resolve("campplus.onnx"), 2);
-        return new io.casehub.agency.speech.sherpa.CampplusSpeakerEmbeddingExtractor(session);
+        return new io.casehub.connectors.voice.sherpa.CampplusSpeakerEmbeddingExtractor(session);
     }
 
     @Produces
     @jakarta.inject.Singleton
     io.casehub.connectors.voice.spi.SpeakerRegistry speakerRegistry(io.casehub.connectors.voice.spi.VoiceprintStore store) {
-        return new io.casehub.agency.speech.sherpa.CosineDistanceSpeakerRegistry(store);
+        return new io.casehub.connectors.voice.sherpa.CosineDistanceSpeakerRegistry(store);
     }
 
     @Produces
     @jakarta.inject.Singleton
     io.casehub.connectors.voice.spi.VoiceprintStore voiceprintStore() {
-        return new io.casehub.agency.speech.sherpa.FileVoiceprintStore(
+        return new io.casehub.connectors.voice.sherpa.FileVoiceprintStore(
                 java.nio.file.Path.of(System.getProperty("user.home"), ".casehub", "voiceprints"));
     }
 
     @Produces
     @ApplicationScoped
     SpeakerDiarizationService diarizer() {
-        java.nio.file.Path segModelDir = io.casehub.agency.speech.sherpa.Provisioner.ensureDiarizationModels();
-        java.nio.file.Path campplusDir = io.casehub.agency.speech.sherpa.Provisioner.ensureCampplusModel();
-        return new io.casehub.agency.speech.sherpa.SherpaOnnxDiarizationService(
-                io.casehub.agency.speech.sherpa.SherpaLibrary.load(),
+        java.nio.file.Path segModelDir = io.casehub.connectors.voice.sherpa.Provisioner.ensureDiarizationModels();
+        java.nio.file.Path campplusDir = io.casehub.connectors.voice.sherpa.Provisioner.ensureCampplusModel();
+        return new io.casehub.connectors.voice.sherpa.SherpaOnnxDiarizationService(
+                io.casehub.connectors.voice.sherpa.SherpaLibrary.load(),
                 segModelDir.resolve("model.onnx"),
                 campplusDir.resolve("campplus.onnx"));
     }
@@ -225,29 +225,29 @@ public class SpeechProducers {
     @ApplicationScoped
     io.casehub.connectors.voice.spi.StreamingSpeechToText stt() {
         try {
-            if (io.casehub.agency.speech.sherpa.WhisperLibrary.isAvailable()) {
+            if (io.casehub.connectors.voice.sherpa.WhisperLibrary.isAvailable()) {
                 LOG.log(System.Logger.Level.INFO, "Using WhisperSpeechToText");
-                return io.casehub.agency.speech.sherpa.WhisperSpeechToText.withDefaults();
+                return io.casehub.connectors.voice.sherpa.WhisperSpeechToText.withDefaults();
             }
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "Whisper init failed, falling back: " + e.getMessage());
         }
         LOG.log(System.Logger.Level.INFO, "Using Zipformer streaming STT");
-        return io.casehub.agency.speech.sherpa.SherpaOnnxStreamingSpeechToText.withDefaults();}
+        return io.casehub.connectors.voice.sherpa.SherpaOnnxStreamingSpeechToText.withDefaults();}
 
     @Produces
     @jakarta.inject.Singleton
     CleanupConfig cleanupConfig() {
         var filters = new java.util.ArrayList<TextFilter>();
-        filters.add(new io.casehub.agency.speech.sherpa.FillerRemovalFilter());
-        filters.add(new io.casehub.agency.speech.sherpa.CasingFilter());
+        filters.add(new io.casehub.connectors.voice.sherpa.FillerRemovalFilter());
+        filters.add(new io.casehub.connectors.voice.sherpa.CasingFilter());
         try {
-            filters.add(io.casehub.agency.speech.sherpa.PunctuationFilter.withDefaults());
+            filters.add(io.casehub.connectors.voice.sherpa.PunctuationFilter.withDefaults());
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "PunctuationFilter unavailable: " + e.getMessage());
         }
         try {
-            filters.add(io.casehub.agency.speech.sherpa.GectorFilter.withDefaults());
+            filters.add(io.casehub.connectors.voice.sherpa.GectorFilter.withDefaults());
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "GECToR unavailable: " + e.getMessage());
         }
@@ -255,39 +255,39 @@ public class SpeechProducers {
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.sherpa.correction.ConversationVocabulary conversationVocabulary() {
-        return new io.casehub.agency.speech.sherpa.correction.ConversationVocabulary();
+    io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary conversationVocabulary() {
+        return new io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary();
     }
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.sherpa.correction.TranscriptCorrector transcriptCorrector(
-            io.casehub.agency.speech.sherpa.correction.ConversationVocabulary vocabulary) {
+    io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector transcriptCorrector(
+            io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary vocabulary) {
         try {
-            var symSpell = io.casehub.agency.speech.sherpa.correction.SymSpellIndex.fromResource(
+            var symSpell = io.casehub.connectors.voice.sherpa.correction.SymSpellIndex.fromResource(
                     "frequency_dictionary_en_82_765.txt");
-            var phonetic = io.casehub.agency.speech.sherpa.correction.PhoneticIndex.fromSymSpellIndex(symSpell);
-            var ngram = io.casehub.agency.speech.sherpa.correction.NgramModel.fromResource(
+            var phonetic = io.casehub.connectors.voice.sherpa.correction.PhoneticIndex.fromSymSpellIndex(symSpell);
+            var ngram = io.casehub.connectors.voice.sherpa.correction.NgramModel.fromResource(
                     "frequency_bigramdictionary_en_243_342.txt");
 
             LOG.log(System.Logger.Level.INFO, "TranscriptCorrector loaded — {0} words, {1} bigrams",
                     symSpell.dictionary().size(), "243K");
-            return new io.casehub.agency.speech.sherpa.correction.TranscriptCorrector(
+            return new io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector(
                     java.util.List.of(
-                            new io.casehub.agency.speech.sherpa.correction.SymSpellStrategy(symSpell),
-                            new io.casehub.agency.speech.sherpa.correction.PhoneticStrategy(phonetic)),
+                            new io.casehub.connectors.voice.sherpa.correction.SymSpellStrategy(symSpell),
+                            new io.casehub.connectors.voice.sherpa.correction.PhoneticStrategy(phonetic)),
                     ngram, symSpell.dictionary());
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "TranscriptCorrector unavailable: " + e.getMessage());
-            return new io.casehub.agency.speech.sherpa.correction.TranscriptCorrector(
+            return new io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector(
                     java.util.List.of(), null, java.util.Set.of());
         }}
 
     @Produces
     @jakarta.inject.Singleton
     io.casehub.agency.speech.ws.CorrectionHooks correctionHooks(
-            io.casehub.agency.speech.sherpa.correction.TranscriptCorrector corrector,
-            io.casehub.agency.speech.sherpa.correction.ConversationVocabulary vocabulary) {
+            io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector corrector,
+            io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary vocabulary) {
         return new io.casehub.agency.speech.ws.CorrectionHooks(
                 corrector::correct,
                 response -> {

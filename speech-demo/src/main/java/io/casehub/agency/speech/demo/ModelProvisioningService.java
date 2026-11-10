@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.demo;
 
-import io.casehub.agency.speech.sherpa.VitsTextToSpeech;
+import io.casehub.connectors.voice.sherpa.VitsTextToSpeech;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -65,11 +65,11 @@ public class ModelProvisioningService {
     }
 
     void provisionKokoro(String modelName) {
-        io.casehub.agency.speech.sherpa.KokoroTextToSpeech.ensureProvisioned();
+        io.casehub.connectors.voice.sherpa.KokoroTextToSpeech.ensureProvisioned();
     }
 
     void provisionStreamingStt() {
-        io.casehub.agency.speech.sherpa.SherpaOnnxStreamingSpeechToText.ensureProvisioned();
+        io.casehub.connectors.voice.sherpa.SherpaOnnxStreamingSpeechToText.ensureProvisioned();
     }
 
 
