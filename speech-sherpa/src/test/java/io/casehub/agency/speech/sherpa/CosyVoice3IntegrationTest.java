@@ -6,8 +6,6 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.nio.file.Path;
 
-import static org.assertj.core.api.Assertions.*;
-
 @EnabledIfSystemProperty(named = "speech.integration", matches = "true")
 class CosyVoice3IntegrationTest {
 
