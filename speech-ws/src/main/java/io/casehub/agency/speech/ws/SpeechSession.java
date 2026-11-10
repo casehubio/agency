@@ -434,7 +434,9 @@ public class SpeechSession {
     private void synthesiseAndSend(TextToSpeech tts, String sentence, int index) {
         long start = System.nanoTime();
         if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streaming) {
-            send(new AvatarMessage.Phonemes(java.util.List.of()));
+            long estimatedMs = sentence.length() * 80L;
+            var estimatedVisemes = VisemeMapping.estimateFromText(sentence, estimatedMs);
+            send(new AvatarMessage.Phonemes(estimatedVisemes));
             int[] chunkCount = {0};
             streaming.synthesiseStreaming(sentence, new SynthesisOptions(null, null, "wav", true), wavChunk -> {
                 binarySink.accept(wavChunk);
