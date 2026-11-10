@@ -95,6 +95,15 @@
     </optgroup>
   </select></label>
   <label>Speed: <input id="speed" type="range" min="0.6" max="1.4" step="0.05" value="0.9" style="width:80px;vertical-align:middle"> <span id="speedVal">0.9x</span></label>
+  <label>Avatar: <select id="avatarModel">
+    <option value="avatar.glb">Current</option>
+    <option value="avatar-brunette.glb">Brunette</option>
+    <option value="avatar-brunette-t.glb">Brunette (light)</option>
+    <option value="avatar-avatarsdk.glb">Avatar SDK</option>
+    <option value="avatar-avaturn.glb">Avaturn</option>
+    <option value="avatar-vroid.glb">VRoid (anime)</option>
+    <option value="avatar-mpfb.glb">MakeHuman</option>
+  </select></label>
 </div>
 <div style="text-align:center;padding:0.25rem"><span id="toggle-avatar">Show 3D Avatar</span></div>
 <div id="avatar-container"></div>
@@ -455,6 +464,16 @@ function pollModelStatus() {
 
 modelPollTimer = setInterval(pollModelStatus, 2000);
 pollModelStatus();
+
+document.getElementById('avatarModel').addEventListener('change', async function() {
+  if (!head || !avatarContainer.classList.contains('active')) return;
+  try {
+    addMessage('Loading avatar...', 'system');
+    visemeMeshes = null;
+    await head.showAvatar({ url: './' + this.value, body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
+    addMessage('Avatar loaded.', 'system');
+  } catch (e) { addMessage('Avatar load error: ' + e.message, 'system'); }
+});
 
 toggleAvatar.addEventListener('click', async function() {
   if (avatarContainer.classList.contains('active')) {
