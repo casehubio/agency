@@ -1,7 +1,7 @@
 package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.agency.core.yaml.spec.KokoroConfigSpec;
-import io.casehub.agency.speech.sherpa.KokoroConfig;
+import io.casehub.connectors.voice.sherpa.KokoroConfig;
 
 import java.nio.file.Path;
 
