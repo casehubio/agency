@@ -432,15 +432,28 @@ public class SpeechSession {
     }
 
     private void synthesiseAndSend(TextToSpeech tts, String sentence, int index) {
-        long            start     = System.nanoTime();
-        SynthesisResult synthesis = tts.synthesise(sentence, new SynthesisOptions(null, null, "wav", true));
-        long            elapsed   = (System.nanoTime() - start) / 1_000_000;
-        LOG.log(System.Logger.Level.INFO, "[TTS] sentence {0}: {1}ms — \"{2}\"",
-                index, elapsed,
-                sentence.length() > 60 ? sentence.substring(0, 60) + "..." : sentence);
-        var visemeFrames = VisemeMapping.convert(synthesis.phonemes());
-        send(new AvatarMessage.Phonemes(visemeFrames));
-        binarySink.accept(synthesis.audioData());
+        long start = System.nanoTime();
+        if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streaming) {
+            send(new AvatarMessage.Phonemes(java.util.List.of()));
+            int[] chunkCount = {0};
+            streaming.synthesiseStreaming(sentence, new SynthesisOptions(null, null, "wav", true), wavChunk -> {
+                binarySink.accept(wavChunk);
+                chunkCount[0]++;
+            });
+            long elapsed = (System.nanoTime() - start) / 1_000_000;
+            LOG.log(System.Logger.Level.INFO, "[TTS-STREAM] sentence {0}: {1}ms, {2} chunks — \"{3}\"",
+                    index, elapsed, chunkCount[0],
+                    sentence.length() > 60 ? sentence.substring(0, 60) + "..." : sentence);
+        } else {
+            SynthesisResult synthesis = tts.synthesise(sentence, new SynthesisOptions(null, null, "wav", true));
+            long elapsed = (System.nanoTime() - start) / 1_000_000;
+            LOG.log(System.Logger.Level.INFO, "[TTS] sentence {0}: {1}ms — \"{2}\"",
+                    index, elapsed,
+                    sentence.length() > 60 ? sentence.substring(0, 60) + "..." : sentence);
+            var visemeFrames = VisemeMapping.convert(synthesis.phonemes());
+            send(new AvatarMessage.Phonemes(visemeFrames));
+            binarySink.accept(synthesis.audioData());
+        }
     }
 
     private void logTiming(String label1, long ns1, String label2, long ns2, int sentences, long totalNs) {
