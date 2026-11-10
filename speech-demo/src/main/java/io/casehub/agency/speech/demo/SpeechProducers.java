@@ -96,6 +96,20 @@ public class SpeechProducers {
             LOG.log(System.Logger.Level.WARNING, "Qwen3-TTS unavailable: " + e.getMessage());
         }
 
+        // Qwen3-TTS cloned voices (pooled Base model servers, .qvoice files)
+        try {
+            var pool = io.casehub.connectors.voice.sherpa.Qwen3VoicePool.createProvisioned(
+                    io.casehub.connectors.voice.sherpa.Qwen3VoicePoolConfig.defaults());
+            for (String voice : pool.availableVoices()) {
+                models.put("qwen3:clone:" + voice, pool.forVoice(voice));
+            }
+            LOG.log(System.Logger.Level.INFO,
+                    "Qwen3-TTS cloned voices registered: {0}", pool.availableVoices());
+        } catch (Exception e) {
+            LOG.log(System.Logger.Level.WARNING,
+                    "Qwen3-TTS voice pool unavailable: " + e.getMessage());
+        }
+
         return new io.casehub.agency.speech.ws.TtsModelRegistry(java.util.Collections.unmodifiableMap(models));}
 
     private static io.casehub.connectors.voice.spi.TextToSpeech wrapIfAvailable(
