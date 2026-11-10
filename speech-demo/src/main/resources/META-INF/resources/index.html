@@ -167,6 +167,14 @@ function connect() {
           break;
         case 'response':
           addMessage(msg.text, 'avatar');
+          if (head) {
+            head.setMood('happy');
+            var text = msg.text.toLowerCase();
+            if (text.includes('?') || text.includes('not sure')) head.playGesture('shrug', 2);
+            else if (text.includes('hello') || text.includes('hi') || text.includes('hey')) head.playGesture('handup', 2);
+            else if (text.includes('great') || text.includes('yes') || text.includes('right')) head.playGesture('thumbup', 2);
+            setTimeout(function() { if (head) head.setMood('neutral'); }, 5000);
+          }
           break;
         case 'phonemes':
           var count = msg.data ? msg.data.length : 0;
@@ -489,10 +497,15 @@ toggleAvatar.addEventListener('click', async function() {
       head = new TalkingHead(avatarContainer, {
         ttsEndpoint: null,
         lipsyncModules: ['en'],
-        cameraView: 'head',
+        cameraView: 'upper',
         cameraRotateEnable: true,
         cameraZoomEnable: true,
-        cameraPanEnable: true
+        cameraPanEnable: true,
+        avatarIdleEyeContact: 0.4,
+        avatarIdleHeadMove: 0.6,
+        avatarSpeakingEyeContact: 0.7,
+        avatarSpeakingHeadMove: 0.7,
+        modelMovementFactor: 0.8
       });
       await head.showAvatar({
         url: './avatar.glb',
