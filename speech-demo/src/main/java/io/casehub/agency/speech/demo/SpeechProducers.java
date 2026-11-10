@@ -82,6 +82,16 @@ public class SpeechProducers {
             models.put(entry.getKey(), wrapIfAvailable(kokoro.forVoice(entry.getValue()), aligner));
         }
 
+        // Qwen3-TTS voices (subprocess, INT4 quantized)
+        try {
+            for (String voice : java.util.List.of("ryan", "aiden", "eric", "dylan", "serena", "vivian")) {
+                models.put("qwen3:" + voice, Qwen3TextToSpeech.withDefaults(voice));
+            }
+            LOG.log(System.Logger.Level.INFO, "Qwen3-TTS voices registered");
+        } catch (Exception e) {
+            LOG.log(System.Logger.Level.WARNING, "Qwen3-TTS unavailable: " + e.getMessage());
+        }
+
         return new io.casehub.agency.speech.ws.TtsModelRegistry(java.util.Collections.unmodifiableMap(models));}
 
     private static io.casehub.connectors.voice.spi.TextToSpeech wrapIfAvailable(
@@ -206,18 +216,12 @@ public class SpeechProducers {
 
     private static String getAccessToken() {
         try {
-            var process = new ProcessBuilder("/Users/mdproctor/google-cloud-sdk/bin/gcloud", "auth", "print-access-token")
-                                  .redirectErrorStream(true).start();
-            String token = new String(process.getInputStream().readAllBytes()).trim();
-            process.waitFor(10, java.util.concurrent.TimeUnit.SECONDS);
-            if (token.isEmpty() || process.exitValue() != 0) {
-                throw new RuntimeException("gcloud auth failed: " + token);
-            }
-            return token;
-        } catch (RuntimeException e) {
-            throw e;
+            var credentials = com.google.auth.oauth2.GoogleCredentials.getApplicationDefault()
+                    .createScoped("https://www.googleapis.com/auth/cloud-platform");
+            credentials.refreshIfExpired();
+            return credentials.getAccessToken().getTokenValue();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to get access token: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to get access token via ADC: " + e.getMessage(), e);
         }
     }
 
