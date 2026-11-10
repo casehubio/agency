@@ -264,6 +264,6 @@ gated on native library availability, matching the existing pattern in
 - GE-20260803-e363e6 — ONNX Runtime SIGSEGV with concurrent thread pool access
 - `speech-api/src/main/java/io/casehub/agency/speech/SpeechToTextService.java`
 - `speech-api/src/main/java/io/casehub/agency/speech/StreamingSpeechToTextService.java`
-- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/WhisperSpeechToText.java`
-- `speech-sherpa/src/main/java/io/casehub/agency/speech/sherpa/SherpaOnnxSpeechToText.java`
+- `../../../../connectors/voice-sherpa/src/main/java/io/casehub/connectors/voice/sherpa/WhisperSpeechToText.java`
+- `../../../../connectors/voice-sherpa/src/main/java/io/casehub/connectors/voice/sherpa/SherpaOnnxSpeechToText.java`
 - `speech-ws/src/main/java/io/casehub/agency/speech/ws/SpeechSession.java`

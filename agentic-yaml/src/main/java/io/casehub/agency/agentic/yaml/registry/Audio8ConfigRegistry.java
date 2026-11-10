@@ -1,7 +1,7 @@
 package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.agency.core.yaml.spec.Audio8ConfigSpec;
-import io.casehub.agency.speech.sherpa.Audio8Config;
+import io.casehub.connectors.voice.sherpa.Audio8Config;
 
 import java.nio.file.Path;
 

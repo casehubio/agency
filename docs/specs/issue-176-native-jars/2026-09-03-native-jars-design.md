@@ -121,29 +121,32 @@ Each native module's `pom.xml` is mechanical — identical structure with only
 the platform ID varying:
 
 ```xml
+
 <artifactId>speech-sherpa-native-osx-arm64</artifactId>
 <packaging>jar</packaging>
 
 <build>
-  <plugins>
+<plugins>
     <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <executions>
-        <execution>
-          <id>provision-native</id>
-          <phase>generate-resources</phase>
-          <goals><goal>java</goal></goals>
-          <configuration>
-            <mainClass>io.casehub.agency.speech.sherpa.NativePackager</mainClass>
-            <arguments>
-              <argument>osx-arm64</argument>
-            </arguments>
-          </configuration>
-        </execution>
-      </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>provision-native</id>
+                <phase>generate-resources</phase>
+                <goals>
+                    <goal>java</goal>
+                </goals>
+                <configuration>
+                    <mainClass>io.casehub.connectors.voice.sherpa.NativePackager</mainClass>
+                    <arguments>
+                        <argument>osx-arm64</argument>
+                    </arguments>
+                </configuration>
+            </execution>
+        </executions>
     </plugin>
-  </plugins>
+</plugins>
 </build>
 ```
 

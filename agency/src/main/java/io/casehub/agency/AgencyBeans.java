@@ -299,10 +299,16 @@ public class AgencyBeans {
             MentalModelOrchestrator mentalModel,
             MoodOrchestrator moodOrchestrator,
             DriveComposer composer, DriveConfig config) {
-        var hygieneAdapter = hygieneOrchestratorInstance.isResolvable()
-                ? new io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter(hygieneOrchestratorInstance.get())
-                : null;
-        var curiosity = new io.casehub.neocortex.cognition.drive.CuriosityDrive(hygieneAdapter);
+        // TODO(#447): CuriosityDrive needs proper mindmap wiring — placeholder until cognitive migration
+        io.casehub.neocortex.cognition.drive.DriveSource curiosity;
+        if (mindMapStoreInstance.isResolvable()) {
+            curiosity = new io.casehub.neocortex.cognition.drive.CuriosityDrive(
+                    new io.casehub.neocortex.mindmap.intelligence.InformationGapDetector(mindMapStoreInstance.get()),
+                    new io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer(), 0.5);
+        } else {
+            curiosity = (agentId, tenantId) -> new io.casehub.neocortex.cognition.drive.DriveIntensity(
+                    io.casehub.neocortex.cognition.drive.DriveAxis.CURIOSITY, 0.0, "no-mindmap");
+        }
         var competence = new io.casehub.neocortex.cognition.drive.CompetenceDrive(strategy);
         var affiliation = new io.casehub.neocortex.cognition.drive.AffiliationDrive(
                 userModel, config.affiliationDecayThreshold(), config.affiliationStaleDuration());

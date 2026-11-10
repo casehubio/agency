@@ -44,13 +44,7 @@
         <jdk>[22,)</jdk>
       </activation>
       <modules>
-        <module>speech-sherpa</module>
         <module>speech-demo</module>
-        <module>speech-sherpa-native-osx-arm64</module>
-        <module>speech-sherpa-native-osx-x64</module>
-        <module>speech-sherpa-native-linux-x64</module>
-        <module>speech-sherpa-native-linux-arm64</module>
-        <module>speech-sherpa-native-win-x64</module>
       </modules>
     </profile>
   </profiles>
