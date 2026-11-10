@@ -82,10 +82,14 @@ public class SpeechProducers {
             models.put(entry.getKey(), wrapIfAvailable(kokoro.forVoice(entry.getValue()), aligner));
         }
 
-        // Qwen3-TTS voices (subprocess, INT4 quantized)
+        // Qwen3-TTS voices (HTTP server, INT4 quantized, streaming)
         try {
+            var qwen3 = io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withExternalServer(
+                    "http://localhost:8790", "ryan");
             for (String voice : java.util.List.of("ryan", "aiden", "eric", "dylan", "serena", "vivian")) {
-                models.put("qwen3:" + voice, Qwen3TextToSpeech.withDefaults(voice));
+                models.put("qwen3:" + voice,
+                        io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withExternalServer(
+                                "http://localhost:8790", voice));
             }
             LOG.log(System.Logger.Level.INFO, "Qwen3-TTS voices registered");
         } catch (Exception e) {
