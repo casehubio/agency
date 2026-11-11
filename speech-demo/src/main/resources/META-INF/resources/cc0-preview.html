@@ -36,6 +36,7 @@
 import { TalkingHead } from "talkinghead";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as THREE from "three";
+import { retargetClipToObject } from "./animations/retarget.mjs";
 
 var ANIMATIONS = [
   { name: "Angry", category: "emotion" },
@@ -106,13 +107,32 @@ async function init() {
 
     var gltfLoader = new GLTFLoader();
     var gltf = await new Promise(function(resolve, reject) {
-      gltfLoader.load('animations/cc0-animations.glb', resolve, null, reject);
+      gltfLoader.load('animations/cc0-animations-v2.glb', resolve, null, reject);
     });
 
+    // Find the avatar's armature in TalkingHead's scene
+    var avatarArmature = null;
+    head.scene.traverse(function(o) {
+      if (!avatarArmature && o.name === 'Armature' && o.isObject3D) avatarArmature = o;
+    });
+
+    var retargetedCount = 0;
     gltf.animations.forEach(function(clip) {
       var cacheKey = 'cc0://' + clip.name + '-0';
+
+      // Retarget the clip from the M2M skeleton to our avatar skeleton
+      var result = retargetClipToObject(clip, avatarArmature || head.scene);
+      var retargetedClip = result && result.clip ? result.clip : clip;
+
+      if (result && result.clip) {
+        retargetedCount++;
+        console.log('Retargeted:', clip.name, 'coverage:', result.coverage);
+      } else {
+        console.warn('Retarget failed for:', clip.name, result);
+      }
+
       var props = {};
-      clip.tracks.forEach(function(t) {
+      retargetedClip.tracks.forEach(function(t) {
         var ids = t.name.split('.');
         if (ids[1] === 'position') {
           props[t.name] = new THREE.Vector3(t.values[0], t.values[1], t.values[2]);
@@ -125,8 +145,9 @@ async function init() {
         pose.standing = props['Hips.position'].y >= 0.5;
         pose.lying = props['Hips.position'].y < 0.5;
       }
-      head.animClips.push({ url: cacheKey, clip: clip, pose: pose });
+      head.animClips.push({ url: cacheKey, clip: retargetedClip, pose: pose });
     });
+    console.log('Retargeted', retargetedCount, 'of', gltf.animations.length, 'clips');
 
     status.textContent = 'Ready — ' + gltf.animations.length + ' CC0 animations. Click any button to preview.';
   } catch (e) {
