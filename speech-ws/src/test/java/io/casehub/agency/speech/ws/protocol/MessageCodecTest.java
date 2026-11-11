@@ -106,6 +106,38 @@ class MessageCodecTest {
         assertThat(obj.get("confidence").getAsDouble()).isCloseTo(0.95, org.assertj.core.data.Offset.offset(0.01));
     }
 
+
+    @Test
+    void encodesAnimationMessageCategoryOnly() {
+        String json = MessageCodec.encode(new AvatarMessage.Animation("thinking", null, null));
+        var    obj  = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("animation");
+        assertThat(obj.get("category").getAsString()).isEqualTo("thinking");
+        assertThat(obj.has("url")).isFalse();
+        assertThat(obj.has("durationSec")).isFalse();
+    }
+
+    @Test
+    void encodesAnimationMessageWithAllFields() {
+        String json = MessageCodec.encode(
+                new AvatarMessage.Animation("greeting", "animations/wave.fbx", 5));
+        var obj = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("animation");
+        assertThat(obj.get("category").getAsString()).isEqualTo("greeting");
+        assertThat(obj.get("url").getAsString()).isEqualTo("animations/wave.fbx");
+        assertThat(obj.get("durationSec").getAsInt()).isEqualTo(5);
+    }
+
+    @Test
+    void encodesAnimationMessageWithUrlOnly() {
+        String json = MessageCodec.encode(
+                new AvatarMessage.Animation("custom", "animations/custom.fbx", null));
+        var obj = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("category").getAsString()).isEqualTo("custom");
+        assertThat(obj.get("url").getAsString()).isEqualTo("animations/custom.fbx");
+        assertThat(obj.has("durationSec")).isFalse();
+    }
+
     @Test
     void decodeSpeakerIdentify() {
         var msg = MessageCodec.decodeClient("{\"type\":\"speakerIdentify\",\"name\":\"Mark\"}");
