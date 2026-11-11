@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="down-arrow" viewBox="0 0 10 7" refX="5" refY="7" markerWidth="8" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 0 L 5 7 z" fill="#475569"/>
+    </marker>
+    <marker id="bi-arrow" viewBox="0 0 10 7" refX="5" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#3b82f6"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="300" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Left: Supervisor Pattern -->
+  <text x="180" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">Supervisor Pattern</text>
+
+  <!-- Supervisor box -->
+  <rect x="130" y="44" width="100" height="40" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="180" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Supervisor</text>
+
+  <!-- Fixed agents -->
+  <rect x="40" y="130" width="80" height="36" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="80" y="152" text-anchor="middle" font-size="10" fill="#991b1b">Agent A</text>
+
+  <rect x="140" y="130" width="80" height="36" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="180" y="152" text-anchor="middle" font-size="10" fill="#991b1b">Agent B</text>
+
+  <rect x="240" y="130" width="80" height="36" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="280" y="152" text-anchor="middle" font-size="10" fill="#991b1b">Agent C</text>
+
+  <!-- Arrows down from supervisor -->
+  <line x1="155" y1="84" x2="80" y2="126" stroke="#475569" stroke-width="1.2" marker-end="url(#down-arrow)"/>
+  <line x1="180" y1="84" x2="180" y2="126" stroke="#475569" stroke-width="1.2" marker-end="url(#down-arrow)"/>
+  <line x1="205" y1="84" x2="280" y2="126" stroke="#475569" stroke-width="1.2" marker-end="url(#down-arrow)"/>
+
+  <!-- Labels -->
+  <text x="180" y="196" text-anchor="middle" font-size="10" fill="#94a3b8">Fixed team, fixed roles</text>
+  <text x="180" y="210" text-anchor="middle" font-size="10" fill="#94a3b8">Top-down assignment</text>
+  <text x="180" y="224" text-anchor="middle" font-size="10" fill="#94a3b8">Collect results, done</text>
+
+  <!-- Divider -->
+  <line x1="360" y1="20" x2="360" y2="280" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- Right: Swarm Pattern -->
+  <text x="540" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">Swarm Coordination</text>
+
+  <!-- Coordinator -->
+  <rect x="490" y="44" width="100" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="540" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Coordinator</text>
+
+  <!-- Shared context (stigmergic medium) -->
+  <rect x="430" y="110" width="220" height="32" rx="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="540" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">Shared Context (SwarmContext)</text>
+
+  <!-- Dynamic agents -->
+  <rect x="392" y="172" width="68" height="36" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="426" y="194" text-anchor="middle" font-size="10" fill="#1e40af">Agent A</text>
+
+  <rect x="472" y="172" width="68" height="36" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="506" y="194" text-anchor="middle" font-size="10" fill="#1e40af">Agent B</text>
+
+  <rect x="556" y="172" width="68" height="36" rx="4" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="590" y="194" text-anchor="middle" font-size="10" fill="#4338ca">Agent D</text>
+  <text x="590" y="164" text-anchor="middle" font-size="8" fill="#4338ca" font-style="italic">provisioned</text>
+
+  <rect x="636" y="172" width="68" height="36" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="670" y="190" text-anchor="middle" font-size="10" fill="#94a3b8">Agent C</text>
+  <line x1="640" y1="184" x2="700" y2="184" stroke="#94a3b8" stroke-width="1"/>
+  <text x="670" y="164" text-anchor="middle" font-size="8" fill="#94a3b8" font-style="italic">released</text>
+
+  <!-- Bidirectional arrows through shared context -->
+  <line x1="540" y1="84" x2="540" y2="106" stroke="#3b82f6" stroke-width="1.2" marker-end="url(#bi-arrow)"/>
+  <line x1="426" y1="142" x2="426" y2="168" stroke="#3b82f6" stroke-width="1" marker-end="url(#bi-arrow)"/>
+  <line x1="506" y1="142" x2="506" y2="168" stroke="#3b82f6" stroke-width="1" marker-end="url(#bi-arrow)"/>
+  <line x1="590" y1="142" x2="590" y2="168" stroke="#3b82f6" stroke-width="1" marker-end="url(#bi-arrow)"/>
+
+  <!-- Labels -->
+  <text x="540" y="234" text-anchor="middle" font-size="10" fill="#3b82f6">Dynamic team, adaptive roles</text>
+  <text x="540" y="248" text-anchor="middle" font-size="10" fill="#3b82f6">LLM-driven formation + synthesis</text>
+  <text x="540" y="262" text-anchor="middle" font-size="10" fill="#3b82f6">Converge, provision, or escalate</text>
+</svg>

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "The Five Milliseconds Nobody Notices"
+title: "The Server That Didn't Need to Exist"
 date: 2026-11-11
 entry_type: article
 subtype: diary
@@ -8,32 +8,25 @@ projects: [casehubio/agency, casehubio/connectors]
 tags: [voice, panama, ffm, native, performance, java22, qwen3-tts, ggml]
 ---
 
-# The Five Milliseconds Nobody Notices
+# The Server That Didn't Need to Exist
 
 The Qwen3-TTS integration worked. You typed text, audio came back, the avatar
-spoke. Every synthesis call went through an HTTP server running as a
-subprocess — Java started the binary, polled a health endpoint until it
-answered, serialised a JSON request, posted it over localhost, read the
-response body, and wrapped the PCM bytes as WAV. For voice cloning, each
+spoke. But between the text and the audio sat an entire HTTP server — a
+subprocess that Java started, babied through a thirty-second health-check
+poll, and communicated with over localhost JSON. For voice cloning, each
 cloned voice got its own server process on a dedicated port, managed by an
 LRU pool that started and killed OS processes as voices rotated.
 
-It worked. Five to ten milliseconds of HTTP overhead per call, invisible
-against the hundreds of milliseconds the model itself takes to synthesise
-speech. Nobody would look at a flame graph and point at the HTTP round-trip
-as the problem.
-
-The problem was everything around it.
-
-Process management is where the complexity lived. Start the binary, wait up
-to thirty seconds for the health check to pass, capture stdout on a virtual
-thread so server logs don't block, handle the case where the process dies
-mid-synthesis, destroy the process on close with a five-second timeout,
-forcibly kill it if it doesn't cooperate. For the voice pool: track which
-ports are allocated, which processes are alive, evict the least-recently-used
-voice when the pool is full, restart a server if it crashes between calls.
-Over a hundred lines of `ProcessBuilder`, `HttpClient`, and LRU bookkeeping
-to do what is, at its core, a function call: here is text, give me audio.
+The per-call overhead was ~5ms of HTTP round-trip. Negligible. The actual
+cost was everything else: start the binary, wait for it to come alive,
+capture stdout so server logs don't block the parent, handle the case where
+the process dies mid-synthesis, destroy it on close with a five-second
+timeout, forcibly kill it if it doesn't cooperate. For the voice pool: track
+which ports are allocated, which processes are alive, evict the
+least-recently-used voice when the pool is full, restart a server if it
+crashes between calls. Over a hundred lines of `ProcessBuilder`,
+`HttpClient`, and LRU bookkeeping to do what is, at its core, a function
+call: here is text, give me audio.
 
 ![Before and after: HTTP subprocess vs FFM native call](images/qwen3-ffm-before-after.svg)
 

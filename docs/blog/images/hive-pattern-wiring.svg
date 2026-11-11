@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2d7d46"/>
+    </marker>
+  </defs>
+
+  <!-- Before side -->
+  <text x="170" y="28" text-anchor="middle" font-size="14" font-weight="bold" fill="#666">Before</text>
+  <rect x="30" y="40" width="280" height="340" rx="8" fill="#f8f8f8" stroke="#ddd"/>
+
+  <!-- Decision Loop -->
+  <rect x="60" y="60" width="220" height="40" rx="6" fill="#e8e8e8" stroke="#bbb"/>
+  <text x="170" y="85" text-anchor="middle" font-size="12" fill="#555">Decision Loop → outcome</text>
+
+  <!-- Arrow down -->
+  <line x1="170" y1="100" x2="170" y2="130" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- HivePatternAdapter -->
+  <rect x="60" y="130" width="220" height="40" rx="6" fill="#fff3cd" stroke="#c9a825"/>
+  <text x="170" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#856404">HivePatternAdapter</text>
+
+  <!-- Three stub arrows -->
+  <line x1="105" y1="170" x2="105" y2="210" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+  <line x1="170" y1="170" x2="170" y2="210" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+  <line x1="235" y1="170" x2="235" y2="210" stroke="#999" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <!-- Stub boxes -->
+  <rect x="60" y="210" width="80" height="50" rx="4" fill="#f5f5f5" stroke="#ccc" stroke-dasharray="4,3"/>
+  <text x="100" y="233" text-anchor="middle" font-size="10" fill="#999">Supervisor</text>
+  <text x="100" y="248" text-anchor="middle" font-size="9" fill="#bbb" font-style="italic">stub</text>
+
+  <rect x="148" y="210" width="50" height="50" rx="4" fill="#f5f5f5" stroke="#ccc" stroke-dasharray="4,3"/>
+  <text x="173" y="233" text-anchor="middle" font-size="10" fill="#999">Debate</text>
+  <text x="173" y="248" text-anchor="middle" font-size="9" fill="#bbb" font-style="italic">stub</text>
+
+  <rect x="206" y="210" width="56" height="50" rx="4" fill="#f5f5f5" stroke="#ccc" stroke-dasharray="4,3"/>
+  <text x="234" y="233" text-anchor="middle" font-size="10" fill="#999">Voting</text>
+  <text x="234" y="248" text-anchor="middle" font-size="9" fill="#bbb" font-style="italic">stub</text>
+
+  <!-- All return SUCCESS -->
+  <rect x="80" y="290" width="180" height="36" rx="4" fill="#fff" stroke="#ccc"/>
+  <text x="170" y="312" text-anchor="middle" font-size="11" fill="#999">return SUCCESS (always)</text>
+
+  <!-- After side -->
+  <text x="540" y="28" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d7d46">After</text>
+  <rect x="400" y="40" width="310" height="340" rx="8" fill="#f0f9f4" stroke="#b8dfc8"/>
+
+  <!-- Decision Loop -->
+  <rect x="430" y="60" width="250" height="40" rx="6" fill="#e8e8e8" stroke="#bbb"/>
+  <text x="555" y="85" text-anchor="middle" font-size="12" fill="#555">Decision Loop → outcome</text>
+
+  <!-- Arrow down -->
+  <line x1="555" y1="100" x2="555" y2="130" stroke="#2d7d46" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <!-- HivePatternAdapter -->
+  <rect x="430" y="130" width="250" height="40" rx="6" fill="#d4edda" stroke="#28a745"/>
+  <text x="555" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#155724">HivePatternAdapter</text>
+
+  <!-- Three real arrows -->
+  <line x1="480" y1="170" x2="480" y2="210" stroke="#2d7d46" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <line x1="555" y1="170" x2="555" y2="210" stroke="#2d7d46" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <line x1="630" y1="170" x2="630" y2="210" stroke="#2d7d46" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <!-- Real pattern boxes -->
+  <rect x="430" y="210" width="100" height="50" rx="4" fill="#d4edda" stroke="#28a745"/>
+  <text x="480" y="230" text-anchor="middle" font-size="10" font-weight="bold" fill="#155724">Patterns</text>
+  <text x="480" y="245" text-anchor="middle" font-size="10" fill="#155724">.supervisor()</text>
+
+  <rect x="535" y="210" width="42" height="50" rx="4" fill="#d4edda" stroke="#28a745"/>
+  <text x="556" y="230" text-anchor="middle" font-size="10" font-weight="bold" fill="#155724">…</text>
+  <text x="556" y="245" text-anchor="middle" font-size="10" fill="#155724">.debate()</text>
+
+  <rect x="582" y="210" width="98" height="50" rx="4" fill="#d4edda" stroke="#28a745"/>
+  <text x="631" y="230" text-anchor="middle" font-size="10" font-weight="bold" fill="#155724">Patterns</text>
+  <text x="631" y="245" text-anchor="middle" font-size="10" fill="#155724">.voting()</text>
+
+  <!-- Agent invocation -->
+  <line x1="480" y1="260" x2="480" y2="290" stroke="#2d7d46" stroke-width="1" marker-end="url(#arrow-green)"/>
+  <line x1="555" y1="260" x2="555" y2="290" stroke="#2d7d46" stroke-width="1" marker-end="url(#arrow-green)"/>
+  <line x1="630" y1="260" x2="630" y2="290" stroke="#2d7d46" stroke-width="1" marker-end="url(#arrow-green)"/>
+
+  <rect x="430" y="290" width="280" height="36" rx="4" fill="#fff" stroke="#28a745"/>
+  <text x="555" y="306" text-anchor="middle" font-size="10" fill="#155724">ExternalAgent → AgentProvider → LLM</text>
+  <text x="555" y="320" text-anchor="middle" font-size="10" fill="#155724">→ CoordinationFeedback</text>
+
+  <!-- Degradation cascade label -->
+  <rect x="430" y="338" width="280" height="30" rx="4" fill="none" stroke="#856404" stroke-dasharray="4,3"/>
+  <text x="555" y="358" text-anchor="middle" font-size="10" fill="#856404">Cascade: Debate → Voting → Supervisor</text>
+</svg>
