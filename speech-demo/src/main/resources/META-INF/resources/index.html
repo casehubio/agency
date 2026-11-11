@@ -116,6 +116,27 @@
     <option value="avatar-vroid.glb">VRoid (anime)</option>
     <option value="avatar-mpfb.glb">MakeHuman</option>
   </select></label>
+  <label>Animation: <select id="animPicker">
+    <option value="">Auto</option>
+    <optgroup label="Conversational">
+      <option value="thinking">Thinking</option>
+      <option value="explaining">Explaining</option>
+      <option value="agreement">Agreement</option>
+      <option value="greeting">Greeting</option>
+    </optgroup>
+    <optgroup label="Expressive">
+      <option value="surprise">Surprise</option>
+      <option value="happy">Happy</option>
+      <option value="sad">Sad</option>
+      <option value="defensive">Defensive</option>
+      <option value="pointing">Pointing</option>
+      <option value="confusion">Confusion</option>
+    </optgroup>
+    <optgroup label="Idle">
+      <option value="idle">Idle Fidget</option>
+    </optgroup>
+  </select></label>
+  <button id="playAnim" style="padding:0.3rem 0.6rem;border-radius:6px;border:1px solid #555;background:#2a2a3e;color:#e0e0e0;cursor:pointer;font-size:0.85rem" title="Play selected animation">&#9654;</button>
 </div>
 <div style="text-align:center;padding:0.25rem"><span id="toggle-avatar">Show 3D Avatar</span></div>
 <div id="avatar-container"></div>
@@ -149,6 +170,127 @@ let micSource = null;
 let recording = false;
 let visemeMeshes = null;
 
+var ANIMATIONS = {
+  greeting: {
+    keywords: ["hello", "hi ", "hey ", "welcome", "good morning", "good afternoon"],
+    anims: [
+      { url: "animations/greeting-wave.fbx", dur: 3, exclusive: true },
+      { url: "animations/greeting-casual.fbx", dur: 3, exclusive: true }
+    ]
+  },
+  thinking: {
+    keywords: ["let me think", "hmm", "consider", "wondering", "perhaps", "let me see"],
+    anims: [
+      { url: "animations/thinking-1.fbx", dur: 4, exclusive: false },
+      { url: "animations/thinking-2.fbx", dur: 4, exclusive: false }
+    ]
+  },
+  explaining: {
+    keywords: ["here's how", "the reason", "because", "essentially", "basically", "in other words", "what this means"],
+    anims: [
+      { url: "animations/explaining-1.fbx", dur: 5, exclusive: false },
+      { url: "animations/explaining-2.fbx", dur: 5, exclusive: false }
+    ]
+  },
+  agreement: {
+    keywords: ["yes", "right", "exactly", "agree", "correct", "absolutely", "indeed"],
+    anims: [
+      { url: "animations/agreement-1.fbx", dur: 3, exclusive: false }
+    ]
+  },
+  surprise: {
+    keywords: ["wow", "really", "amazing", "incredible", "fascinating", "remarkable"],
+    anims: [
+      { url: "animations/surprise-1.fbx", dur: 3, exclusive: false }
+    ]
+  },
+  confusion: {
+    keywords: ["not sure", "i don't know", "unclear", "hard to say", "it depends"],
+    anims: [
+      { url: "animations/confusion-1.fbx", dur: 3, exclusive: false },
+      { url: "animations/confusion-shrug.fbx", dur: 3, exclusive: false }
+    ]
+  },
+  happy: {
+    keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "that's funny"],
+    anims: [
+      { url: "animations/happy-laugh.fbx", dur: 3, exclusive: false },
+      { url: "animations/happy-clap.fbx", dur: 3, exclusive: true }
+    ]
+  },
+  sad: {
+    keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"],
+    anims: [
+      { url: "animations/sad-1.fbx", dur: 4, exclusive: false }
+    ]
+  },
+  defensive: {
+    keywords: ["however", "on the other hand", "but ", "disagree", "not necessarily"],
+    anims: [
+      { url: "animations/defensive-1.fbx", dur: 4, exclusive: false }
+    ]
+  },
+  pointing: {
+    keywords: ["look at", "right here", "this one", "over there", "check this"],
+    anims: [
+      { url: "animations/pointing-1.fbx", dur: 3, exclusive: true }
+    ]
+  },
+  idle: {
+    keywords: [],
+    anims: [
+      { url: "animations/idle-1.fbx", dur: 8, exclusive: false },
+      { url: "animations/idle-2.fbx", dur: 8, exclusive: false },
+      { url: "animations/idle-3.fbx", dur: 10, exclusive: false }
+    ]
+  }
+};
+
+var currentAnimation = null;
+var animationExclusive = false;
+var idleTimer = null;
+var serverAnimationReceived = false;
+
+function classifyResponse(text) {
+  var lower = text.toLowerCase();
+  for (var category in ANIMATIONS) {
+    var config = ANIMATIONS[category];
+    if (config.keywords.length === 0) continue;
+    for (var i = 0; i < config.keywords.length; i++) {
+      if (lower.includes(config.keywords[i])) return category;
+    }
+  }
+  return null;
+}
+
+function playAnimationByCategory(category) {
+  if (!head) return;
+  var config = ANIMATIONS[category];
+  if (!config) return;
+  var anim = config.anims[Math.floor(Math.random() * config.anims.length)];
+  animationExclusive = anim.exclusive;
+  currentAnimation = category;
+  head.playAnimation(anim.url, null, anim.dur).catch(function(e) {
+    console.warn('Animation load failed:', e);
+    animationExclusive = false;
+    currentAnimation = null;
+  });
+  setTimeout(function() {
+    animationExclusive = false;
+    currentAnimation = null;
+  }, anim.dur * 1000);
+  resetIdleTimer();
+}
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(function() {
+    if (head && !isPlaying && !currentAnimation) {
+      playAnimationByCategory('idle');
+    }
+  }, 5000 + Math.random() * 3000);
+}
+
 function addMessage(text, cls) {
   const div = document.createElement('div');
   div.className = 'msg ' + cls;
@@ -180,13 +322,13 @@ function connect() {
         case 'response':
           addMessage(msg.text, 'avatar');
           if (head) {
-            head.setMood('happy');
-            var text = msg.text.toLowerCase();
-            if (text.includes('?') || text.includes('not sure')) head.playGesture('shrug', 2);
-            else if (text.includes('hello') || text.includes('hi') || text.includes('hey')) head.playGesture('handup', 2);
-            else if (text.includes('great') || text.includes('yes') || text.includes('right')) head.playGesture('thumbup', 2);
-            setTimeout(function() { if (head) head.setMood('neutral'); }, 5000);
+            if (!serverAnimationReceived) {
+              var category = classifyResponse(msg.text);
+              if (category) playAnimationByCategory(category);
+            }
+            serverAnimationReceived = false;
           }
+          resetIdleTimer();
           break;
         case 'phonemes':
           var count = msg.data ? msg.data.length : 0;
@@ -198,6 +340,18 @@ function connect() {
           break;
         case 'timing':
           showTiming(msg);
+          break;
+        case 'animation':
+          serverAnimationReceived = true;
+          if (msg.url) {
+            var dur = msg.durationSec || 5;
+            animationExclusive = false;
+            if (head) head.playAnimation(msg.url, null, dur).catch(function(e) {
+              console.warn('Server animation failed:', e);
+            });
+          } else if (msg.category) {
+            playAnimationByCategory(msg.category);
+          }
           break;
         case 'error':
           addMessage('Error: ' + msg.message, 'system');
@@ -233,6 +387,7 @@ function sendText() {
   ws.send(JSON.stringify({ type: 'text', text: text, llmModel: llmModel, ttsModel: ttsModel }));
   msgInput.value = '';
   status.textContent = 'Processing...';
+  if (head) playAnimationByCategory('thinking');
 }
 
 function discoverVisemeMeshes() {
@@ -320,15 +475,17 @@ function playNextQueued() {
       }
     }
 
-    meshes.forEach(function(m) {
-      for (var k in m.dict) {
-        var idx = m.dict[k];
-        var target = (k === 'viseme_' + activeViseme) ? activeWeight : 0;
-        var current = m.mesh.morphTargetInfluences[idx] || 0;
-        var lerp = target > current ? ATTACK : DECAY;
-        m.mesh.morphTargetInfluences[idx] = current + (target - current) * lerp;
-      }
-    });
+    if (!animationExclusive) {
+      meshes.forEach(function(m) {
+        for (var k in m.dict) {
+          var idx = m.dict[k];
+          var target = (k === 'viseme_' + activeViseme) ? activeWeight : 0;
+          var current = m.mesh.morphTargetInfluences[idx] || 0;
+          var lerp = target > current ? ATTACK : DECAY;
+          m.mesh.morphTargetInfluences[idx] = current + (target - current) * lerp;
+        }
+      });
+    }
 
     requestAnimationFrame(animate);
   }
@@ -412,6 +569,7 @@ function stopRecording() {
       ws.send(JSON.stringify({ type: 'stop' }));
     }
     status.textContent = 'Processing speech...';
+    if (head) playAnimationByCategory('thinking');
     micBtn.textContent = 'Mic';
     if (micProcessor) { micProcessor.disconnect(); micProcessor = null; }
     if (micSource) { micSource.disconnect(); micSource = null; }
@@ -540,10 +698,19 @@ toggleAvatar.addEventListener('click', async function() {
       addMessage('3D avatar ready.', 'system');
       head.setMood('neutral');
       head.playGesture('handup', 3);
+      resetIdleTimer();
     } catch (e) {
       addMessage('Avatar load error: ' + e.message, 'system');
       head = null;
     }
+  }
+});
+
+document.getElementById('playAnim').addEventListener('click', function() {
+  var category = document.getElementById('animPicker').value;
+  if (category && head) {
+    playAnimationByCategory(category);
+    addMessage('Playing animation: ' + category, 'system');
   }
 });
 </script>
