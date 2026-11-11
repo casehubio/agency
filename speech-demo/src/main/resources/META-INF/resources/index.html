@@ -128,7 +128,6 @@
       <option value="surprise">Surprise</option>
       <option value="happy">Happy</option>
       <option value="sad">Sad</option>
-      <option value="defensive">Defensive</option>
       <option value="pointing">Pointing</option>
       <option value="confusion">Confusion</option>
     </optgroup>
@@ -174,28 +173,26 @@ var ANIMATIONS = {
   greeting: {
     keywords: ["hello", "hi ", "hey ", "welcome", "good morning", "good afternoon"],
     anims: [
-      { url: "animations/greeting-wave.fbx", dur: 3, exclusive: true },
-      { url: "animations/greeting-casual.fbx", dur: 3, exclusive: true }
+      { url: "animations/greeting-wave.fbx", dur: 3, exclusive: true }
     ]
   },
   thinking: {
     keywords: ["let me think", "hmm", "consider", "wondering", "perhaps", "let me see"],
     anims: [
-      { url: "animations/thinking-1.fbx", dur: 4, exclusive: false },
-      { url: "animations/thinking-2.fbx", dur: 4, exclusive: false }
+      { url: "animations/thinking-1.fbx", dur: 4, exclusive: false }
     ]
   },
   explaining: {
     keywords: ["here's how", "the reason", "because", "essentially", "basically", "in other words", "what this means"],
     anims: [
-      { url: "animations/explaining-1.fbx", dur: 5, exclusive: false },
-      { url: "animations/explaining-2.fbx", dur: 5, exclusive: false }
+      { url: "animations/explaining-1.fbx", dur: 5, exclusive: false }
     ]
   },
   agreement: {
     keywords: ["yes", "right", "exactly", "agree", "correct", "absolutely", "indeed"],
     anims: [
-      { url: "animations/agreement-1.fbx", dur: 3, exclusive: false }
+      { url: "animations/agreement-1.fbx", dur: 3, exclusive: false },
+      { url: "animations/agreement-2.fbx", dur: 3, exclusive: false }
     ]
   },
   surprise: {
@@ -207,7 +204,6 @@ var ANIMATIONS = {
   confusion: {
     keywords: ["not sure", "i don't know", "unclear", "hard to say", "it depends"],
     anims: [
-      { url: "animations/confusion-1.fbx", dur: 3, exclusive: false },
       { url: "animations/confusion-shrug.fbx", dur: 3, exclusive: false }
     ]
   },
@@ -224,12 +220,6 @@ var ANIMATIONS = {
       { url: "animations/sad-1.fbx", dur: 4, exclusive: false }
     ]
   },
-  defensive: {
-    keywords: ["however", "on the other hand", "but ", "disagree", "not necessarily"],
-    anims: [
-      { url: "animations/defensive-1.fbx", dur: 4, exclusive: false }
-    ]
-  },
   pointing: {
     keywords: ["look at", "right here", "this one", "over there", "check this"],
     anims: [
@@ -240,8 +230,7 @@ var ANIMATIONS = {
     keywords: [],
     anims: [
       { url: "animations/idle-1.fbx", dur: 8, exclusive: false },
-      { url: "animations/idle-2.fbx", dur: 8, exclusive: false },
-      { url: "animations/idle-3.fbx", dur: 10, exclusive: false }
+      { url: "animations/idle-2.fbx", dur: 8, exclusive: false }
     ]
   }
 };
