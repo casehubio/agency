@@ -1,6 +1,11 @@
 ---
-type: diary
-tags: [voice, panama, ffm, native, performance, java22]
+layout: post
+title: "The Five Milliseconds Nobody Notices"
+date: 2026-11-11
+entry_type: article
+subtype: diary
+projects: [casehubio/agency, casehubio/connectors]
+tags: [voice, panama, ffm, native, performance, java22, qwen3-tts, ggml]
 ---
 
 # The Five Milliseconds Nobody Notices
