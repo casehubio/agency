@@ -22,4 +22,8 @@ public sealed interface AvatarMessage {
 
     record SpeakerIdentified(String name, double confidence) implements AvatarMessage {}
 
+    record Animation(String category, @org.jspecify.annotations.Nullable String url,
+                     @org.jspecify.annotations.Nullable Integer durationSec) implements AvatarMessage {}
+
+
 }

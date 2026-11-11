@@ -64,6 +64,12 @@ public final class MessageCodec {
                 obj.addProperty("name", si.name());
                 obj.addProperty("confidence", si.confidence());
             }
+            case AvatarMessage.Animation a -> {
+                obj.addProperty("type", "animation");
+                obj.addProperty("category", a.category());
+                if (a.url() != null) { obj.addProperty("url", a.url()); }
+                if (a.durationSec() != null) { obj.addProperty("durationSec", a.durationSec()); }
+            }
         }
         return GSON.toJson(obj);}
 
