@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 320" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2d7d46"/>
+    </marker>
+  </defs>
+
+  <!-- YAML Surface (left) -->
+  <text x="140" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#555">YAML Surface</text>
+  <rect x="20" y="36" width="240" height="260" rx="8" fill="#fff9e6" stroke="#c9a825"/>
+
+  <text x="140" y="62" text-anchor="middle" font-size="12" font-weight="bold" fill="#856404">RolePolicySpec</text>
+
+  <rect x="40" y="76" width="200" height="30" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="140" y="96" text-anchor="middle" font-size="11" fill="#555">obligations: [review, report]</text>
+
+  <rect x="40" y="114" width="200" height="30" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="140" y="134" text-anchor="middle" font-size="11" fill="#555">permissions: [provision]</text>
+
+  <rect x="40" y="152" width="200" height="30" rx="4" fill="#d4edda" stroke="#28a745"/>
+  <text x="140" y="172" text-anchor="middle" font-size="11" fill="#155724">minAgents: 1</text>
+
+  <rect x="40" y="190" width="200" height="30" rx="4" fill="#d4edda" stroke="#28a745"/>
+  <text x="140" y="210" text-anchor="middle" font-size="11" fill="#155724">maxAgents: 5</text>
+
+  <text x="140" y="248" text-anchor="middle" font-size="10" fill="#999" font-style="italic">YAML convenience type</text>
+  <text x="140" y="264" text-anchor="middle" font-size="10" fill="#999" font-style="italic">for config authors</text>
+
+  <!-- Arrow: toRoleSpec() -->
+  <line x1="260" y1="160" x2="340" y2="160" stroke="#2d7d46" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="300" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#2d7d46">toRoleSpec()</text>
+  <text x="300" y="178" text-anchor="middle" font-size="9" fill="#2d7d46">compiles to</text>
+
+  <!-- Canonical Type (right) -->
+  <text x="510" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d7d46">Canonical Type (eidos)</text>
+  <rect x="360" y="36" width="320" height="260" rx="8" fill="#f0f9f4" stroke="#28a745"/>
+
+  <text x="510" y="62" text-anchor="middle" font-size="12" font-weight="bold" fill="#155724">RoleSpec</text>
+
+  <rect x="380" y="76" width="280" height="28" rx="4" fill="#fff" stroke="#b8dfc8"/>
+  <text x="510" y="95" text-anchor="middle" font-size="11" fill="#555">roleName: "coordinator"</text>
+
+  <rect x="380" y="110" width="280" height="28" rx="4" fill="#fff" stroke="#b8dfc8"/>
+  <text x="510" y="129" text-anchor="middle" font-size="11" fill="#555">minCardinality: 1  maxCardinality: 5</text>
+
+  <rect x="380" y="146" width="280" height="56" rx="4" fill="#fff" stroke="#b8dfc8"/>
+  <text x="510" y="164" text-anchor="middle" font-size="11" fill="#555">policies:</text>
+  <text x="510" y="180" text-anchor="middle" font-size="10" fill="#777">RolePolicy("review", OBLIGATION)</text>
+  <text x="510" y="194" text-anchor="middle" font-size="10" fill="#777">RolePolicy("provision", PERMISSION)</text>
+
+  <rect x="380" y="210" width="280" height="28" rx="4" fill="#fff" stroke="#b8dfc8"/>
+  <text x="510" y="229" text-anchor="middle" font-size="11" fill="#555">obligations: [review, report]</text>
+
+  <rect x="380" y="246" width="280" height="28" rx="4" fill="#fff" stroke="#b8dfc8"/>
+  <text x="510" y="265" text-anchor="middle" font-size="11" fill="#555">permissions: [provision]</text>
+</svg>

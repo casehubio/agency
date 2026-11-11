@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="340" fill="#fafaf9" rx="8"/>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">Domain Lifecycle Signals in Multi-Swarm Coordination</text>
+
+  <!-- Active phase box -->
+  <rect x="30" y="50" width="300" height="260" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="180" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Active Domain</text>
+
+  <!-- Signal boxes in active phase -->
+  <rect x="55" y="88" width="110" height="36" rx="4" fill="#fff" stroke="#93c5fd" stroke-width="1"/>
+  <text x="110" y="111" text-anchor="middle" font-size="11" fill="#1e293b">Finding</text>
+
+  <rect x="55" y="134" width="110" height="36" rx="4" fill="#fff" stroke="#93c5fd" stroke-width="1"/>
+  <text x="110" y="157" text-anchor="middle" font-size="11" fill="#1e293b">Progress</text>
+
+  <rect x="55" y="180" width="110" height="36" rx="4" fill="#fff" stroke="#93c5fd" stroke-width="1"/>
+  <text x="110" y="203" text-anchor="middle" font-size="11" fill="#1e293b">ResourceClaim</text>
+
+  <!-- Handlers in active phase -->
+  <rect x="200" y="88" width="115" height="36" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="257" y="107" text-anchor="middle" font-size="10" fill="#1e40af">Relevance scoring</text>
+  <text x="257" y="119" text-anchor="middle" font-size="10" fill="#1e40af">+ belief revision</text>
+
+  <rect x="200" y="134" width="115" height="36" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="257" y="153" text-anchor="middle" font-size="10" fill="#1e40af">Convergence eval</text>
+  <text x="257" y="165" text-anchor="middle" font-size="10" fill="#1e40af">+ escalation gates</text>
+
+  <rect x="200" y="180" width="115" height="36" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+  <text x="257" y="203" text-anchor="middle" font-size="10" fill="#1e40af">Contention tracking</text>
+
+  <!-- Arrows active -->
+  <line x1="165" y1="106" x2="196" y2="106" stroke="#475569" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="165" y1="152" x2="196" y2="152" stroke="#475569" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="165" y1="198" x2="196" y2="198" stroke="#475569" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- Transition signals -->
+  <rect x="370" y="50" width="320" height="260" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="530" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">Lifecycle Transitions</text>
+
+  <!-- Completion -->
+  <rect x="395" y="88" width="110" height="36" rx="4" fill="#fff" stroke="#86efac" stroke-width="1"/>
+  <text x="450" y="111" text-anchor="middle" font-size="11" font-weight="500" fill="#166534">Completion</text>
+
+  <rect x="540" y="88" width="130" height="72" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+  <text x="605" y="104" text-anchor="middle" font-size="10" fill="#166534">Track domain state</text>
+  <text x="605" y="118" text-anchor="middle" font-size="10" fill="#166534">Skip escalation gates</text>
+  <text x="605" y="132" text-anchor="middle" font-size="10" fill="#166534">Evict beliefs (opt-in)</text>
+  <text x="605" y="146" text-anchor="middle" font-size="10" fill="#166534">All-complete check</text>
+
+  <line x1="505" y1="106" x2="536" y2="106" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arrow-green)"/>
+
+  <!-- Handoff -->
+  <rect x="395" y="180" width="110" height="36" rx="4" fill="#fff" stroke="#86efac" stroke-width="1"/>
+  <text x="450" y="203" text-anchor="middle" font-size="11" font-weight="500" fill="#166534">Handoff</text>
+
+  <rect x="540" y="180" width="130" height="56" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+  <text x="605" y="198" text-anchor="middle" font-size="10" fill="#166534">Capability matching</text>
+  <text x="605" y="212" text-anchor="middle" font-size="10" fill="#166534">Best-target routing</text>
+  <text x="605" y="226" text-anchor="middle" font-size="10" fill="#166534">HANDOFF notification</text>
+
+  <line x1="505" y1="198" x2="536" y2="198" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arrow-green)"/>
+
+  <!-- Was: ignored -->
+  <text x="530" y="262" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">Previously: ignored -&gt; {}</text>
+
+  <!-- Cross-connection: completion affects active phase -->
+  <path d="M 540,146 Q 460,260 315,168" fill="none" stroke="#2563eb" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+  <text x="400" y="254" text-anchor="middle" font-size="9" fill="#2563eb">gates silenced</text>
+</svg>
