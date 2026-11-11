@@ -82,21 +82,20 @@ public class SpeechProducers {
             models.put(entry.getKey(), wrapIfAvailable(kokoro.forVoice(entry.getValue()), aligner));
         }
 
-        // Qwen3-TTS voices (auto-provisioned, HTTP server, INT4 quantized, streaming)
+        // Qwen3-TTS voices (native FFM, GGUF quantized, streaming)
         try {
-            var qwen3First = io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withDefaults("ryan");
-            models.put("qwen3:ryan", qwen3First);
+            var qwen3 = io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withDefaults("ryan");
+            models.put("qwen3:ryan", qwen3);
             for (String voice : java.util.List.of("aiden", "eric", "dylan", "serena", "vivian")) {
                 models.put("qwen3:" + voice,
-                        io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withExternalServer(
-                                "http://localhost:8790", voice));
+                        io.casehub.connectors.voice.sherpa.Qwen3TextToSpeech.withDefaults(voice));
             }
-            LOG.log(System.Logger.Level.INFO, "Qwen3-TTS voices registered (server on port 8790)");
+            LOG.log(System.Logger.Level.INFO, "Qwen3-TTS voices registered (native FFM)");
         } catch (Exception e) {
             LOG.log(System.Logger.Level.WARNING, "Qwen3-TTS unavailable: " + e.getMessage());
         }
 
-        // Qwen3-TTS cloned voices (pooled Base model servers, .qvoice files)
+        // Qwen3-TTS cloned voices (in-process voice extraction from .wav files)
         try {
             var pool = io.casehub.connectors.voice.sherpa.Qwen3VoicePool.createProvisioned(
                     io.casehub.connectors.voice.sherpa.Qwen3VoicePoolConfig.defaults());

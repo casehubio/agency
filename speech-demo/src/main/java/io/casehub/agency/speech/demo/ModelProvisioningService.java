@@ -37,7 +37,7 @@ public class ModelProvisioningService {
         MODELS.keySet().forEach(key -> statuses.put(key, ModelStatus.PENDING));
         KOKORO_MODELS.keySet().forEach(key -> statuses.put(key, ModelStatus.PENDING));
         statuses.put("streaming-stt", ModelStatus.PENDING);
-        statuses.put("qwen3-binary", ModelStatus.PENDING);
+        statuses.put("qwen3-lib", ModelStatus.PENDING);
         statuses.put("qwen3-model", ModelStatus.PENDING);}
 
     void provisionAll() {
@@ -48,20 +48,18 @@ public class ModelProvisioningService {
             provisionEntry(entry.getKey(), () -> provisionKokoro(entry.getValue()));
         }
         provisionEntry("streaming-stt", this::provisionStreamingStt);
-        provisionEntry("qwen3-binary", this::provisionQwen3Binary);
+        provisionEntry("qwen3-lib", this::provisionQwen3SharedLibrary);
         provisionEntry("qwen3-model", this::provisionQwen3Model);}
 
     void provision(String modelName) {
         VitsTextToSpeech.ensureProvisioned(modelName);
     }
 
-    void provisionQwen3Binary() {
-        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Binary();
+    void provisionQwen3SharedLibrary() {
+        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3SharedLibrary();
     }
 
-    void provisionQwen3Model() {
-        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Model("0.6b-customvoice");
-    }
+    void provisionQwen3Model() {io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Model("0.6b-customvoice-q4");}
 
     private void provisionEntry(String key, Runnable provisioner) {
         statuses.put(key, ModelStatus.DOWNLOADING);
