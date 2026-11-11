@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CC0 Animation Preview</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+    "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.8/modules/talkinghead.mjs"
+} }
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 0.75rem; text-align: center; border-bottom: 1px solid #333; }
+  h1 { font-size: 1.1rem; font-weight: 500; }
+  #avatar-container { width: 100%; height: 450px; background: #111; position: relative; }
+  #controls { padding: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+  #controls button { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+  #controls button:hover { background: #3a3a5e; }
+  #controls button.active { background: #2d5aa0; border-color: #2d5aa0; }
+  #status { padding: 0.5rem; text-align: center; font-size: 0.85rem; color: #999; border-bottom: 1px solid #333; }
+  .category { color: #666; font-size: 0.7rem; display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CC0 Animation Preview — Mesh2Motion (24 animations)</h1>
+</header>
+<div id="avatar-container"></div>
+<div id="status">Loading avatar...</div>
+<div id="controls"></div>
+
+<script type="module">
+import { TalkingHead } from "talkinghead";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import * as THREE from "three";
+
+var ANIMATIONS = [
+  { name: "Angry", category: "emotion" },
+  { name: "Bow", category: "greeting" },
+  { name: "Cheer One Arm", category: "happy" },
+  { name: "Cheering Two Hands", category: "happy" },
+  { name: "Confused", category: "confusion" },
+  { name: "Greeting", category: "greeting" },
+  { name: "Head Nod", category: "agreement" },
+  { name: "Help One Arm", category: "explaining" },
+  { name: "Help Two Arms", category: "explaining" },
+  { name: "Idle Listening", category: "thinking" },
+  { name: "Idle A", category: "idle" },
+  { name: "Idle FoldArms", category: "defensive" },
+  { name: "Idle ShakeOff", category: "idle" },
+  { name: "Idle Subtle", category: "idle" },
+  { name: "Idle Talking", category: "explaining" },
+  { name: "Insult", category: "emotion" },
+  { name: "Interact", category: "pointing" },
+  { name: "Meditate", category: "idle" },
+  { name: "Reject", category: "defensive" },
+  { name: "Salute", category: "greeting" },
+  { name: "Tired Hunched", category: "sad" },
+  { name: "Victory Fist Pump", category: "happy" },
+  { name: "Victory", category: "happy" },
+  { name: "Yes", category: "agreement" },
+];
+
+var container = document.getElementById('avatar-container');
+var controls = document.getElementById('controls');
+var status = document.getElementById('status');
+var head = null;
+var activeBtn = null;
+
+ANIMATIONS.forEach(function(anim) {
+  var cacheUrl = 'cc0://' + anim.name.replace(/ /g, '_') + '_RT';
+  var btn = document.createElement('button');
+  btn.innerHTML = anim.name + '<span class="category">' + anim.category + '</span>';
+  btn.addEventListener('click', function() {
+    if (!head) return;
+    if (activeBtn) activeBtn.classList.remove('active');
+    btn.classList.add('active');
+    activeBtn = btn;
+    status.textContent = 'Playing: ' + anim.name;
+    head.playAnimation(cacheUrl, null, 8, 0).catch(function(e) {
+      status.textContent = 'Error: ' + e.message;
+    });
+  });
+  controls.appendChild(btn);
+});
+
+async function init() {
+  try {
+    head = new TalkingHead(container, {
+      ttsEndpoint: null,
+      lipsyncModules: ['en'],
+      cameraView: 'upper',
+      cameraRotateEnable: true,
+      cameraZoomEnable: true,
+      cameraPanEnable: true,
+      avatarIdleEyeContact: 0.4,
+      avatarIdleHeadMove: 0.6,
+    });
+    await head.showAvatar({ url: './avatar.glb', body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
+    window._head = head;
+
+    status.textContent = 'Loading CC0 animations...';
+
+    var gltfLoader = new GLTFLoader();
+    var gltf = await new Promise(function(resolve, reject) {
+      gltfLoader.load('animations/cc0-animations.glb', resolve, null, reject);
+    });
+
+    gltf.animations.forEach(function(clip) {
+      var cacheKey = 'cc0://' + clip.name + '-0';
+      var props = {};
+      clip.tracks.forEach(function(t) {
+        var ids = t.name.split('.');
+        if (ids[1] === 'position') {
+          props[t.name] = new THREE.Vector3(t.values[0], t.values[1], t.values[2]);
+        } else if (ids[1] === 'quaternion') {
+          props[t.name] = new THREE.Quaternion(t.values[0], t.values[1], t.values[2], t.values[3]);
+        }
+      });
+      var pose = { props: props };
+      if (props['Hips.position']) {
+        pose.standing = props['Hips.position'].y >= 0.5;
+        pose.lying = props['Hips.position'].y < 0.5;
+      }
+      head.animClips.push({ url: cacheKey, clip: clip, pose: pose });
+    });
+
+    status.textContent = 'Ready — ' + gltf.animations.length + ' CC0 animations. Click any button to preview.';
+  } catch (e) {
+    status.textContent = 'Error: ' + e.message;
+    console.error(e);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
