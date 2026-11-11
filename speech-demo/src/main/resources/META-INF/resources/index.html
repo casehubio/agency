@@ -275,6 +275,10 @@ function playAnimationByCategory(category) {
     animationExclusive = false;
     currentAnimation = null;
   });
+  setTimeout(function() {
+    animationExclusive = false;
+    currentAnimation = null;
+  }, anim.dur * 1000);
   resetIdleTimer();
 }
 
