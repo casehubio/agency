@@ -151,6 +151,9 @@
 
 <script type="module">
 import { TalkingHead } from "talkinghead";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import * as THREE from "three";
+import { retargetClipToObject } from "./animations/retarget.mjs";
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
@@ -169,68 +172,77 @@ let micSource = null;
 let recording = false;
 let visemeMeshes = null;
 
+var CC0_GLB_FILES = [
+  'greeting-wave', 'thinking', 'explaining',
+  'agreement-nod', 'agreement-enthuse',
+  'surprise', 'confusion',
+  'happy', 'happy-clap',
+  'sad', 'pointing',
+  'idle-shift', 'idle-breathe'
+];
+
 var ANIMATIONS = {
   greeting: {
     keywords: ["hello", "hi ", "hey ", "welcome", "good morning", "good afternoon"],
     anims: [
-      { url: "animations/greeting-wave.fbx", dur: 3, exclusive: true }
+      { url: "cc0://greeting-wave", dur: 3, exclusive: true }
     ]
   },
   thinking: {
     keywords: ["let me think", "hmm", "consider", "wondering", "perhaps", "let me see"],
     anims: [
-      { url: "animations/thinking-1.fbx", dur: 4, exclusive: false }
+      { url: "cc0://thinking", dur: 3, exclusive: false }
     ]
   },
   explaining: {
     keywords: ["here's how", "the reason", "because", "essentially", "basically", "in other words", "what this means"],
     anims: [
-      { url: "animations/explaining-1.fbx", dur: 5, exclusive: false }
+      { url: "cc0://explaining", dur: 3, exclusive: false }
     ]
   },
   agreement: {
     keywords: ["yes", "right", "exactly", "agree", "correct", "absolutely", "indeed"],
     anims: [
-      { url: "animations/agreement-1.fbx", dur: 3, exclusive: false },
-      { url: "animations/agreement-2.fbx", dur: 3, exclusive: false }
+      { url: "cc0://agreement-nod", dur: 3, exclusive: false },
+      { url: "cc0://agreement-enthuse", dur: 3, exclusive: false }
     ]
   },
   surprise: {
     keywords: ["wow", "really", "amazing", "incredible", "fascinating", "remarkable"],
     anims: [
-      { url: "animations/surprise-1.fbx", dur: 3, exclusive: false }
+      { url: "cc0://surprise", dur: 3, exclusive: false }
     ]
   },
   confusion: {
     keywords: ["not sure", "i don't know", "unclear", "hard to say", "it depends"],
     anims: [
-      { url: "animations/confusion-shrug.fbx", dur: 3, exclusive: false }
+      { url: "cc0://confusion", dur: 3, exclusive: false }
     ]
   },
   happy: {
     keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "that's funny"],
     anims: [
-      { url: "animations/happy-laugh.fbx", dur: 3, exclusive: false },
-      { url: "animations/happy-clap.fbx", dur: 3, exclusive: true }
+      { url: "cc0://happy", dur: 3, exclusive: false },
+      { url: "cc0://happy-clap", dur: 3, exclusive: true }
     ]
   },
   sad: {
     keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"],
     anims: [
-      { url: "animations/sad-1.fbx", dur: 4, exclusive: false }
+      { url: "cc0://sad", dur: 3, exclusive: false }
     ]
   },
   pointing: {
     keywords: ["look at", "right here", "this one", "over there", "check this"],
     anims: [
-      { url: "animations/pointing-1.fbx", dur: 3, exclusive: true }
+      { url: "cc0://pointing", dur: 3, exclusive: true }
     ]
   },
   idle: {
     keywords: [],
     anims: [
-      { url: "animations/idle-1.fbx", dur: 8, exclusive: false },
-      { url: "animations/idle-2.fbx", dur: 8, exclusive: false }
+      { url: "cc0://idle-shift", dur: 3, exclusive: false },
+      { url: "cc0://idle-breathe", dur: 3, exclusive: false }
     ]
   }
 };
@@ -239,6 +251,46 @@ var currentAnimation = null;
 var animationExclusive = false;
 var idleTimer = null;
 var serverAnimationReceived = false;
+
+async function loadCC0Animations(head) {
+  var gltfLoader = new GLTFLoader();
+  var avatarArmature = null;
+  head.scene.traverse(function(o) {
+    if (!avatarArmature && o.name === 'Armature' && o.isObject3D) avatarArmature = o;
+  });
+  var target = avatarArmature || head.scene;
+  var loaded = 0;
+  for (var i = 0; i < CC0_GLB_FILES.length; i++) {
+    var name = CC0_GLB_FILES[i];
+    try {
+      var gltf = await new Promise(function(resolve, reject) {
+        gltfLoader.load('animations/cc0/' + name + '.glb', resolve, null, reject);
+      });
+      if (!gltf.animations || gltf.animations.length === 0) {
+        console.warn('No animations in', name);
+        continue;
+      }
+      var clip = gltf.animations[0];
+      var result = retargetClipToObject(clip, target);
+      var retargetedClip = result && result.clip ? result.clip : clip;
+      var props = {};
+      retargetedClip.tracks.forEach(function(t) {
+        var ids = t.name.split('.');
+        if (ids[1] === 'position') {
+          props[t.name] = new THREE.Vector3(t.values[0], t.values[1], t.values[2]);
+        } else if (ids[1] === 'quaternion') {
+          props[t.name] = new THREE.Quaternion(t.values[0], t.values[1], t.values[2], t.values[3]);
+        }
+      });
+      var cacheKey = 'cc0://' + name + '-0';
+      head.animClips.push({ url: cacheKey, clip: retargetedClip, pose: { props: props } });
+      loaded++;
+    } catch (e) {
+      console.warn('Failed to load CC0 animation:', name, e);
+    }
+  }
+  console.log('Loaded', loaded, 'CC0 animations');
+}
 
 function classifyResponse(text) {
   var lower = text.toLowerCase();
@@ -637,7 +689,9 @@ document.getElementById('avatarModel').addEventListener('change', async function
   try {
     addMessage('Loading avatar...', 'system');
     visemeMeshes = null;
+    head.animClips = head.animClips.filter(function(c) { return !c.url.startsWith('cc0://'); });
     await head.showAvatar({ url: './' + this.value, body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
+    await loadCC0Animations(head);
     addMessage('Avatar loaded.', 'system');
   } catch (e) { addMessage('Avatar load error: ' + e.message, 'system'); }
 });
@@ -684,7 +738,9 @@ toggleAvatar.addEventListener('click', async function() {
           }
         });
       }
-      addMessage('3D avatar ready.', 'system');
+      addMessage('3D avatar ready. Loading animations...', 'system');
+      await loadCC0Animations(head);
+      addMessage('Animations loaded.', 'system');
       head.setMood('neutral');
       head.playGesture('handup', 3);
       resetIdleTimer();
