@@ -31,13 +31,11 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-// retargetClipToObject not used — corrections applied directly
+import { canonicalRestMapFromObject, canonicalWorldRestMapFromObject, canonicalNodeMapFromObject, hipsParentWorldQuat, hipRestLocalHeight, clipHipBaselineY } from "./animations/retarget.mjs";
 
-// ── M2M source skeleton LOCAL rest rotations [x,y,z,w] ─────────────
+// ── M2M source skeleton LOCAL rest [x,y,z,w] ───────────────────────
 // Extracted from animation-human-rest-pose.blend via Blender glTF export.
-// The Blender retarget converted Hips keyframes to target space but left
-// child bone keyframes in M2M's local axis convention. For each child:
-//   corrected = avatar_local_rest × inv(m2m_local_rest) × keyframe
+// Hips keyframes were already converted by Blender retarget — skip Hips.
 var M2M_REST = {
   Head: [-0.203031, 0, 0, 0.979172],
   Hips: [0.790468, 0, 0, 0.612503],
@@ -93,6 +91,22 @@ var M2M_REST = {
   Spine2: [-0.093324, 0, 0, 0.995636],
 };
 
+var PARENT = {
+  Hips: null, Spine: 'Hips', Spine1: 'Spine', Spine2: 'Spine1',
+  Neck: 'Spine2', Head: 'Neck',
+  LeftShoulder: 'Spine2', LeftArm: 'LeftShoulder', LeftForeArm: 'LeftArm', LeftHand: 'LeftForeArm',
+  RightShoulder: 'Spine2', RightArm: 'RightShoulder', RightForeArm: 'RightArm', RightHand: 'RightForeArm',
+  LeftUpLeg: 'Hips', LeftLeg: 'LeftUpLeg', LeftFoot: 'LeftLeg', LeftToeBase: 'LeftFoot',
+  RightUpLeg: 'Hips', RightLeg: 'RightUpLeg', RightFoot: 'RightLeg', RightToeBase: 'RightFoot',
+};
+['Left','Right'].forEach(function(s) {
+  ['Index','Middle','Ring','Pinky','Thumb'].forEach(function(f) {
+    PARENT[s+'Hand'+f+'1'] = s+'Hand';
+    PARENT[s+'Hand'+f+'2'] = s+'Hand'+f+'1';
+    PARENT[s+'Hand'+f+'3'] = s+'Hand'+f+'2';
+  });
+});
+
 var status = document.getElementById('status');
 var controls = document.getElementById('controls');
 var diag = document.getElementById('diag');
@@ -139,50 +153,87 @@ async function init() {
   status.textContent = 'Loading animations...';
   var animGltf = await new Promise(function(r,e) { loader.load('animations/cc0-animations-v2.glb', r, null, e); });
 
-  // Read avatar's bone local rests
-  var avatarRest = {};
-  avatarModel.traverse(function(n) {
-    if (n.isBone && n.name) avatarRest[n.name] = n.quaternion.clone();
-  });
+  // Avatar target rest (local + world)
+  var avatarLocalRest = canonicalRestMapFromObject(avatarModel);
+  var avatarWorldRest = canonicalWorldRestMapFromObject(avatarModel);
+  var avatarNodeMap = canonicalNodeMapFromObject(avatarModel);
+  var avatarHipY = hipRestLocalHeight(avatarModel);
+  var avatarHipsParent = hipsParentWorldQuat(avatarModel);
 
-  // Compute per-bone premultiply correction: P = avatar_rest × inv(m2m_rest)
-  // Skip Hips — its keyframes are already in target space.
-  var BIND_EPS = 1e-6;
-  var corrections = {};
-  var corrCount = 0;
+  // M2M source rest (local + world)
+  // Hips parent in M2M was a root bone with -90° X, BUT the Blender retarget
+  // already baked this into the Hips keyframes. So for world rest computation,
+  // treat Hips parent as IDENTITY (matching the avatar's setup).
+  var m2mLocal = new Map();
+  var m2mWorld = new Map();
   Object.keys(M2M_REST).forEach(function(bone) {
-    if (bone === 'Hips') return;
-    var avatarQ = avatarRest[bone];
-    if (!avatarQ) return;
-    var m2mArr = M2M_REST[bone];
-    var m2mQ = new THREE.Quaternion(m2mArr[0], m2mArr[1], m2mArr[2], m2mArr[3]);
-    var P = avatarQ.clone().multiply(m2mQ.clone().invert());
-    if (1 - Math.abs(P.w) < BIND_EPS) return;
-    corrections[bone] = P;
-    corrCount++;
+    var q = M2M_REST[bone];
+    m2mLocal.set(bone, new THREE.Quaternion(q[0], q[1], q[2], q[3]));
   });
-  console.log('Per-bone corrections (skip Hips):', corrCount);
 
-  // Pre-correct all animation clips
+  // For Hips: use avatar's world rest (keyframes already converted).
+  // For children: avatar-Hips-world × M2M child local rests.
+  m2mWorld.set('Hips', avatarWorldRest.get('Hips').clone());
+
+  function getM2mWorld(bone) {
+    if (m2mWorld.has(bone)) return m2mWorld.get(bone);
+    var local = m2mLocal.get(bone);
+    if (!local) return null;
+    var p = PARENT[bone];
+    if (!p) { m2mWorld.set(bone, local.clone()); return m2mWorld.get(bone); }
+    var pw = getM2mWorld(p);
+    if (!pw) { m2mWorld.set(bone, local.clone()); return m2mWorld.get(bone); }
+    var w = pw.clone().multiply(local);
+    m2mWorld.set(bone, w);
+    return w;
+  }
+  for (var bone of m2mLocal.keys()) { if (bone !== 'Hips') getM2mWorld(bone); }
+  console.log('M2M local:', m2mLocal.size, 'world:', m2mWorld.size);
+  console.log('Avatar local:', avatarLocalRest.size, 'world:', avatarWorldRest.size);
+
+  // Full L/R bind corrections: M2M → avatar, skip Hips
+  var BIND_EPS = 1e-6;
+  var bindCorr = new Map();
+  for (var [bname, Rs] of m2mLocal) {
+    if (bname === 'Hips') continue;
+    var Rt = avatarLocalRest.get(bname);
+    var Ws = m2mWorld.get(bname);
+    var Wt = avatarWorldRest.get(bname);
+    if (!Rt || !Ws || !Wt) continue;
+    var L = Rt.clone().multiply(Wt.clone().invert()).multiply(Ws.clone()).multiply(Rs.clone().invert());
+    var R = Ws.clone().invert().multiply(Wt);
+    var idL = (1 - Math.abs(L.w)) < BIND_EPS;
+    var idR = (1 - Math.abs(R.w)) < BIND_EPS;
+    if (idL && idR) continue;
+    bindCorr.set(bname, { L: idL ? null : L, R: idR ? null : R });
+  }
+  console.log('Bind corrections (M2M→avatar, skip Hips):', bindCorr.size);
+
+  // Hip position correction
+  var hipPosCorr = null;
+  if (avatarHipsParent) {
+    var hpq = avatarHipsParent.clone().invert();
+    if (1 - Math.abs(hpq.w) >= BIND_EPS) hipPosCorr = hpq;
+  }
+
+  // Apply corrections and build UI — play directly, no retargetClipToObject
   var tmpQ = new THREE.Quaternion();
+  var tmpV = new THREE.Vector3();
+  var loaded = 0;
   animGltf.animations.forEach(function(clip) {
     clip.tracks.forEach(function(track) {
       if (!track.name.endsWith('.quaternion')) return;
       var bone = track.name.split('.')[0];
-      var P = corrections[bone];
-      if (!P) return;
+      var corr = bindCorr.get(bone);
+      if (!corr) return;
       for (var i = 0; i < track.values.length; i += 4) {
         tmpQ.set(track.values[i], track.values[i+1], track.values[i+2], track.values[i+3]);
-        tmpQ.premultiply(P);
+        if (corr.L) tmpQ.premultiply(corr.L);
+        if (corr.R) tmpQ.multiply(corr.R);
         track.values[i] = tmpQ.x; track.values[i+1] = tmpQ.y;
         track.values[i+2] = tmpQ.z; track.values[i+3] = tmpQ.w;
       }
     });
-  });
-
-  // Clips are already in avatar space — play directly (no retargetClipToObject)
-  var loaded = 0;
-  animGltf.animations.forEach(function(clip) {
     loaded++;
 
     var label = clip.name.replace(/_RT$/, '').replace(/_/g, ' ');
@@ -201,7 +252,7 @@ async function init() {
     controls.appendChild(btn);
   });
 
-  diag.textContent = loaded + ' animations, ' + corrCount + ' bone corrections (M2M rest from Blender, Hips skipped)';
+  diag.textContent = loaded + ' animations, ' + bindCorr.size + ' L/R corrections (M2M Blender rest, Hips skipped, no retargetClipToObject)';
   status.textContent = 'Ready — click any animation';
 }
 
