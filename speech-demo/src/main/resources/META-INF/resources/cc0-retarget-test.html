@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CC0 T-Pose Delta Retarget Test</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+} }
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+  #viewport { flex: 1; min-height: 400px; }
+  #status { padding: 0.5rem; text-align: center; font-size: 0.85rem; color: #999; border-bottom: 1px solid #333; }
+  #controls { padding: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; max-height: 150px; overflow-y: auto; }
+  #controls button { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+  #controls button:hover { background: #3a3a5e; }
+  #controls button.active { background: #2d5aa0; border-color: #2d5aa0; }
+  #diag { padding: 0.5rem; font-size: 0.75rem; color: #777; text-align: center; }
+</style>
+</head>
+<body>
+<div id="viewport"></div>
+<div id="status">Loading...</div>
+<div id="controls"></div>
+<div id="diag"></div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CANONICAL_REST, CANONICAL_REST_WORLD, retargetClipToObject } from "./animations/retarget.mjs";
+
+var status = document.getElementById('status');
+var controls = document.getElementById('controls');
+var diag = document.getElementById('diag');
+var viewport = document.getElementById('viewport');
+
+// ── THREE.js setup ───────────────────────────────────────────────────
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+
+var camera = new THREE.PerspectiveCamera(35, viewport.clientWidth / viewport.clientHeight, 0.01, 100);
+camera.position.set(0, 1.2, 2.5);
+
+var renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+viewport.appendChild(renderer.domElement);
+
+var orbit = new OrbitControls(camera, renderer.domElement);
+orbit.target.set(0, 1.0, 0);
+orbit.update();
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+dirLight.position.set(2, 3, 2);
+scene.add(dirLight);
+
+window.addEventListener('resize', function() {
+  camera.aspect = viewport.clientWidth / viewport.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+});
+
+// ── State ────────────────────────────────────────────────────────────
+var mixer = null;
+var currentAction = null;
+var activeBtn = null;
+var clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  var dt = clock.getDelta();
+  if (mixer) mixer.update(dt);
+  renderer.render(scene, camera);
+}
+animate();
+
+// ── Load ─────────────────────────────────────────────────────────────
+async function init() {
+  var loader = new GLTFLoader();
+  status.textContent = 'Loading avatar...';
+
+  // Load avatar
+  var avatarGltf = await new Promise(function(res, rej) { loader.load('avatar.glb', res, null, rej); });
+  var avatarModel = avatarGltf.scene;
+  scene.add(avatarModel);
+  window._avatarModel = avatarModel;
+  mixer = new THREE.AnimationMixer(avatarModel);
+  status.textContent = 'Loading animations...';
+
+  // Load CC0 animations
+  var animGltf = await new Promise(function(res, rej) { loader.load('animations/cc0-animations-v2.glb', res, null, rej); });
+
+  // ── T-pose delta retarget ────────────────────────────────────────
+  // Find neutral clip for M2M rest extraction
+  var neutralClip = animGltf.animations.find(function(c) { return c.name.indexOf('Idle_Subtle') >= 0; });
+  if (!neutralClip) neutralClip = animGltf.animations.find(function(c) { return c.name.indexOf('Idle') >= 0; });
+
+  var m2mRest = {};
+  if (neutralClip) {
+    neutralClip.tracks.forEach(function(track) {
+      if (!track.name.endsWith('.quaternion')) return;
+      var bone = track.name.split('.')[0];
+      m2mRest[bone] = new THREE.Quaternion(track.values[0], track.values[1], track.values[2], track.values[3]);
+    });
+    console.log('M2M rest from', neutralClip.name, ':', Object.keys(m2mRest).length, 'bones');
+  }
+
+  // Mixamo bone hierarchy (parent map)
+  var PARENT = {
+    Hips: null, Spine: 'Hips', Spine1: 'Spine', Spine2: 'Spine1',
+    Neck: 'Spine2', Head: 'Neck',
+    LeftShoulder: 'Spine2', LeftArm: 'LeftShoulder', LeftForeArm: 'LeftArm', LeftHand: 'LeftForeArm',
+    RightShoulder: 'Spine2', RightArm: 'RightShoulder', RightForeArm: 'RightArm', RightHand: 'RightForeArm',
+    LeftUpLeg: 'Hips', LeftLeg: 'LeftUpLeg', LeftFoot: 'LeftLeg', LeftToeBase: 'LeftFoot',
+    RightUpLeg: 'Hips', RightLeg: 'RightUpLeg', RightFoot: 'RightLeg', RightToeBase: 'RightFoot',
+  };
+  // Add finger bones
+  ['Left','Right'].forEach(function(side) {
+    ['Index','Middle','Ring','Pinky','Thumb'].forEach(function(finger) {
+      PARENT[side+'Hand'+finger+'1'] = side+'Hand';
+      PARENT[side+'Hand'+finger+'2'] = side+'Hand'+finger+'1';
+      PARENT[side+'Hand'+finger+'3'] = side+'Hand'+finger+'2';
+    });
+  });
+
+  // Compute M2M world rests from local rests + hierarchy
+  var m2mWorldRest = {};
+  function computeM2mWorld(bone) {
+    if (m2mWorldRest[bone]) return m2mWorldRest[bone];
+    var local = m2mRest[bone];
+    if (!local) return null;
+    var parent = PARENT[bone];
+    if (!parent) {
+      m2mWorldRest[bone] = local.clone();
+      return m2mWorldRest[bone];
+    }
+    var parentWorld = computeM2mWorld(parent);
+    if (!parentWorld) {
+      m2mWorldRest[bone] = local.clone();
+      return m2mWorldRest[bone];
+    }
+    m2mWorldRest[bone] = parentWorld.clone().multiply(local);
+    return m2mWorldRest[bone];
+  }
+  Object.keys(m2mRest).forEach(function(bone) { computeM2mWorld(bone); });
+  console.log('M2M world rests computed:', Object.keys(m2mWorldRest).length);
+
+  // Full retarget correction: M2M source → CANONICAL target
+  // L = Rt × inv(Wt) × Ws_m2m × inv(Rs_m2m)
+  // R = inv(Ws_m2m) × Wt
+  // corrected = L × keyframe × R
+  var BIND_EPS = 1e-6;
+  var corrections = {};
+  var corrCount = 0;
+  Object.keys(m2mRest).forEach(function(bone) {
+    var Rs = m2mRest[bone];       // M2M local rest (source)
+    var Ws = m2mWorldRest[bone];  // M2M world rest (source)
+    var crArr = CANONICAL_REST[bone];
+    var cwArr = CANONICAL_REST_WORLD[bone];
+    if (!Rs || !Ws || !crArr || !cwArr) return;
+    var Rt = new THREE.Quaternion(crArr[0], crArr[1], crArr[2], crArr[3]);  // canonical local (target)
+    var Wt = new THREE.Quaternion(cwArr[0], cwArr[1], cwArr[2], cwArr[3]); // canonical world (target)
+
+    // L = Rt × inv(Wt) × Ws × inv(Rs)
+    var L = Rt.clone()
+      .multiply(Wt.clone().invert())
+      .multiply(Ws.clone())
+      .multiply(Rs.clone().invert());
+
+    // R = inv(Ws) × Wt
+    var R = Ws.clone().invert().multiply(Wt);
+
+    var identityL = (1 - Math.abs(L.w)) < BIND_EPS;
+    var identityR = (1 - Math.abs(R.w)) < BIND_EPS;
+    if (identityL && identityR) return;
+
+    corrections[bone] = {
+      L: identityL ? null : L,
+      R: identityR ? null : R
+    };
+    corrCount++;
+  });
+  console.log('Full retarget corrections (M2M→CANONICAL):', corrCount);
+
+  // Apply corrections to all clips
+  var tmpQ = new THREE.Quaternion();
+  animGltf.animations.forEach(function(clip) {
+    clip.tracks.forEach(function(track) {
+      if (!track.name.endsWith('.quaternion')) return;
+      var bone = track.name.split('.')[0];
+      var corr = corrections[bone];
+      if (!corr) return;
+      for (var i = 0; i < track.values.length; i += 4) {
+        tmpQ.set(track.values[i], track.values[i+1], track.values[i+2], track.values[i+3]);
+        if (corr.L) tmpQ.premultiply(corr.L);
+        if (corr.R) tmpQ.multiply(corr.R);
+        track.values[i]   = tmpQ.x;
+        track.values[i+1] = tmpQ.y;
+        track.values[i+2] = tmpQ.z;
+        track.values[i+3] = tmpQ.w;
+      }
+    });
+  });
+  console.log('Applied M2M→CANONICAL retarget to', animGltf.animations.length, 'clips');
+
+  // Step 2: retargetClipToObject handles CANONICAL → avatar
+  var loaded = 0;
+  animGltf.animations.forEach(function(clip) {
+    var result = retargetClipToObject(clip, avatarModel);
+    var retClip = result && result.clip ? result.clip : null;
+    if (!retClip) {
+      console.warn('Retarget failed:', clip.name, result);
+      return;
+    }
+    loaded++;
+
+    var label = clip.name.replace(/_RT$/, '').replace(/_/g, ' ');
+    var btn = document.createElement('button');
+    btn.textContent = label;
+    btn.addEventListener('click', function() {
+      if (activeBtn) activeBtn.classList.remove('active');
+      btn.classList.add('active');
+      activeBtn = btn;
+
+      if (currentAction) currentAction.fadeOut(0.3);
+      var action = mixer.clipAction(retClip);
+      action.reset().fadeIn(0.3).play();
+      currentAction = action;
+      status.textContent = 'Playing: ' + label;
+    });
+    controls.appendChild(btn);
+  });
+
+  diag.textContent = loaded + ' animations loaded, ' + corrCount + ' bone corrections applied (from ' + (neutralClip ? neutralClip.name : 'none') + ')';
+  status.textContent = 'Ready — click any animation';
+}
+
+init().catch(function(e) {
+  status.textContent = 'Error: ' + e.message;
+  console.error(e);
+});
+</script>
+</body>
+</html>
