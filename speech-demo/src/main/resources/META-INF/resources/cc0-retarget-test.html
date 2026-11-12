@@ -31,7 +31,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CANONICAL_REST, CANONICAL_REST_WORLD, retargetClipToObject } from "./animations/retarget.mjs";
+import { CANONICAL_REST, CANONICAL_REST_WORLD, canonicalRestMapFromObject, canonicalWorldRestMapFromObject, hipsParentWorldQuat, hipRestLocalHeight, clipHipBaselineY, canonicalNodeMapFromObject } from "./animations/retarget.mjs";
 
 var status = document.getElementById('status');
 var controls = document.getElementById('controls');
@@ -111,113 +111,187 @@ async function init() {
     console.log('M2M rest from', neutralClip.name, ':', Object.keys(m2mRest).length, 'bones');
   }
 
-  // Mixamo bone hierarchy (parent map)
-  var PARENT = {
-    Hips: null, Spine: 'Hips', Spine1: 'Spine', Spine2: 'Spine1',
-    Neck: 'Spine2', Head: 'Neck',
-    LeftShoulder: 'Spine2', LeftArm: 'LeftShoulder', LeftForeArm: 'LeftArm', LeftHand: 'LeftForeArm',
-    RightShoulder: 'Spine2', RightArm: 'RightShoulder', RightForeArm: 'RightArm', RightHand: 'RightForeArm',
-    LeftUpLeg: 'Hips', LeftLeg: 'LeftUpLeg', LeftFoot: 'LeftLeg', LeftToeBase: 'LeftFoot',
-    RightUpLeg: 'Hips', RightLeg: 'RightUpLeg', RightFoot: 'RightLeg', RightToeBase: 'RightFoot',
-  };
-  // Add finger bones
-  ['Left','Right'].forEach(function(side) {
-    ['Index','Middle','Ring','Pinky','Thumb'].forEach(function(finger) {
-      PARENT[side+'Hand'+finger+'1'] = side+'Hand';
-      PARENT[side+'Hand'+finger+'2'] = side+'Hand'+finger+'1';
-      PARENT[side+'Hand'+finger+'3'] = side+'Hand'+finger+'2';
-    });
+  // ── Direct M2M→avatar retarget (single pass) ─────────────────────
+  // Use M2M rest as SOURCE and avatar rest as TARGET.
+  // retargetClip uses hard-coded CANONICAL_REST as source, so we
+  // override by passing M2M rests as the "target" rest maps to
+  // retargetClip, effectively swapping perspective: the clip is
+  // treated as canonical-sourced, and the "target" corrections
+  // encode the full M2M→avatar delta.
+  //
+  // Instead, we compute our own bind corrections directly:
+  // L = Rt × inv(Wt) × Ws × inv(Rs)    (Rs=M2M, Rt=avatar)
+  // R = inv(Ws) × Wt                     (Ws=M2M world, Wt=avatar world)
+
+  // Get avatar's rest info
+  var avatarNodeMap = canonicalNodeMapFromObject(avatarModel);
+  var avatarLocalRest = canonicalRestMapFromObject(avatarModel);
+  var avatarWorldRest = canonicalWorldRestMapFromObject(avatarModel);
+  var avatarHipsParent = hipsParentWorldQuat(avatarModel);
+  var avatarHipY = hipRestLocalHeight(avatarModel);
+  var avatarHipGroundY = 0;
+
+  console.log('Avatar: nodeMap size', avatarNodeMap.size,
+    'localRest size', avatarLocalRest.size,
+    'worldRest size', avatarWorldRest.size,
+    'hipY', avatarHipY.toFixed(3));
+
+  // Compute M2M world rests from local rests + bone hierarchy
+  // Use the animation GLB's skeleton nodes for hierarchy
+  var m2mLocalMap = new Map();
+  var m2mWorldMap = new Map();
+
+  // Build parent map from animation GLB skeleton
+  var animSkeleton = null;
+  animGltf.scene.traverse(function(n) {
+    if (n.isBone && !animSkeleton) animSkeleton = n;
+  });
+  // Walk up to skeleton root
+  if (animSkeleton) {
+    while (animSkeleton.parent && animSkeleton.parent.isBone) animSkeleton = animSkeleton.parent;
+  }
+
+  // For M2M rest: at the neutral frame, the keyframe values ARE the
+  // bone local rotations. Compute world rest by traversing the hierarchy.
+  Object.keys(m2mRest).forEach(function(bone) {
+    m2mLocalMap.set(bone, m2mRest[bone]);
   });
 
-  // Compute M2M world rests from local rests + hierarchy
-  var m2mWorldRest = {};
-  function computeM2mWorld(bone) {
-    if (m2mWorldRest[bone]) return m2mWorldRest[bone];
-    var local = m2mRest[bone];
-    if (!local) return null;
-    var parent = PARENT[bone];
-    if (!parent) {
-      m2mWorldRest[bone] = local.clone();
-      return m2mWorldRest[bone];
+  // Compute world rests using animation GLB's actual node hierarchy
+  function computeWorldRestFromNodes(root) {
+    var worldMap = new Map();
+    function walk(node, parentWorldQ) {
+      var name = node.name;
+      var localQ = m2mLocalMap.get(name);
+      var worldQ;
+      if (localQ) {
+        worldQ = parentWorldQ.clone().multiply(localQ);
+        worldMap.set(name, worldQ);
+      } else {
+        worldQ = parentWorldQ.clone().multiply(node.quaternion);
+      }
+      for (var i = 0; i < node.children.length; i++) {
+        if (node.children[i].isBone) walk(node.children[i], worldQ);
+      }
     }
-    var parentWorld = computeM2mWorld(parent);
-    if (!parentWorld) {
-      m2mWorldRest[bone] = local.clone();
-      return m2mWorldRest[bone];
-    }
-    m2mWorldRest[bone] = parentWorld.clone().multiply(local);
-    return m2mWorldRest[bone];
+    if (root) walk(root, new THREE.Quaternion());
+    return worldMap;
   }
-  Object.keys(m2mRest).forEach(function(bone) { computeM2mWorld(bone); });
-  console.log('M2M world rests computed:', Object.keys(m2mWorldRest).length);
+  m2mWorldMap = computeWorldRestFromNodes(animSkeleton);
+  console.log('M2M world rests:', m2mWorldMap.size);
 
-  // Full retarget correction: M2M source → CANONICAL target
-  // L = Rt × inv(Wt) × Ws_m2m × inv(Rs_m2m)
-  // R = inv(Ws_m2m) × Wt
-  // corrected = L × keyframe × R
+  // Compute bind corrections: M2M source → avatar target
   var BIND_EPS = 1e-6;
-  var corrections = {};
+  var bindCorr = new Map();
   var corrCount = 0;
-  Object.keys(m2mRest).forEach(function(bone) {
-    var Rs = m2mRest[bone];       // M2M local rest (source)
-    var Ws = m2mWorldRest[bone];  // M2M world rest (source)
-    var crArr = CANONICAL_REST[bone];
-    var cwArr = CANONICAL_REST_WORLD[bone];
-    if (!Rs || !Ws || !crArr || !cwArr) return;
-    var Rt = new THREE.Quaternion(crArr[0], crArr[1], crArr[2], crArr[3]);  // canonical local (target)
-    var Wt = new THREE.Quaternion(cwArr[0], cwArr[1], cwArr[2], cwArr[3]); // canonical world (target)
+  for (var [bone, Rs] of m2mLocalMap) {
+    var Rt = avatarLocalRest.get(bone);
+    var Ws = m2mWorldMap.get(bone);
+    var Wt = avatarWorldRest.get(bone);
+    if (!Rt || !Ws || !Wt) continue;
 
     // L = Rt × inv(Wt) × Ws × inv(Rs)
     var L = Rt.clone()
       .multiply(Wt.clone().invert())
       .multiply(Ws.clone())
       .multiply(Rs.clone().invert());
-
     // R = inv(Ws) × Wt
     var R = Ws.clone().invert().multiply(Wt);
 
     var identityL = (1 - Math.abs(L.w)) < BIND_EPS;
     var identityR = (1 - Math.abs(R.w)) < BIND_EPS;
-    if (identityL && identityR) return;
+    if (identityL && identityR) continue;
 
-    corrections[bone] = {
+    bindCorr.set(bone, {
       L: identityL ? null : L,
       R: identityR ? null : R
-    };
-    corrCount++;
-  });
-  console.log('Full retarget corrections (M2M→CANONICAL):', corrCount);
-
-  // Apply corrections to all clips
-  var tmpQ = new THREE.Quaternion();
-  animGltf.animations.forEach(function(clip) {
-    clip.tracks.forEach(function(track) {
-      if (!track.name.endsWith('.quaternion')) return;
-      var bone = track.name.split('.')[0];
-      var corr = corrections[bone];
-      if (!corr) return;
-      for (var i = 0; i < track.values.length; i += 4) {
-        tmpQ.set(track.values[i], track.values[i+1], track.values[i+2], track.values[i+3]);
-        if (corr.L) tmpQ.premultiply(corr.L);
-        if (corr.R) tmpQ.multiply(corr.R);
-        track.values[i]   = tmpQ.x;
-        track.values[i+1] = tmpQ.y;
-        track.values[i+2] = tmpQ.z;
-        track.values[i+3] = tmpQ.w;
-      }
     });
-  });
-  console.log('Applied M2M→CANONICAL retarget to', animGltf.animations.length, 'clips');
+    corrCount++;
+  }
+  console.log('Bind corrections (M2M→avatar):', corrCount);
 
-  // Step 2: retargetClipToObject handles CANONICAL → avatar
+  // Hip position correction
+  var hipPosCorr = null;
+  if (avatarHipsParent) {
+    var hpq = avatarHipsParent.clone().invert();
+    if (1 - Math.abs(hpq.w) >= BIND_EPS) hipPosCorr = hpq;
+  }
+  if (!hipPosCorr) {
+    var hipsCorr = bindCorr.get('Hips');
+    if (hipsCorr && hipsCorr.L) hipPosCorr = hipsCorr.L;
+  }
+
+  // Apply corrections and build buttons
+  var tmpQ = new THREE.Quaternion();
+  var tmpV = new THREE.Vector3();
   var loaded = 0;
   animGltf.animations.forEach(function(clip) {
-    var result = retargetClipToObject(clip, avatarModel);
-    var retClip = result && result.clip ? result.clip : null;
-    if (!retClip) {
-      console.warn('Retarget failed:', clip.name, result);
+    var tracks = [];
+    var total = 0;
+    var matched = 0;
+
+    clip.tracks.forEach(function(track) {
+      var dot = track.name.indexOf('.');
+      if (dot === -1) return;
+      var boneName = track.name.slice(0, dot);
+      var property = track.name.slice(dot + 1);
+
+      if (property === 'quaternion') {
+        total++;
+        var nodeName = avatarNodeMap.get(boneName);
+        if (!nodeName) return;
+        matched++;
+
+        var next = track.clone();
+        next.name = nodeName + '.quaternion';
+        var corr = bindCorr.get(boneName);
+        if (corr) {
+          for (var i = 0; i < next.values.length; i += 4) {
+            tmpQ.set(next.values[i], next.values[i+1], next.values[i+2], next.values[i+3]);
+            if (corr.L) tmpQ.premultiply(corr.L);
+            if (corr.R) tmpQ.multiply(corr.R);
+            next.values[i]   = tmpQ.x;
+            next.values[i+1] = tmpQ.y;
+            next.values[i+2] = tmpQ.z;
+            next.values[i+3] = tmpQ.w;
+          }
+        }
+        tracks.push(next);
+      } else if (property === 'position' && boneName === 'Hips') {
+        total++;
+        var hipsNode = avatarNodeMap.get('Hips');
+        if (!hipsNode) return;
+        matched++;
+
+        var next = track.clone();
+        next.name = hipsNode + '.position';
+        // Hip position: rotate + scale + offset
+        var baseline = clipHipBaselineY(clip);
+        var hipScale = 1;
+        if (avatarHipY > 0.05 && baseline > 0.05) {
+          hipScale = Math.min(200, Math.max(0.2, avatarHipY / baseline));
+        }
+        for (var i = 0; i < next.values.length; i += 3) {
+          if (hipPosCorr) {
+            tmpV.set(next.values[i], next.values[i+1], next.values[i+2]).applyQuaternion(hipPosCorr);
+            next.values[i] = tmpV.x; next.values[i+1] = tmpV.y; next.values[i+2] = tmpV.z;
+          }
+          if (hipScale !== 1) {
+            next.values[i] *= hipScale; next.values[i+1] *= hipScale; next.values[i+2] *= hipScale;
+          }
+          if (avatarHipGroundY) next.values[i+1] += avatarHipGroundY;
+        }
+        tracks.push(next);
+      }
+    });
+
+    if (total > 0 && matched / total < 0.5) {
+      console.warn('Low coverage:', clip.name, matched + '/' + total);
       return;
     }
+
+    var retClip = clip.clone();
+    retClip.tracks = tracks;
     loaded++;
 
     var label = clip.name.replace(/_RT$/, '').replace(/_/g, ' ');
