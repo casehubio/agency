@@ -26,7 +26,7 @@
 </head>
 <body>
 <header>
-  <h1>CC0 Animation Preview — Mesh2Motion (24 animations)</h1>
+  <h1>CC0 Animation Preview — UniMate (13 animations)</h1>
 </header>
 <div id="avatar-container"></div>
 <div id="status">Loading avatar...</div>
@@ -39,40 +39,28 @@ import * as THREE from "three";
 import { retargetClipToObject } from "./animations/retarget.mjs";
 
 var ANIMATIONS = [
-  { name: "Angry", category: "emotion" },
-  { name: "Bow", category: "greeting" },
-  { name: "Cheer One Arm", category: "happy" },
-  { name: "Cheering Two Hands", category: "happy" },
-  { name: "Confused", category: "confusion" },
-  { name: "Greeting", category: "greeting" },
-  { name: "Head Nod", category: "agreement" },
-  { name: "Help One Arm", category: "explaining" },
-  { name: "Help Two Arms", category: "explaining" },
-  { name: "Idle Listening", category: "thinking" },
-  { name: "Idle A", category: "idle" },
-  { name: "Idle FoldArms", category: "defensive" },
-  { name: "Idle ShakeOff", category: "idle" },
-  { name: "Idle Subtle", category: "idle" },
-  { name: "Idle Talking", category: "explaining" },
-  { name: "Insult", category: "emotion" },
-  { name: "Interact", category: "pointing" },
-  { name: "Meditate", category: "idle" },
-  { name: "Reject", category: "defensive" },
-  { name: "Salute", category: "greeting" },
-  { name: "Tired Hunched", category: "sad" },
-  { name: "Victory Fist Pump", category: "happy" },
-  { name: "Victory", category: "happy" },
-  { name: "Yes", category: "agreement" },
+  { name: "greeting-wave", category: "greeting" },
+  { name: "thinking", category: "thinking" },
+  { name: "explaining", category: "explaining" },
+  { name: "agreement-nod", category: "agreement" },
+  { name: "agreement-enthuse", category: "agreement" },
+  { name: "surprise", category: "surprise" },
+  { name: "confusion", category: "confusion" },
+  { name: "happy", category: "happy" },
+  { name: "happy-clap", category: "happy" },
+  { name: "sad", category: "sad" },
+  { name: "pointing", category: "pointing" },
+  { name: "idle-shift", category: "idle" },
+  { name: "idle-breathe", category: "idle" },
 ];
 
 var container = document.getElementById('avatar-container');
 var controls = document.getElementById('controls');
-var status = document.getElementById('status');
+var statusEl = document.getElementById('status');
 var head = null;
 var activeBtn = null;
 
 ANIMATIONS.forEach(function(anim) {
-  var cacheUrl = 'cc0://' + anim.name.replace(/ /g, '_') + '_RT';
   var btn = document.createElement('button');
   btn.innerHTML = anim.name + '<span class="category">' + anim.category + '</span>';
   btn.addEventListener('click', function() {
@@ -80,9 +68,9 @@ ANIMATIONS.forEach(function(anim) {
     if (activeBtn) activeBtn.classList.remove('active');
     btn.classList.add('active');
     activeBtn = btn;
-    status.textContent = 'Playing: ' + anim.name;
-    head.playAnimation(cacheUrl, null, 8, 0).catch(function(e) {
-      status.textContent = 'Error: ' + e.message;
+    statusEl.textContent = 'Playing: ' + anim.name;
+    head.playAnimation('cc0://' + anim.name, null, 5, 0).catch(function(e) {
+      statusEl.textContent = 'Error: ' + e.message;
     });
   });
   controls.appendChild(btn);
@@ -103,55 +91,46 @@ async function init() {
     await head.showAvatar({ url: './avatar.glb', body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
     window._head = head;
 
-    status.textContent = 'Loading CC0 animations...';
+    statusEl.textContent = 'Loading CC0 animations...';
 
     var gltfLoader = new GLTFLoader();
-    var gltf = await new Promise(function(resolve, reject) {
-      gltfLoader.load('animations/cc0-animations-v2.glb', resolve, null, reject);
-    });
-
-    // Find the avatar's armature in TalkingHead's scene
     var avatarArmature = null;
     head.scene.traverse(function(o) {
       if (!avatarArmature && o.name === 'Armature' && o.isObject3D) avatarArmature = o;
     });
+    var target = avatarArmature || head.scene;
 
-    var retargetedCount = 0;
-    gltf.animations.forEach(function(clip) {
-      var cacheKey = 'cc0://' + clip.name + '-0';
-
-      // Retarget the clip from the M2M skeleton to our avatar skeleton
-      var result = retargetClipToObject(clip, avatarArmature || head.scene);
-      var retargetedClip = result && result.clip ? result.clip : clip;
-
-      if (result && result.clip) {
-        retargetedCount++;
-        console.log('Retargeted:', clip.name, 'coverage:', result.coverage);
-      } else {
-        console.warn('Retarget failed for:', clip.name, result);
+    var loaded = 0;
+    for (var i = 0; i < ANIMATIONS.length; i++) {
+      var anim = ANIMATIONS[i];
+      try {
+        var gltf = await new Promise(function(resolve, reject) {
+          gltfLoader.load('animations/cc0/' + anim.name + '.glb', resolve, null, reject);
+        });
+        if (!gltf.animations || gltf.animations.length === 0) continue;
+        var clip = gltf.animations[0];
+        var result = retargetClipToObject(clip, target);
+        var retargetedClip = result && result.clip ? result.clip : clip;
+        var props = {};
+        retargetedClip.tracks.forEach(function(t) {
+          var ids = t.name.split('.');
+          if (ids[1] === 'position') {
+            props[t.name] = new THREE.Vector3(t.values[0], t.values[1], t.values[2]);
+          } else if (ids[1] === 'quaternion') {
+            props[t.name] = new THREE.Quaternion(t.values[0], t.values[1], t.values[2], t.values[3]);
+          }
+        });
+        var cacheKey = 'cc0://' + anim.name + '-0';
+        head.animClips.push({ url: cacheKey, clip: retargetedClip, pose: { props: props } });
+        loaded++;
+      } catch (e) {
+        console.warn('Failed:', anim.name, e);
       }
+    }
 
-      var props = {};
-      retargetedClip.tracks.forEach(function(t) {
-        var ids = t.name.split('.');
-        if (ids[1] === 'position') {
-          props[t.name] = new THREE.Vector3(t.values[0], t.values[1], t.values[2]);
-        } else if (ids[1] === 'quaternion') {
-          props[t.name] = new THREE.Quaternion(t.values[0], t.values[1], t.values[2], t.values[3]);
-        }
-      });
-      var pose = { props: props };
-      if (props['Hips.position']) {
-        pose.standing = props['Hips.position'].y >= 0.5;
-        pose.lying = props['Hips.position'].y < 0.5;
-      }
-      head.animClips.push({ url: cacheKey, clip: retargetedClip, pose: pose });
-    });
-    console.log('Retargeted', retargetedCount, 'of', gltf.animations.length, 'clips');
-
-    status.textContent = 'Ready — ' + gltf.animations.length + ' CC0 animations. Click any button to preview.';
+    statusEl.textContent = 'Ready — ' + loaded + ' CC0 animations loaded. Click any button to preview.';
   } catch (e) {
-    status.textContent = 'Error: ' + e.message;
+    statusEl.textContent = 'Error: ' + e.message;
     console.error(e);
   }
 }
