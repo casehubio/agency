@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CC0 T-Pose Delta Retarget Test</title>
+<title>CC0 Retarget — v4 + Surgical Blender Overrides</title>
 <script type="importmap">
 { "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
@@ -12,55 +12,127 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
-  #viewport { flex: 1; min-height: 400px; }
-  #status { padding: 0.5rem; text-align: center; font-size: 0.85rem; color: #999; border-bottom: 1px solid #333; }
-  #controls { padding: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; max-height: 150px; overflow-y: auto; }
-  #controls button { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.8rem; }
+  #viewport { flex: 1; min-height: 300px; }
+  #status { padding: 0.4rem; text-align: center; font-size: 0.85rem; color: #999; border-bottom: 1px solid #333; }
+  #controls { padding: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; max-height: 120px; overflow-y: auto; }
+  #controls button { padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.75rem; }
   #controls button:hover { background: #3a3a5e; }
   #controls button.active { background: #2d5aa0; border-color: #2d5aa0; }
-  #diag { padding: 0.5rem; font-size: 0.75rem; color: #777; text-align: center; }
+  #overrides { padding: 0.5rem; border-top: 1px solid #333; font-size: 0.7rem; max-height: 180px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: flex-start; }
+  #overrides label { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.15rem 0.4rem; background: #222; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+  #overrides label:hover { background: #333; }
+  #overrides label.active { background: #4a2a2a; border: 1px solid #a55; }
+  #overrides input { margin: 0; }
+  #diag { padding: 0.4rem; font-size: 0.7rem; color: #777; text-align: center; }
+  .section-label { color: #888; font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.5rem; }
 </style>
 </head>
 <body>
 <div id="viewport"></div>
 <div id="status">Loading...</div>
 <div id="controls"></div>
+<div>
+  <span class="section-label">Override with Blender M2M rest (check bones to fix twists):</span>
+  <button id="applyBtn" style="font-size:0.7rem; padding:0.2rem 0.5rem; margin-left:0.5rem; background:#2d5a2d; border:1px solid #5a5; color:#cfc; border-radius:4px; cursor:pointer;">Apply & Re-retarget</button>
+</div>
+<div id="overrides"></div>
 <div id="diag"></div>
 
 <script type="module">
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { retargetClipToObject } from "./animations/retarget.mjs";
+import { canonicalRestMapFromObject, canonicalWorldRestMapFromObject, hipsParentWorldQuat, hipRestLocalHeight, clipHipBaselineY, canonicalNodeMapFromObject } from "./animations/retarget.mjs";
 
-var status = document.getElementById('status');
-var controls = document.getElementById('controls');
-var diag = document.getElementById('diag');
-var viewport = document.getElementById('viewport');
+// Blender-extracted M2M rest (from animation-human-rest-pose.blend via glTF export)
+var BLENDER_M2M_REST = {
+  "Hips": [0.7905, 0, 0, 0.6125],
+  "Spine": [-0.0647, 0, 0, 0.9979],
+  "Spine1": [-0.0773, 0, 0, 0.9970],
+  "Spine2": [-0.0933, 0, 0, 0.9956],
+  "Neck": [0.3496, 0, 0, 0.9369],
+  "Head": [-0.2030, 0, 0, 0.9792],
+  "LeftShoulder": [-0.5308, -0.2882, -0.3146, 0.7323],
+  "LeftArm": [0.1921, 0.6605, -0.2679, 0.6746],
+  "LeftForeArm": [0.0216, 0.0003, -0.0067, 0.9997],
+  "LeftHand": [-0.0084, -0.0001, 0.0094, 0.9999],
+  "LeftHandIndex1": [0.0613, 0.7045, 0.0613, 0.7044],
+  "LeftHandIndex2": [0, 0, 0.0108, 0.9999],
+  "LeftHandIndex3": [0, 0, 0.0109, 0.9999],
+  "LeftHandMiddle1": [0.0187, 0.7069, 0.0187, 0.7069],
+  "LeftHandMiddle2": [0, 0, 0.0022, 1.0000],
+  "LeftHandMiddle3": [0, 0, 0.0242, 0.9997],
+  "LeftHandPinky1": [-0.0277, 0.7066, -0.0277, 0.7066],
+  "LeftHandPinky2": [0, 0, -0.0139, 0.9999],
+  "LeftHandPinky3": [0, 0, 0.0129, 0.9999],
+  "LeftHandRing1": [-0.0126, 0.7070, -0.0126, 0.7070],
+  "LeftHandRing2": [0, 0, 0.0197, 0.9998],
+  "LeftHandRing3": [0, 0, 0.0040, 1.0000],
+  "LeftHandThumb1": [0.2498, 0.9174, 0.3003, 0.0768],
+  "LeftHandThumb2": [0.0827, -0.0041, 0.0087, 0.9965],
+  "LeftHandThumb3": [0.0390, -0.0066, 0.0225, 0.9990],
+  "RightShoulder": [-0.5308, 0.2882, 0.3146, 0.7323],
+  "RightArm": [0.1921, -0.6605, 0.2679, 0.6746],
+  "RightForeArm": [0.0216, -0.0003, 0.0067, 0.9997],
+  "RightHand": [-0.0084, 0.0001, -0.0094, 0.9999],
+  "RightHandIndex1": [0.0613, -0.7045, -0.0613, 0.7044],
+  "RightHandIndex2": [0, 0, -0.0108, 0.9999],
+  "RightHandIndex3": [0, 0, -0.0109, 0.9999],
+  "RightHandMiddle1": [0.0187, -0.7069, -0.0187, 0.7069],
+  "RightHandMiddle2": [0, 0, -0.0022, 1.0000],
+  "RightHandMiddle3": [0, 0, -0.0242, 0.9997],
+  "RightHandPinky1": [-0.0277, -0.7066, 0.0277, 0.7066],
+  "RightHandPinky2": [0, 0, 0.0139, 0.9999],
+  "RightHandPinky3": [0, 0, -0.0129, 0.9999],
+  "RightHandRing1": [-0.0126, -0.7070, 0.0126, 0.7070],
+  "RightHandRing2": [0, 0, -0.0197, 0.9998],
+  "RightHandRing3": [0, 0, -0.0040, 1.0000],
+  "RightHandThumb1": [0.2498, -0.9174, -0.3003, 0.0768],
+  "RightHandThumb2": [0.0827, 0.0041, -0.0087, 0.9965],
+  "RightHandThumb3": [0.0390, 0.0066, -0.0225, 0.9990],
+  "LeftUpLeg": [0.9890, 0, 0, 0.1476],
+  "LeftLeg": [0.1000, -0.0001, 0, 0.9950],
+  "LeftFoot": [-0.5865, 0.0005, -0.0002, 0.8099],
+  "LeftToeBase": [0.0001, 0.9767, -0.2144, 0.0005],
+  "RightUpLeg": [0.9890, 0, 0, 0.1476],
+  "RightLeg": [0.1000, 0.0001, 0, 0.9950],
+  "RightFoot": [-0.5865, -0.0005, 0.0002, 0.8099],
+  "RightToeBase": [0.0001, -0.9767, 0.2144, 0.0005]
+};
 
+var statusEl = document.getElementById('status');
+var controlsEl = document.getElementById('controls');
+var diagEl = document.getElementById('diag');
+var viewportEl = document.getElementById('viewport');
+var overridesEl = document.getElementById('overrides');
+var applyBtn = document.getElementById('applyBtn');
+
+// THREE.js setup
 var scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a2e);
-var camera = new THREE.PerspectiveCamera(35, viewport.clientWidth / viewport.clientHeight, 0.01, 100);
+var camera = new THREE.PerspectiveCamera(35, viewportEl.clientWidth / viewportEl.clientHeight, 0.01, 100);
 camera.position.set(0, 1.2, 2.5);
 var renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+renderer.setSize(viewportEl.clientWidth, viewportEl.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-viewport.appendChild(renderer.domElement);
+viewportEl.appendChild(renderer.domElement);
 var orbit = new OrbitControls(camera, renderer.domElement);
 orbit.target.set(0, 1.0, 0);
 orbit.update();
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-var dl = new THREE.DirectionalLight(0xffffff, 1.2);
-dl.position.set(2, 3, 2);
-scene.add(dl);
+var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+dirLight.position.set(2, 3, 2);
+scene.add(dirLight);
 window.addEventListener('resize', function() {
-  camera.aspect = viewport.clientWidth / viewport.clientHeight;
+  camera.aspect = viewportEl.clientWidth / viewportEl.clientHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+  renderer.setSize(viewportEl.clientWidth, viewportEl.clientHeight);
 });
 
 var mixer = null, currentAction = null, activeBtn = null, clock = new THREE.Clock();
+var currentClipName = null;
+
 function animate() {
   requestAnimationFrame(animate);
   if (mixer) mixer.update(clock.getDelta());
@@ -68,35 +140,168 @@ function animate() {
 }
 animate();
 
-async function init() {
-  var loader = new GLTFLoader();
-  status.textContent = 'Loading avatar...';
-  var avatarGltf = await new Promise(function(r,e) { loader.load('avatar.glb', r, null, e); });
-  var avatarModel = avatarGltf.scene;
-  scene.add(avatarModel);
+// Shared state for re-retarget
+var avatarModel = null;
+var animGltf = null;
+var avatarNodeMap = null;
+var avatarLocalRest = null;
+var avatarWorldRest = null;
+var avatarHipsParent = null;
+var avatarHipY = 0;
+var animSkeleton = null;
+var m2mRestFromFrame0 = {};  // Idle_Subtle frame 0 values
+var overrideBones = new Set(); // bones using Blender rest
+
+function quatAngleDeg(q1, q2) {
+  var dot = Math.abs(q1.x*q2[0] + q1.y*q2[1] + q1.z*q2[2] + q1.w*q2[3]);
+  return 2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI;
+}
+
+function buildOverrideUI() {
+  overridesEl.innerHTML = '';
+  // Show bones sorted by divergence from Blender rest
+  var bones = Object.keys(m2mRestFromFrame0).filter(function(b) { return b !== 'Hips' && BLENDER_M2M_REST[b]; });
+  var withAngle = bones.map(function(b) {
+    var f0 = m2mRestFromFrame0[b];
+    var br = BLENDER_M2M_REST[b];
+    var dot = Math.abs(f0.x*br[0] + f0.y*br[1] + f0.z*br[2] + f0.w*br[3]);
+    return { bone: b, angle: 2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI };
+  });
+  withAngle.sort(function(a, b) { return b.angle - a.angle; });
+
+  withAngle.forEach(function(item) {
+    var label = document.createElement('label');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = item.bone;
+    cb.checked = overrideBones.has(item.bone);
+    cb.addEventListener('change', function() {
+      if (cb.checked) overrideBones.add(item.bone);
+      else overrideBones.delete(item.bone);
+      label.classList.toggle('active', cb.checked);
+    });
+    if (cb.checked) label.classList.add('active');
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' ' + item.bone + ' (' + item.angle.toFixed(0) + '°)'));
+    overridesEl.appendChild(label);
+  });
+}
+
+function retargetAll() {
+  if (!animGltf || !avatarModel) return;
+  mixer.stopAllAction();
   mixer = new THREE.AnimationMixer(avatarModel);
 
-  // Load the RAW M2M animation (original bone names, original rest poses)
-  // retargetClipToObject handles name mapping AND axis conversion
-  status.textContent = 'Loading Blender-retargeted animation...';
-  var rawGltf = await new Promise(function(r,e) { loader.load('/m2m-retargeted-idle-subtle.glb', r, null, e); });
-
-  console.log('Raw M2M clips:', rawGltf.animations.length);
-  console.log('Raw M2M bones:');
-  rawGltf.scene.traverse(function(n) {
-    if (n.isBone && n.name) console.log('  ' + n.name);
+  // Build M2M rest map: frame 0 by default, Blender override for selected bones
+  var m2mLocalMap = new Map();
+  Object.keys(m2mRestFromFrame0).forEach(function(bone) {
+    if (bone === 'Hips') return; // skip Hips — already converted
+    if (overrideBones.has(bone) && BLENDER_M2M_REST[bone]) {
+      var br = BLENDER_M2M_REST[bone];
+      m2mLocalMap.set(bone, new THREE.Quaternion(br[0], br[1], br[2], br[3]));
+    } else {
+      m2mLocalMap.set(bone, m2mRestFromFrame0[bone].clone());
+    }
   });
 
+  // Compute M2M world rests from hierarchy
+  var m2mWorldMap = computeWorldRestFromNodes(animSkeleton, m2mLocalMap);
+
+  // Compute bind corrections
+  var BIND_EPS = 1e-6;
+  var bindCorr = new Map();
+  var tmpQ = new THREE.Quaternion();
+  var tmpV = new THREE.Vector3();
+
+  for (var [bone, Rs] of m2mLocalMap) {
+    var Rt = avatarLocalRest.get(bone);
+    var Ws = m2mWorldMap.get(bone);
+    var Wt = avatarWorldRest.get(bone);
+    if (!Rt || !Ws || !Wt) continue;
+    var L = Rt.clone().multiply(Wt.clone().invert()).multiply(Ws.clone()).multiply(Rs.clone().invert());
+    var R = Ws.clone().invert().multiply(Wt);
+    var identityL = (1 - Math.abs(L.w)) < BIND_EPS;
+    var identityR = (1 - Math.abs(R.w)) < BIND_EPS;
+    if (identityL && identityR) continue;
+    bindCorr.set(bone, { L: identityL ? null : L, R: identityR ? null : R });
+  }
+
+  // Hip position correction
+  var hipPosCorr = null;
+  if (avatarHipsParent) {
+    var hpq = avatarHipsParent.clone().invert();
+    if (1 - Math.abs(hpq.w) >= BIND_EPS) hipPosCorr = hpq;
+  }
+  if (!hipPosCorr) {
+    var hipsCorr = bindCorr.get('Hips');
+    if (hipsCorr && hipsCorr.L) hipPosCorr = hipsCorr.L;
+  }
+
+  // Apply to all clips
+  controlsEl.innerHTML = '';
   var loaded = 0;
-  rawGltf.animations.forEach(function(clip) {
-    var result = retargetClipToObject(clip, avatarModel, { minCoverage: 0.1 });
-    var retClip = result && result.clip ? result.clip : null;
-    if (!retClip) {
-      console.warn('Retarget failed:', clip.name, 'coverage:', result ? result.coverage : 'null');
-      return;
-    }
+  var retargetedClips = {};
+
+  animGltf.animations.forEach(function(clip) {
+    var tracks = [];
+    var total = 0, matched = 0;
+
+    clip.tracks.forEach(function(track) {
+      var dot = track.name.indexOf('.');
+      if (dot === -1) return;
+      var boneName = track.name.slice(0, dot);
+      var property = track.name.slice(dot + 1);
+
+      if (property === 'quaternion') {
+        total++;
+        var nodeName = avatarNodeMap.get(boneName);
+        if (!nodeName) return;
+        matched++;
+        var next = track.clone();
+        next.name = nodeName + '.quaternion';
+        var corr = bindCorr.get(boneName);
+        if (corr) {
+          for (var i = 0; i < next.values.length; i += 4) {
+            tmpQ.set(next.values[i], next.values[i+1], next.values[i+2], next.values[i+3]);
+            if (corr.L) tmpQ.premultiply(corr.L);
+            if (corr.R) tmpQ.multiply(corr.R);
+            next.values[i] = tmpQ.x;
+            next.values[i+1] = tmpQ.y;
+            next.values[i+2] = tmpQ.z;
+            next.values[i+3] = tmpQ.w;
+          }
+        }
+        tracks.push(next);
+      } else if (property === 'position' && boneName === 'Hips') {
+        total++;
+        var hipsNode = avatarNodeMap.get('Hips');
+        if (!hipsNode) return;
+        matched++;
+        var next = track.clone();
+        next.name = hipsNode + '.position';
+        var baseline = clipHipBaselineY(clip);
+        var hipScale = 1;
+        if (avatarHipY > 0.05 && baseline > 0.05) {
+          hipScale = Math.min(200, Math.max(0.2, avatarHipY / baseline));
+        }
+        for (var i = 0; i < next.values.length; i += 3) {
+          if (hipPosCorr) {
+            tmpV.set(next.values[i], next.values[i+1], next.values[i+2]).applyQuaternion(hipPosCorr);
+            next.values[i] = tmpV.x; next.values[i+1] = tmpV.y; next.values[i+2] = tmpV.z;
+          }
+          if (hipScale !== 1) {
+            next.values[i] *= hipScale; next.values[i+1] *= hipScale; next.values[i+2] *= hipScale;
+          }
+        }
+        tracks.push(next);
+      }
+    });
+
+    if (total > 0 && matched / total < 0.3) return;
+    var retClip = clip.clone();
+    retClip.tracks = tracks;
+    retargetedClips[clip.name] = retClip;
     loaded++;
-    console.log('Retargeted:', clip.name, 'coverage:', result.coverage.toFixed(2), 'matched:', result.matched + '/' + result.total);
 
     var label = clip.name.replace(/_RT$/, '').replace(/_/g, ' ');
     var btn = document.createElement('button');
@@ -109,16 +314,102 @@ async function init() {
       var action = mixer.clipAction(retClip);
       action.reset().fadeIn(0.3).play();
       currentAction = action;
-      status.textContent = 'Playing: ' + label;
+      currentClipName = clip.name;
+      statusEl.textContent = 'Playing: ' + label;
     });
-    controls.appendChild(btn);
+    controlsEl.appendChild(btn);
   });
 
-  diag.textContent = loaded + ' raw M2M animations retargeted directly via retargetClipToObject';
-  status.textContent = 'Ready — click any animation';
+  diagEl.textContent = loaded + ' animations, ' + bindCorr.size + ' bone corrections, overrides: ' + (overrideBones.size > 0 ? Array.from(overrideBones).join(', ') : 'none');
+  statusEl.textContent = 'Ready — click any animation (' + overrideBones.size + ' Blender overrides)';
+
+  // Auto-play current clip if one was playing
+  if (currentClipName && retargetedClips[currentClipName]) {
+    var retClip = retargetedClips[currentClipName];
+    var action = mixer.clipAction(retClip);
+    action.reset().play();
+    currentAction = action;
+    // Re-activate button
+    var btns = controlsEl.querySelectorAll('button');
+    var label = currentClipName.replace(/_RT$/, '').replace(/_/g, ' ');
+    btns.forEach(function(b) {
+      if (b.textContent === label) { b.classList.add('active'); activeBtn = b; }
+    });
+  }
 }
 
-init().catch(function(e) { status.textContent = 'Error: ' + e.message; console.error(e); });
+function computeWorldRestFromNodes(root, localMap) {
+  var worldMap = new Map();
+  function walk(node, parentWorldQ) {
+    var name = node.name;
+    var localQ = localMap.get(name);
+    var worldQ;
+    if (localQ) {
+      worldQ = parentWorldQ.clone().multiply(localQ);
+      worldMap.set(name, worldQ);
+    } else {
+      worldQ = parentWorldQ.clone().multiply(node.quaternion);
+    }
+    for (var i = 0; i < node.children.length; i++) {
+      if (node.children[i].isBone) walk(node.children[i], worldQ);
+    }
+  }
+  if (root) walk(root, new THREE.Quaternion());
+  return worldMap;
+}
+
+async function init() {
+  var loader = new GLTFLoader();
+  statusEl.textContent = 'Loading avatar...';
+  var avatarGltf = await new Promise(function(res, rej) { loader.load('avatar.glb', res, null, rej); });
+  avatarModel = avatarGltf.scene;
+  scene.add(avatarModel);
+  mixer = new THREE.AnimationMixer(avatarModel);
+
+  statusEl.textContent = 'Loading animations...';
+  animGltf = await new Promise(function(res, rej) { loader.load('animations/cc0-animations-v2.glb', res, null, rej); });
+
+  // Extract avatar rest info
+  avatarNodeMap = canonicalNodeMapFromObject(avatarModel);
+  avatarLocalRest = canonicalRestMapFromObject(avatarModel);
+  avatarWorldRest = canonicalWorldRestMapFromObject(avatarModel);
+  avatarHipsParent = hipsParentWorldQuat(avatarModel);
+  avatarHipY = hipRestLocalHeight(avatarModel);
+
+  // Find animation skeleton root
+  animGltf.scene.traverse(function(n) {
+    if (n.isBone && !animSkeleton) animSkeleton = n;
+  });
+  if (animSkeleton) {
+    while (animSkeleton.parent && animSkeleton.parent.isBone) animSkeleton = animSkeleton.parent;
+  }
+
+  // Extract M2M rest from Idle_Subtle frame 0
+  var neutralClip = animGltf.animations.find(function(c) { return c.name.indexOf('Idle_Subtle') >= 0; });
+  if (!neutralClip) neutralClip = animGltf.animations.find(function(c) { return c.name.indexOf('Idle') >= 0; });
+
+  if (neutralClip) {
+    neutralClip.tracks.forEach(function(track) {
+      if (!track.name.endsWith('.quaternion')) return;
+      var bone = track.name.split('.')[0];
+      m2mRestFromFrame0[bone] = new THREE.Quaternion(track.values[0], track.values[1], track.values[2], track.values[3]);
+    });
+    console.log('M2M rest from', neutralClip.name, ':', Object.keys(m2mRestFromFrame0).length, 'bones');
+  }
+
+  // Build override UI and do initial retarget
+  buildOverrideUI();
+  retargetAll();
+}
+
+applyBtn.addEventListener('click', function() {
+  retargetAll();
+});
+
+init().catch(function(e) {
+  statusEl.textContent = 'Error: ' + e.message;
+  console.error(e);
+});
 </script>
 </body>
 </html>
