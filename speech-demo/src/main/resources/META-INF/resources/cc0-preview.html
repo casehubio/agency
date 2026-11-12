@@ -36,7 +36,7 @@
 import { TalkingHead } from "talkinghead";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as THREE from "three";
-import { retargetClipToObject } from "./animations/retarget.mjs";
+import { retargetClipToObject, CANONICAL_REST } from "./animations/retarget.mjs";
 
 var ANIMATIONS = [
   { name: "Angry", category: "emotion" },
@@ -71,17 +71,20 @@ var status = document.getElementById('status');
 var head = null;
 var activeBtn = null;
 
+var clipUrlMap = {};
 ANIMATIONS.forEach(function(anim) {
-  var cacheUrl = 'cc0://' + anim.name.replace(/ /g, '_') + '_RT';
   var btn = document.createElement('button');
   btn.innerHTML = anim.name + '<span class="category">' + anim.category + '</span>';
+  btn.dataset.animName = anim.name;
   btn.addEventListener('click', function() {
     if (!head) return;
+    var url = clipUrlMap[anim.name];
+    if (!url) { status.textContent = 'Not loaded: ' + anim.name; return; }
     if (activeBtn) activeBtn.classList.remove('active');
     btn.classList.add('active');
     activeBtn = btn;
     status.textContent = 'Playing: ' + anim.name;
-    head.playAnimation(cacheUrl, null, 8, 0).catch(function(e) {
+    head.playAnimation(url, null, 8, 0).catch(function(e) {
       status.textContent = 'Error: ' + e.message;
     });
   });
@@ -116,20 +119,87 @@ async function init() {
       if (!avatarArmature && o.name === 'Armature' && o.isObject3D) avatarArmature = o;
     });
 
+    // ── T-pose delta retarget ───────────────────────────────────────────
+    // The Blender retarget renamed bones and set rest poses to match
+    // canonical (RPM/Avaturn) but did NOT re-express keyframes in the new
+    // bone axes. Frame 0 of Idle_Subtle (neutral standing) encodes
+    // Mesh2Motion's original rest rotations. Use those as source_rest:
+    //   P[bone] = canonical_rest × inverse(m2m_rest)
+    //   corrected[N] = P × keyframe[N]
+    var neutralClip = gltf.animations.find(function(c) { return c.name.indexOf('Idle_Subtle') >= 0; });
+    if (!neutralClip) neutralClip = gltf.animations.find(function(c) { return c.name.indexOf('Idle') >= 0; });
+    var m2mRest = {};
+    if (neutralClip) {
+      neutralClip.tracks.forEach(function(track) {
+        if (!track.name.endsWith('.quaternion')) return;
+        var bone = track.name.split('.')[0];
+        m2mRest[bone] = new THREE.Quaternion(track.values[0], track.values[1], track.values[2], track.values[3]);
+      });
+      console.log('M2M rest extracted from', neutralClip.name, '—', Object.keys(m2mRest).length, 'bones');
+    } else {
+      console.warn('No neutral clip found — cannot extract M2M rest');
+    }
+
+    var boneCorrections = {};
+    var correctionCount = 0;
+    Object.keys(m2mRest).forEach(function(bone) {
+      var canonArr = CANONICAL_REST[bone];
+      if (!canonArr) return;
+      var canonQ = new THREE.Quaternion(canonArr[0], canonArr[1], canonArr[2], canonArr[3]);
+      var invM2m = m2mRest[bone].clone().invert();
+      var P = canonQ.clone().multiply(invM2m);
+      if (1 - Math.abs(P.w) < 1e-6) return;
+      boneCorrections[bone] = P;
+      correctionCount++;
+    });
+    console.log('Computed', correctionCount, 'bone axis corrections');
+
+    var tmpQ = new THREE.Quaternion();
+    gltf.animations.forEach(function(clip) {
+      clip.tracks.forEach(function(track) {
+        if (!track.name.endsWith('.quaternion')) return;
+        var bone = track.name.split('.')[0];
+        var P = boneCorrections[bone];
+        if (!P) return;
+        for (var i = 0; i < track.values.length; i += 4) {
+          tmpQ.set(track.values[i], track.values[i+1], track.values[i+2], track.values[i+3]);
+          tmpQ.premultiply(P);
+          track.values[i]   = tmpQ.x;
+          track.values[i+1] = tmpQ.y;
+          track.values[i+2] = tmpQ.z;
+          track.values[i+3] = tmpQ.w;
+        }
+      });
+    });
+    console.log('Applied T-pose delta retarget to', gltf.animations.length, 'clips');
+    // ── End T-pose delta retarget ─────────────────────────────────────────
+
+    // Build name→clipName lookup (clip names may have _RT suffix)
+    var animNameLookup = {};
+    ANIMATIONS.forEach(function(a) {
+      var key = a.name.replace(/ /g, '_');
+      animNameLookup[key] = a.name;
+      animNameLookup[key + '_RT'] = a.name;
+    });
+
     var retargetedCount = 0;
     gltf.animations.forEach(function(clip) {
-      var cacheKey = 'cc0://' + clip.name + '-0';
+      var cacheKey = 'cc0://' + clip.name;
 
-      // Retarget the clip from the M2M skeleton to our avatar skeleton
       var result = retargetClipToObject(clip, avatarArmature || head.scene);
       var retargetedClip = result && result.clip ? result.clip : clip;
 
       if (result && result.clip) {
         retargetedCount++;
-        console.log('Retargeted:', clip.name, 'coverage:', result.coverage);
+        console.log('Retargeted:', clip.name, 'coverage:', result.coverage.toFixed(2),
+          'matched:', result.matched + '/' + result.total);
       } else {
         console.warn('Retarget failed for:', clip.name, result);
       }
+
+      // Map clip name back to button animation name
+      var btnName = animNameLookup[clip.name] || animNameLookup[clip.name.replace(/_RT$/, '')];
+      if (btnName) clipUrlMap[btnName] = cacheKey;
 
       var props = {};
       retargetedClip.tracks.forEach(function(t) {
@@ -148,6 +218,7 @@ async function init() {
       head.animClips.push({ url: cacheKey, clip: retargetedClip, pose: pose });
     });
     console.log('Retargeted', retargetedCount, 'of', gltf.animations.length, 'clips');
+    console.log('Clip URL map:', clipUrlMap);
 
     status.textContent = 'Ready — ' + gltf.animations.length + ' CC0 animations. Click any button to preview.';
   } catch (e) {
