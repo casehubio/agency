@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CC0 Retarget — Two-Pass (GLB Rest → Canonical → Avatar)</title>
+<title>CC0 Retarget — v4 One-Pass with GLB Rest</title>
 <script type="importmap">
 { "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
@@ -18,6 +18,8 @@
   #controls button { padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.75rem; }
   #controls button:hover { background: #3a3a5e; }
   #controls button.active { background: #2d5aa0; border-color: #2d5aa0; }
+  #mode { padding: 0.4rem; display: flex; gap: 1rem; justify-content: center; align-items: center; font-size: 0.75rem; border-top: 1px solid #333; }
+  #mode label { cursor: pointer; }
   #diag { padding: 0.4rem; font-size: 0.7rem; color: #777; text-align: center; }
 </style>
 </head>
@@ -25,18 +27,25 @@
 <div id="viewport"></div>
 <div id="status">Loading...</div>
 <div id="controls"></div>
+<div id="mode">
+  <label><input type="radio" name="rest" value="frame0"> Frame 0 (v4 original)</label>
+  <label><input type="radio" name="rest" value="hybrid" checked> Hybrid (frame0 local + GLB world)</label>
+  <label><input type="radio" name="rest" value="glb"> GLB node.quaternion</label>
+  <button id="applyBtn" style="font-size:0.7rem; padding:0.2rem 0.5rem; background:#2d5a2d; border:1px solid #5a5; color:#cfc; border-radius:4px; cursor:pointer;">Apply</button>
+</div>
 <div id="diag"></div>
 
 <script type="module">
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CANONICAL_REST, retargetClipToObject } from "./animations/retarget.mjs";
+import { canonicalRestMapFromObject, canonicalWorldRestMapFromObject, hipsParentWorldQuat, hipRestLocalHeight, clipHipBaselineY, canonicalNodeMapFromObject } from "./animations/retarget.mjs";
 
 var statusEl = document.getElementById('status');
 var controlsEl = document.getElementById('controls');
 var diagEl = document.getElementById('diag');
 var viewportEl = document.getElementById('viewport');
+var applyBtn = document.getElementById('applyBtn');
 
 var scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a2e);
@@ -61,6 +70,7 @@ window.addEventListener('resize', function() {
 });
 
 var mixer = null, currentAction = null, activeBtn = null, clock = new THREE.Clock();
+var currentClipName = null;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -69,81 +79,152 @@ function animate() {
 }
 animate();
 
-async function init() {
-  var loader = new GLTFLoader();
-  statusEl.textContent = 'Loading avatar...';
-  var avatarGltf = await new Promise(function(res, rej) { loader.load('avatar.glb', res, null, rej); });
-  var avatarModel = avatarGltf.scene;
-  scene.add(avatarModel);
-  mixer = new THREE.AnimationMixer(avatarModel);
+var avatarModel = null, animGltf = null, animSkeleton = null;
+var avatarNodeMap = null, avatarLocalRest = null, avatarWorldRest = null;
+var avatarHipsParent = null, avatarHipY = 0;
+var m2mRestFrame0 = {};
+var m2mRestGlb = {};
+var m2mRestSymmetric = {};
 
-  statusEl.textContent = 'Loading animations...';
-  var animGltf = await new Promise(function(res, rej) { loader.load('animations/cc0-animations-v2.glb', res, null, rej); });
-
-  // ── Extract M2M rest from GLB skeleton's node.quaternion ──────────
-  // This is the bone's actual rest pose in the GLB's coordinate frame —
-  // more accurate than Idle_Subtle frame 0 (which includes animation).
-  var glbRest = {};
-  animGltf.scene.traverse(function(n) {
-    if (n.isBone && n.name && CANONICAL_REST[n.name]) {
-      glbRest[n.name] = n.quaternion.clone();
+function computeWorldRestFromNodes(root, localMap) {
+  var worldMap = new Map();
+  function walk(node, parentWorldQ) {
+    var name = node.name;
+    var localQ = localMap.get(name);
+    var worldQ;
+    if (localQ) {
+      worldQ = parentWorldQ.clone().multiply(localQ);
+      worldMap.set(name, worldQ);
+    } else {
+      worldQ = parentWorldQ.clone().multiply(node.quaternion);
     }
-  });
-  console.log('GLB skeleton rest:', Object.keys(glbRest).length, 'bones');
+    for (var i = 0; i < node.children.length; i++) {
+      if (node.children[i].isBone) walk(node.children[i], worldQ);
+    }
+  }
+  if (root) walk(root, new THREE.Quaternion());
+  return worldMap;
+}
 
-  // ── Pass 1: GLB rest → Canonical (local rest swap) ────────────────
-  // P[bone] = canonical_rest × inv(glb_rest)
-  // corrected[N] = P × keyframe[N]
-  // Skip Hips — Hips keyframes were already converted by Blender retarget
-  var boneCorrections = {};
-  var corrCount = 0;
-  var tmpQ = new THREE.Quaternion();
+function retargetAll(mode) {
+  if (!animGltf || !avatarModel) return;
+  var isHybrid = (mode === 'hybrid');
 
-  Object.keys(glbRest).forEach(function(bone) {
+  // Choose M2M LOCAL rest source (used as Rs in L = Rt × Wt⁻¹ × Ws × Rs⁻¹)
+  var m2mLocalMap = new Map();
+  var source = mode === 'glb' ? m2mRestGlb : m2mRestFrame0;
+  Object.keys(source).forEach(function(bone) {
     if (bone === 'Hips') return;
-    var canonArr = CANONICAL_REST[bone];
-    if (!canonArr) return;
-    var canonQ = new THREE.Quaternion(canonArr[0], canonArr[1], canonArr[2], canonArr[3]);
-    var glbQ = glbRest[bone];
-    var P = canonQ.clone().multiply(glbQ.clone().invert());
-    if (1 - Math.abs(P.w) < 1e-6) return;
-    boneCorrections[bone] = P;
-    corrCount++;
-
-    // Log large corrections for diagnostics
-    var angle = 2 * Math.acos(Math.min(1, Math.abs(P.w))) * 180 / Math.PI;
-    if (angle > 20) console.log('  Correction', bone, ':', angle.toFixed(1) + '°');
-  });
-  console.log('Pass 1 corrections:', corrCount);
-
-  // Apply pass 1 corrections to all clips
-  var correctedClips = animGltf.animations.map(function(clip) {
-    var corrClip = clip.clone();
-    corrClip.tracks = clip.tracks.map(function(track) {
-      var next = track.clone();
-      if (!next.name.endsWith('.quaternion')) return next;
-      var bone = next.name.split('.')[0];
-      var P = boneCorrections[bone];
-      if (!P) return next;
-      for (var i = 0; i < next.values.length; i += 4) {
-        tmpQ.set(next.values[i], next.values[i+1], next.values[i+2], next.values[i+3]);
-        tmpQ.premultiply(P);
-        next.values[i] = tmpQ.x;
-        next.values[i+1] = tmpQ.y;
-        next.values[i+2] = tmpQ.z;
-        next.values[i+3] = tmpQ.w;
-      }
-      return next;
-    });
-    return corrClip;
+    m2mLocalMap.set(bone, source[bone].clone());
   });
 
-  // ── Pass 2: Canonical → Avatar (retargetClipToObject) ────────────
+  // Choose M2M WORLD rest source (used as Ws in L and R)
+  // Hybrid: use GLB rest for world computation — avoids frame 0 animation artifacts
+  // propagating through the hierarchy and causing arm twist
+  var worldLocalMap = new Map();
+  var worldSource = (isHybrid || mode === 'glb') ? m2mRestGlb : m2mRestFrame0;
+  Object.keys(worldSource).forEach(function(bone) {
+    if (bone === 'Hips') return;
+    worldLocalMap.set(bone, worldSource[bone].clone());
+  });
+  var m2mWorldMap = computeWorldRestFromNodes(animSkeleton, worldLocalMap);
+
+  // Compute bind corrections: M2M → avatar (full L/R)
+  var BIND_EPS = 1e-6;
+  var bindCorr = new Map();
+  var tmpQ = new THREE.Quaternion();
+  var tmpV = new THREE.Vector3();
+
+  for (var [bone, Rs] of m2mLocalMap) {
+    var Rt = avatarLocalRest.get(bone);
+    var Ws = m2mWorldMap.get(bone);
+    var Wt = avatarWorldRest.get(bone);
+    if (!Rt || !Ws || !Wt) continue;
+    var L = Rt.clone().multiply(Wt.clone().invert()).multiply(Ws.clone()).multiply(Rs.clone().invert());
+    var R = Ws.clone().invert().multiply(Wt);
+    var identityL = (1 - Math.abs(L.w)) < BIND_EPS;
+    var identityR = (1 - Math.abs(R.w)) < BIND_EPS;
+    if (identityL && identityR) continue;
+    bindCorr.set(bone, { L: identityL ? null : L, R: identityR ? null : R });
+  }
+
+  // Hip position correction
+  var hipPosCorr = null;
+  if (avatarHipsParent) {
+    var hpq = avatarHipsParent.clone().invert();
+    if (1 - Math.abs(hpq.w) >= BIND_EPS) hipPosCorr = hpq;
+  }
+  if (!hipPosCorr) {
+    var hipsCorr = bindCorr.get('Hips');
+    if (hipsCorr && hipsCorr.L) hipPosCorr = hipsCorr.L;
+  }
+
+  // Apply to all clips
+  mixer.stopAllAction();
+  mixer = new THREE.AnimationMixer(avatarModel);
+  controlsEl.innerHTML = '';
   var loaded = 0;
-  correctedClips.forEach(function(clip) {
-    var result = retargetClipToObject(clip, avatarModel, { minCoverage: 0.1 });
-    var retClip = result && result.clip ? result.clip : null;
-    if (!retClip) return;
+  var retargetedClips = {};
+
+  animGltf.animations.forEach(function(clip) {
+    var tracks = [];
+    var total = 0, matched = 0;
+
+    clip.tracks.forEach(function(track) {
+      var dot = track.name.indexOf('.');
+      if (dot === -1) return;
+      var boneName = track.name.slice(0, dot);
+      var property = track.name.slice(dot + 1);
+
+      if (property === 'quaternion') {
+        total++;
+        var nodeName = avatarNodeMap.get(boneName);
+        if (!nodeName) return;
+        matched++;
+        var next = track.clone();
+        next.name = nodeName + '.quaternion';
+        var corr = bindCorr.get(boneName);
+        if (corr) {
+          for (var i = 0; i < next.values.length; i += 4) {
+            tmpQ.set(next.values[i], next.values[i+1], next.values[i+2], next.values[i+3]);
+            if (corr.L) tmpQ.premultiply(corr.L);
+            if (corr.R) tmpQ.multiply(corr.R);
+            next.values[i] = tmpQ.x;
+            next.values[i+1] = tmpQ.y;
+            next.values[i+2] = tmpQ.z;
+            next.values[i+3] = tmpQ.w;
+          }
+        }
+        tracks.push(next);
+      } else if (property === 'position' && boneName === 'Hips') {
+        total++;
+        var hipsNode = avatarNodeMap.get('Hips');
+        if (!hipsNode) return;
+        matched++;
+        var next = track.clone();
+        next.name = hipsNode + '.position';
+        var baseline = clipHipBaselineY(clip);
+        var hipScale = 1;
+        if (avatarHipY > 0.05 && baseline > 0.05) {
+          hipScale = Math.min(200, Math.max(0.2, avatarHipY / baseline));
+        }
+        for (var i = 0; i < next.values.length; i += 3) {
+          if (hipPosCorr) {
+            tmpV.set(next.values[i], next.values[i+1], next.values[i+2]).applyQuaternion(hipPosCorr);
+            next.values[i] = tmpV.x; next.values[i+1] = tmpV.y; next.values[i+2] = tmpV.z;
+          }
+          if (hipScale !== 1) {
+            next.values[i] *= hipScale; next.values[i+1] *= hipScale; next.values[i+2] *= hipScale;
+          }
+        }
+        tracks.push(next);
+      }
+    });
+
+    if (total > 0 && matched / total < 0.3) return;
+    var retClip = clip.clone();
+    retClip.tracks = tracks;
+    retargetedClips[clip.name] = retClip;
     loaded++;
 
     var label = clip.name.replace(/_RT$/, '').replace(/_/g, ' ');
@@ -157,14 +238,153 @@ async function init() {
       var action = mixer.clipAction(retClip);
       action.reset().fadeIn(0.3).play();
       currentAction = action;
+      currentClipName = clip.name;
       statusEl.textContent = 'Playing: ' + label;
     });
     controlsEl.appendChild(btn);
   });
 
-  diagEl.textContent = loaded + ' animations retargeted (two-pass: GLB rest → canonical → avatar), ' + corrCount + ' pass-1 corrections';
-  statusEl.textContent = 'Ready — click any animation';
+  // Log L/R correction comparison for arm chain
+  var armBones = ['Arm', 'ForeArm', 'Hand'];
+  console.log('=== L/R Correction Comparison (Left vs Right) ===');
+  armBones.forEach(function(suffix) {
+    var left = bindCorr.get('Left' + suffix);
+    var right = bindCorr.get('Right' + suffix);
+    var fmtQ = function(q) { return q ? '[' + q.x.toFixed(4) + ', ' + q.y.toFixed(4) + ', ' + q.z.toFixed(4) + ', ' + q.w.toFixed(4) + ']' : 'null'; };
+    var angleDeg = function(q) { return q ? (2 * Math.acos(Math.min(1, Math.abs(q.w))) * 180 / Math.PI).toFixed(1) + '°' : '0°'; };
+    console.log(suffix + ':');
+    console.log('  Left  L=' + fmtQ(left?.L) + ' (' + angleDeg(left?.L) + ')  R=' + fmtQ(left?.R) + ' (' + angleDeg(left?.R) + ')');
+    console.log('  Right L=' + fmtQ(right?.L) + ' (' + angleDeg(right?.L) + ')  R=' + fmtQ(right?.R) + ' (' + angleDeg(right?.R) + ')');
+    // Compare L corrections: mirror Right L to Left and measure difference
+    if (left?.L && right?.L) {
+      var mirrorRL = new THREE.Quaternion(right.L.x, -right.L.y, -right.L.z, right.L.w);
+      var dot = Math.abs(left.L.x*mirrorRL.x + left.L.y*mirrorRL.y + left.L.z*mirrorRL.z + left.L.w*mirrorRL.w);
+      console.log('  L asymmetry: ' + (2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI).toFixed(1) + '°');
+    }
+    if (left?.R && right?.R) {
+      var mirrorRR = new THREE.Quaternion(right.R.x, -right.R.y, -right.R.z, right.R.w);
+      var dot = Math.abs(left.R.x*mirrorRR.x + left.R.y*mirrorRR.y + left.R.z*mirrorRR.z + left.R.w*mirrorRR.w);
+      console.log('  R asymmetry: ' + (2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI).toFixed(1) + '°');
+    }
+  });
+
+  var restLabel = mode === 'glb' ? 'GLB node.quaternion' : isHybrid ? 'hybrid (frame0 local + GLB world)' : 'Idle_Subtle frame 0';
+  diagEl.textContent = loaded + ' animations, ' + bindCorr.size + ' bone corrections (source: ' + restLabel + ')';
+  statusEl.textContent = 'Ready — ' + restLabel;
+
+  if (currentClipName && retargetedClips[currentClipName]) {
+    var retClip = retargetedClips[currentClipName];
+    var action = mixer.clipAction(retClip);
+    action.reset().play();
+    currentAction = action;
+    var btns = controlsEl.querySelectorAll('button');
+    var targetLabel = currentClipName.replace(/_RT$/, '').replace(/_/g, ' ');
+    btns.forEach(function(b) {
+      if (b.textContent === targetLabel) { b.classList.add('active'); activeBtn = b; }
+    });
+  }
 }
+
+async function init() {
+  var loader = new GLTFLoader();
+  statusEl.textContent = 'Loading avatar...';
+  var avatarGltf = await new Promise(function(res, rej) { loader.load('avatar.glb', res, null, rej); });
+  avatarModel = avatarGltf.scene;
+  scene.add(avatarModel);
+  mixer = new THREE.AnimationMixer(avatarModel);
+
+  avatarNodeMap = canonicalNodeMapFromObject(avatarModel);
+  avatarLocalRest = canonicalRestMapFromObject(avatarModel);
+  avatarWorldRest = canonicalWorldRestMapFromObject(avatarModel);
+  avatarHipsParent = hipsParentWorldQuat(avatarModel);
+  avatarHipY = hipRestLocalHeight(avatarModel);
+
+  statusEl.textContent = 'Loading animations...';
+  animGltf = await new Promise(function(res, rej) { loader.load('animations/cc0-animations-v2.glb', res, null, rej); });
+
+  // Find skeleton root
+  animGltf.scene.traverse(function(n) {
+    if (n.isBone && !animSkeleton) animSkeleton = n;
+  });
+  if (animSkeleton) {
+    while (animSkeleton.parent && animSkeleton.parent.isBone) animSkeleton = animSkeleton.parent;
+  }
+
+  // Extract GLB rest from skeleton nodes
+  animGltf.scene.traverse(function(n) {
+    if (n.isBone && n.name) {
+      m2mRestGlb[n.name] = n.quaternion.clone();
+    }
+  });
+  console.log('GLB rest:', Object.keys(m2mRestGlb).length, 'bones');
+
+  // Extract Idle_Subtle frame 0
+  var neutralClip = animGltf.animations.find(function(c) { return c.name.indexOf('Idle_Subtle') >= 0; });
+  if (neutralClip) {
+    neutralClip.tracks.forEach(function(track) {
+      if (!track.name.endsWith('.quaternion')) return;
+      var bone = track.name.split('.')[0];
+      m2mRestFrame0[bone] = new THREE.Quaternion(track.values[0], track.values[1], track.values[2], track.values[3]);
+    });
+  }
+  console.log('Frame 0 rest:', Object.keys(m2mRestFrame0).length, 'bones');
+
+  // Build symmetric rest: start with frame 0, mirror Right→Left for ONLY the
+  // bones where the left side has significantly more animation than the right.
+  // This fixes the left hand 180° twist without breaking other animations.
+  Object.keys(m2mRestFrame0).forEach(function(bone) {
+    m2mRestSymmetric[bone] = m2mRestFrame0[bone].clone();
+  });
+  // Mirror: quaternion for left bone from right = (x, -y, -z, w)
+  // Only mirror bones where left-side animation at frame 0 is >30° more than right
+  var mirrorCandidates = ['Arm', 'ForeArm', 'Hand', 'HandIndex1', 'HandIndex2', 'HandIndex3', 'HandMiddle1', 'HandMiddle2', 'HandMiddle3', 'HandRing1', 'HandRing2', 'HandRing3', 'HandPinky1', 'HandPinky2', 'HandPinky3', 'HandThumb1', 'HandThumb2', 'HandThumb3'];
+  var mirrored = [];
+  mirrorCandidates.forEach(function(suffix) {
+    var rightBone = 'Right' + suffix;
+    var leftBone = 'Left' + suffix;
+    if (!m2mRestFrame0[rightBone] || !m2mRestFrame0[leftBone] || !m2mRestGlb[rightBone] || !m2mRestGlb[leftBone]) return;
+    // Compute animation at frame 0 for both sides
+    var lg = m2mRestGlb[leftBone], lf = m2mRestFrame0[leftBone];
+    var rg = m2mRestGlb[rightBone], rf = m2mRestFrame0[rightBone];
+    var leftAnim = 2 * Math.acos(Math.min(1, Math.abs(lg.x*lf.x + lg.y*lf.y + lg.z*lf.z + lg.w*lf.w))) * 180 / Math.PI;
+    var rightAnim = 2 * Math.acos(Math.min(1, Math.abs(rg.x*rf.x + rg.y*rf.y + rg.z*rf.z + rg.w*rf.w))) * 180 / Math.PI;
+    if (leftAnim > rightAnim + 20) {
+      var r = m2mRestFrame0[rightBone];
+      m2mRestSymmetric[leftBone] = new THREE.Quaternion(r.x, -r.y, -r.z, r.w);
+      mirrored.push(leftBone + ' (' + leftAnim.toFixed(0) + '° vs ' + rightAnim.toFixed(0) + '°)');
+    }
+  });
+  console.log('Mirrored bones (left had >20° more animation than right):', mirrored.join(', '));
+  console.log('Symmetric rest:', Object.keys(m2mRestSymmetric).length, 'bones');
+
+  // Log bones where GLB rest differs significantly from frame 0
+  console.log('=== GLB rest vs Frame 0 divergence (>5°) ===');
+  Object.keys(m2mRestGlb).forEach(function(bone) {
+    if (!m2mRestFrame0[bone]) return;
+    var g = m2mRestGlb[bone];
+    var f = m2mRestFrame0[bone];
+    var dot = Math.abs(g.x*f.x + g.y*f.y + g.z*f.z + g.w*f.w);
+    var angle = 2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI;
+    if (angle > 5) console.log('  ' + bone + ': ' + angle.toFixed(1) + '°');
+  });
+
+  // Build a fixed version: frame0 but with LeftArm mirrored from RightArm
+  // This is the surgical fix: LeftArm's frame 0 is 31° asymmetric from mirrored RightArm
+  // which propagates through the world rest chain and twists the left hand 180°
+  if (m2mRestFrame0['RightArm']) {
+    var rArm = m2mRestFrame0['RightArm'];
+    m2mRestFrame0['LeftArm'] = new THREE.Quaternion(rArm.x, -rArm.y, -rArm.z, rArm.w);
+    console.log('SURGICAL FIX: LeftArm rest mirrored from RightArm');
+  }
+
+  // Default: use frame0 (v4 + LeftArm fix)
+  retargetAll('frame0');
+}
+
+applyBtn.addEventListener('click', function() {
+  var mode = document.querySelector('input[name="rest"]:checked').value;
+  retargetAll(mode);
+});
 
 init().catch(function(e) {
   statusEl.textContent = 'Error: ' + e.message;
