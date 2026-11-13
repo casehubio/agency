@@ -117,22 +117,43 @@
     <option value="avatar-mpfb.glb">MakeHuman</option>
   </select></label>
   <label>Animation: <select id="animPicker">
-    <option value="">Auto</option>
+    <option value="">Auto (idle cycle)</option>
     <optgroup label="Conversational">
-      <option value="thinking">Thinking</option>
-      <option value="explaining">Explaining</option>
-      <option value="agreement">Agreement</option>
       <option value="greeting">Greeting</option>
+      <option value="head-nod">Head Nod</option>
+      <option value="yes">Yes</option>
+      <option value="reject">Reject</option>
+      <option value="confused">Confused</option>
+      <option value="angry">Angry</option>
+      <option value="clapping">Clapping</option>
     </optgroup>
     <optgroup label="Expressive">
-      <option value="surprise">Surprise</option>
-      <option value="happy">Happy</option>
-      <option value="sad">Sad</option>
-      <option value="pointing">Pointing</option>
-      <option value="confusion">Confusion</option>
+      <option value="dab">Dab</option>
+      <option value="victory">Victory</option>
+      <option value="victory-fist-pump">Fist Pump</option>
+      <option value="dizzy">Dizzy</option>
+      <option value="power-up">Power Up</option>
+      <option value="shiver">Shiver</option>
+      <option value="chest-open">Chest Open</option>
     </optgroup>
     <optgroup label="Idle">
-      <option value="idle">Idle Fidget</option>
+      <option value="idle-a">Idle A</option>
+      <option value="idle-subtle">Idle Subtle</option>
+      <option value="idle-foldarms">Fold Arms</option>
+      <option value="idle-talking">Talking</option>
+      <option value="guitar-playing">Guitar</option>
+      <option value="meditate">Meditate</option>
+    </optgroup>
+    <optgroup label="Dance">
+      <option value="dance-charleston">Charleston</option>
+      <option value="dance-simple">Dance</option>
+      <option value="moonwalk">Moonwalk</option>
+    </optgroup>
+    <optgroup label="Dramatic">
+      <option value="backflip">Backflip</option>
+      <option value="death-a">Death</option>
+      <option value="zombie-idle">Zombie</option>
+      <option value="drunk-walk">Drunk Walk</option>
     </optgroup>
   </select></label>
   <button id="playAnim" style="padding:0.3rem 0.6rem;border-radius:6px;border:1px solid #555;background:#2a2a3e;color:#e0e0e0;cursor:pointer;font-size:0.85rem" title="Play selected animation">&#9654;</button>
@@ -150,7 +171,9 @@
 </div>
 
 <script type="module">
+import * as THREE from "three";
 import { TalkingHead } from "talkinghead";
+import { BodyAnimationSystem, parseGestureTags } from "./animations/body-animations.mjs";
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
@@ -162,6 +185,7 @@ const toggleAvatar = document.getElementById('toggle-avatar');
 let ws;
 let audioCtx;
 let head = null;
+let bodyAnim = null;
 let pendingVisemes = null;
 let micStream = null;
 let micProcessor = null;
@@ -169,115 +193,50 @@ let micSource = null;
 let recording = false;
 let visemeMeshes = null;
 
-var ANIMATIONS = {
-  greeting: {
-    keywords: ["hello", "hi ", "hey ", "welcome", "good morning", "good afternoon"],
-    anims: [
-      { url: "animations/greeting-wave.fbx", dur: 3, exclusive: true }
-    ]
-  },
-  thinking: {
-    keywords: ["let me think", "hmm", "consider", "wondering", "perhaps", "let me see"],
-    anims: [
-      { url: "animations/thinking-1.fbx", dur: 4, exclusive: false }
-    ]
-  },
-  explaining: {
-    keywords: ["here's how", "the reason", "because", "essentially", "basically", "in other words", "what this means"],
-    anims: [
-      { url: "animations/explaining-1.fbx", dur: 5, exclusive: false }
-    ]
-  },
-  agreement: {
-    keywords: ["yes", "right", "exactly", "agree", "correct", "absolutely", "indeed"],
-    anims: [
-      { url: "animations/agreement-1.fbx", dur: 3, exclusive: false },
-      { url: "animations/agreement-2.fbx", dur: 3, exclusive: false }
-    ]
-  },
-  surprise: {
-    keywords: ["wow", "really", "amazing", "incredible", "fascinating", "remarkable"],
-    anims: [
-      { url: "animations/surprise-1.fbx", dur: 3, exclusive: false }
-    ]
-  },
-  confusion: {
-    keywords: ["not sure", "i don't know", "unclear", "hard to say", "it depends"],
-    anims: [
-      { url: "animations/confusion-shrug.fbx", dur: 3, exclusive: false }
-    ]
-  },
-  happy: {
-    keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "that's funny"],
-    anims: [
-      { url: "animations/happy-laugh.fbx", dur: 3, exclusive: false },
-      { url: "animations/happy-clap.fbx", dur: 3, exclusive: true }
-    ]
-  },
-  sad: {
-    keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"],
-    anims: [
-      { url: "animations/sad-1.fbx", dur: 4, exclusive: false }
-    ]
-  },
-  pointing: {
-    keywords: ["look at", "right here", "this one", "over there", "check this"],
-    anims: [
-      { url: "animations/pointing-1.fbx", dur: 3, exclusive: true }
-    ]
-  },
-  idle: {
-    keywords: [],
-    anims: [
-      { url: "animations/idle-1.fbx", dur: 8, exclusive: false },
-      { url: "animations/idle-2.fbx", dur: 8, exclusive: false }
-    ]
-  }
+var serverAnimationReceived = false;
+
+// Gesture tag → M2M clip name mapping (LLM emits [gesture:key] inline)
+var GESTURE_MAP = {
+  angry: "angry", bow: "head-nod", clapping: "clapping", confused: "confused",
+  dab: "dab", greeting: "greeting", nod: "head-nod", reject: "reject",
+  shiver: "shiver", victory: "victory", fistpump: "victory-fist-pump",
+  yes: "yes", dizzy: "dizzy", powerup: "power-up", powerburst: "power-burst",
+  chestopen: "chest-open", push: "push", knock: "knock",
+  // dances
+  charleston: "dance-charleston", armpump: "dance-arm-pump",
+  bodyroll: "dance-body-roll", dance: "dance-simple",
+  // dramatic
+  death: "death-a", hit: "hit-chest", zombie: "zombie-idle",
+  drunk: "drunk-walk", backflip: "backflip", interact: "interact",
+  // mood-driven fallbacks
+  happy: "clapping", sad: "reject", surprise: "dizzy", thinking: "idle-talking",
+  explaining: "idle-talking", agreement: "head-nod",
 };
 
-var currentAnimation = null;
-var animationExclusive = false;
-var idleTimer = null;
-var serverAnimationReceived = false;
+// Keyword → gesture fallback (for responses without explicit tags)
+var KEYWORD_GESTURES = [
+  { keywords: ["hello", "hi ", "hey ", "welcome"], gesture: "greeting" },
+  { keywords: ["yes", "exactly", "agree", "correct", "absolutely"], gesture: "head-nod" },
+  { keywords: ["wow", "amazing", "incredible"], gesture: "dizzy" },
+  { keywords: ["great", "wonderful", "fantastic", "haha"], gesture: "clapping" },
+  { keywords: ["not sure", "unclear", "hard to say"], gesture: "confused" },
+  { keywords: ["sorry", "unfortunately", "sadly"], gesture: "reject" },
+];
 
 function classifyResponse(text) {
   var lower = text.toLowerCase();
-  for (var category in ANIMATIONS) {
-    var config = ANIMATIONS[category];
-    if (config.keywords.length === 0) continue;
-    for (var i = 0; i < config.keywords.length; i++) {
-      if (lower.includes(config.keywords[i])) return category;
+  for (var entry of KEYWORD_GESTURES) {
+    for (var kw of entry.keywords) {
+      if (lower.includes(kw)) return entry.gesture;
     }
   }
   return null;
 }
 
-function playAnimationByCategory(category) {
-  if (!head) return;
-  var config = ANIMATIONS[category];
-  if (!config) return;
-  var anim = config.anims[Math.floor(Math.random() * config.anims.length)];
-  animationExclusive = anim.exclusive;
-  currentAnimation = category;
-  head.playAnimation(anim.url, null, anim.dur).catch(function(e) {
-    console.warn('Animation load failed:', e);
-    animationExclusive = false;
-    currentAnimation = null;
-  });
-  setTimeout(function() {
-    animationExclusive = false;
-    currentAnimation = null;
-  }, anim.dur * 1000);
-  resetIdleTimer();
-}
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(function() {
-    if (head && !isPlaying && !currentAnimation) {
-      playAnimationByCategory('idle');
-    }
-  }, 5000 + Math.random() * 3000);
+function playBodyGesture(gestureName) {
+  if (!bodyAnim) return;
+  var clipName = GESTURE_MAP[gestureName] || gestureName;
+  bodyAnim.playGesture(clipName);
 }
 
 function addMessage(text, cls) {
@@ -308,17 +267,21 @@ function connect() {
         case 'transcript':
           addMessage(msg.text, 'user');
           break;
-        case 'response':
-          addMessage(msg.text, 'avatar');
-          if (head) {
-            if (!serverAnimationReceived) {
-              var category = classifyResponse(msg.text);
-              if (category) playAnimationByCategory(category);
+        case 'response': {
+          var parsed = parseGestureTags(msg.text);
+          addMessage(parsed.cleaned, 'avatar');
+          if (bodyAnim && !serverAnimationReceived) {
+            if (parsed.tags.length > 0) {
+              playBodyGesture(parsed.tags[0]);
+            } else {
+              var fallback = classifyResponse(parsed.cleaned);
+              if (fallback) playBodyGesture(fallback);
             }
-            serverAnimationReceived = false;
           }
-          resetIdleTimer();
+          serverAnimationReceived = false;
+          if (bodyAnim) bodyAnim.startIdleCycle();
           break;
+        }
         case 'phonemes':
           var count = msg.data ? msg.data.length : 0;
           var totalMs = count > 0 ? msg.data[msg.data.length - 1].endMs : 0;
@@ -332,14 +295,12 @@ function connect() {
           break;
         case 'animation':
           serverAnimationReceived = true;
-          if (msg.url) {
-            var dur = msg.durationSec || 5;
-            animationExclusive = false;
-            if (head) head.playAnimation(msg.url, null, dur).catch(function(e) {
+          if (msg.gesture && bodyAnim) {
+            playBodyGesture(msg.gesture);
+          } else if (msg.url && head) {
+            head.playAnimation(msg.url, null, msg.durationSec || 5).catch(function(e) {
               console.warn('Server animation failed:', e);
             });
-          } else if (msg.category) {
-            playAnimationByCategory(msg.category);
           }
           break;
         case 'error':
@@ -376,7 +337,7 @@ function sendText() {
   ws.send(JSON.stringify({ type: 'text', text: text, llmModel: llmModel, ttsModel: ttsModel }));
   msgInput.value = '';
   status.textContent = 'Processing...';
-  if (head) playAnimationByCategory('thinking');
+  if (bodyAnim) playBodyGesture('thinking');
 }
 
 function discoverVisemeMeshes() {
@@ -464,17 +425,15 @@ function playNextQueued() {
       }
     }
 
-    if (!animationExclusive) {
-      meshes.forEach(function(m) {
-        for (var k in m.dict) {
-          var idx = m.dict[k];
-          var target = (k === 'viseme_' + activeViseme) ? activeWeight : 0;
-          var current = m.mesh.morphTargetInfluences[idx] || 0;
-          var lerp = target > current ? ATTACK : DECAY;
-          m.mesh.morphTargetInfluences[idx] = current + (target - current) * lerp;
-        }
-      });
-    }
+    meshes.forEach(function(m) {
+      for (var k in m.dict) {
+        var idx = m.dict[k];
+        var target = (k === 'viseme_' + activeViseme) ? activeWeight : 0;
+        var current = m.mesh.morphTargetInfluences[idx] || 0;
+        var lerp = target > current ? ATTACK : DECAY;
+        m.mesh.morphTargetInfluences[idx] = current + (target - current) * lerp;
+      }
+    });
 
     requestAnimationFrame(animate);
   }
@@ -558,7 +517,7 @@ function stopRecording() {
       ws.send(JSON.stringify({ type: 'stop' }));
     }
     status.textContent = 'Processing speech...';
-    if (head) playAnimationByCategory('thinking');
+    if (bodyAnim) playBodyGesture('thinking');
     micBtn.textContent = 'Mic';
     if (micProcessor) { micProcessor.disconnect(); micProcessor = null; }
     if (micSource) { micSource.disconnect(); micSource = null; }
@@ -686,8 +645,26 @@ toggleAvatar.addEventListener('click', async function() {
       }
       addMessage('3D avatar ready.', 'system');
       head.setMood('neutral');
-      head.playGesture('handup', 3);
-      resetIdleTimer();
+
+      // Load body animations onto the avatar's armature (separate mixer from TalkingHead)
+      try {
+        var avatarModel = head.armature;
+        if (avatarModel) {
+          bodyAnim = new BodyAnimationSystem();
+          await bodyAnim.load(avatarModel);
+          bodyAnim.startIdleCycle();
+          // Pump body mixer on its own rAF loop (separate from TalkingHead's render)
+          var _bodyClock = new THREE.Clock();
+          (function tickBody() {
+            requestAnimationFrame(tickBody);
+            bodyAnim.update(_bodyClock.getDelta());
+          })();
+          addMessage('Body animations loaded (' + bodyAnim.clipNames.length + ' clips).', 'system');
+        }
+      } catch (e) {
+        console.warn('Body animation load failed:', e);
+        addMessage('Body animations unavailable: ' + e.message, 'system');
+      }
     } catch (e) {
       addMessage('Avatar load error: ' + e.message, 'system');
       head = null;
@@ -696,10 +673,10 @@ toggleAvatar.addEventListener('click', async function() {
 });
 
 document.getElementById('playAnim').addEventListener('click', function() {
-  var category = document.getElementById('animPicker').value;
-  if (category && head) {
-    playAnimationByCategory(category);
-    addMessage('Playing animation: ' + category, 'system');
+  var clipName = document.getElementById('animPicker').value;
+  if (clipName && bodyAnim) {
+    bodyAnim.playGesture(clipName);
+    addMessage('Playing: ' + clipName, 'system');
   }
 });
 </script>
