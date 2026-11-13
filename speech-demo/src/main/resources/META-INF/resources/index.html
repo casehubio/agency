@@ -186,6 +186,7 @@ let ws;
 let audioCtx;
 let head = null;
 let bodyAnim = null;
+let bodyAnimFrameId = null;
 let pendingVisemes = null;
 let micStream = null;
 let micProcessor = null;
@@ -196,7 +197,7 @@ let visemeMeshes = null;
 var serverAnimationReceived = false;
 
 // TalkingHead mood names: neutral, happy, angry, sad, fear, disgust, love, sleep
-var MOOD_TAG_RE = /\[mood:([a-z]+)\]/gi;
+var MOOD_TAG_RE = /\[mood:([a-z]+)\]/i;
 var KEYWORD_MOODS = [
   { keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "funny", "awesome"], mood: "happy" },
   { keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"], mood: "sad" },
@@ -206,8 +207,8 @@ var KEYWORD_MOODS = [
 ];
 
 function detectMood(text) {
-  var match;
-  while ((match = MOOD_TAG_RE.exec(text)) !== null) return match[1];
+  var m = MOOD_TAG_RE.exec(text);
+  if (m) return m[1];
   var lower = text.toLowerCase();
   for (var entry of KEYWORD_MOODS) {
     for (var kw of entry.keywords) {
@@ -635,15 +636,18 @@ toggleAvatar.addEventListener('click', async function() {
 
       // Load body animations onto the avatar's armature (separate mixer from TalkingHead)
       try {
+        // Cancel any prior body animation loop before creating a new one
+        if (bodyAnimFrameId) { cancelAnimationFrame(bodyAnimFrameId); bodyAnimFrameId = null; }
+        if (bodyAnim) { bodyAnim.dispose(); bodyAnim = null; }
+
         var avatarModel = head.armature;
         if (avatarModel) {
           bodyAnim = new BodyAnimationSystem();
           await bodyAnim.load(avatarModel);
           bodyAnim.startIdleCycle();
-          // Pump body mixer on its own rAF loop (separate from TalkingHead's render)
           var _bodyClock = new THREE.Clock();
           (function tickBody() {
-            requestAnimationFrame(tickBody);
+            bodyAnimFrameId = requestAnimationFrame(tickBody);
             bodyAnim.update(_bodyClock.getDelta());
           })();
           addMessage('Body animations loaded (' + bodyAnim.clipNames.length + ' clips).', 'system');

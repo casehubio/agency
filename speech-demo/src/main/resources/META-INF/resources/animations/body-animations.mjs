@@ -233,6 +233,7 @@ export class BodyAnimationSystem {
     this._clips = new Map();
     this._mixer = null;
     this._currentAction = null;
+    this._finishedListener = null;
     this._cycleTimer = null;
     this._active = false;
     this._model = null;
@@ -287,13 +288,20 @@ export class BodyAnimationSystem {
 
     this._currentAction = action;
 
+    if (this._finishedListener) {
+      this._mixer.removeEventListener("finished", this._finishedListener);
+      this._finishedListener = null;
+    }
+
     if (!loop) {
       const onFinished = (e) => {
         if (e.action === action) {
           this._mixer.removeEventListener("finished", onFinished);
+          this._finishedListener = null;
           this._playFromActivePool();
         }
       };
+      this._finishedListener = onFinished;
       this._mixer.addEventListener("finished", onFinished);
     }
 
