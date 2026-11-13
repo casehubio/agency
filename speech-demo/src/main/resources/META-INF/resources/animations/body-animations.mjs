@@ -24,26 +24,41 @@ const TAXONOMY = {
       { name: "idle-subtle", weight: 10 },
       { name: "idle-foldarms", weight: 6 },
       { name: "idle-listening", weight: 8 },
+      { name: "hands-clasped-front", weight: 8 },
+      { name: "hands-behind-back", weight: 6 },
+      { name: "thinker", weight: 5 },
+      { name: "hands-on-hips", weight: 5 },
+      { name: "open-palms-presenting", weight: 6 },
     ],
     "hand-gesture": [
       { name: "idle-talking", weight: 12 },
+      { name: "hands-base-to-chest", weight: 8 },
+      { name: "hands-expand", weight: 8 },
+      { name: "hands-converge", weight: 7 },
+      { name: "hands-alternating", weight: 7 },
     ],
     agreement: [
       { name: "head-nod", weight: 8 },
       { name: "yes", weight: 6 },
       { name: "clapping", weight: 3 },
+      { name: "thumbs-up", weight: 5 },
     ],
     disagreement: [
       { name: "reject", weight: 8 },
       { name: "push", weight: 5 },
+      { name: "head-shake", weight: 7 },
+      { name: "finger-wag", weight: 4 },
     ],
     emphasis: [
       { name: "chest-open", weight: 6 },
       { name: "knock", weight: 4 },
       { name: "power-burst", weight: 2 },
+      { name: "finger-pointing-up", weight: 5 },
+      { name: "one-hand-raised", weight: 5 },
     ],
     uncertainty: [
       { name: "confused", weight: 8 },
+      { name: "shrug", weight: 7 },
     ],
   },
   idle: {
@@ -81,17 +96,27 @@ const TAXONOMY = {
       { name: "victory", weight: 6 },
       { name: "victory-fist-pump", weight: 5 },
       { name: "dab", weight: 3 },
+      { name: "arms-wide-open", weight: 5 },
     ],
     negative: [
       { name: "angry", weight: 6 },
       { name: "shiver", weight: 4 },
+      { name: "self-hug", weight: 5 },
+      { name: "facepalm", weight: 4 },
     ],
     surprise: [
       { name: "dizzy", weight: 6 },
       { name: "power-up", weight: 4 },
+      { name: "shocked-recoil", weight: 5 },
     ],
     greeting: [
       { name: "greeting", weight: 10 },
+    ],
+    distress: [
+      { name: "hands-over-mouth", weight: 6 },
+      { name: "hand-over-mouth", weight: 5 },
+      { name: "hands-on-head", weight: 5 },
+      { name: "hands-interlocked-chest", weight: 5 },
     ],
   },
   dramatic: {
@@ -125,11 +150,11 @@ const TAXONOMY = {
 // ── Pool definitions: which subcategories to draw from ────────────────
 // { path: "category.subcategory", weight } — weight is for subcategory selection
 const SPEAKING_POOL_REFS = [
-  { path: "conversational.hand-gesture", weight: 14 },
-  { path: "conversational.stance", weight: 12 },
+  { path: "conversational.hand-gesture", weight: 16 },
+  { path: "conversational.stance", weight: 14 },
   { path: "conversational.agreement", weight: 4 },
-  { path: "conversational.uncertainty", weight: 3 },
-  { path: "conversational.emphasis", weight: 3 },
+  { path: "conversational.uncertainty", weight: 4 },
+  { path: "conversational.emphasis", weight: 4 },
 ];
 
 const IDLE_POOL_REFS = [
@@ -170,6 +195,24 @@ const GESTURE_MAP = {
   death: { clip: "death-a" },
   hit: { clip: "hit-chest" },
 
+  // P2 reactive gesture clips
+  no: { clip: "head-shake" },
+  naughty: { clip: "finger-wag" },
+  shrug: { clip: "shrug" },
+  wait: { clip: "one-hand-raised" },
+  thumbsup: { clip: "thumbs-up" },
+  aha: { clip: "finger-pointing-up" },
+
+  // P2 emotional body pose clips
+  sad: { clip: "self-hug" },
+  joyful: { clip: "arms-wide-open" },
+  facepalm: { clip: "facepalm" },
+  shocked: { clip: "shocked-recoil" },
+  horror: { clip: "hands-over-mouth" },
+  oops: { clip: "hand-over-mouth" },
+  overwhelmed: { clip: "hands-on-head" },
+  nervous: { clip: "hands-interlocked-chest" },
+
   // Subcategory picks (random from variants)
   agreement: { subcategory: "conversational.agreement" },
   disagreement: { subcategory: "conversational.disagreement" },
@@ -177,11 +220,11 @@ const GESTURE_MAP = {
   surprise: { subcategory: "reactive.surprise" },
   celebrate: { subcategory: "reactive.positive" },
   dance: { subcategory: "idle.dance" },
+  distress: { subcategory: "reactive.distress" },
 
   // Mood-driven fallbacks
   happy: { subcategory: "reactive.positive" },
-  sad: { clip: "reject" },
-  thinking: { clip: "idle-talking" },
+  thinking: { clip: "thinker" },
   explaining: { subcategory: "conversational.hand-gesture" },
 };
 
@@ -189,10 +232,14 @@ const GESTURE_MAP = {
 const KEYWORD_GESTURES = [
   { keywords: ["hello", "hi ", "hey ", "welcome"], gesture: "greeting" },
   { keywords: ["yes", "exactly", "agree", "correct", "absolutely"], gesture: "agreement" },
+  { keywords: ["no ", "don't", "won't", "can't", "shouldn't"], gesture: "no" },
   { keywords: ["wow", "amazing", "incredible"], gesture: "surprise" },
   { keywords: ["great", "wonderful", "fantastic", "haha"], gesture: "celebrate" },
-  { keywords: ["not sure", "unclear", "hard to say"], gesture: "confused" },
+  { keywords: ["not sure", "unclear", "hard to say", "hmm"], gesture: "shrug" },
   { keywords: ["sorry", "unfortunately", "sadly"], gesture: "sad" },
+  { keywords: ["wait", "hold on", "one moment"], gesture: "wait" },
+  { keywords: ["oh no", "terrible", "horrible"], gesture: "distress" },
+  { keywords: ["think about", "consider", "let me think"], gesture: "thinking" },
 ];
 
 // ── Internals ─────────────────────────────────────────────────────────
