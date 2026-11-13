@@ -223,6 +223,28 @@ var KEYWORD_GESTURES = [
   { keywords: ["sorry", "unfortunately", "sadly"], gesture: "reject" },
 ];
 
+// TalkingHead mood names: neutral, happy, angry, sad, fear, disgust, love, sleep
+var MOOD_TAG_RE = /\[mood:([a-z]+)\]/gi;
+var KEYWORD_MOODS = [
+  { keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "funny", "awesome"], mood: "happy" },
+  { keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"], mood: "sad" },
+  { keywords: ["frustrat", "annoying", "unacceptable"], mood: "angry" },
+  { keywords: ["love", "adore", "wonderful", "beautiful"], mood: "love" },
+  { keywords: ["scary", "worried", "afraid", "danger"], mood: "fear" },
+];
+
+function detectMood(text) {
+  var match;
+  while ((match = MOOD_TAG_RE.exec(text)) !== null) return match[1];
+  var lower = text.toLowerCase();
+  for (var entry of KEYWORD_MOODS) {
+    for (var kw of entry.keywords) {
+      if (lower.includes(kw)) return entry.mood;
+    }
+  }
+  return null;
+}
+
 function classifyResponse(text) {
   var lower = text.toLowerCase();
   for (var entry of KEYWORD_GESTURES) {
@@ -269,15 +291,19 @@ function connect() {
           break;
         case 'response': {
           var parsed = parseGestureTags(msg.text);
-          addMessage(parsed.cleaned, 'avatar');
+          var cleanText = parsed.cleaned.replace(MOOD_TAG_RE, "").trim();
+          addMessage(cleanText, 'avatar');
           if (bodyAnim && !serverAnimationReceived) {
             if (parsed.tags.length > 0) {
               playBodyGesture(parsed.tags[0]);
             } else {
-              var fallback = classifyResponse(parsed.cleaned);
+              var fallback = classifyResponse(cleanText);
               if (fallback) playBodyGesture(fallback);
             }
           }
+          // Set TalkingHead mood from [mood:X] tag or keyword detection
+          var mood = detectMood(msg.text);
+          if (mood && head) head.setMood(mood);
           serverAnimationReceived = false;
           if (bodyAnim) bodyAnim.startIdleCycle();
           break;
