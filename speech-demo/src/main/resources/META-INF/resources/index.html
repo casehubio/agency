@@ -173,7 +173,7 @@
 <script type="module">
 import * as THREE from "three";
 import { TalkingHead } from "talkinghead";
-import { BodyAnimationSystem, parseGestureTags } from "./animations/body-animations.mjs";
+import { BodyAnimationSystem, parseGestureTags, classifyResponse } from "./animations/body-animations.mjs";
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
@@ -194,34 +194,6 @@ let recording = false;
 let visemeMeshes = null;
 
 var serverAnimationReceived = false;
-
-// Gesture tag → M2M clip name mapping (LLM emits [gesture:key] inline)
-var GESTURE_MAP = {
-  angry: "angry", bow: "head-nod", clapping: "clapping", confused: "confused",
-  dab: "dab", greeting: "greeting", nod: "head-nod", reject: "reject",
-  shiver: "shiver", victory: "victory", fistpump: "victory-fist-pump",
-  yes: "yes", dizzy: "dizzy", powerup: "power-up", powerburst: "power-burst",
-  chestopen: "chest-open", push: "push", knock: "knock",
-  // dances
-  charleston: "dance-charleston", armpump: "dance-arm-pump",
-  bodyroll: "dance-body-roll", dance: "dance-simple",
-  // dramatic
-  death: "death-a", hit: "hit-chest", zombie: "zombie-idle",
-  drunk: "drunk-walk", backflip: "backflip", interact: "interact",
-  // mood-driven fallbacks
-  happy: "clapping", sad: "reject", surprise: "dizzy", thinking: "idle-talking",
-  explaining: "idle-talking", agreement: "head-nod",
-};
-
-// Keyword → gesture fallback (for responses without explicit tags)
-var KEYWORD_GESTURES = [
-  { keywords: ["hello", "hi ", "hey ", "welcome"], gesture: "greeting" },
-  { keywords: ["yes", "exactly", "agree", "correct", "absolutely"], gesture: "head-nod" },
-  { keywords: ["wow", "amazing", "incredible"], gesture: "dizzy" },
-  { keywords: ["great", "wonderful", "fantastic", "haha"], gesture: "clapping" },
-  { keywords: ["not sure", "unclear", "hard to say"], gesture: "confused" },
-  { keywords: ["sorry", "unfortunately", "sadly"], gesture: "reject" },
-];
 
 // TalkingHead mood names: neutral, happy, angry, sad, fear, disgust, love, sleep
 var MOOD_TAG_RE = /\[mood:([a-z]+)\]/gi;
@@ -245,20 +217,9 @@ function detectMood(text) {
   return null;
 }
 
-function classifyResponse(text) {
-  var lower = text.toLowerCase();
-  for (var entry of KEYWORD_GESTURES) {
-    for (var kw of entry.keywords) {
-      if (lower.includes(kw)) return entry.gesture;
-    }
-  }
-  return null;
-}
-
 function playBodyGesture(gestureName) {
   if (!bodyAnim) return;
-  var clipName = GESTURE_MAP[gestureName] || gestureName;
-  bodyAnim.playGesture(clipName);
+  bodyAnim.playGesture(gestureName);
 }
 
 function addMessage(text, cls) {
