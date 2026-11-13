@@ -1,5 +1,5 @@
 // Body animation system — loads pre-retargeted M2M animations and provides
-// idle cycling, gesture tag parsing, and crossfade playback.
+// speaking-phase rotation, idle cycling, gesture tag parsing, and crossfade playback.
 // Designed to layer on top of TalkingHead's facial expression system.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -8,6 +8,21 @@ const ANIMATION_GLB = "animations/m2m-animations.glb";
 const CROSSFADE_DURATION = 0.4;
 const IDLE_MIN_INTERVAL = 5000;
 const IDLE_MAX_INTERVAL = 15000;
+const SPEAKING_MIN_INTERVAL = 4000;
+const SPEAKING_MAX_INTERVAL = 10000;
+
+const SPEAKING_POOL = [
+  { name: "idle-talking", weight: 12 },
+  { name: "idle-listening", weight: 10 },
+  { name: "idle-subtle", weight: 8 },
+  { name: "idle-foldarms", weight: 5 },
+  { name: "head-nod", weight: 3 },
+  { name: "confused", weight: 2 },
+  { name: "chest-open", weight: 2 },
+  { name: "push", weight: 1 },
+  { name: "knock", weight: 1 },
+  { name: "yes", weight: 2 },
+];
 
 const IDLE_POOL = [
   { name: "idle-a", weight: 10 },
@@ -36,15 +51,30 @@ const HEAD_BONES = new Set([
   "HeadTop_End", "Neck1",
 ]);
 
+function totalWeight(pool) {
+  return pool.reduce((s, e) => s + e.weight, 0);
+}
+
+function pickWeighted(pool, total) {
+  let r = Math.random() * total;
+  for (const entry of pool) {
+    r -= entry.weight;
+    if (r <= 0) return entry.name;
+  }
+  return pool[0].name;
+}
+
 export class BodyAnimationSystem {
   constructor() {
     this._clips = new Map();
     this._mixer = null;
     this._currentAction = null;
-    this._idleTimer = null;
+    this._cycleTimer = null;
     this._active = false;
     this._model = null;
-    this._idleTotalWeight = IDLE_POOL.reduce((s, e) => s + e.weight, 0);
+    this._speaking = false;
+    this._idleTotalWeight = totalWeight(IDLE_POOL);
+    this._speakingTotalWeight = totalWeight(SPEAKING_POOL);
   }
 
   async load(avatarRoot) {
@@ -99,7 +129,7 @@ export class BodyAnimationSystem {
       const onFinished = (e) => {
         if (e.action === action) {
           this._mixer.removeEventListener("finished", onFinished);
-          this._playRandomIdle();
+          this._playFromActivePool();
         }
       };
       this._mixer.addEventListener("finished", onFinished);
@@ -109,48 +139,60 @@ export class BodyAnimationSystem {
   }
 
   playGesture(name) {
-    this.stopIdleCycle();
+    this._stopCycleTimer();
     const played = this.play(name, { loop: false });
-    if (!played) this.startIdleCycle();
+    if (!played) this._startCycle();
     return played;
   }
 
-  _playRandomIdle() {
-    let r = Math.random() * this._idleTotalWeight;
-    for (const entry of IDLE_POOL) {
-      r -= entry.weight;
-      if (r <= 0) {
-        this.play(entry.name, { loop: true });
-        return;
-      }
+  setSpeaking(speaking) {
+    if (this._speaking === speaking) return;
+    this._speaking = speaking;
+    this._playFromActivePool();
+    this._startCycle();
+  }
+
+  _playFromActivePool() {
+    if (this._speaking) {
+      this.play(pickWeighted(SPEAKING_POOL, this._speakingTotalWeight), { loop: true });
+    } else {
+      this.play(pickWeighted(IDLE_POOL, this._idleTotalWeight), { loop: true });
     }
-    this.play(IDLE_POOL[0].name, { loop: true });
   }
 
   startIdleCycle() {
-    if (!this._active) return;
-    this._playRandomIdle();
-    this._scheduleNextIdle();
+    this._speaking = false;
+    this._playFromActivePool();
+    this._startCycle();
   }
 
-  _scheduleNextIdle() {
-    clearTimeout(this._idleTimer);
-    const delay = IDLE_MIN_INTERVAL + Math.random() * (IDLE_MAX_INTERVAL - IDLE_MIN_INTERVAL);
-    this._idleTimer = setTimeout(() => {
+  startSpeakingCycle() {
+    this._speaking = true;
+    this._playFromActivePool();
+    this._startCycle();
+  }
+
+  _startCycle() {
+    this._stopCycleTimer();
+    const [min, max] = this._speaking
+      ? [SPEAKING_MIN_INTERVAL, SPEAKING_MAX_INTERVAL]
+      : [IDLE_MIN_INTERVAL, IDLE_MAX_INTERVAL];
+    const delay = min + Math.random() * (max - min);
+    this._cycleTimer = setTimeout(() => {
       if (this._active) {
-        this._playRandomIdle();
-        this._scheduleNextIdle();
+        this._playFromActivePool();
+        this._startCycle();
       }
     }, delay);
   }
 
-  stopIdleCycle() {
-    clearTimeout(this._idleTimer);
-    this._idleTimer = null;
+  _stopCycleTimer() {
+    clearTimeout(this._cycleTimer);
+    this._cycleTimer = null;
   }
 
   stop() {
-    this.stopIdleCycle();
+    this._stopCycleTimer();
     if (this._mixer) this._mixer.stopAllAction();
     this._currentAction = null;
   }
@@ -169,17 +211,20 @@ export class BodyAnimationSystem {
   get isPlaying() {
     return this._currentAction !== null && this._currentAction.isRunning();
   }
+
+  get isSpeaking() {
+    return this._speaking;
+  }
 }
 
 const GESTURE_TAG_RE = /\[gesture:([a-z0-9_-]+)\]/gi;
 
 export function parseGestureTags(text) {
   const tags = [];
-  let cleaned = text;
   let match;
   while ((match = GESTURE_TAG_RE.exec(text)) !== null) {
     tags.push(match[1]);
   }
-  cleaned = text.replace(GESTURE_TAG_RE, "").trim();
+  const cleaned = text.replace(GESTURE_TAG_RE, "").trim();
   return { tags, cleaned };
 }
