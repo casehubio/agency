@@ -605,24 +605,57 @@ def keyframe_all(armature, frame, bones_dict, hips_loc=None):
             hips.keyframe_insert(data_path="location", frame=frame)
 
 def add_breathing(armature, base_bones, hips_loc, frame):
-    """Apply subtle breathing overlay to a base pose at a specific frame."""
-    phase = sin(frame / (TOTAL_FRAMES - 1) * 2 * pi)
+    """Apply visible breathing and idle motion overlay to a base pose."""
+    t = frame / (TOTAL_FRAMES - 1)
+    breath = sin(t * 2 * pi)           # primary breathing cycle
+    drift = sin(t * pi)                 # slower weight-shift arc (half cycle)
+    sway = sin(t * 2.5 * pi) * 0.6     # asymmetric micro-sway
+
     modified = dict(base_bones)
-    # Chest expansion on inhale
+
+    # Chest expansion on inhale — visible rise and fall
+    modified["Spine"] = tuple(apply(base_bones.get("Spine", NEUTRAL["Spine"]),
+                                    (1, 0, 0), breath * 2.0))
     modified["Spine1"] = tuple(apply(base_bones.get("Spine1", NEUTRAL["Spine1"]),
-                                     (1, 0, 0), phase * 1.5))
+                                     (1, 0, 0), breath * 3.5))
     modified["Spine2"] = tuple(apply(base_bones.get("Spine2", NEUTRAL["Spine2"]),
-                                     (1, 0, 0), phase * 1.0))
-    # Subtle shoulder rise
+                                     (1, 0, 0), breath * 2.5))
+
+    # Shoulder rise on inhale
     modified["LeftShoulder"] = tuple(apply(
         base_bones.get("LeftShoulder", NEUTRAL["LeftShoulder"]),
-        (1, 0, 0), phase * 1.0))
+        (1, 0, 0), breath * 2.5))
     modified["RightShoulder"] = tuple(apply(
         base_bones.get("RightShoulder", NEUTRAL["RightShoulder"]),
-        (1, 0, 0), phase * 1.0))
-    # Tiny hips shift
+        (1, 0, 0), breath * 2.0))
+
+    # Subtle lateral weight shift — hips and spine tilt slightly
+    modified["Hips"] = tuple(apply(
+        base_bones.get("Hips", NEUTRAL["Hips"]),
+        (0, 0, 1), drift * 1.5))
+    modified["Spine"] = tuple(apply(modified["Spine"],
+                                    (0, 0, 1), drift * -0.8))
+
+    # Arm drift — arms sway slightly with the body
+    modified["LeftArm"] = tuple(apply(
+        base_bones.get("LeftArm", NEUTRAL["LeftArm"]),
+        (1, 0, 0), sway * 1.5))
+    modified["RightArm"] = tuple(apply(
+        base_bones.get("RightArm", NEUTRAL["RightArm"]),
+        (1, 0, 0), sway * -1.2))
+
+    # Head micro-movement — slight tilt follows breathing
+    modified["Head"] = tuple(apply(
+        base_bones.get("Head", NEUTRAL["Head"]),
+        (1, 0, 0), breath * 1.0))
+    modified["Head"] = tuple(apply(modified["Head"],
+                                   (0, 0, 1), drift * 1.0))
+
+    # Hips vertical shift (breathing lifts the chest)
     mod_loc = list(hips_loc) if hips_loc else list(NEUTRAL_HIPS_LOC)
-    mod_loc[1] += phase * 0.002
+    mod_loc[1] += breath * 0.006
+    # Slight lateral sway
+    mod_loc[0] += drift * 0.003
     return modified, tuple(mod_loc)
 
 
@@ -822,11 +855,21 @@ def create_oneshot(armature, pose_def):
             NEUTRAL_HIPS_LOC[2] + (peak_loc[2] - NEUTRAL_HIPS_LOC[2]) * t,
         )
 
-        # Add subtle breathing during hold
-        if 0.2 < t:
-            breath = sin(frame / TOTAL_FRAMES * 4 * pi) * 0.3 * t
+        # Breathing during hold — visible chest rise/fall and weight shift
+        if t > 0.2:
+            hold_breath = sin(frame / TOTAL_FRAMES * 4 * pi) * t
+            hold_drift = sin(frame / TOTAL_FRAMES * 2 * pi) * t
             blended["Spine1"] = tuple(apply(
-                blended.get("Spine1", NEUTRAL["Spine1"]), (1, 0, 0), breath))
+                blended.get("Spine1", NEUTRAL["Spine1"]), (1, 0, 0), hold_breath * 3.0))
+            blended["Spine2"] = tuple(apply(
+                blended.get("Spine2", NEUTRAL["Spine2"]), (1, 0, 0), hold_breath * 2.0))
+            blended["LeftShoulder"] = tuple(apply(
+                blended.get("LeftShoulder", NEUTRAL["LeftShoulder"]), (1, 0, 0), hold_breath * 1.5))
+            blended["RightShoulder"] = tuple(apply(
+                blended.get("RightShoulder", NEUTRAL["RightShoulder"]), (1, 0, 0), hold_breath * 1.5))
+            blended["Head"] = tuple(apply(
+                blended.get("Head", NEUTRAL["Head"]), (1, 0, 0), hold_breath * 0.8))
+            loc = (loc[0] + hold_drift * 0.002, loc[1] + hold_breath * 0.004, loc[2])
 
         set_pose(armature, blended, loc)
         if frame % 3 == 0 or frame == TOTAL_FRAMES - 1:
