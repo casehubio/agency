@@ -47,6 +47,12 @@ import io.casehub.neocortex.cognition.core.CognitiveProfileParticipant;
 import io.casehub.neocortex.cognition.core.ConsolidationMediator;
 import io.casehub.neocortex.cognition.core.DomainActivationParticipant;
 import io.casehub.neocortex.cognition.drive.DriveComposer;
+import io.casehub.neocortex.cognition.drive.CuriosityDrive;
+import io.casehub.neocortex.cognition.drive.DriveAxis;
+import io.casehub.neocortex.cognition.drive.DriveIntensity;
+import io.casehub.neocortex.cognition.drive.DriveSource;
+import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
+import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
 import io.casehub.neocortex.cognition.drive.DriveOrchestrator;
 import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
@@ -299,10 +305,12 @@ public class AgencyBeans {
             MentalModelOrchestrator mentalModel,
             MoodOrchestrator moodOrchestrator,
             DriveComposer composer, DriveConfig config) {
-        var hygieneAdapter = hygieneOrchestratorInstance.isResolvable()
-                ? new io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter(hygieneOrchestratorInstance.get())
-                : null;
-        var curiosity = new io.casehub.neocortex.cognition.drive.CuriosityDrive(hygieneAdapter);
+        DriveSource curiosity = (agentId, tenantId) ->
+                new DriveIntensity(DriveAxis.CURIOSITY, 0.0, "no mind map");
+        if (mindMapStoreInstance.isResolvable()) {
+            curiosity = new CuriosityDrive(new InformationGapDetector(mindMapStoreInstance.get()),
+                    new CuriosityChannelComputer(), 0.5);
+        }
         var competence = new io.casehub.neocortex.cognition.drive.CompetenceDrive(strategy);
         var affiliation = new io.casehub.neocortex.cognition.drive.AffiliationDrive(
                 userModel, config.affiliationDecayThreshold(), config.affiliationStaleDuration());

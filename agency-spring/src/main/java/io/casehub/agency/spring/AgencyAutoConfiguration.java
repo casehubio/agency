@@ -9,6 +9,13 @@ import io.casehub.agency.communication.channel.summary.HeuristicMessageSummarise
 import io.casehub.agency.communication.channel.summary.NoOpThreadSummaryStore;
 import io.casehub.agency.communication.channel.summary.ThreadSummaryObserver;
 import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
+import io.casehub.neocortex.cognition.drive.CuriosityDrive;
+import io.casehub.neocortex.cognition.drive.DriveAxis;
+import io.casehub.neocortex.cognition.drive.DriveIntensity;
+import io.casehub.neocortex.cognition.drive.DriveSource;
+import io.casehub.neocortex.mindmap.MindMapStore;
+import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
+import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
 import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
 import io.casehub.agency.social.memory.NoOpReflectionStore;
 import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
@@ -252,17 +259,19 @@ public class AgencyAutoConfiguration {
 
     @Bean
     public DriveOrchestrator driveOrchestrator(
-            Optional<MemoryHygieneOrchestrator> hygieneOrchestrator,
+            Optional<MindMapStore> mindMapStore,
             StrategyLearningOrchestrator strategy,
             UserModelOrchestrator userModel,
             MentalModelOrchestrator mentalModel,
             MoodOrchestrator moodOrchestrator,
             DriveComposer composer, DriveConfig config,
             Optional<NarrativeOrchestrator> narrativeOrchestrator) {
-        var hygieneAdapter = hygieneOrchestrator
-                                     .map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new)
-                                     .orElse(null);
-        var curiosity  = new io.casehub.neocortex.cognition.drive.CuriosityDrive(hygieneAdapter);
+        DriveSource curiosity = (agentId, tenantId) ->
+                new DriveIntensity(DriveAxis.CURIOSITY, 0.0, "no mind map");
+        if (mindMapStore.isPresent()) {
+            curiosity = new CuriosityDrive(new InformationGapDetector(mindMapStore.get()),
+                    new CuriosityChannelComputer(), 0.5);
+        }
         var competence = new io.casehub.neocortex.cognition.drive.CompetenceDrive(strategy);
         var affiliation = new io.casehub.neocortex.cognition.drive.AffiliationDrive(
                 userModel, config.affiliationDecayThreshold(), config.affiliationStaleDuration());
