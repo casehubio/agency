@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 440" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="axis-arrow" viewBox="0 0 10 7" refX="9" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-auto">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="520" height="440" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="260" y="32" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Convergence Detection: Two Signals, Four Outcomes</text>
+
+  <!-- Axes -->
+  <line x1="80" y1="380" x2="480" y2="380" stroke="#64748b" stroke-width="1.5" marker-end="url(#axis-arrow)"/>
+  <line x1="80" y1="380" x2="80" y2="60" stroke="#64748b" stroke-width="1.5" marker-end="url(#axis-arrow)"/>
+
+  <!-- Axis labels -->
+  <text x="280" y="415" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Consensus Score</text>
+  <text x="30" y="220" text-anchor="middle" font-size="13" font-weight="600" fill="#475569" transform="rotate(-90, 30, 220)">Stability Score</text>
+  <text x="80" y="400" font-size="10" fill="#94a3b8">0.0</text>
+  <text x="470" y="400" font-size="10" fill="#94a3b8">1.0</text>
+  <text x="60" y="384" font-size="10" fill="#94a3b8">0.0</text>
+  <text x="60" y="74" font-size="10" fill="#94a3b8">1.0</text>
+
+  <!-- Threshold lines -->
+  <line x1="320" y1="380" x2="320" y2="60" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>
+  <line x1="80" y1="180" x2="480" y2="180" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>
+  <text x="320" y="54" text-anchor="middle" font-size="9" fill="#94a3b8">threshold</text>
+  <text x="500" y="184" font-size="9" fill="#94a3b8">threshold</text>
+
+  <!-- Quadrant 1: Top-Right — Converged -->
+  <rect x="322" y="62" width="156" height="116" rx="6" fill="#dcfce7" fill-opacity="0.6"/>
+  <text x="400" y="108" text-anchor="middle" font-size="14" font-weight="700" fill="#166534">CONVERGED</text>
+  <text x="400" y="126" text-anchor="middle" font-size="10" fill="#15803d">Agents agree and</text>
+  <text x="400" y="140" text-anchor="middle" font-size="10" fill="#15803d">state is stable</text>
+  <text x="400" y="158" text-anchor="middle" font-size="10" fill="#166534" font-weight="600">→ Complete</text>
+
+  <!-- Quadrant 2: Top-Left — Deadlock -->
+  <rect x="82" y="62" width="236" height="116" rx="6" fill="#fef2f2" fill-opacity="0.6"/>
+  <text x="200" y="108" text-anchor="middle" font-size="14" font-weight="700" fill="#dc2626">DEADLOCK</text>
+  <text x="200" y="126" text-anchor="middle" font-size="10" fill="#b91c1c">Stable but agents</text>
+  <text x="200" y="140" text-anchor="middle" font-size="10" fill="#b91c1c">consistently disagree</text>
+  <text x="200" y="158" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="600">→ Escalate</text>
+
+  <!-- Quadrant 3: Bottom-Right — Progressing -->
+  <rect x="322" y="182" width="156" height="196" rx="6" fill="#fef3c7" fill-opacity="0.5"/>
+  <text x="400" y="268" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">PROGRESSING</text>
+  <text x="400" y="286" text-anchor="middle" font-size="10" fill="#b45309">Agents converging</text>
+  <text x="400" y="300" text-anchor="middle" font-size="10" fill="#b45309">but state still shifting</text>
+  <text x="400" y="318" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">→ Continue</text>
+
+  <!-- Quadrant 4: Bottom-Left — Exploring -->
+  <rect x="82" y="182" width="236" height="196" rx="6" fill="#e0e7ff" fill-opacity="0.5"/>
+  <text x="200" y="268" text-anchor="middle" font-size="14" font-weight="700" fill="#3730a3">EXPLORING</text>
+  <text x="200" y="286" text-anchor="middle" font-size="10" fill="#4338ca">No agreement yet,</text>
+  <text x="200" y="300" text-anchor="middle" font-size="10" fill="#4338ca">state still changing</text>
+  <text x="200" y="318" text-anchor="middle" font-size="10" fill="#3730a3" font-weight="600">→ Continue + provision</text>
+</svg>

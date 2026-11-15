@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="l0" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e8f5e9"/>
+      <stop offset="100%" stop-color="#c8e6c9"/>
+    </linearGradient>
+    <linearGradient id="l1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e3f2fd"/>
+      <stop offset="100%" stop-color="#bbdefb"/>
+    </linearGradient>
+    <linearGradient id="l2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fff3e0"/>
+      <stop offset="100%" stop-color="#ffe0b2"/>
+    </linearGradient>
+    <linearGradient id="l3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fce4ec"/>
+      <stop offset="100%" stop-color="#f8bbd0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- L0 -->
+  <rect x="20" y="20" width="680" height="80" rx="8" fill="url(#l0)" stroke="#4caf50" stroke-width="1.5"/>
+  <text x="40" y="50" font-size="14" font-weight="700" fill="#2e7d32">L0 — Shared Observation Space</text>
+  <text x="40" y="72" font-size="12" fill="#33691e">Rule-based predicate matching · CoordinationBus · Zero inference cost</text>
+  <text x="600" y="50" font-size="11" fill="#558b2f" font-style="italic">all signals</text>
+
+  <!-- Arrow L0→L1 -->
+  <path d="M360,100 L360,130" stroke="#78909c" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="370" y="120" font-size="10" fill="#78909c">capability overlap filter</text>
+
+  <!-- L1 -->
+  <rect x="20" y="130" width="680" height="80" rx="8" fill="url(#l1)" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="40" y="160" font-size="14" font-weight="700" fill="#1565c0">L1 — Bayesian BJT Relevance Scoring</text>
+  <text x="40" y="182" font-size="12" fill="#0d47a1">Neocortex junction tree · P(Relevant | signal) · OnlineParameterUpdater learning</text>
+  <text x="560" y="160" font-size="11" fill="#1565c0" font-style="italic">amplified signals</text>
+
+  <!-- Arrow L1→L2 -->
+  <path d="M360,210 L360,240" stroke="#78909c" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="370" y="230" font-size="10" fill="#78909c">P(escalate) &gt; threshold</text>
+
+  <!-- L2 -->
+  <rect x="20" y="240" width="680" height="80" rx="8" fill="url(#l2)" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="40" y="270" font-size="14" font-weight="700" fill="#e65100">L2 — Conflict Detection + Notification</text>
+  <text x="40" y="292" font-size="12" fill="#bf360c">BeliefSet · AGM contraction · DomainConsistencyChecker · CrossSwarmNotification</text>
+  <text x="580" y="270" font-size="11" fill="#e65100" font-style="italic">confirmed conflicts</text>
+
+  <!-- Arrow L2→L3 -->
+  <path d="M360,320 L360,350" stroke="#78909c" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="370" y="340" font-size="10" fill="#78909c">conflict confirmed</text>
+
+  <!-- L3 -->
+  <rect x="20" y="350" width="680" height="56" rx="8" fill="url(#l3)" stroke="#c62828" stroke-width="1.5"/>
+  <text x="40" y="378" font-size="14" font-weight="700" fill="#b71c1c">L3 — LLM-Mediated Resolution</text>
+  <text x="40" y="394" font-size="12" fill="#880e4f">NegotiationProtocol · ExplanationEngine · Optional (heuristic fallback without LLM)</text>
+
+  <!-- Cost annotation -->
+  <text x="700" y="65" font-size="10" fill="#4caf50" text-anchor="end">free</text>
+  <text x="700" y="175" font-size="10" fill="#1976d2" text-anchor="end">μs</text>
+  <text x="700" y="285" font-size="10" fill="#f57c00" text-anchor="end">μs</text>
+  <text x="700" y="383" font-size="10" fill="#c62828" text-anchor="end">$$</text>
+
+  <!-- Arrowhead marker -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#78909c"/>
+    </marker>
+  </defs>
+</svg>

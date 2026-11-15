@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <!-- Centralised side -->
+  <text x="180" y="24" font-size="15" font-weight="600" text-anchor="middle" fill="#1a1a2e">Centralised</text>
+
+  <!-- Coordinator box -->
+  <rect x="100" y="40" width="160" height="50" rx="6" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="1.5"/>
+  <text x="180" y="62" text-anchor="middle" font-weight="600" fill="#283593">Coordinator</text>
+  <text x="180" y="78" text-anchor="middle" font-size="11" fill="#5c6bc0">3 LLM calls</text>
+
+  <!-- Arrows from coordinator to agents -->
+  <line x1="140" y1="90" x2="60" y2="140" stroke="#9fa8da" stroke-width="1.5" marker-end="url(#arrow-grey)"/>
+  <line x1="180" y1="90" x2="180" y2="140" stroke="#9fa8da" stroke-width="1.5" marker-end="url(#arrow-grey)"/>
+  <line x1="220" y1="90" x2="300" y2="140" stroke="#9fa8da" stroke-width="1.5" marker-end="url(#arrow-grey)"/>
+
+  <!-- Agent boxes -->
+  <rect x="20" y="140" width="80" height="36" rx="4" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1"/>
+  <text x="60" y="163" text-anchor="middle" fill="#616161">Agent A</text>
+
+  <rect x="140" y="140" width="80" height="36" rx="4" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1"/>
+  <text x="180" y="163" text-anchor="middle" fill="#616161">Agent B</text>
+
+  <rect x="260" y="140" width="80" height="36" rx="4" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1"/>
+  <text x="300" y="163" text-anchor="middle" fill="#616161">Agent C</text>
+
+  <!-- Labels -->
+  <text x="180" y="210" text-anchor="middle" font-size="11" fill="#9e9e9e">Agents execute; coordinator decides</text>
+
+  <!-- Divider -->
+  <line x1="390" y1="10" x2="390" y2="330" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Distributed side -->
+  <text x="600" y="24" font-size="15" font-weight="600" text-anchor="middle" fill="#1a1a2e">Distributed</text>
+
+  <!-- Environment (stigmergy) -->
+  <rect x="460" y="40" width="280" height="50" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.5"/>
+  <text x="600" y="62" text-anchor="middle" font-weight="600" fill="#2e7d32">Stigmergy Environment</text>
+  <text x="600" y="78" text-anchor="middle" font-size="11" fill="#66bb6a">signals, observations, consensus</text>
+
+  <!-- Bidirectional arrows -->
+  <line x1="500" y1="90" x2="500" y2="140" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <line x1="510" y1="140" x2="510" y2="90" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <line x1="600" y1="90" x2="600" y2="140" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <line x1="610" y1="140" x2="610" y2="90" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <line x1="700" y1="90" x2="700" y2="140" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <line x1="710" y1="140" x2="710" y2="90" stroke="#81c784" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <!-- Agent boxes with LLM -->
+  <rect x="460" y="140" width="90" height="50" rx="4" fill="#e3f2fd" stroke="#42a5f5" stroke-width="1.5"/>
+  <text x="505" y="160" text-anchor="middle" font-weight="600" fill="#1565c0">Agent A</text>
+  <text x="505" y="178" text-anchor="middle" font-size="10" fill="#42a5f5">own LLM loop</text>
+
+  <rect x="555" y="140" width="90" height="50" rx="4" fill="#e3f2fd" stroke="#42a5f5" stroke-width="1.5"/>
+  <text x="600" y="160" text-anchor="middle" font-weight="600" fill="#1565c0">Agent B</text>
+  <text x="600" y="178" text-anchor="middle" font-size="10" fill="#42a5f5">own LLM loop</text>
+
+  <rect x="655" y="140" width="90" height="50" rx="4" fill="#e3f2fd" stroke="#42a5f5" stroke-width="1.5"/>
+  <text x="700" y="160" text-anchor="middle" font-weight="600" fill="#1565c0">Agent C</text>
+  <text x="700" y="178" text-anchor="middle" font-size="10" fill="#42a5f5">own LLM loop</text>
+
+  <!-- Labels -->
+  <text x="600" y="220" text-anchor="middle" font-size="11" fill="#9e9e9e">Each agent reads signals, reasons, deposits signals</text>
+
+  <!-- Legend -->
+  <rect x="180" y="250" width="440" height="80" rx="6" fill="#fafafa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="400" y="272" text-anchor="middle" font-size="12" font-weight="600" fill="#424242">Conflict resolution</text>
+  <text x="400" y="292" text-anchor="middle" font-size="11" fill="#757575">Routing: engine FSM serialises task claims</text>
+  <text x="400" y="308" text-anchor="middle" font-size="11" fill="#757575">Provisioning: signal reinforcement is idempotent — consensus, not commands</text>
+  <text x="400" y="324" text-anchor="middle" font-size="11" fill="#757575">Aggregation: gossip propagation converges — eventual consistency</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow-grey" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#9fa8da" stroke-width="1.5"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#81c784" stroke-width="1.5"/>
+    </marker>
+  </defs>
+</svg>

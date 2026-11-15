@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 380" font-family="Inter, -apple-system, sans-serif">
+  <rect width="780" height="380" fill="#fafaf9" rx="8"/>
+
+  <!-- Title -->
+  <text x="390" y="28" font-size="13" font-weight="600" text-anchor="middle" fill="#1e293b">Validation Layers — What Each Level Proves</text>
+
+  <!-- Layer 1: Calibration -->
+  <rect x="30" y="45" width="720" height="55" fill="#f0fdf4" stroke="#86efac" rx="5" stroke-width="1.5"/>
+  <text x="50" y="66" font-size="11" font-weight="600" fill="#166534">CALIBRATION</text>
+  <text x="50" y="84" font-size="10" fill="#475569">All-positive > 0.7 | All-negative &lt; 0.15 | Mixed = intermediate | Both strategies</text>
+  <text x="720" y="78" font-size="10" text-anchor="end" fill="#166534" font-weight="600">6 tests</text>
+
+  <!-- Layer 2: Structural -->
+  <rect x="30" y="108" width="720" height="55" fill="#eff6ff" stroke="#93c5fd" rx="5" stroke-width="1.5"/>
+  <text x="50" y="129" font-size="11" font-weight="600" fill="#1e40af">STRUCTURAL PROPERTIES</text>
+  <text x="50" y="147" font-size="10" fill="#475569">Monotonicity (4 dims) | Dimensional independence (each > 3% delta) | Both strategies</text>
+  <text x="720" y="141" font-size="10" text-anchor="end" fill="#1e40af" font-weight="600">12 tests</text>
+
+  <!-- Layer 3: Discrimination -->
+  <rect x="30" y="171" width="720" height="55" fill="#fefce8" stroke="#fde047" rx="5" stroke-width="1.5"/>
+  <text x="50" y="192" font-size="11" font-weight="600" fill="#854d0e">DISCRIMINATION</text>
+  <text x="50" y="210" font-size="10" fill="#475569">Three-tier separation (gaps > 0.1) | Extreme cases classify correctly | Strategy comparison</text>
+  <text x="720" y="204" font-size="10" text-anchor="end" fill="#854d0e" font-weight="600">8 tests</text>
+
+  <!-- Layer 4: Learning -->
+  <rect x="30" y="234" width="720" height="55" fill="#fdf2f8" stroke="#f9a8d4" rx="5" stroke-width="1.5"/>
+  <text x="50" y="255" font-size="11" font-weight="600" fill="#9d174d">ONLINE LEARNING</text>
+  <text x="50" y="273" font-size="10" fill="#475569">Shift up on relevant | Shift down on irrelevant | No degeneration after 50 examples | Both strategies</text>
+  <text x="720" y="267" font-size="10" text-anchor="end" fill="#9d174d" font-weight="600">12 tests</text>
+
+  <!-- Layer 5: Adversarial -->
+  <rect x="30" y="297" width="720" height="65" fill="#fef2f2" stroke="#fca5a5" rx="5" stroke-width="1.5"/>
+  <text x="50" y="318" font-size="11" font-weight="600" fill="#991b1b">ADVERSARIAL</text>
+  <text x="50" y="336" font-size="10" fill="#475569">22,641 input points (zero NaN) | 5 realistic scenarios | Threshold fragility (±0.05 no flip)</text>
+  <text x="50" y="350" font-size="10" fill="#475569">Classification boundary stability | 1000 concurrent scores | Determinism | Conditional independence proof</text>
+  <text x="720" y="338" font-size="10" text-anchor="end" fill="#991b1b" font-weight="600">18 tests</text>
+</svg>

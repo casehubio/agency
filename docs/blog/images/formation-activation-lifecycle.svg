@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="340" fill="#fafaf9" rx="6"/>
+
+  <!-- Phase labels -->
+  <text x="180" y="28" text-anchor="middle" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="1">NEGOTIATION</text>
+  <text x="440" y="28" text-anchor="middle" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="1">FORMATION</text>
+  <text x="640" y="28" text-anchor="middle" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="1">ACTIVATION</text>
+
+  <!-- Phase separator lines -->
+  <line x1="320" y1="40" x2="320" y2="300" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="555" y1="40" x2="555" y2="300" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Propose node -->
+  <rect x="30" y="70" width="130" height="44" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="95" y="88" text-anchor="middle" font-weight="600" fill="#0c4a6e" font-size="12">Coalition</text>
+  <text x="95" y="103" text-anchor="middle" fill="#0c4a6e" font-size="11">Proposal</text>
+
+  <!-- Evaluate -->
+  <rect x="30" y="150" width="130" height="44" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="95" y="168" text-anchor="middle" font-weight="600" fill="#0c4a6e" font-size="12">Viability</text>
+  <text x="95" y="183" text-anchor="middle" fill="#0c4a6e" font-size="11">Evaluation</text>
+
+  <!-- Negotiate -->
+  <rect x="200" y="150" width="100" height="44" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="250" y="168" text-anchor="middle" font-weight="600" fill="#0c4a6e" font-size="12">Peer</text>
+  <text x="250" y="183" text-anchor="middle" fill="#0c4a6e" font-size="11">Negotiation</text>
+
+  <!-- FORMING state -->
+  <rect x="340" y="70" width="130" height="44" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="405" y="88" text-anchor="middle" font-weight="700" fill="#92400e" font-size="12">FORMING</text>
+  <text x="405" y="103" text-anchor="middle" fill="#92400e" font-size="11">Group created</text>
+
+  <!-- JointIntention -->
+  <rect x="340" y="150" width="130" height="44" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="405" y="168" text-anchor="middle" font-weight="600" fill="#14532d" font-size="12">JointIntention</text>
+  <text x="405" y="183" text-anchor="middle" fill="#14532d" font-size="11">form() → activate()</text>
+
+  <!-- Monitor gate -->
+  <polygon points="405,230 440,255 405,280 370,255" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="405" y="259" text-anchor="middle" font-weight="600" fill="#991b1b" font-size="10">Monitor</text>
+
+  <!-- ACTIVE state -->
+  <rect x="575" y="150" width="120" height="44" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="635" y="168" text-anchor="middle" font-weight="700" fill="#14532d" font-size="12">ACTIVE</text>
+  <text x="635" y="183" text-anchor="middle" fill="#14532d" font-size="11">Group running</text>
+
+  <!-- Rejected -->
+  <rect x="475" y="270" width="100" height="32" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="525" y="291" text-anchor="middle" font-weight="600" fill="#991b1b" font-size="11">Rejected</text>
+
+  <!-- Arrows -->
+  <!-- Propose → Evaluate -->
+  <line x1="95" y1="114" x2="95" y2="148" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Evaluate → Negotiate -->
+  <line x1="160" y1="172" x2="198" y2="172" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Negotiate → FORMING -->
+  <path d="M 300 172 Q 320 130 338 92" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="315" y="120" font-size="10" fill="#64748b">agreed</text>
+  <!-- FORMING → JointIntention -->
+  <line x1="405" y1="114" x2="405" y2="148" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- JointIntention → Monitor -->
+  <line x1="405" y1="194" x2="405" y2="228" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Monitor → ACTIVE -->
+  <line x1="440" y1="245" x2="573" y2="180" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="500" y="205" font-size="10" fill="#16a34a" font-weight="600">pass</text>
+  <!-- Monitor → Rejected -->
+  <line x1="420" y1="270" x2="473" y2="282" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+  <text x="440" y="298" font-size="10" fill="#dc2626" font-weight="600">signal</text>
+
+  <!-- Component labels -->
+  <text x="95" y="320" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">BottomUpFormation</text>
+  <text x="95" y="332" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">Orchestrator</text>
+  <text x="405" y="320" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">FormationActivator</text>
+  <text x="635" y="213" text-anchor="middle" font-size="10" fill="#94a3b8" font-style="italic">GroupLifecycleService</text>
+</svg>

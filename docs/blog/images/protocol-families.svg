@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, 'Segoe UI', sans-serif; fill: #333; }
+      .box { rx: 8; stroke-width: 1.5; }
+      .counter-box { fill: #e8f4fd; stroke: #4a9eda; }
+      .sender-box { fill: #f0e8fd; stroke: #8b5cf6; }
+      .prim { fill: #f8f9fa; stroke: #adb5bd; rx: 6; stroke-width: 1.2; }
+      .warn { fill: #fff3cd; stroke: #ffc107; rx: 6; stroke-width: 1.2; }
+      .title { font-size: 15px; font-weight: 700; }
+      .protocol { font-size: 13px; font-weight: 600; }
+      .detail { font-size: 11px; fill: #666; }
+      .prim-label { font-size: 11px; font-weight: 600; }
+      .family { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text class="title" x="360" y="28" text-anchor="middle">Two protocol families, same playbook format</text>
+
+  <!-- Counter family -->
+  <rect class="box counter-box" x="20" y="50" width="330" height="270"/>
+  <text class="family" x="185" y="74" text-anchor="middle" fill="#2563eb">Counter-based</text>
+  <text class="detail" x="185" y="90" text-anchor="middle">track quantities — how many open?</text>
+
+  <!-- REQUEST_RESPONSE -->
+  <rect class="prim" x="40" y="105" width="290" height="60"/>
+  <text class="protocol" x="55" y="125">REQUEST_RESPONSE</text>
+  <text class="detail" x="55" y="142">counter-add +1 on QUERY, −1 on RESPONSE</text>
+
+  <!-- TASK_COMPLETION -->
+  <rect class="prim" x="40" y="175" width="290" height="60"/>
+  <text class="protocol" x="55" y="195">TASK_COMPLETION</text>
+  <text class="detail" x="55" y="212">counter-add +1 on COMMAND, −1 on DONE/FAIL/DECLINE</text>
+
+  <!-- Primitives -->
+  <rect class="warn" x="60" y="250" width="100" height="28"/>
+  <text class="prim-label" x="110" y="268" text-anchor="middle">counter-add</text>
+  <rect class="warn" x="180" y="250" width="100" height="28"/>
+  <text class="prim-label" x="230" y="268" text-anchor="middle">counter-get</text>
+  <text class="detail" x="185" y="300" text-anchor="middle">advisory fires at threshold</text>
+
+  <!-- Sender family -->
+  <rect class="box sender-box" x="370" y="50" width="330" height="270"/>
+  <text class="family" x="535" y="74" text-anchor="middle" fill="#7c3aed">Sender-tracking</text>
+  <text class="detail" x="535" y="90" text-anchor="middle">track identity — who sent it?</text>
+
+  <!-- CONTRIBUTION_REQUIRED -->
+  <rect class="prim" x="390" y="105" width="290" height="60"/>
+  <text class="protocol" x="405" y="125">CONTRIBUTION_REQUIRED</text>
+  <text class="detail" x="405" y="142">counter-set 1 on sender change, +1 on same</text>
+
+  <!-- ROUND_ROBIN -->
+  <rect class="prim" x="390" y="175" width="290" height="60"/>
+  <text class="protocol" x="405" y="195">ROUND_ROBIN</text>
+  <text class="detail" x="405" y="212">state-set lastSender, compare expected rotation</text>
+
+  <!-- Primitives -->
+  <rect class="warn" x="400" y="250" width="100" height="28"/>
+  <text class="prim-label" x="450" y="268" text-anchor="middle">counter-set</text>
+  <rect class="warn" x="520" y="250" width="100" height="28"/>
+  <text class="prim-label" x="570" y="268" text-anchor="middle">state-set</text>
+  <text class="detail" x="535" y="300" text-anchor="middle">advisory fires on identity mismatch</text>
+</svg>

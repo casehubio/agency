@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, 'Segoe UI', sans-serif; fill: #333; }
+      .box { rx: 6; stroke-width: 1.2; }
+      .monitor { fill: #e8f4fd; stroke: #4a9eda; }
+      .map { fill: #f0fdf4; stroke: #22c55e; }
+      .count { fill: #fefce8; stroke: #eab308; }
+      .fire { fill: #fef2f2; stroke: #ef4444; }
+      .title { font-size: 13px; font-weight: 600; }
+      .label { font-size: 11px; font-weight: 600; }
+      .detail { font-size: 10px; fill: #666; }
+      .flow { stroke: #555; stroke-width: 1.5; fill: none; }
+    </style>
+  </defs>
+
+  <text class="title" x="340" y="22" text-anchor="middle">quorum pattern — N of M distinct sources confirm before escalation</text>
+
+  <!-- Monitor sources -->
+  <rect class="box monitor" x="20" y="45" width="110" height="40"/>
+  <text class="label" x="75" y="63" text-anchor="middle">monitor-A</text>
+  <text class="detail" x="75" y="77" text-anchor="middle">OVERLOAD</text>
+
+  <rect class="box monitor" x="20" y="95" width="110" height="40"/>
+  <text class="label" x="75" y="113" text-anchor="middle">monitor-B</text>
+  <text class="detail" x="75" y="127" text-anchor="middle">OVERLOAD</text>
+
+  <rect class="box monitor" x="20" y="145" width="110" height="40"/>
+  <text class="label" x="75" y="163" text-anchor="middle">monitor-C</text>
+  <text class="detail" x="75" y="177" text-anchor="middle">OVERLOAD</text>
+
+  <!-- Arrows to map -->
+  <line x1="130" y1="65" x2="218" y2="105" class="flow" marker-end="url(#arr)"/>
+  <line x1="130" y1="115" x2="218" y2="115" class="flow" marker-end="url(#arr)"/>
+  <line x1="130" y1="165" x2="218" y2="125" class="flow" marker-end="url(#arr)"/>
+
+  <!-- Map box -->
+  <rect class="box map" x="220" y="80" width="140" height="70"/>
+  <text class="label" x="290" y="103" text-anchor="middle">map-put</text>
+  <text class="detail" x="290" y="118" text-anchor="middle">reporters[sender] = true</text>
+  <text class="detail" x="290" y="133" text-anchor="middle">tracks distinct sources</text>
+
+  <!-- Arrow to count -->
+  <line x1="360" y1="115" x2="408" y2="115" class="flow" marker-end="url(#arr)"/>
+
+  <!-- Count check -->
+  <rect class="box count" x="410" y="80" width="120" height="70"/>
+  <text class="label" x="470" y="103" text-anchor="middle">map-size</text>
+  <text class="detail" x="470" y="118" text-anchor="middle">≥ quorum?</text>
+  <text class="detail" x="470" y="133" text-anchor="middle">3 of 5 = yes</text>
+
+  <!-- Arrow to fire -->
+  <line x1="530" y1="115" x2="568" y2="115" class="flow" marker-end="url(#arr)"/>
+
+  <!-- Fire -->
+  <rect class="box fire" x="570" y="85" width="90" height="55"/>
+  <text class="label" x="615" y="108" text-anchor="middle">advisory</text>
+  <text class="detail" x="615" y="123" text-anchor="middle">ESCALATE</text>
+
+  <!-- Legend -->
+  <text class="detail" x="340" y="210" text-anchor="middle">map tracks which sources have reported — count of distinct keys determines quorum</text>
+</svg>
