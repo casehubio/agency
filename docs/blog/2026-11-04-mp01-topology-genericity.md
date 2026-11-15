@@ -2,7 +2,7 @@
 layout: post
 title: "The Interfaces Were Already There"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [architecture, topology, genericity, code-review, multi-agent]

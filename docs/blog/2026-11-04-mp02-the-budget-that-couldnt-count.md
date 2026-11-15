@@ -2,7 +2,7 @@
 layout: post
 title: "The Budget That Couldn't Count"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [budget, telemetry, multi-agent, observability, cost-governance]

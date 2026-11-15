@@ -2,7 +2,7 @@
 layout: post
 title: "The Feedback Loop That Was Missing"
 date: 2026-11-05
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [multi-agent, observability, opentelemetry, decision-loop, coordination, sealed-types]

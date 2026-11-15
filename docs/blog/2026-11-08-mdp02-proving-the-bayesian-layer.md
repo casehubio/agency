@@ -2,7 +2,7 @@
 layout: post
 title: "Proving the Bayesian Layer"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency, casehubio/neocortex]
 tags: [bayesian, junction-tree, validation, multi-agent, testing, inference-bayes]

@@ -2,7 +2,7 @@
 layout: post
 title: "Groups That Actually Start"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [multi-agent, society, formation, orchestration, joint-intention, lifecycle]

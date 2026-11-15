@@ -2,7 +2,7 @@
 layout: post
 title: "When Agents Go Silent"
 date: 2026-11-05
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [multi-agent, degradation, fault-tolerance, coordination, topology]

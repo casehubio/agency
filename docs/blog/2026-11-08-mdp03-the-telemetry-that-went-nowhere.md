@@ -2,7 +2,7 @@
 layout: post
 title: "The Telemetry That Went Nowhere"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency, casehubio/engine]
 tags: [telemetry, swarm, observability, spi, cross-repo, architecture]

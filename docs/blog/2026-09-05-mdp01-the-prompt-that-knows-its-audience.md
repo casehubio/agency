@@ -2,7 +2,7 @@
 layout: post
 title: "The Prompt That Knows Its Audience"
 date: 2026-09-05
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [social-cognition, avatar, speech, architecture, composition]

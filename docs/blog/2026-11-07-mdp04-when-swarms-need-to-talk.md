@@ -2,7 +2,7 @@
 layout: post
 title: "When Swarms Need to Talk"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [swarm, multi-agent, bayesian, coordination, architecture, belief-revision]

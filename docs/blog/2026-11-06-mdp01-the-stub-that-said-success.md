@@ -2,7 +2,7 @@
 layout: post
 title: "The Stub That Always Said Success"
 date: 2026-11-06
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [orchestration, multi-agent, patterns, compositional-architecture]

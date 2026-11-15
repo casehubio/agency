@@ -2,7 +2,7 @@
 layout: post
 title: "Designing an Annotation Model for Compositional AI Orchestration"
 date: 2026-08-23
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [annotations, orchestration, architecture, quarkus, langchain4j, design]

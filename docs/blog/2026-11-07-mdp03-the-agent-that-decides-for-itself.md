@@ -2,7 +2,7 @@
 layout: post
 title: "The Agent That Decides for Itself"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [swarm, stigmergy, distributed-coordination, multi-agent, architecture]

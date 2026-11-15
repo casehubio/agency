@@ -2,7 +2,7 @@
 layout: post
 title: "Annotation Boundaries Follow Execution Models"
 date: 2026-08-22
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [annotations, langchain4j, orchestration, architecture, adr]

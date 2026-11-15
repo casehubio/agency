@@ -2,7 +2,7 @@
 layout: post
 title: "The Class Hierarchy That Wasn't Earning Its Keep"
 date: 2026-11-05
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [topology, architecture, refactoring, composition, multi-agent, design-patterns]

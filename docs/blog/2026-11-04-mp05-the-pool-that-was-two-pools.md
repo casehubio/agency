@@ -2,7 +2,7 @@
 layout: post
 title: "The Pool That Was Two Pools"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [budget, multi-agent, cost-governance, architecture, construction-vs-composition]

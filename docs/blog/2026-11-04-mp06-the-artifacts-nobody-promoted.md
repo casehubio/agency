@@ -2,7 +2,7 @@
 layout: post
 title: "The Artifacts Nobody Promoted"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/engine, casehubio/agency]
 tags: [workspace-hygiene, git-workflow, artifact-management, branch-lifecycle]

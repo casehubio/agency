@@ -2,7 +2,7 @@
 layout: post
 title: "The Review That Found Real Bugs"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [code-review, concurrency, multi-agent, composition, orchestration]

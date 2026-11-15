@@ -2,7 +2,7 @@
 layout: post
 title: "The Pipeline That Wasn't Connected"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/agency]
 tags: [swarm, multi-agent, bayesian, coordination, architecture, belief-revision, code-review]
