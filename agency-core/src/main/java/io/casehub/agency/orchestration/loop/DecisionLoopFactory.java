@@ -1,7 +1,5 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.stigmergy.llm.InFlightGate;
@@ -11,6 +9,8 @@ import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.agency.summarisation.SummarisationRunner;
 import io.casehub.agency.summarisation.WindowPolicy;
 import io.casehub.api.model.coordination.ObservationStrategy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 
 import java.time.Instant;
 import java.util.List;
@@ -86,7 +86,7 @@ public class DecisionLoopFactory {
                 new SectionAwareContentSummariser(reasoner, sections, context);
 
         ContentSummariser<ObservationEvent, DecisionOutcome> budgetAware =
-                new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetBridge, r -> 0L, "unknown");
+                new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetBridge, DecisionLoopFactory::estimateTokens, "unknown");
 
         var degradationAware = new io.casehub.agency.orchestration.degradation.DegradationAwareSummariser<>(
                 budgetAware, heuristic, compositeTrigger, degradationBridge, descriptor.name());
@@ -119,4 +119,14 @@ public class DecisionLoopFactory {
             case DEMAND_DRIVEN -> (buffered, state, now) -> false;
         };
     }
+
+    static long estimateTokens(DecisionOutcome outcome) {
+        return switch (outcome) {
+            case DecisionOutcome.WriteBack wb -> wb.estimatedOutputTokens();
+            case DecisionOutcome.Composite c -> c.outcomes().stream().mapToLong(DecisionLoopFactory::estimateTokens).sum();
+            case DecisionOutcome.ScopeGated sg -> estimateTokens(sg.rejected());
+            default -> 0L;
+        };
+    }
+
 }

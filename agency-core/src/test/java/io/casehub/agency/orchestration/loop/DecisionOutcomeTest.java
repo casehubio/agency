@@ -48,6 +48,19 @@ class DecisionOutcomeTest {
     }
 
     @Test
+    void writeBack_threeArgConstructor_zeroTokens() {
+        var wb = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of());
+        assertThat(wb.estimatedOutputTokens()).isZero();
+    }
+
+    @Test
+    void writeBack_fourArgConstructor_carriesTokens() {
+        var wb = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of(), 1500L);
+        assertThat(wb.estimatedOutputTokens()).isEqualTo(1500L);
+    }
+
+
+    @Test
     void route_nullDecision_throws() {
         assertThatNullPointerException()
             .isThrownBy(() -> new DecisionOutcome.Route(null));

@@ -11,14 +11,20 @@ import java.util.Objects;
 public sealed interface DecisionOutcome {
 
     record WriteBack(
-        List<Observation> observations,
-        List<SignalDeposit> signals,
-        List<ContextWrite> contextWrites
+            List<Observation> observations,
+            List<SignalDeposit> signals,
+            List<ContextWrite> contextWrites,
+            long estimatedOutputTokens
     ) implements DecisionOutcome {
         public WriteBack {
-            observations = observations != null ? List.copyOf(observations) : List.of();
-            signals = signals != null ? List.copyOf(signals) : List.of();
+            observations  = observations != null ? List.copyOf(observations) : List.of();
+            signals       = signals != null ? List.copyOf(signals) : List.of();
             contextWrites = contextWrites != null ? List.copyOf(contextWrites) : List.of();
+        }
+
+        public WriteBack(List<Observation> observations, List<SignalDeposit> signals,
+                         List<ContextWrite> contextWrites) {
+            this(observations, signals, contextWrites, 0L);
         }
     }
 

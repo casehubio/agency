@@ -52,17 +52,17 @@ public class DistributedAgentReasoner implements ContentSummariser<ObservationEv
 
     @Override
     public CompletionStage<DecisionOutcome> summarise(List<ObservationEvent> events,
-                                                       @Nullable DecisionOutcome previous) {
+                                                      @Nullable DecisionOutcome previous) {
         var systemPrompt = promptCustomiser != null
-                ? promptCustomiser.customise(SYSTEM_PROMPT, PROMPT_SIGNATURE, variantSlot)
-                : SYSTEM_PROMPT;
+                           ? promptCustomiser.customise(SYSTEM_PROMPT, PROMPT_SIGNATURE, variantSlot)
+                           : SYSTEM_PROMPT;
 
         var userPrompt = renderObservations(events);
-        var config = AgentSessionConfig.of(systemPrompt, userPrompt);
+        var config     = AgentSessionConfig.of(systemPrompt, userPrompt);
 
         var result = StructuredAgentInvoker.invokeRaw(agentProvider, config);
         return CompletableFuture.completedFuture(switch (result) {
-            case InvocationResult.Success<JsonNode> s -> parseWriteBack(s.value());
+            case InvocationResult.Success<JsonNode> s -> parseWriteBack(s.value(), s.metadata().outputTokens());
             case InvocationResult.ParseError<JsonNode> pe -> noOp();
             case InvocationResult.AgentError<JsonNode> ae -> noOp();
         });
@@ -76,8 +76,8 @@ public class DistributedAgentReasoner implements ContentSummariser<ObservationEv
         return sb.toString();
     }
 
-    private DecisionOutcome parseWriteBack(JsonNode json) {
-        var signals = new ArrayList<SignalDeposit>();
+    private DecisionOutcome parseWriteBack(JsonNode json, long outputTokens) {
+        var signals     = new ArrayList<SignalDeposit>();
         var signalsNode = json.path("signals");
         if (signalsNode.isArray()) {
             for (var s : signalsNode) {
@@ -87,15 +87,15 @@ public class DistributedAgentReasoner implements ContentSummariser<ObservationEv
         }
 
         var observations = new ArrayList<Observation>();
-        var synthesis = json.path("synthesis").asText(null);
+        var synthesis    = json.path("synthesis").asText(null);
         if (synthesis != null && !synthesis.isBlank()) {
             observations.add(new Observation(
                     "synthesis", 1.0, Map.of("text",
-                    new com.fasterxml.jackson.databind.ObjectMapper().valueToTree(synthesis)),
+                                             new com.fasterxml.jackson.databind.ObjectMapper().valueToTree(synthesis)),
                     Instant.now()));
         }
 
-        return new DecisionOutcome.WriteBack(observations, signals, List.of());
+        return new DecisionOutcome.WriteBack(observations, signals, List.of(), outputTokens);
     }
 
     private static DecisionOutcome noOp() {

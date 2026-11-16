@@ -1,9 +1,5 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetPriority;
-
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.CommunicationMode;
@@ -11,6 +7,9 @@ import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -119,4 +118,32 @@ class DecisionLoopFactoryTest {
         var loop = factory.create(descriptor, CTX, NOOP_REASONER, new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(), new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"), () -> false, e -> {}, e -> {});
         assertThat(loop.budget().callsUsed()).isEqualTo(0);
     }
+
+    @Test
+    void estimateTokens_writeBack_returnsEstimatedOutputTokens() {
+        var wb = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of(), 1234L);
+        assertThat(DecisionLoopFactory.estimateTokens(wb)).isEqualTo(1234L);
+    }
+
+    @Test
+    void estimateTokens_writeBack_zeroWhenNotSet() {
+        var wb = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of());
+        assertThat(DecisionLoopFactory.estimateTokens(wb)).isZero();
+    }
+
+    @Test
+    void estimateTokens_composite_sumsChildren() {
+        var wb1       = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of(), 100L);
+        var wb2       = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of(), 200L);
+        var composite = new DecisionOutcome.Composite(List.of(wb1, wb2));
+        assertThat(DecisionLoopFactory.estimateTokens(composite)).isEqualTo(300L);
+    }
+
+    @Test
+    void estimateTokens_route_returnsZero() {
+        var route = new DecisionOutcome.Route(
+                new io.casehub.agency.orchestration.routing.RoutingDecision.Unresolvable("none"));
+        assertThat(DecisionLoopFactory.estimateTokens(route)).isZero();
+    }
+
 }
