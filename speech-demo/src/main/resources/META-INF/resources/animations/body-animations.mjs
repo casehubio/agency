@@ -39,9 +39,8 @@ const TAXONOMY = {
     ],
     agreement: [
       { name: "head-nod", weight: 8 },
-      { name: "yes", weight: 6 },
       { name: "clapping", weight: 3 },
-      { name: "thumbs-up", weight: 5 },
+      { name: "thumbs-up", weight: 8 },
     ],
     disagreement: [
       { name: "reject", weight: 8 },
@@ -103,6 +102,7 @@ const TAXONOMY = {
       { name: "shiver", weight: 4 },
       { name: "self-hug", weight: 5 },
       { name: "facepalm", weight: 4 },
+      { name: "double-facepalm", weight: 3 },
     ],
     surprise: [
       { name: "dizzy", weight: 6 },
@@ -181,7 +181,7 @@ const GESTURE_MAP = {
   shiver: { clip: "shiver" },
   victory: { clip: "victory" },
   fistpump: { clip: "victory-fist-pump" },
-  yes: { clip: "yes" },
+  yes: { clip: "thumbs-up" },
   dizzy: { clip: "dizzy" },
   powerup: { clip: "power-up" },
   powerburst: { clip: "power-burst" },
@@ -207,6 +207,7 @@ const GESTURE_MAP = {
   sad: { clip: "self-hug" },
   joyful: { clip: "arms-wide-open" },
   facepalm: { clip: "facepalm" },
+  doublefacepalm: { clip: "double-facepalm" },
   shocked: { clip: "shocked-recoil" },
   horror: { clip: "hands-over-mouth" },
   oops: { clip: "hand-over-mouth" },
