@@ -3,6 +3,7 @@ package io.casehub.agency.orchestration.topology;
 import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
+import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.platform.agent.AgentProvider;
@@ -10,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public record TopologyContext(
         UUID caseId,
@@ -20,7 +22,8 @@ public record TopologyContext(
         DegradationPolicy degradationPolicy,
         @Nullable RoleBridgingPolicy bridgingPolicy,
         @Nullable String groupId,
-        @Nullable String tenancyId
+        @Nullable String tenancyId,
+        @Nullable Consumer<DecisionLoopEvent> loopEventSink
 ) {
     public TopologyContext {
         Objects.requireNonNull(caseId, "caseId must not be null");
@@ -39,6 +42,10 @@ public record TopologyContext(
             AutonomyBudgetPolicy budgetPolicy,
             DegradationPolicy degradationPolicy) {
         this(caseId, descriptor, agentProvider, loopFactory, budgetPolicy, degradationPolicy,
-             null, null, null);
+             null, null, null, null);
+    }
+
+    public Consumer<DecisionLoopEvent> loopEventSinkOrDefault() {
+        return loopEventSink != null ? loopEventSink : e -> {};
     }
 }

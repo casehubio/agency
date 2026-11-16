@@ -124,7 +124,7 @@ class HiveTopologyTest {
                 new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
                 AutonomyBudgetPolicy.defaults(),
                 io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults(),
-                null, "group-42", "tenant-1");
+                null, "group-42", "tenant-1", null);
 
         topology.configure(ctxWithGroup);
 

@@ -1,13 +1,12 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.core.RoutingCandidate;
+import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
-import io.casehub.agency.orchestration.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
-import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
 import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
@@ -17,15 +16,14 @@ import io.casehub.agency.orchestration.loop.DecisionContext;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.summarisation.ContentSummariser;
-import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 import io.casehub.agency.orchestration.routing.RoutingStrategy;
-import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
+import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
@@ -57,7 +55,6 @@ public class CentralisedTopology<C> implements CoordinationTopology {
     private final ContentSummariser<ObservationEvent, DecisionOutcome>           aggregationHeuristic;
     private final ContentSummariser<ObservationEvent, DecisionOutcome>           provisioningHeuristic;
     private final @Nullable Consumer<SwarmCoordinationEvent>                     swarmEventHandler;
-    private final Consumer<io.casehub.agency.orchestration.loop.DecisionLoopEvent> loopEventSink;
     private       List<AgentDecisionLoop>                                        loops = List.of();
 
     private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
@@ -77,20 +74,18 @@ public class CentralisedTopology<C> implements CoordinationTopology {
             ContentSummariser<ObservationEvent, DecisionOutcome> routingHeuristic,
             ContentSummariser<ObservationEvent, DecisionOutcome> aggregationHeuristic,
             ContentSummariser<ObservationEvent, DecisionOutcome> provisioningHeuristic,
-            @Nullable Consumer<SwarmCoordinationEvent> swarmEventHandler,
-            Consumer<io.casehub.agency.orchestration.loop.DecisionLoopEvent> loopEventSink) {
-        this.coordinationContext  = Objects.requireNonNull(coordinationContext);
-        this.routingStrategy      = Objects.requireNonNull(routingStrategy);
-        this.aggregationStrategy  = Objects.requireNonNull(aggregationStrategy);
-        this.terminationCondition = Objects.requireNonNull(terminationCondition);
-        this.promptSectionNames   = List.copyOf(promptSectionNames);
-        this.provisioningAdvisor  = Objects.requireNonNull(provisioningAdvisor);
-        this.candidateSupplier    = Objects.requireNonNull(candidateSupplier);
-        this.routingHeuristic     = Objects.requireNonNull(routingHeuristic);
-        this.aggregationHeuristic = Objects.requireNonNull(aggregationHeuristic);
+            @Nullable Consumer<SwarmCoordinationEvent> swarmEventHandler) {
+        this.coordinationContext   = Objects.requireNonNull(coordinationContext);
+        this.routingStrategy       = Objects.requireNonNull(routingStrategy);
+        this.aggregationStrategy   = Objects.requireNonNull(aggregationStrategy);
+        this.terminationCondition  = Objects.requireNonNull(terminationCondition);
+        this.promptSectionNames    = List.copyOf(promptSectionNames);
+        this.provisioningAdvisor   = Objects.requireNonNull(provisioningAdvisor);
+        this.candidateSupplier     = Objects.requireNonNull(candidateSupplier);
+        this.routingHeuristic      = Objects.requireNonNull(routingHeuristic);
+        this.aggregationHeuristic  = Objects.requireNonNull(aggregationHeuristic);
         this.provisioningHeuristic = Objects.requireNonNull(provisioningHeuristic);
-        this.swarmEventHandler    = swarmEventHandler;
-        this.loopEventSink        = Objects.requireNonNull(loopEventSink);
+        this.swarmEventHandler     = swarmEventHandler;
     }
 
     @Override
@@ -100,6 +95,7 @@ public class CentralisedTopology<C> implements CoordinationTopology {
 
     @Override
     public CoordinationPlan configure(TopologyContext context) {
+        var loopEventSink = context.loopEventSinkOrDefault();
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
 
         if (routingStrategy instanceof io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy srs) {

@@ -3,7 +3,6 @@ package io.casehub.agency.orchestration.swarm;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.platform.agent.AgentProvider;
@@ -12,7 +11,6 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class SwarmCoordinatorBuilder {
 
@@ -25,7 +23,6 @@ public class SwarmCoordinatorBuilder {
     private           SystemPromptCustomiser     promptCustomiser;
     private @Nullable VariantSelector            variantSelector;
     private @Nullable SwarmPromptOutcomeProvider outcomeProvider;
-    private           Consumer<DecisionLoopEvent> loopEventSink = e -> {};
 
 
     public SwarmCoordinatorBuilder agentProvider(AgentProvider agentProvider) {
@@ -80,12 +77,6 @@ public class SwarmCoordinatorBuilder {
         return this;
     }
 
-    public SwarmCoordinatorBuilder loopEventSink(Consumer<DecisionLoopEvent> sink) {
-        this.loopEventSink = Objects.requireNonNull(sink);
-        return this;
-    }
-
-
     public io.casehub.agency.orchestration.topology.CentralisedTopology<SwarmContext> buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
@@ -134,8 +125,7 @@ public class SwarmCoordinatorBuilder {
                         case SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
                         case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
-                },
-                loopEventSink);
+                });
     }
 
 }

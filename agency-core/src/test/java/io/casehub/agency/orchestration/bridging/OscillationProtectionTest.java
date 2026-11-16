@@ -54,7 +54,7 @@ class OscillationProtectionTest {
         TestAgentProviders.noOp(),
         new DecisionLoopFactory(name -> c -> "", new EventStreamBus<>()),
         AutonomyBudgetPolicy.defaults(), DegradationPolicy.defaults(),
-        policy, null, null);
+        policy, null, null, null);
   }
 
   @Test

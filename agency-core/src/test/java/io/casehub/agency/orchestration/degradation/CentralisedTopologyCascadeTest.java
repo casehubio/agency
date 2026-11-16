@@ -49,8 +49,7 @@ class CentralisedTopologyCascadeTest {
                 new HeuristicRoutingSummariser(fallback, List::of),
                 new HeuristicAggregationSummariser(fallback),
                 new HeuristicProvisioningSummariser(fallback, () -> 0, () -> 10),
-                null,
-                e -> {});
+                null);
 
         var degradationPolicy = DegradationPolicy.defaults();
         topologyContext = new TopologyContext(

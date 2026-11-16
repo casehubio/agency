@@ -43,7 +43,7 @@ class TopologyContextTest {
     void creates_with_group_context() {
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
-                null, "group-1", "tenant-1");
+                null, "group-1", "tenant-1", null);
         assertThat(ctx.groupId()).isEqualTo("group-1");
         assertThat(ctx.tenancyId()).isEqualTo("tenant-1");
     }
@@ -52,7 +52,7 @@ class TopologyContextTest {
     void creates_with_null_group_context() {
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
-                null, null, null);
+                null, null, null, null);
         assertThat(ctx.groupId()).isNull();
         assertThat(ctx.tenancyId()).isNull();
     }
@@ -63,7 +63,7 @@ class TopologyContextTest {
                 RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
-                bridgingPolicy, "group-1", "tenant-1");
+                bridgingPolicy, "group-1", "tenant-1", null);
         assertThat(ctx.bridgingPolicy()).isEqualTo(bridgingPolicy);
     }
 
@@ -72,6 +72,36 @@ class TopologyContextTest {
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY);
         assertThat(ctx.bridgingPolicy()).isNull();
+    }
+
+    @Test
+    void convenience_constructor_has_null_loopEventSink() {
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY);
+        assertThat(ctx.loopEventSink()).isNull();
+    }
+
+    @Test
+    void loopEventSinkOrDefault_returnsNoOp_whenNull() {
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY);
+        var sink = ctx.loopEventSinkOrDefault();
+        assertThat(sink).isNotNull();
+        sink.accept(new io.casehub.agency.orchestration.loop.DecisionLoopEvent.ObservationGathered(
+                UUID.randomUUID(), "agent-1", "key", java.time.Instant.now()));
+    }
+
+    @Test
+    void loopEventSinkOrDefault_returnsProvidedSink_whenSet() {
+        var events = new java.util.ArrayList<io.casehub.agency.orchestration.loop.DecisionLoopEvent>();
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
+                null, null, null, events::add);
+        var sink = ctx.loopEventSinkOrDefault();
+        var event = new io.casehub.agency.orchestration.loop.DecisionLoopEvent.ObservationGathered(
+                UUID.randomUUID(), "agent-1", "key", java.time.Instant.now());
+        sink.accept(event);
+        assertThat(events).containsExactly(event);
     }
 
 

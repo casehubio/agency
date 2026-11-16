@@ -68,8 +68,7 @@ class CentralisedTopologyTest {
                         case SwarmCoordinationEvent.MemberCompleted m -> swarmContext.onMemberCompleted(m.agentId());
                         case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
-                },
-                e -> {});  // loopEventSink
+                });
 
         topologyContext = new TopologyContext(
                 UUID.randomUUID(),

@@ -64,7 +64,7 @@ class ConflictResolutionTest {
         TestAgentProviders.noOp(),
         new DecisionLoopFactory(name -> c -> "", new EventStreamBus<>()),
         AutonomyBudgetPolicy.defaults(), DegradationPolicy.defaults(),
-        policy, null, null);
+        policy, null, null, null);
     topology.configure(ctx);
 
     topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(UUID.randomUUID(), 
@@ -103,7 +103,7 @@ class ConflictResolutionTest {
         TestAgentProviders.noOp(),
         new DecisionLoopFactory(name -> c -> "", new EventStreamBus<>()),
         AutonomyBudgetPolicy.defaults(), DegradationPolicy.defaults(),
-        policy, null, null);
+        policy, null, null, null);
     topology.configure(ctx);
 
     topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(UUID.randomUUID(), 
@@ -142,7 +142,7 @@ class ConflictResolutionTest {
         TestAgentProviders.noOp(),
         new DecisionLoopFactory(name -> c -> "", new EventStreamBus<>()),
         AutonomyBudgetPolicy.defaults(), DegradationPolicy.defaults(),
-        policy, null, null);
+        policy, null, null, null);
     topology.configure(ctx);
 
     topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(UUID.randomUUID(), 
