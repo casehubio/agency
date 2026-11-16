@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetTelemetryEvent;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.stigmergy.llm.InFlightGate;

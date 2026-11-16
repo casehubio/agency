@@ -5,7 +5,7 @@ import io.casehub.agency.orchestration.topology.HivePatternAdapter;
 import io.casehub.agency.orchestration.topology.HiveTopology;
 import io.casehub.agency.orchestration.topology.OrchestrationPatternType;
 import io.casehub.agency.orchestration.topology.TopologyContext;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.AgentRole;

@@ -1,9 +1,9 @@
 package io.casehub.agency.orchestration.multiswarm;
 
-import io.casehub.agency.orchestration.budget.AgentBudgetView;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetGrant;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AgentBudgetView;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetGrant;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;

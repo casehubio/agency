@@ -2,8 +2,8 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.bridging.BridgedRoleState;
 import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;

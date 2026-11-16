@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.distributed;
 
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.loop.LoopPromptSection;
 import io.casehub.agency.orchestration.topology.DistributedTopology;
 import io.casehub.api.model.coordination.AgentRole;

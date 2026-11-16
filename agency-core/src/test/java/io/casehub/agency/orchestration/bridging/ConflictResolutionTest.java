@@ -2,7 +2,7 @@ package io.casehub.agency.orchestration.bridging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;

@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetPriority;
 
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;

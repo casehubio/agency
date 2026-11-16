@@ -2,9 +2,9 @@ package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.core.invoke.StructuredAgentInvoker;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetGrant;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetGrant;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.AgentSessionConfig;

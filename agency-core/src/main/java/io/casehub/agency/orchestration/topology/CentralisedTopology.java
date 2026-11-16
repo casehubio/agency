@@ -2,8 +2,9 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;

@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;

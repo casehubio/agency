@@ -1,11 +1,11 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.stigmergy.BehavioralFingerprint;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.SwarmProgress;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;

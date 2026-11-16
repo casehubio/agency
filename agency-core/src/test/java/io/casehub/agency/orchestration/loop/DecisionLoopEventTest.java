@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.agency.orchestration.budget.BudgetPressure;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetPressure;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import org.junit.jupiter.api.Test;

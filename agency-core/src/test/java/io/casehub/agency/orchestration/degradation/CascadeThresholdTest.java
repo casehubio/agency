@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

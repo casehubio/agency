@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.budget.AgentBudgetView;
+import io.casehub.platform.agent.budget.AgentBudgetView;
 import java.util.Objects;
 
 public class BudgetDegradationTrigger implements DegradationTrigger {

@@ -1,9 +1,9 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.budget.AgentBudgetView;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AgentBudgetView;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

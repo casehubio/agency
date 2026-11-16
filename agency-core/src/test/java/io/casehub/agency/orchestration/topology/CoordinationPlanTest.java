@@ -1,8 +1,8 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
-import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.api.model.coordination.CommunicationMode;

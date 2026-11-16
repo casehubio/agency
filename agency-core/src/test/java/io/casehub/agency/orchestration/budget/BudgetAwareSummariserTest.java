@@ -1,6 +1,12 @@
 package io.casehub.agency.orchestration.budget;
 
 import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.platform.agent.budget.AgentBudgetView;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetGrant;
+import io.casehub.platform.agent.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 

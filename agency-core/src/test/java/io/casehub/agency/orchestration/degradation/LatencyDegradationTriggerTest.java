@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.budget.BudgetTelemetryEvent;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import org.junit.jupiter.api.Test;
 

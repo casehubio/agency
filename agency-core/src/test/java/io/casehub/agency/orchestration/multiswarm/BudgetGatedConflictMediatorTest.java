@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.multiswarm;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -67,7 +67,7 @@ class BudgetGatedConflictMediatorTest {
                 new AutonomyBudgetPolicy(1, 1L, 0.0, 1, 1L), "test");
         gated.bindPool(pool);
         // Exhaust the single-call budget
-        pool.tryAcquire(io.casehub.agency.orchestration.budget.BudgetPriority.NORMAL);
+        pool.tryAcquire(io.casehub.platform.agent.budget.BudgetPriority.NORMAL);
 
         var result = gated.mediate(context);
 

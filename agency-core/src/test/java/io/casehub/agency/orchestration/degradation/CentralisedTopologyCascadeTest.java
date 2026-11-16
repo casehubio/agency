@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;

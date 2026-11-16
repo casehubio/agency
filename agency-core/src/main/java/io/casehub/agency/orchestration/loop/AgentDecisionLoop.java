@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.agency.orchestration.budget.AgentBudgetView;
+import io.casehub.platform.agent.budget.AgentBudgetView;
 import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.agency.summarisation.SummarisationRunner;
 

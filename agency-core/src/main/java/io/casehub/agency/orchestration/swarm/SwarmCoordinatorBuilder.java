@@ -2,7 +2,8 @@ package io.casehub.agency.orchestration.swarm;
 
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.platform.agent.AgentProvider;

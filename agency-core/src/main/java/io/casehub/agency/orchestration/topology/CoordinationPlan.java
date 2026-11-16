@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
