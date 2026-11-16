@@ -66,9 +66,9 @@ class SwarmRoutingStrategyTest {
 
     @Test
     void route_fallsBackWhenBudgetExhausted() {
-        var pool = new io.casehub.agency.orchestration.budget.AutonomyBudgetPool(
-                new io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
-        pool.tryAcquire(io.casehub.agency.orchestration.budget.BudgetPriority.RESERVED);
+        var pool = new io.casehub.platform.agent.budget.AutonomyBudgetPool(
+                new io.casehub.platform.agent.budget.AutonomyBudgetPolicy(1, 500_000, 0.0, 1, 500_000), "test");
+        pool.tryAcquire(io.casehub.platform.agent.budget.BudgetPriority.RESERVED);
 
         var strategy = new SwarmRoutingStrategy(agentProvider, experienceSection, 12);
         strategy.setBudgetPool(pool);
