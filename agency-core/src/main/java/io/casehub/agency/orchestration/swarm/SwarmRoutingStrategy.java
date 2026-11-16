@@ -22,7 +22,9 @@ import java.util.Set;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
-public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
+import io.casehub.agency.orchestration.topology.TokenRecordable;
+
+public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext>, TokenRecordable {
 
     private static final System.Logger LOG =
             System.getLogger(SwarmRoutingStrategy.class.getName());
@@ -59,6 +61,7 @@ public class SwarmRoutingStrategy implements RoutingStrategy<SwarmContext> {
         this.budgetPool = pool;
     }
 
+    @Override
     public void setTokenRecorder(@Nullable LongConsumer recorder) {
         this.tokenRecorder = recorder;
     }

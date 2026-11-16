@@ -2,9 +2,6 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetPriority;
-import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
@@ -28,6 +25,8 @@ import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -99,15 +98,9 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
         var loopEventSink = context.loopEventSinkOrDefault();
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
 
-        if (routingStrategy instanceof io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy srs) {
-            srs.setTokenRecorder(t -> pool.recordTokens("routing", t));
-        }
-        if (aggregationStrategy instanceof io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation cra) {
-            cra.setTokenRecorder(t -> pool.recordTokens("aggregation", t));
-        }
-        if (provisioningAdvisor instanceof io.casehub.agency.orchestration.swarm.SwarmProvisioningAdvisorImpl impl) {
-            impl.setTokenRecorder(t -> pool.recordTokens("provisioning", t));
-        }
+        wireTokenRecorder(routingStrategy, "routing", pool);
+        wireTokenRecorder(aggregationStrategy, "aggregation", pool);
+        wireTokenRecorder(provisioningAdvisor, "provisioning", pool);
 
         var teamFormation = new DecisionLoopDescriptor(
                 "centralised-team-formation",
@@ -296,4 +289,9 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
 
     public List<AgentDecisionLoop> loops()                {return loops;}
 
+    private static void wireTokenRecorder(Object target, String label, AutonomyBudgetPool pool) {
+        if (target instanceof TokenRecordable tr) {
+            tr.setTokenRecorder(t -> pool.recordTokens(label, t));
+        }
+    }
 }

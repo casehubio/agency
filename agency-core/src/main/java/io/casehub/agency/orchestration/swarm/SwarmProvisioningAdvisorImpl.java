@@ -12,7 +12,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.LongConsumer;
 
-public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
+import io.casehub.agency.orchestration.topology.TokenRecordable;
+
+public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor, TokenRecordable {
 
     private static final System.Logger LOG =
             System.getLogger(SwarmProvisioningAdvisorImpl.class.getName());
@@ -42,6 +44,7 @@ public class SwarmProvisioningAdvisorImpl implements SwarmProvisioningAdvisor {
         this.budgetPool = pool;
     }
 
+    @Override
     public void setTokenRecorder(@Nullable LongConsumer recorder) {
         this.tokenRecorder = recorder;
     }

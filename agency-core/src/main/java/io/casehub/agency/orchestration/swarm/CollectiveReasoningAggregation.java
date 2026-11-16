@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
-public class CollectiveReasoningAggregation implements AggregationStrategy<SwarmContext> {
+import io.casehub.agency.orchestration.topology.TokenRecordable;
+
+public class CollectiveReasoningAggregation implements AggregationStrategy<SwarmContext>, TokenRecordable {
 
     private static final System.Logger LOG =
             System.getLogger(CollectiveReasoningAggregation.class.getName());
@@ -44,6 +46,7 @@ public class CollectiveReasoningAggregation implements AggregationStrategy<Swarm
         this.budgetPool = pool;
     }
 
+    @Override
     public void setTokenRecorder(@Nullable LongConsumer recorder) {
         this.tokenRecorder = recorder;
     }
