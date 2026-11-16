@@ -5,7 +5,6 @@ import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
-import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.platform.agent.AgentProvider;
 import org.jspecify.annotations.Nullable;
@@ -93,8 +92,8 @@ public class SwarmCoordinatorBuilder {
         var experienceSection = new SwarmExperienceSection(experienceConfig);
         var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
                                                        preFilterThreshold, promptCustomiser, additionalSections);
-        var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
-        TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
+        var                                                                            aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        io.casehub.agency.orchestration.termination.TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
 
         String slot = variantSelector != null
                       ? variantSelector.selectSlot(java.util.UUID.randomUUID(), "swarm-coordination")
@@ -114,13 +113,13 @@ public class SwarmCoordinatorBuilder {
         }
 
         var swarmContext = new SwarmContext();
-        var provisioner = new SwarmProvisioningAdvisorImpl(agentProvider, swarmContext, promptCustomiser);
+        var provisioner  = new SwarmProvisioningAdvisorImpl(agentProvider, swarmContext, promptCustomiser);
         provisioner.setVariantSlot(slot);
 
-        var fallback = new SwarmFallbackStrategy();
-        var routingHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, java.util.List::of);
-        var aggregationHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback);
-        var provisioningHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10);
+        var fallback              = new SwarmFallbackStrategy();
+        var routingHeuristic      = new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, java.util.List::of);
+        var aggregationHeuristic  = new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback);
+        var provisioningHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, swarmContext::currentSize, swarmContext::maxSize);
 
         return new io.casehub.agency.orchestration.topology.CentralisedTopology<>(
                 swarmContext, routingStrategy, aggregation,

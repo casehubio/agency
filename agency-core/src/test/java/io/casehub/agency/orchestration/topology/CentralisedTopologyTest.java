@@ -8,7 +8,6 @@ import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
 import io.casehub.agency.orchestration.swarm.ExperienceReplayConfig;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
-import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.agency.orchestration.swarm.SwarmExperienceSection;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.swarm.SwarmRoutingStrategy;
@@ -16,6 +15,7 @@ import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
@@ -58,7 +58,7 @@ class CentralisedTopologyTest {
                 List::of,
                 new io.casehub.agency.orchestration.degradation.HeuristicRoutingSummariser(fallback, List::of),
                 new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback),
-                new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, 0, 10),
+                new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, () -> 0, () -> 10),
                 e -> {  // swarmEventHandler
                     switch (e) {
                         case SwarmCoordinationEvent.SwarmInitialised s -> swarmContext.onSwarmInitialised(s.experiences(), s.progress());

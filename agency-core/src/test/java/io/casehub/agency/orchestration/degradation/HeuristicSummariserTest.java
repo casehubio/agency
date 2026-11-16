@@ -61,8 +61,8 @@ class HeuristicSummariserTest {
 
     @Test
     void provisioning_producesProvisionOutcome() throws Exception {
-        var fallback = new SwarmFallbackStrategy();
-        var summariser = new HeuristicProvisioningSummariser(fallback, 3, 10);
+        var fallback   = new SwarmFallbackStrategy();
+        var summariser = new HeuristicProvisioningSummariser(fallback, () -> 3, () -> 10);
 
         var result = summariser.summarise(List.of(), null).toCompletableFuture().get();
         assertThat(result).isInstanceOf(DecisionOutcome.Provision.class);
@@ -72,11 +72,27 @@ class HeuristicSummariserTest {
 
     @Test
     void provisioning_doesNotProvision_whenAtMax() throws Exception {
-        var fallback = new SwarmFallbackStrategy();
-        var summariser = new HeuristicProvisioningSummariser(fallback, 10, 10);
+        var fallback   = new SwarmFallbackStrategy();
+        var summariser = new HeuristicProvisioningSummariser(fallback, () -> 10, () -> 10);
 
-        var result = summariser.summarise(List.of(), null).toCompletableFuture().get();
+        var result    = summariser.summarise(List.of(), null).toCompletableFuture().get();
         var provision = (DecisionOutcome.Provision) result;
         assertThat(provision.advice().shouldProvision()).isFalse();
     }
+
+    @Test
+    void provisioning_readsLiveSize_onEachCall() throws Exception {
+        var fallback    = new SwarmFallbackStrategy();
+        var currentSize = new java.util.concurrent.atomic.AtomicInteger(3);
+        var maxSize     = new java.util.concurrent.atomic.AtomicInteger(10);
+        var summariser  = new HeuristicProvisioningSummariser(fallback, currentSize::get, maxSize::get);
+
+        var result1 = summariser.summarise(List.of(), null).toCompletableFuture().get();
+        assertThat(((DecisionOutcome.Provision) result1).advice().shouldProvision()).isTrue();
+
+        currentSize.set(10);
+        var result2 = summariser.summarise(List.of(), null).toCompletableFuture().get();
+        assertThat(((DecisionOutcome.Provision) result2).advice().shouldProvision()).isFalse();
+    }
+
 }
