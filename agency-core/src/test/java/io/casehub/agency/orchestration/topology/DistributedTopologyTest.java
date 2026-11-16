@@ -2,6 +2,7 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
+import io.casehub.agency.orchestration.distributed.DistributedAgentReasoner;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
@@ -38,7 +39,8 @@ class DistributedTopologyTest {
             "agent-a", AgentRole.of("peer-a", StructuralRole.PEER),
             "agent-b", AgentRole.of("peer-b", StructuralRole.PEER),
             "agent-c", AgentRole.of("peer-c", StructuralRole.PEER));
-        topology = new DistributedTopology(agentRoles);
+        var reasoner = new DistributedAgentReasoner(TestAgentProviders.noOp(), null);
+        topology = new DistributedTopology(agentRoles, reasoner, AutonomyBudgetPolicy.defaults(), 0.8, List.of(), Map.of());
 
         topologyContext = new TopologyContext(
             UUID.randomUUID(),

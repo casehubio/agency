@@ -1119,6 +1119,15 @@
             "required" : [ "type" ],
             "type" : "object",
             "unevaluatedProperties" : false
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "distributed"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object",
+            "unevaluatedProperties" : false
           } ]
         }
       },

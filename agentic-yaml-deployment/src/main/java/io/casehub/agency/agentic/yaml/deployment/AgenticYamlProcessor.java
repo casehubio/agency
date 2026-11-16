@@ -4,22 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.casehub.agency.agentic.yaml.topology.HiveTopologyCompiler;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsBean;
 import io.casehub.agency.core.yaml.runtime.AgencySpecsResource;
 import io.casehub.agency.core.yaml.runtime.AgenticRecorder;
-import io.casehub.agency.agentic.yaml.topology.HiveTopologyCompiler;
 import io.casehub.agency.core.yaml.spec.PatternDefinition;
 import io.casehub.agency.core.yaml.spec.TopologySpec;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
 import io.casehub.yaml.jackson.YamlMappers;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
-import jakarta.inject.Singleton;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.runtime.RuntimeValue;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Singleton;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,14 +124,20 @@ public class AgenticYamlProcessor {
 
 
     @BuildStep
-    TopologyBuildItem extractHiveTopologies(AgenticPatternsBuildItem patterns) {
+    TopologyBuildItem extractTopologies(AgenticPatternsBuildItem patterns) {
         var hiveSpecs = patterns.patterns().stream()
                 .filter(p -> p instanceof PatternDefinition.Swarm s
                         && s.topology() instanceof TopologySpec.Hive)
                 .map(p -> (TopologySpec.Hive)
                         ((PatternDefinition.Swarm) p).topology())
                 .toList();
-        return new TopologyBuildItem(hiveSpecs);
+        var distributedSpecs = patterns.patterns().stream()
+                .filter(p -> p instanceof PatternDefinition.Swarm s
+                        && s.topology() instanceof TopologySpec.Distributed)
+                .map(p -> (TopologySpec.Distributed)
+                        ((PatternDefinition.Swarm) p).topology())
+                .toList();
+        return new TopologyBuildItem(hiveSpecs, distributedSpecs);
     }
 
     @BuildStep
@@ -151,6 +157,25 @@ public class AgenticYamlProcessor {
                 })
                 .toList();
     }
+
+    @BuildStep
+    @Record(RUNTIME_INIT)
+    List<SyntheticBeanBuildItem> registerDistributedTopologies(
+            AgenticRecorder recorder,
+            TopologyBuildItem topologies) {
+        return topologies.distributedTopologies().stream()
+                         .map(spec -> {
+                             RuntimeValue<io.casehub.agency.agentic.yaml.topology.DistributedTopologyCompiler.CompiledDistributed> rv =
+                                     recorder.compileDistributedTopology(spec);
+                             return SyntheticBeanBuildItem
+                                            .configure(io.casehub.agency.agentic.yaml.topology.DistributedTopologyCompiler.CompiledDistributed.class)
+                                            .scope(Singleton.class)
+                                            .runtimeValue(rv)
+                                            .done();
+                         })
+                         .toList();
+    }
+
 
     @BuildStep
     @Record(STATIC_INIT)

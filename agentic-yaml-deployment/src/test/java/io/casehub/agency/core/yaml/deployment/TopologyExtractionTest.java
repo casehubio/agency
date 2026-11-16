@@ -48,7 +48,7 @@ class TopologyExtractionTest {
 
     @Test
     void swarmWithHiveTopology_extracted() {
-        var item = processor.extractHiveTopologies(
+        var item = processor.extractTopologies(
                 new AgenticPatternsBuildItem(List.of(swarmWithHive())));
 
         assertThat(item.hiveTopologies()).hasSize(1);
@@ -58,7 +58,7 @@ class TopologyExtractionTest {
 
     @Test
     void swarmWithSwarmTopology_notExtracted() {
-        var item = processor.extractHiveTopologies(
+        var item = processor.extractTopologies(
                 new AgenticPatternsBuildItem(List.of(swarmWithSwarmTopology())));
 
         assertThat(item.hiveTopologies()).isEmpty();
@@ -66,7 +66,7 @@ class TopologyExtractionTest {
 
     @Test
     void noSwarmPatterns_emptyResult() {
-        var item = processor.extractHiveTopologies(
+        var item = processor.extractTopologies(
                 new AgenticPatternsBuildItem(List.of(nonSwarmPattern())));
 
         assertThat(item.hiveTopologies()).isEmpty();
@@ -74,7 +74,7 @@ class TopologyExtractionTest {
 
     @Test
     void mixedPatterns_onlyHiveExtracted() {
-        var item = processor.extractHiveTopologies(
+        var item = processor.extractTopologies(
                 new AgenticPatternsBuildItem(List.of(
                         swarmWithHive(), swarmWithSwarmTopology(), nonSwarmPattern())));
 
@@ -83,7 +83,7 @@ class TopologyExtractionTest {
 
     @Test
     void swarmWithNullTopology_notExtracted() {
-        var item = processor.extractHiveTopologies(
+        var item = processor.extractTopologies(
                 new AgenticPatternsBuildItem(List.of(swarmWithNullTopology())));
 
         assertThat(item.hiveTopologies()).isEmpty();

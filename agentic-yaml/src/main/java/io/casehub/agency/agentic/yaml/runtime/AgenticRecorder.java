@@ -1,7 +1,7 @@
 package io.casehub.agency.core.yaml.runtime;
 
-import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
 import io.casehub.agency.agentic.yaml.topology.HiveTopologyCompiler;
+import io.casehub.agency.core.yaml.compiler.CognitionCompiler;
 import io.casehub.agency.core.yaml.compiler.PatternCompiler;
 import io.casehub.agency.core.yaml.compiler.PromptOptimisationCompiler;
 import io.casehub.agency.core.yaml.spec.TopologySpec;
@@ -36,6 +36,12 @@ public class AgenticRecorder {
             TopologySpec.Hive spec) {
         return new RuntimeValue<>(new HiveTopologyCompiler().compile(spec, null));
     }
+
+    public RuntimeValue<io.casehub.agency.agentic.yaml.topology.DistributedTopologyCompiler.CompiledDistributed> compileDistributedTopology(
+            TopologySpec.Distributed spec) {
+        return new RuntimeValue<>(new io.casehub.agency.agentic.yaml.topology.DistributedTopologyCompiler().compile(spec, null));
+    }
+
 
     public RuntimeValue<AgencySpecsBean> createSpecsBean(String preSerializedJson) {
         return new RuntimeValue<>(new AgencySpecsBean(preSerializedJson));

@@ -19,7 +19,8 @@ import java.util.Map;
         @Type(value = TopologySpec.Hive.class, name = "hive"),
         @Type(value = TopologySpec.Mesh.class, name = "mesh"),
         @Type(value = TopologySpec.Many.class, name = "many"),
-        @Type(value = TopologySpec.MultiSwarm.class, name = "multi-swarm")
+        @Type(value = TopologySpec.MultiSwarm.class, name = "multi-swarm"),
+        @Type(value = TopologySpec.Distributed.class, name = "distributed")
 })
 public sealed interface TopologySpec {
 
@@ -53,6 +54,32 @@ public sealed interface TopologySpec {
         public MultiSwarm {
             if (swarms != null) {swarms = Map.copyOf(swarms);}
         }
+    }
+
+    record Distributed(
+            @Nullable String authority,
+            @Nullable Map<String, AgentSpec> agents,
+            @Nullable Double convergenceThreshold,
+            @Nullable BudgetSpec budget
+    ) implements TopologySpec {
+        public Distributed {
+            if (agents != null) {agents = Map.copyOf(agents);}
+        }
+
+        public record AgentSpec(
+                String role,
+                @Nullable List<String> capabilities,
+                @Nullable String model
+        ) {
+            public AgentSpec {
+                if (capabilities != null) {capabilities = List.copyOf(capabilities);}
+            }
+        }
+
+        public record BudgetSpec(
+                @Nullable Integer maxTokensPerTick,
+                @Nullable Integer maxConcurrentCalls
+        ) {}
     }
 
 
