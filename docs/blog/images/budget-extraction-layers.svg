@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Before -->
+  <text x="180" y="20" font-size="15" font-weight="600" text-anchor="middle" fill="#333">Before</text>
+
+  <rect x="30" y="35" width="300" height="60" rx="6" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="180" y="58" font-weight="600" fill="#1a73e8" text-anchor="middle">agency-core</text>
+  <text x="180" y="78" fill="#555" text-anchor="middle" font-size="11">AutonomyBudgetPool · AgentBudgetView · BudgetGrant</text>
+
+  <rect x="30" y="110" width="300" height="45" rx="6" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="180" y="137" fill="#c5221f" text-anchor="middle" font-size="11">platform agent-api (AgentProvider — no budget types)</text>
+
+  <rect x="30" y="170" width="300" height="45" rx="6" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="180" y="197" fill="#c5221f" text-anchor="middle" font-size="11">neocortex (runs LLMs — cannot see budget)</text>
+
+  <line x1="180" y1="95" x2="180" y2="110" stroke="#666" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="180" y1="155" x2="180" y2="170" stroke="#ccc" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="310" y="168" fill="#999" font-size="10">no dependency path</text>
+
+  <!-- After -->
+  <text x="540" y="20" font-size="15" font-weight="600" text-anchor="middle" fill="#333">After</text>
+
+  <rect x="390" y="35" width="300" height="45" rx="6" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="540" y="55" font-weight="600" fill="#1a73e8" text-anchor="middle">agency-core</text>
+  <text x="540" y="68" fill="#555" text-anchor="middle" font-size="10">BudgetAwareSummariser (imports from platform)</text>
+
+  <rect x="390" y="110" width="300" height="60" rx="6" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="540" y="133" font-weight="600" fill="#137333" text-anchor="middle">platform agent-api</text>
+  <text x="540" y="153" fill="#555" text-anchor="middle" font-size="11">AutonomyBudgetPool · AgentBudgetView · BudgetGrant</text>
+
+  <rect x="390" y="200" width="300" height="45" rx="6" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="540" y="227" fill="#137333" text-anchor="middle" font-size="11">neocortex (can now compose budget types)</text>
+
+  <line x1="540" y1="80" x2="540" y2="110" stroke="#666" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="540" y1="170" x2="540" y2="200" stroke="#34a853" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Legend -->
+  <rect x="30" y="260" width="660" height="65" rx="6" fill="#f8f9fa" stroke="#dadce0" stroke-width="1"/>
+  <text x="50" y="282" font-size="12" fill="#555">7 types moved · 86 import sites updated across 46 files · 0 external consumers — clean extraction</text>
+  <text x="50" y="302" font-size="12" fill="#555">BudgetAwareSummariser stays in agency (depends on ContentSummariser) · platform types are pure Java</text>
+</svg>

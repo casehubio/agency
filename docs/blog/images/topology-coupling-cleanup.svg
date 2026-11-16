@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    text { fill: #1a1a2e; font-size: 13px; }
+    .title { font-size: 15px; font-weight: 600; }
+    .subtitle { font-size: 11px; fill: #666; }
+    .box { rx: 6; ry: 6; stroke-width: 1.5; }
+    .interface-box { fill: #e8f4f8; stroke: #2980b9; }
+    .swarm-box { fill: #fef3e2; stroke: #e67e22; }
+    .generic-box { fill: #eafaf1; stroke: #27ae60; }
+    .dead-box { fill: #f5f5f5; stroke: #bbb; stroke-dasharray: 4 2; }
+    .arrow { fill: none; stroke: #555; stroke-width: 1.5; marker-end: url(#arrowhead); }
+    .cross { stroke: #e74c3c; stroke-width: 2.5; }
+    .label { font-size: 11px; fill: #444; }
+    .removed { font-size: 11px; fill: #e74c3c; font-style: italic; }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" class="title">Before: onSwarmEvent forced on all topologies</text>
+
+  <!-- Before side -->
+  <rect x="20" y="48" width="320" height="45" class="box interface-box"/>
+  <text x="180" y="67" text-anchor="middle" font-weight="600">CoordinationTopology</text>
+  <text x="180" y="83" text-anchor="middle" class="subtitle">onSwarmEvent() · onFeedback() · configure()</text>
+
+  <!-- Before implementations -->
+  <rect x="20" y="115" width="145" height="35" class="box swarm-box"/>
+  <text x="92" y="137" text-anchor="middle" font-size="12">CentralisedTopology</text>
+
+  <rect x="195" y="115" width="145" height="35" class="box dead-box"/>
+  <text x="267" y="137" text-anchor="middle" font-size="12" fill="#999">HybridTopology</text>
+
+  <text x="267" y="165" text-anchor="middle" class="removed">onSwarmEvent() { } ← empty</text>
+
+  <!-- Arrows before -->
+  <line x1="92" y1="93" x2="92" y2="115" class="arrow"/>
+  <line x1="267" y1="93" x2="267" y2="115" class="arrow"/>
+
+  <!-- After side -->
+  <text x="540" y="28" text-anchor="middle" class="title">After: SwarmAwareTopology sub-interface</text>
+
+  <rect x="380" y="48" width="320" height="35" class="box interface-box"/>
+  <text x="540" y="70" text-anchor="middle" font-weight="600">CoordinationTopology</text>
+
+  <rect x="380" y="105" width="200" height="35" class="box swarm-box"/>
+  <text x="480" y="127" text-anchor="middle" font-weight="600">SwarmAwareTopology</text>
+
+  <line x1="480" y1="83" x2="480" y2="105" class="arrow"/>
+
+  <!-- After swarm impls -->
+  <rect x="380" y="162" width="93" height="30" class="box swarm-box"/>
+  <text x="426" y="181" text-anchor="middle" font-size="10">Centralised</text>
+
+  <rect x="483" y="162" width="93" height="30" class="box swarm-box"/>
+  <text x="530" y="181" text-anchor="middle" font-size="10">Distributed</text>
+
+  <rect x="380" y="200" width="93" height="30" class="box swarm-box"/>
+  <text x="426" y="219" text-anchor="middle" font-size="10">Hive</text>
+
+  <rect x="483" y="200" width="93" height="30" class="box swarm-box"/>
+  <text x="530" y="219" text-anchor="middle" font-size="10">MultiSwarm</text>
+
+  <!-- After generic impls -->
+  <rect x="600" y="162" width="93" height="30" class="box generic-box"/>
+  <text x="646" y="181" text-anchor="middle" font-size="10">Hybrid</text>
+
+  <rect x="600" y="200" width="93" height="30" class="box generic-box"/>
+  <text x="646" y="219" text-anchor="middle" font-size="10">Hierarchical</text>
+
+  <rect x="600" y="238" width="93" height="30" class="box generic-box"/>
+  <text x="646" y="257" text-anchor="middle" font-size="10">Graduated</text>
+
+  <!-- After arrows -->
+  <line x1="426" y1="140" x2="426" y2="162" class="arrow"/>
+  <line x1="530" y1="140" x2="530" y2="162" class="arrow"/>
+  <line x1="646" y1="83" x2="646" y2="162" class="arrow"/>
+
+  <!-- Lower section: the other two fixes -->
+  <line x1="10" y1="280" x2="710" y2="280" stroke="#ddd" stroke-width="1"/>
+
+  <text x="180" y="308" text-anchor="middle" class="title">IntSupplier: live values</text>
+  <rect x="40" y="320" width="280" height="80" class="box" fill="#fff8f0" stroke="#d35400"/>
+  <text x="180" y="342" text-anchor="middle" font-size="12" font-family="monospace">HeuristicProvisioningSummariser</text>
+  <text x="180" y="362" text-anchor="middle" class="subtitle" fill="#c0392b">Before: int currentSize = 0 (stale)</text>
+  <text x="180" y="382" text-anchor="middle" class="subtitle" fill="#27ae60">After: IntSupplier → swarmContext::currentSize</text>
+
+  <text x="540" y="308" text-anchor="middle" class="title">TopologyContext: event wiring</text>
+  <rect x="400" y="320" width="280" height="80" class="box" fill="#f0f4ff" stroke="#2c3e50"/>
+  <text x="540" y="342" text-anchor="middle" font-size="12" font-family="monospace">TopologyContext</text>
+  <text x="540" y="362" text-anchor="middle" class="subtitle" fill="#c0392b">Before: loopEventSink on builder (e → {})</text>
+  <text x="540" y="382" text-anchor="middle" class="subtitle" fill="#27ae60">After: on context → listeners.onDecisionLoopEvent()</text>
+</svg>
