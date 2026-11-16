@@ -174,8 +174,8 @@ class MetricsListenerTest {
         void budgetExhausted_incrementsCounter() {
             var event = new io.casehub.agency.orchestration.loop.DecisionLoopEvent.BudgetExhausted(
                     CASE_ID, AGENT_ID, "call budget exhausted",
-                    new io.casehub.agency.orchestration.budget.BudgetPressure(0.99,
-                                                                              io.casehub.agency.orchestration.budget.BudgetPriority.NORMAL), NOW);
+                    new io.casehub.platform.agent.budget.BudgetPressure(0.99,
+                                                                              io.casehub.platform.agent.budget.BudgetPriority.NORMAL), NOW);
             listener.onDecisionLoopEvent(event);
 
             var metrics = reader.collectAllMetrics();
