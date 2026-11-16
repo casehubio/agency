@@ -7,10 +7,10 @@ import io.casehub.platform.agent.AgentSessionConfig;
 import io.casehub.platform.agent.AgentSessionInit;
 import io.smallrye.mutiny.Multi;
 
-final class TestAgentProviders {
+public final class TestAgentProviders {
     private TestAgentProviders() {}
 
-    static AgentProvider noOp() {
+    public static AgentProvider noOp() {
         return new AgentProvider() {
             @Override
             public Multi<AgentEvent> invoke(AgentSessionConfig config) {

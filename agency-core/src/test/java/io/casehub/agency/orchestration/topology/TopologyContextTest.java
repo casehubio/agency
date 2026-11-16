@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
+import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
@@ -42,7 +43,7 @@ class TopologyContextTest {
     void creates_with_group_context() {
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
-                "group-1", "tenant-1");
+                null, "group-1", "tenant-1");
         assertThat(ctx.groupId()).isEqualTo("group-1");
         assertThat(ctx.tenancyId()).isEqualTo("tenant-1");
     }
@@ -51,9 +52,26 @@ class TopologyContextTest {
     void creates_with_null_group_context() {
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
-                null, null);
+                null, null, null);
         assertThat(ctx.groupId()).isNull();
         assertThat(ctx.tenancyId()).isNull();
+    }
+
+    @Test
+    void creates_with_bridging_policy() {
+        var bridgingPolicy = new RoleBridgingPolicy(
+                RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
+                bridgingPolicy, "group-1", "tenant-1");
+        assertThat(ctx.bridgingPolicy()).isEqualTo(bridgingPolicy);
+    }
+
+    @Test
+    void convenience_constructor_has_null_bridging_policy() {
+        var ctx = new TopologyContext(
+                UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY);
+        assertThat(ctx.bridgingPolicy()).isNull();
     }
 
 

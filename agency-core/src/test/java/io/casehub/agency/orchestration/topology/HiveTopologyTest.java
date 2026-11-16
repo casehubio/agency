@@ -1,6 +1,10 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
+import io.casehub.api.model.stigmergy.BehavioralFingerprint;
+import io.casehub.api.model.stigmergy.DetectedRole;
+import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
@@ -120,7 +124,7 @@ class HiveTopologyTest {
                 new DecisionLoopFactory(name -> ctx -> "", new EventStreamBus<>()),
                 AutonomyBudgetPolicy.defaults(),
                 io.casehub.agency.orchestration.degradation.DegradationPolicy.defaults(),
-                "group-42", "tenant-1");
+                null, "group-42", "tenant-1");
 
         topology.configure(ctxWithGroup);
 
@@ -135,4 +139,17 @@ class HiveTopologyTest {
         assertThat(topology.groupId()).isNull();
         assertThat(topology.tenancyId()).isNull();
     }
+
+    @Test
+    void onSwarmEvent_noop_when_no_strategy() {
+        topology.configure(topologyContext);
+        var roles = java.util.List.of(new DetectedRole(
+                "cluster-1", java.util.Set.of("builder"), BehavioralFingerprint.EMPTY,
+                java.util.List.of("coordination"), 5, 0.1));
+        topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(UUID.randomUUID(), roles, SwarmProgress.EMPTY));
+
+        var descriptor = topology.describeTopology(UUID.randomUUID());
+        assertThat(descriptor.agentRoles()).isEqualTo(agentRoles);
+    }
+
 }

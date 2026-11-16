@@ -1,5 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
+import io.casehub.agency.orchestration.bridging.BridgedRoleState;
+import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPool;
 import io.casehub.agency.orchestration.budget.BudgetPriority;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
@@ -18,6 +20,9 @@ import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.api.model.coordination.RoleSuggestion;
+import io.casehub.api.spi.coordination.RoleBridgingStrategy;
+import io.casehub.platform.api.path.Path;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
@@ -47,24 +52,41 @@ public class HiveTopology implements CoordinationTopology {
     private List<CascadeDegradationTrigger> cascadeTriggers;
     private volatile @org.jspecify.annotations.Nullable String groupId;
     private volatile @org.jspecify.annotations.Nullable String tenancyId;
+    private final @org.jspecify.annotations.Nullable RoleBridgingStrategy bridgingStrategy;
+    private volatile @org.jspecify.annotations.Nullable RoleBridgingPolicy bridgingPolicy;
+    private final Map<String, BridgedRoleState> bridgedStates = new ConcurrentHashMap<>();
+
+    public HiveTopology(Map<String, AgentRole> agentRoles,
+                        HivePatternAdapter patternAdapter,
+                        OrchestrationPatternType patternType,
+                        @org.jspecify.annotations.Nullable RoleBridgingStrategy bridgingStrategy) {
+        this.agentRoles = Map.copyOf(Objects.requireNonNull(agentRoles));
+        this.patternAdapter = Objects.requireNonNull(patternAdapter);
+        this.patternType = Objects.requireNonNull(patternType);
+        this.bridgingStrategy = bridgingStrategy;
+    }
 
     public HiveTopology(Map<String, AgentRole> agentRoles,
                         HivePatternAdapter patternAdapter,
                         OrchestrationPatternType patternType) {
-        this.agentRoles = Map.copyOf(Objects.requireNonNull(agentRoles));
-        this.patternAdapter = Objects.requireNonNull(patternAdapter);
-        this.patternType = Objects.requireNonNull(patternType);
+        this(agentRoles, patternAdapter, patternType, null);
     }
 
     @Override
     public TopologyDescriptor describeTopology(UUID caseId) {
-        return new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles);
+        if (bridgedStates.isEmpty()) {
+            return new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles);
+        }
+        var merged = new LinkedHashMap<>(agentRoles);
+        bridgedStates.forEach((id, state) -> merged.put(id, state.bridgedRole()));
+        return new TopologyDescriptor(TopologyType.CENTRALISED, Map.copyOf(merged));
     }
 
     @Override
     public CoordinationPlan configure(TopologyContext context) {
         this.groupId = context.groupId();
         this.tenancyId = context.tenancyId();
+        this.bridgingPolicy = context.bridgingPolicy();
 
         context.descriptor().coordinatorAgentId()
                .orElseThrow(() -> new IllegalStateException(
@@ -136,6 +158,101 @@ public class HiveTopology implements CoordinationTopology {
 
     @Override
     public void onSwarmEvent(SwarmCoordinationEvent event) {
+        if (event instanceof SwarmCoordinationEvent.RoleChanged changed
+            && bridgingStrategy != null && bridgingPolicy != null) {
+            var suggestions = bridgingStrategy.map(changed.roles());
+            applyBridging(suggestions);
+        }
+    }
+
+    private void applyBridging(List<RoleSuggestion> suggestions) {
+        if (bridgingPolicy.mode() == RoleBridgingPolicy.Mode.ADVISORY) {
+            return;
+        }
+
+        Map<String, Double> latestConfidence = new LinkedHashMap<>();
+        for (var suggestion : suggestions) {
+            for (String agentId : suggestion.source().memberAgents()) {
+                latestConfidence.merge(agentId, suggestion.confidence(), Math::max);
+            }
+        }
+
+        Map<String, RoleSuggestion> candidates = new LinkedHashMap<>();
+        for (var suggestion : suggestions) {
+            if (suggestion.confidence() < bridgingPolicy.minConfidence()) continue;
+            for (String agentId : suggestion.source().memberAgents()) {
+                candidates.merge(agentId, suggestion, (existing, candidate) ->
+                    candidate.confidence() > existing.confidence() ? candidate : existing);
+            }
+        }
+
+        resolveConflicts(candidates);
+
+        for (var entry : candidates.entrySet()) {
+            String agentId = entry.getKey();
+            RoleSuggestion suggestion = entry.getValue();
+            AgentRole role = toBridgedRole(suggestion);
+            bridgedStates.compute(agentId, (id, existing) ->
+                existing != null
+                    ? existing.withConfidence(suggestion.confidence())
+                    : new BridgedRoleState(id, role, suggestion.confidence(), 0));
+        }
+
+        var toRemove = new ArrayList<String>();
+        for (var entry : bridgedStates.entrySet()) {
+            if (!candidates.containsKey(entry.getKey())) {
+                double confidence = latestConfidence.getOrDefault(entry.getKey(), 0.0);
+                var updated = entry.getValue().withConfidence(confidence);
+                if (updated.demotionEligible(bridgingPolicy)) {
+                    toRemove.add(entry.getKey());
+                } else {
+                    bridgedStates.put(entry.getKey(), updated);
+                }
+            }
+        }
+        toRemove.forEach(bridgedStates::remove);
+    }
+
+    private void resolveConflicts(Map<String, RoleSuggestion> candidates) {
+        Map<StructuralRole, List<String>> exclusiveGroups = new LinkedHashMap<>();
+        for (var entry : candidates.entrySet()) {
+            StructuralRole structural = effectiveStructuralRole(entry.getValue());
+            if (structural == StructuralRole.INITIATOR) {
+                exclusiveGroups.computeIfAbsent(structural, k -> new ArrayList<>())
+                    .add(entry.getKey());
+            }
+        }
+        for (var group : exclusiveGroups.values()) {
+            if (group.size() > 1) {
+                group.sort((a, b) -> {
+                    int cmp = Double.compare(
+                        candidates.get(b).confidence(), candidates.get(a).confidence());
+                    return cmp != 0 ? cmp : a.compareTo(b);
+                });
+                for (int i = 1; i < group.size(); i++) {
+                    candidates.remove(group.get(i));
+                }
+            }
+        }
+    }
+
+    private AgentRole toBridgedRole(RoleSuggestion suggestion) {
+        var structural = suggestion.suggestedStructuralRole();
+        var platform = suggestion.suggestedPlatformRole();
+        if (platform != null && structural == null) {
+            structural = platform.requiredStructuralRole();
+        }
+        return new AgentRole(Path.parse(suggestion.suggestedName()), structural, platform);
+    }
+
+    private @org.jspecify.annotations.Nullable StructuralRole effectiveStructuralRole(RoleSuggestion suggestion) {
+        if (suggestion.suggestedStructuralRole() != null) {
+            return suggestion.suggestedStructuralRole();
+        }
+        if (suggestion.suggestedPlatformRole() != null) {
+            return suggestion.suggestedPlatformRole().requiredStructuralRole();
+        }
+        return null;
     }
 
     @Override

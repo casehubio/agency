@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
+import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
 import io.casehub.agency.orchestration.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
@@ -17,6 +18,7 @@ public record TopologyContext(
         DecisionLoopFactory loopFactory,
         AutonomyBudgetPolicy budgetPolicy,
         DegradationPolicy degradationPolicy,
+        @Nullable RoleBridgingPolicy bridgingPolicy,
         @Nullable String groupId,
         @Nullable String tenancyId
 ) {
@@ -36,6 +38,7 @@ public record TopologyContext(
             DecisionLoopFactory loopFactory,
             AutonomyBudgetPolicy budgetPolicy,
             DegradationPolicy degradationPolicy) {
-        this(caseId, descriptor, agentProvider, loopFactory, budgetPolicy, degradationPolicy, null, null);
+        this(caseId, descriptor, agentProvider, loopFactory, budgetPolicy, degradationPolicy,
+             null, null, null);
     }
 }
