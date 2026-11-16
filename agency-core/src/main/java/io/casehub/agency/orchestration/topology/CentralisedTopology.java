@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CentralisedTopology<C> implements CoordinationTopology {
+public class CentralisedTopology<C> implements SwarmAwareTopology {
 
     private final C                                                              coordinationContext;
     private final RoutingStrategy<C>                                             routingStrategy;

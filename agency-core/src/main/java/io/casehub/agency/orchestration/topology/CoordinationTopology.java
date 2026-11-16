@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.spi.coordination.TopologyProvider;
 
@@ -11,8 +10,6 @@ public interface CoordinationTopology extends TopologyProvider {
     TopologyDescriptor describeTopology(UUID caseId);
 
     CoordinationPlan configure(TopologyContext context);
-
-    void onSwarmEvent(SwarmCoordinationEvent event);
 
     void onFeedback(CoordinationFeedback feedback);
 

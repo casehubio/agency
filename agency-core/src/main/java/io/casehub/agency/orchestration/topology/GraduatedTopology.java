@@ -11,13 +11,12 @@ import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
+import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
-import io.casehub.api.model.coordination.SwarmCoordinationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
-import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.CommunicationMode;
+import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
@@ -100,10 +99,6 @@ public class GraduatedTopology implements CoordinationTopology {
                 CompletableFuture.completedFuture(
                     new CoordinationFeedback(agentId, outcome, FeedbackSignal.SUCCESS));
         };
-    }
-
-    @Override
-    public void onSwarmEvent(SwarmCoordinationEvent event) {
     }
 
     @Override

@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DistributedTopology implements CoordinationTopology {
+public class DistributedTopology implements SwarmAwareTopology {
 
     private static final Logger LOG = Logger.getLogger(DistributedTopology.class.getName());
 

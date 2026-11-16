@@ -40,7 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HiveTopology implements CoordinationTopology {
+public class HiveTopology implements SwarmAwareTopology {
 
     private final Map<String, AgentRole> agentRoles;
     private final HivePatternAdapter patternAdapter;
