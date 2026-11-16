@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#c0392b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="480" fill="#fafafa" rx="4"/>
+
+  <!-- Title -->
+  <text x="360" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#2c3e50">Hierarchy-Aware Event Routing</text>
+
+  <!-- Left panel: Normal routing -->
+  <rect x="20" y="50" width="330" height="400" fill="white" stroke="#ddd" rx="6"/>
+  <text x="185" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#34495e">Normal Routing</text>
+
+  <!-- Hierarchy nodes - left -->
+  <rect x="145" y="100" width="80" height="36" rx="6" fill="#2980b9" stroke="none"/>
+  <text x="185" y="123" text-anchor="middle" fill="white" font-size="12" font-weight="500">Root</text>
+
+  <rect x="75" y="190" width="80" height="36" rx="6" fill="#27ae60" stroke="none"/>
+  <text x="115" y="213" text-anchor="middle" fill="white" font-size="12" font-weight="500">Middle</text>
+
+  <rect x="215" y="190" width="80" height="36" rx="6" fill="#27ae60" stroke="none"/>
+  <text x="255" y="213" text-anchor="middle" fill="white" font-size="12" font-weight="500">Middle₂</text>
+
+  <rect x="45" y="280" width="70" height="36" rx="6" fill="#8e44ad" stroke="none"/>
+  <text x="80" y="303" text-anchor="middle" fill="white" font-size="12" font-weight="500">Leaf</text>
+
+  <rect x="130" y="280" width="70" height="36" rx="6" fill="#8e44ad" stroke="none"/>
+  <text x="165" y="303" text-anchor="middle" fill="white" font-size="12" font-weight="500">Leaf₂</text>
+
+  <!-- Hierarchy lines - left -->
+  <line x1="175" y1="136" x2="125" y2="190" stroke="#bbb" stroke-width="1.5"/>
+  <line x1="195" y1="136" x2="245" y2="190" stroke="#bbb" stroke-width="1.5"/>
+  <line x1="100" y1="226" x2="85" y2="280" stroke="#bbb" stroke-width="1.5"/>
+  <line x1="125" y1="226" x2="160" y2="280" stroke="#bbb" stroke-width="1.5"/>
+
+  <!-- Event routing labels - left -->
+  <text x="30" y="355" font-size="11" fill="#2980b9" font-weight="600">▸ Initialised, Team, Provisioning → Root</text>
+  <text x="30" y="375" font-size="11" fill="#27ae60" font-weight="600">▸ RoleChanged → Root + Middle tiers</text>
+  <text x="30" y="395" font-size="11" fill="#f39c12" font-weight="600">▸ ProgressUpdated → All loops</text>
+  <text x="30" y="415" font-size="11" fill="#8e44ad" font-weight="600">▸ MemberCompleted → Parent of agent</text>
+
+  <!-- Right panel: Scope absorption -->
+  <rect x="370" y="50" width="330" height="400" fill="white" stroke="#ddd" rx="6"/>
+  <text x="535" y="75" text-anchor="middle" font-size="13" font-weight="600" fill="#34495e">Scope Absorption</text>
+
+  <!-- Hierarchy nodes - right -->
+  <rect x="495" y="100" width="80" height="36" rx="6" fill="#2980b9" stroke="none"/>
+  <text x="535" y="123" text-anchor="middle" fill="white" font-size="12" font-weight="500">Root</text>
+
+  <rect x="425" y="190" width="80" height="36" rx="6" fill="#c0392b" stroke="none" opacity="0.4"/>
+  <text x="465" y="213" text-anchor="middle" fill="white" font-size="12" font-weight="500">Middle ✕</text>
+
+  <rect x="565" y="190" width="80" height="36" rx="6" fill="#27ae60" stroke="none"/>
+  <text x="605" y="213" text-anchor="middle" fill="white" font-size="12" font-weight="500">Middle₂</text>
+
+  <rect x="395" y="280" width="70" height="36" rx="6" fill="#8e44ad" stroke="none"/>
+  <text x="430" y="303" text-anchor="middle" fill="white" font-size="12" font-weight="500">Leaf</text>
+
+  <rect x="480" y="280" width="70" height="36" rx="6" fill="#8e44ad" stroke="none"/>
+  <text x="515" y="303" text-anchor="middle" fill="white" font-size="12" font-weight="500">Leaf₂</text>
+
+  <!-- Hierarchy lines - right -->
+  <line x1="525" y1="136" x2="475" y2="190" stroke="#bbb" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="545" y1="136" x2="595" y2="190" stroke="#bbb" stroke-width="1.5"/>
+  <line x1="450" y1="226" x2="435" y2="280" stroke="#bbb" stroke-width="1.5"/>
+  <line x1="475" y1="226" x2="510" y2="280" stroke="#bbb" stroke-width="1.5"/>
+
+  <!-- Absorption redirect arrow -->
+  <path d="M 430,316 C 430,350 490,370 530,136" stroke="#c0392b" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrow-red)"/>
+  <text x="490" y="360" font-size="10" fill="#c0392b" font-weight="600">resolveAbsorber()</text>
+  <text x="490" y="373" font-size="10" fill="#c0392b">walks parentMap</text>
+
+  <!-- Right labels -->
+  <text x="380" y="420" font-size="11" fill="#c0392b" font-weight="600">When Middle collapses:</text>
+  <text x="380" y="437" font-size="11" fill="#666">Leaf's MemberCompleted re-routes to Root</text>
+</svg>
