@@ -83,7 +83,7 @@ public class SwarmCoordinatorBuilder {
         var experienceSection = new SwarmExperienceSection(experienceConfig);
         var routingStrategy = new SwarmRoutingStrategy(agentProvider, experienceSection,
                                                        preFilterThreshold, promptCustomiser, additionalSections);
-        var                                                                            aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
+        var aggregation = new CollectiveReasoningAggregation(agentProvider, promptCustomiser);
         io.casehub.agency.orchestration.termination.TerminationCondition<SwarmContext> termination = new SwarmConvergenceTermination(convergenceThreshold);
 
         String slot = variantSelector != null

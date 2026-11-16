@@ -30,7 +30,7 @@ public class HeuristicProvisioningSummariser implements ContentSummariser<Observ
     public CompletionStage<DecisionOutcome> summarise(List<ObservationEvent> items,
                                                       @Nullable DecisionOutcome previous) {
         boolean shouldProvision = fallback.fallbackProvisioningAdvice(currentSize.getAsInt(), maxSize.getAsInt());
-        var     advice          = new ProvisioningAdvice(shouldProvision, null, null, "heuristic-fallback");
+        var advice = new ProvisioningAdvice(shouldProvision, null, null, "heuristic-fallback");
         return CompletableFuture.completedFuture(new DecisionOutcome.Provision(advice));
     }
 }

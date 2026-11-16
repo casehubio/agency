@@ -9,6 +9,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.topology.CoordinationFeedback;
+import io.casehub.agency.orchestration.topology.SwarmAwareTopology;
 import io.casehub.agency.orchestration.topology.CoordinationPlan;
 import io.casehub.agency.orchestration.topology.FeedbackSignal;
 import io.casehub.agency.orchestration.topology.TopologyContext;
@@ -41,7 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-public class MultiSwarmTopology implements io.casehub.agency.orchestration.topology.SwarmAwareTopology, RegistryListener, AutoCloseable {
+public class MultiSwarmTopology implements SwarmAwareTopology, RegistryListener, AutoCloseable {
 
     private final MultiSwarmRegistry registry;
     private final CoordinationBus<MultiSwarmSignal> bus;
