@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
@@ -9,6 +8,7 @@ import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
+import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
@@ -54,6 +54,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
                                 Map<String, String> parentMap) {
         this.agentRoles = Map.copyOf(Objects.requireNonNull(agentRoles));
         this.parentMap  = Map.copyOf(Objects.requireNonNull(parentMap));
+        validateAcyclic(this.parentMap);
     }
 
     public void registerLoop(String agentId, AgentDecisionLoop loop) {
@@ -215,6 +216,21 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             current = parent;
         }
         return current;
+    }
+
+    private static void validateAcyclic(Map<String, String> parentMap) {
+        for (String start : parentMap.keySet()) {
+            Set<String> visited = new HashSet<>();
+            visited.add(start);
+            String current = parentMap.get(start);
+            while (current != null) {
+                if (!visited.add(current)) {
+                    throw new IllegalArgumentException(
+                            "Cycle detected in parentMap involving: " + current);
+                }
+                current = parentMap.get(current);
+            }
+        }
     }
 
     private CompletionStage<CoordinationFeedback> executeDelegated(

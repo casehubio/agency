@@ -1,7 +1,5 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.summarisation.EventStreamBus;
@@ -12,6 +10,8 @@ import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.StructuralRole;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -102,5 +102,17 @@ class HierarchicalTopologyTest {
         assertThat(plan.pool()).isNotNull();
         assertThat(plan.pool().topologyId()).endsWith("-HIERARCHICAL");
         assertThat(plan.pool().callsUsed()).isZero();
+    }
+
+    @Test
+    void constructor_rejects_cyclic_parentMap() {
+        Map<String, AgentRole> roles = Map.of(
+                "a", AgentRole.of("a", StructuralRole.CONTRACTOR),
+                "b", AgentRole.of("b", StructuralRole.CONTRACTOR));
+        Map<String, String> cyclic = Map.of("a", "b", "b", "a");
+
+        org.assertj.core.api.Assertions.assertThatIllegalArgumentException()
+                                       .isThrownBy(() -> new HierarchicalTopology(roles, cyclic))
+                                       .withMessageContaining("Cycle");
     }
 }
