@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="320" fill="#fafafa" rx="4"/>
+
+  <!-- Title -->
+  <text x="340" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#333">CascadeHandler Composition</text>
+  <text x="340" y="46" text-anchor="middle" font-size="11" fill="#888">Common cascade logic, topology-specific action</text>
+
+  <!-- CascadeHandler box -->
+  <rect x="200" y="60" width="280" height="80" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="340" y="82" text-anchor="middle" font-weight="600" fill="#1565c0">CascadeHandler</text>
+  <text x="340" y="100" text-anchor="middle" font-size="11" fill="#555">degradedLoops · threshold check · CAS</text>
+  <text x="340" y="116" text-anchor="middle" font-size="11" fill="#555">cascadeAction.run() → triggers.activate()</text>
+
+  <!-- Five topologies -->
+  <rect x="20"  y="190" width="120" height="55" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="80"  y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Centralised</text>
+  <text x="80"  y="230" text-anchor="middle" font-size="10" fill="#888">no-op action</text>
+
+  <rect x="150" y="190" width="120" height="55" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="210" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Hierarchical</text>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#888">+ collapsedLoops</text>
+
+  <rect x="280" y="190" width="120" height="55" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="340" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Hive</text>
+  <text x="340" y="230" text-anchor="middle" font-size="10" fill="#888">demote pattern</text>
+
+  <rect x="410" y="190" width="120" height="55" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="470" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Graduated</text>
+  <text x="470" y="230" text-anchor="middle" font-size="10" fill="#888">force scope</text>
+
+  <rect x="540" y="190" width="120" height="55" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="600" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#e65100">Hybrid</text>
+  <text x="600" y="230" text-anchor="middle" font-size="10" fill="#888">no-op action</text>
+
+  <!-- Arrows from handler to topologies -->
+  <line x1="260" y1="140" x2="80"  y2="186" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="300" y1="140" x2="210" y2="186" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="340" y1="140" x2="340" y2="186" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="380" y1="140" x2="470" y2="186" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="420" y1="140" x2="600" y2="186" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- Net lines annotation -->
+  <text x="340" y="280" text-anchor="middle" font-size="12" fill="#666">5 topologies, 1 handler, net −78 lines</text>
+  <text x="340" y="298" text-anchor="middle" font-size="11" fill="#999">Each topology passes its custom response as a Runnable</text>
+</svg>

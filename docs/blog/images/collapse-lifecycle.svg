@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#444"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#c44"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="280" fill="#fafafa" rx="4"/>
+
+  <!-- Normal state -->
+  <rect x="30" y="100" width="120" height="50" rx="8" fill="#e8f5e9" stroke="#4caf50" stroke-width="1.5"/>
+  <text x="90" y="130" text-anchor="middle" font-weight="600" fill="#2e7d32">Normal</text>
+
+  <!-- Degraded state -->
+  <rect x="210" y="100" width="120" height="50" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5"/>
+  <text x="270" y="130" text-anchor="middle" font-weight="600" fill="#e65100">Degraded</text>
+
+  <!-- Collapsed state -->
+  <rect x="390" y="100" width="120" height="50" rx="8" fill="#fbe9e7" stroke="#f44336" stroke-width="1.5"/>
+  <text x="450" y="130" text-anchor="middle" font-weight="600" fill="#c62828">Collapsed</text>
+
+  <!-- Absorbed state -->
+  <rect x="570" y="100" width="120" height="50" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.5"/>
+  <text x="630" y="130" text-anchor="middle" font-weight="600" fill="#6a1b9a">Absorbed</text>
+
+  <!-- Normal → Degraded -->
+  <line x1="150" y1="125" x2="205" y2="125" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="178" y="115" text-anchor="middle" font-size="11" fill="#666">trigger fires</text>
+
+  <!-- Degraded → Collapsed -->
+  <line x1="330" y1="125" x2="385" y2="125" stroke="#c44" stroke-width="1.5" marker-end="url(#arrow-red)"/>
+  <text x="358" y="115" text-anchor="middle" font-size="11" fill="#c44">policy fires</text>
+
+  <!-- Collapsed → Absorbed -->
+  <line x1="510" y1="125" x2="565" y2="125" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="538" y="115" text-anchor="middle" font-size="11" fill="#666">parent takes</text>
+  <text x="538" y="128" text-anchor="middle" font-size="11" fill="#666">scope</text>
+
+  <!-- Degraded → Normal (recovery) -->
+  <path d="M270,155 Q270,210 90,210 Q60,210 60,155" fill="none" stroke="#4caf50" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow)"/>
+  <text x="165" y="230" text-anchor="middle" font-size="11" fill="#4caf50">recovery — counter resets</text>
+
+  <!-- Descriptions below states -->
+  <text x="90" y="175" text-anchor="middle" font-size="10" fill="#888">LLM calls</text>
+  <text x="270" y="175" text-anchor="middle" font-size="10" fill="#888">heuristic fallback</text>
+  <text x="450" y="175" text-anchor="middle" font-size="10" fill="#888">sustained heuristic</text>
+  <text x="630" y="175" text-anchor="middle" font-size="10" fill="#888">parent runs scope</text>
+
+  <!-- Title -->
+  <text x="360" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#333">Degradation Lifecycle</text>
+  <text x="360" y="50" text-anchor="middle" font-size="11" fill="#888">DegradationAwareSummariser → CollapsePolicy → HierarchicalTopology</text>
+
+  <!-- Policy label -->
+  <rect x="345" y="58" width="90" height="22" rx="4" fill="#fff" stroke="#c44" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="390" y="73" text-anchor="middle" font-size="10" fill="#c44">CollapsePolicy</text>
+</svg>
