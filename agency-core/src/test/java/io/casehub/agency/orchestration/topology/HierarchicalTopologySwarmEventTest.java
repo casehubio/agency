@@ -144,6 +144,16 @@ class HierarchicalTopologySwarmEventTest {
     }
 
     @Test
+    void progress_broadcast_skips_collapsed_loop_and_redirects_to_absorber() {
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true, true));
+
+        topology.onSwarmEvent(new SwarmCoordinationEvent.ProgressUpdated(SWARM_ID, SwarmProgress.EMPTY));
+
+        assertThat(agentIdsFromCaptured()).containsExactlyInAnyOrder("root", "leaf");
+    }
+
+
+    @Test
     void member_completed_routes_to_parent_of_completed_agent() {
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
 

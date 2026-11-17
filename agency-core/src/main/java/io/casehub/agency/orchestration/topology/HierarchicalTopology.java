@@ -151,11 +151,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             case SwarmCoordinationEvent.TeamChanged e -> feedLoop(rootAgentId(), ObservationEvent.of("team-changed", e));
             case SwarmCoordinationEvent.ProvisioningChanged e -> feedLoop(rootAgentId(), ObservationEvent.of("provisioning-changed", e));
             case SwarmCoordinationEvent.RoleChanged e -> feedNonLeafLoops(ObservationEvent.of("roles-changed", e));
-            case SwarmCoordinationEvent.ProgressUpdated e -> {
-                for (var loop : loops.values()) {
-                    loop.collect(ObservationEvent.of("progress-updated", e));
-                }
-            }
+            case SwarmCoordinationEvent.ProgressUpdated e -> feedAllLoops(ObservationEvent.of("progress-updated", e));
             case SwarmCoordinationEvent.MemberCompleted e -> {
                 String parent = parentMap.get(e.agentId());
                 if (parent != null) {
@@ -208,6 +204,17 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             }
         }
     }
+
+    private void feedAllLoops(ObservationEvent event) {
+        Set<String> delivered = new HashSet<>();
+        for (String agentId : agentRoles.keySet()) {
+            String target = resolveAbsorber(agentId);
+            if (delivered.add(target)) {
+                feedLoop(target, event);
+            }
+        }
+    }
+
 
     private String resolveAbsorber(String agentId) {
         String current = agentId;
