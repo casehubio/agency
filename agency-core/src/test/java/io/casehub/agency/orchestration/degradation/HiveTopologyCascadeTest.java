@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.topology.HivePatternAdapter;
 import io.casehub.agency.orchestration.topology.HiveTopology;
 import io.casehub.agency.orchestration.topology.OrchestrationPatternType;
@@ -59,8 +58,8 @@ class HiveTopologyCascadeTest {
         topology.configure(topologyContext);
         assertThat(topology.patternType()).isEqualTo(OrchestrationPatternType.DEBATE);
 
-        topology.onDegradation(new SwarmDegradedEvent("hive-coordinator", "budget", true));
-        topology.onDegradation(new SwarmDegradedEvent("hive-worker-worker-1", "budget", true));
+        topology.onDegradation(new DegradedEvent("hive-coordinator", "budget", true));
+        topology.onDegradation(new DegradedEvent("hive-worker-worker-1", "budget", true));
 
         assertThat(topology.patternType()).isEqualTo(OrchestrationPatternType.VOTING);
     }
@@ -69,12 +68,12 @@ class HiveTopologyCascadeTest {
     void onDegradation_cascadeIsOneWayRatchet() {
         topology.configure(topologyContext);
 
-        topology.onDegradation(new SwarmDegradedEvent("hive-coordinator", "budget", true));
-        topology.onDegradation(new SwarmDegradedEvent("hive-worker-worker-1", "budget", true));
+        topology.onDegradation(new DegradedEvent("hive-coordinator", "budget", true));
+        topology.onDegradation(new DegradedEvent("hive-worker-worker-1", "budget", true));
         assertThat(topology.patternType()).isEqualTo(OrchestrationPatternType.VOTING);
 
-        topology.onDegradation(new SwarmDegradedEvent("hive-coordinator", "cleared", false));
-        topology.onDegradation(new SwarmDegradedEvent("hive-worker-worker-1", "cleared", false));
+        topology.onDegradation(new DegradedEvent("hive-coordinator", "cleared", false));
+        topology.onDegradation(new DegradedEvent("hive-worker-worker-1", "cleared", false));
         assertThat(topology.patternType()).isEqualTo(OrchestrationPatternType.VOTING);
     }
 }

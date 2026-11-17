@@ -293,7 +293,7 @@ When the coordinator LLM is unavailable (network failure, rate limit, context ov
 | Adaptive coordination | No-op — swarm continues without re-coordination |
 | Provisioning advice | Budget-based heuristic — provision if under budget and capabilities needed |
 
-The swarm continues operating with reduced intelligence. Observability events are delivered via a new `default void onSwarmDegraded(SwarmDegradedEvent event) {}` callback on `ExecutionEventListener` — backward-compatible since all methods on the interface have default implementations. `SwarmDegradedEvent` records (new, in `io.casehub.agency.orchestration.swarm`) signal which capability degraded and whether fallback is active. Agency's own event model; no dependency on engine-runtime-core's `SwarmEvent`.
+The swarm continues operating with reduced intelligence. Observability events are delivered via a new `default void onSwarmDegraded(SwarmDegradedEvent event) {}` callback on `ExecutionEventListener` — backward-compatible since all methods on the interface have default implementations. `DegradedEvent` records (new, in `io.casehub.agency.orchestration.swarm`) signal which capability degraded and whether fallback is active. Agency's own event model; no dependency on engine-runtime-core's `SwarmEvent`.
 
 ## PatternCompiler Changes
 

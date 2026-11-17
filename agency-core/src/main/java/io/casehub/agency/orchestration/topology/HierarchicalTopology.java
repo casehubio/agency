@@ -12,7 +12,7 @@ import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
@@ -260,7 +260,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
     }
 
     @Override
-    public void onDegradation(SwarmDegradedEvent event) {
+    public void onDegradation(DegradedEvent event) {
         if (event.fallbackActive()) {
             degradedLoops.add(event.capability());
             collapsedLoops.add(event.capability());

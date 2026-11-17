@@ -350,7 +350,7 @@ Expected: All tests PASS.
 
 - [ ] **Step 10: Update CLAUDE.md swarm package description**
 
-In `CLAUDE.md`, find the swarm package row in the Key Directories table and append `SwarmCoordinationListenerBridge` to the description. Add after `SwarmDegradedEvent`:
+In `CLAUDE.md`, find the swarm package row in the Key Directories table and append `SwarmCoordinationListenerBridge` to the description. Add after `DegradedEvent`:
 
 `, SwarmCoordinationListenerBridge (`@ApplicationScoped` `SwarmCoordinationListener` bridge — maps engine lifecycle callbacks to `SwarmCoordinationEvent` sealed variants via bound `SwarmEventSource`; no-op before `bind()`)`
 

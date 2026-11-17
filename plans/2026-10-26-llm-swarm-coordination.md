@@ -200,7 +200,7 @@ git commit -m "feat(#285): add PatternDefinition.Swarm topology + YAML serializa
 - Produces: `ExperienceReplayConfig(int maxTraces, double minSimilarity)` — used by Task 3
 - Produces: `SwarmAggregationState` record — used by Task 4
 - Produces: `SwarmInvocationPolicy(int maxCallsPerExecution, long maxTokensPerExecution, int provisioningReserve, Duration warnAfter, Duration errorAfter)` — used by Task 5
-- Produces: `SwarmDegradedEvent` record — used by Task 5
+- Produces: `DegradedEvent` record — used by Task 5
 
 - [ ] **Step 1: Write test for SwarmAssignment**
 
@@ -623,7 +623,7 @@ git commit -m "feat(#285): CollectiveReasoningAggregation + SwarmConvergenceTerm
 - Create: `agency/src/test/java/io/casehub/agency/orchestration/swarm/SwarmEventSourceTest.java`
 
 **Interfaces:**
-- Consumes: `SwarmInvocationPolicy` (Task 2), `SwarmDegradedEvent` (Task 2), `SwarmContext` (Task 2)
+- Consumes: `SwarmInvocationPolicy` (Task 2), `DegradedEvent` (Task 2), `SwarmContext` (Task 2)
 - Consumes: `EventSource` (agency orchestration/execution), `DriverEvent` (agency orchestration/execution)
 - Consumes: `CoalitionEvaluator` (agency deliberation/coalition), `CollectAll` (agency orchestration/aggregation)
 - Produces: `SwarmInvocationTracker` — `boolean tryAcquire(String capability)`, `void recordTokens(long tokens)` — used by Task 6

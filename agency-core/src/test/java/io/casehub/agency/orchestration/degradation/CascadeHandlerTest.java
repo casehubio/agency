@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CascadeHandlerTest {
 
-    private SwarmDegradedEvent degraded(String capability, boolean fallbackActive) {
-        return new SwarmDegradedEvent(capability, "reason", fallbackActive);
+    private DegradedEvent degraded(String capability, boolean fallbackActive) {
+        return new DegradedEvent(capability, "reason", fallbackActive);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.loop;
 
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.stigmergy.llm.InFlightGate;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EmissionPolicy;
@@ -46,7 +46,7 @@ public class DecisionLoopFactory {
             ContentSummariser<ObservationEvent, DecisionOutcome> heuristic,
             AutonomyBudgetPool pool,
             DegradationTrigger additionalTrigger,
-            Consumer<SwarmDegradedEvent> degradationSink,
+            Consumer<DegradedEvent> degradationSink,
             Consumer<BudgetTelemetryEvent> budgetEventSink) {
         return create(descriptor, context, reasoner, heuristic, pool,
                 additionalTrigger, degradationSink, budgetEventSink, e -> {});
@@ -59,7 +59,7 @@ public class DecisionLoopFactory {
             ContentSummariser<ObservationEvent, DecisionOutcome> heuristic,
             AutonomyBudgetPool pool,
             DegradationTrigger additionalTrigger,
-            Consumer<SwarmDegradedEvent> degradationSink,
+            Consumer<DegradedEvent> degradationSink,
             Consumer<BudgetTelemetryEvent> budgetEventSink,
             Consumer<DecisionLoopEvent> loopEventSink) {
         var sections = sectionRegistry.resolveAll(descriptor.promptSectionNames());
@@ -87,7 +87,7 @@ public class DecisionLoopFactory {
             }
         };
 
-        Consumer<SwarmDegradedEvent> degradationBridge = event -> {
+        Consumer<DegradedEvent> degradationBridge = event -> {
             degradationSink.accept(event);
             loopEventSink.accept(new DecisionLoopEvent.Degraded(
                     context.caseId(), context.agentId(), event.capability(),

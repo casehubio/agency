@@ -5,6 +5,7 @@ import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.orchestration.aggregation.AggregationResult;
 import io.casehub.agency.orchestration.routing.RoutingDecision;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.termination.TerminationDecision;
 
 import java.time.Duration;
@@ -24,7 +25,7 @@ public interface ExecutionEventListener {
     default void onExecutionStart(ExecutionModel<?> model) {}
     default void onExecutionComplete(ExecutionResult result, Duration executionDuration,
                                      int iterationCount) {}
-    default void onSwarmDegraded(io.casehub.agency.orchestration.swarm.SwarmDegradedEvent event) {}
+    default void onSwarmDegraded(DegradedEvent event) {}
 
     default void onDecisionLoopEvent(io.casehub.agency.orchestration.loop.DecisionLoopEvent event) {}
 

@@ -9,7 +9,7 @@ import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
@@ -176,7 +176,7 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void leaf_collapse_does_not_affect_parent_routing() {
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-leaf", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
 
@@ -185,7 +185,7 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void collapsed_middle_reroutes_to_root() {
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-middle", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
 
@@ -194,8 +194,8 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void multi_level_collapse_walks_up_to_root() {
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-middle", "latency", true));
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-leaf", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(
                 SWARM_ID, List.of(), SwarmProgress.EMPTY));
@@ -205,8 +205,8 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void recovery_removes_from_collapsed_set() {
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-leaf", "latency", true));
-        topology.onDegradation(new SwarmDegradedEvent("hierarchical-leaf", "recovered", false));
+        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "recovered", false));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
 

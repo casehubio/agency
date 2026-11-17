@@ -7,7 +7,7 @@ import io.casehub.platform.agent.budget.AutonomyBudgetPool;
 import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.topology.CoordinationFeedback;
 import io.casehub.agency.orchestration.topology.SwarmAwareTopology;
 import io.casehub.agency.orchestration.topology.CoordinationPlan;
@@ -128,7 +128,7 @@ public class MultiSwarmTopology implements SwarmAwareTopology, RegistryListener,
     public void onFeedback(CoordinationFeedback feedback) {}
 
     @Override
-    public void onDegradation(SwarmDegradedEvent event) {}
+    public void onDegradation(DegradedEvent event) {}
 
     @Override
     public void onRegistered(SwarmDescriptor descriptor) {

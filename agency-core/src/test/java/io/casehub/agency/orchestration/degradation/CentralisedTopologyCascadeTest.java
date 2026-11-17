@@ -3,7 +3,6 @@ package io.casehub.agency.orchestration.degradation;
 import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.swarm.SwarmContext;
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.orchestration.swarm.SwarmFallbackStrategy;
 import io.casehub.agency.orchestration.topology.CentralisedTopology;
 import io.casehub.agency.orchestration.topology.TopologyContext;
@@ -71,8 +70,8 @@ class CentralisedTopologyCascadeTest {
     void onDegradation_cascadesAllHeuristic_whenThresholdBreached() {
         topology.configure(topologyContext);
 
-        topology.onDegradation(new SwarmDegradedEvent("centralised-team-formation", "budget exhausted", true));
-        topology.onDegradation(new SwarmDegradedEvent("centralised-collective-reasoning", "budget exhausted", true));
+        topology.onDegradation(new DegradedEvent("centralised-team-formation", "budget exhausted", true));
+        topology.onDegradation(new DegradedEvent("centralised-collective-reasoning", "budget exhausted", true));
 
         assertThat(topology.loops()).isNotEmpty();
     }
@@ -81,10 +80,10 @@ class CentralisedTopologyCascadeTest {
     void onDegradation_recoveryRemovesFromDegradedSet() {
         topology.configure(topologyContext);
 
-        topology.onDegradation(new SwarmDegradedEvent("centralised-team-formation", "latency", true));
-        topology.onDegradation(new SwarmDegradedEvent("centralised-team-formation", "cleared", false));
+        topology.onDegradation(new DegradedEvent("centralised-team-formation", "latency", true));
+        topology.onDegradation(new DegradedEvent("centralised-team-formation", "cleared", false));
 
-        topology.onDegradation(new SwarmDegradedEvent("centralised-collective-reasoning", "budget", true));
+        topology.onDegradation(new DegradedEvent("centralised-collective-reasoning", "budget", true));
         assertThat(topology.loops()).isNotEmpty();
     }
 }

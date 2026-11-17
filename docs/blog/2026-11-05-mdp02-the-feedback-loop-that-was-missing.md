@@ -15,7 +15,7 @@ We shipped graceful degradation last week. Agents that exhaust their LLM budget 
 
 Except we had no way to see any of it happening.
 
-The degradation system fires `SwarmDegradedEvent` when a loop switches to heuristic. The budget system fires `BudgetTelemetryEvent` when a grant is acquired or denied. Both events exist. Both are consumed internally. Neither reaches the monitoring infrastructure. An operator watching Grafana would see the swarm's aggregate throughput drop and have no idea why — no per-agent latency, no token consumption, no degradation signals.
+The degradation system fires `DegradedEvent` when a loop switches to heuristic. The budget system fires `BudgetTelemetryEvent` when a grant is acquired or denied. Both events exist. Both are consumed internally. Neither reaches the monitoring infrastructure. An operator watching Grafana would see the swarm's aggregate throughput drop and have no idea why — no per-agent latency, no token consumption, no degradation signals.
 
 This is the gap between handling failure and understanding failure. You can build the world's most elegant fallback system, and it is operationally useless if nobody can see when it activates.
 
@@ -41,7 +41,7 @@ Why sealed? Because the `MetricsListener` uses an exhaustive switch. If we add a
 
 The interesting design problem was not the event hierarchy. It was getting the events emitted without coupling the summariser chain to decision loop concerns.
 
-The summariser chain is generic. `BudgetAwareSummariser<T, R>` wraps any `ContentSummariser` with budget gating. `DegradationAwareSummariser<T, R>` wraps any summariser with trigger-based fallback. Neither knows about `DecisionLoopEvent`, `caseId`, or `agentId`. They emit their own domain events — `BudgetTelemetryEvent` and `SwarmDegradedEvent` — through typed `Consumer<>` sinks.
+The summariser chain is generic. `BudgetAwareSummariser<T, R>` wraps any `ContentSummariser` with budget gating. `DegradationAwareSummariser<T, R>` wraps any summariser with trigger-based fallback. Neither knows about `DecisionLoopEvent`, `caseId`, or `agentId`. They emit their own domain events — `BudgetTelemetryEvent` and `DegradedEvent` — through typed `Consumer<>` sinks.
 
 The factory has the context. It creates the `DecisionContext` (which has `caseId` and `agentId`), and it creates the `Consumer<>` sinks that the summarisers will use. The bridge intercepts these sinks:
 

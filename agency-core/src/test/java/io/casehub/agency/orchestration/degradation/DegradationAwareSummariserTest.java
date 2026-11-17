@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.agency.summarisation.ContentSummariser;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ class DegradationAwareSummariserTest {
     void delegatesToLlm_whenNotDegraded() throws Exception {
         var llm = new StubSummariser();
         var heuristic = new HeuristicStub();
-        var events = new ArrayList<SwarmDegradedEvent>();
+        var events = new ArrayList<DegradedEvent>();
         var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> false, events::add, "test-loop");
 
         var result = summariser.summarise(List.of("input"), null).toCompletableFuture().get();
@@ -49,7 +48,7 @@ class DegradationAwareSummariserTest {
     void delegatesToHeuristic_whenDegraded() throws Exception {
         var llm = new StubSummariser();
         var heuristic = new HeuristicStub();
-        var events = new ArrayList<SwarmDegradedEvent>();
+        var events = new ArrayList<DegradedEvent>();
         var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> true, events::add, "test-loop");
 
         var result = summariser.summarise(List.of("input"), null).toCompletableFuture().get();
@@ -61,7 +60,7 @@ class DegradationAwareSummariserTest {
     void emitsDegradationEvent_onTransition() throws Exception {
         var llm = new StubSummariser();
         var heuristic = new HeuristicStub();
-        var events = new ArrayList<SwarmDegradedEvent>();
+        var events = new ArrayList<DegradedEvent>();
         boolean[] degraded = {false};
         var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> degraded[0], events::add, "test-loop");
 
@@ -79,7 +78,7 @@ class DegradationAwareSummariserTest {
     void emitsRecoveryEvent_onRecovery() throws Exception {
         var llm = new StubSummariser();
         var heuristic = new HeuristicStub();
-        var events = new ArrayList<SwarmDegradedEvent>();
+        var events = new ArrayList<DegradedEvent>();
         boolean[] degraded = {true};
         var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> degraded[0], events::add, "test-loop");
 
@@ -97,7 +96,7 @@ class DegradationAwareSummariserTest {
     void doesNotEmitDuplicate_whenAlreadyDegraded() throws Exception {
         var llm = new StubSummariser();
         var heuristic = new HeuristicStub();
-        var events = new ArrayList<SwarmDegradedEvent>();
+        var events = new ArrayList<DegradedEvent>();
         var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> true, events::add, "test-loop");
 
         summariser.summarise(List.of("a"), null).toCompletableFuture().get();

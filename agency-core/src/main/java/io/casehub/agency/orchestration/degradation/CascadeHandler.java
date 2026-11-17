@@ -1,6 +1,5 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.agency.orchestration.swarm.SwarmDegradedEvent;
 import io.casehub.platform.agent.budget.BudgetPriority;
 import org.jspecify.annotations.Nullable;
 
@@ -35,7 +34,7 @@ public class CascadeHandler {
         this(threshold, loopPriorities, cascadeTriggers, () -> {});
     }
 
-    public void onDegradation(SwarmDegradedEvent event) {
+    public void onDegradation(DegradedEvent event) {
         if (event.fallbackActive()) {
             degradedLoops.add(event.capability());
         } else {

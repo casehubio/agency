@@ -1,5 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.spi.coordination.TopologyProvider;
 
@@ -13,7 +14,7 @@ public interface CoordinationTopology extends TopologyProvider {
 
     void onFeedback(CoordinationFeedback feedback);
 
-    default void onDegradation(io.casehub.agency.orchestration.swarm.SwarmDegradedEvent event) {}
+    default void onDegradation(DegradedEvent event) {}
 
     @Override
     default TopologyDescriptor topologyFor(String agentId, String tenancyId) {

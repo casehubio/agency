@@ -46,7 +46,7 @@ The real argument for graceful degradation is not about fault tolerance in the a
 
 A swarm running on heuristics will route all candidates instead of selecting the best ones. It will concatenate all results instead of reasoning about them. It will provision new agents whenever there is room instead of considering whether they are needed. Every one of these decisions is worse than the LLM-backed version.
 
-But every one of them is a decision. The swarm continues to function. Work gets routed. Results get aggregated. The topology knows which loops are degraded and has responded structurally. An operator monitoring `SwarmDegradedEvent` can see exactly which loops switched to heuristic, when, and whether cascade fired.
+But every one of them is a decision. The swarm continues to function. Work gets routed. Results get aggregated. The topology knows which loops are degraded and has responded structurally. An operator monitoring `DegradedEvent` can see exactly which loops switched to heuristic, when, and whether cascade fired.
 
 The alternative — the status quo until this week — was that the swarm silently became a collection of agents sending messages into a void.
 
