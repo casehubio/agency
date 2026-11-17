@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220" style="max-width:700px;width:100%">
+  <style>
+    text { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; }
+    .header { font-weight: 600; font-size: 14px; }
+    .dim { fill: #666; }
+  </style>
+  <rect x="0" y="0" width="700" height="220" fill="#fafafa" rx="6"/>
+  <line x1="30" y1="45" x2="670" y2="45" stroke="#ddd" stroke-width="1"/>
+  <text x="40" y="30" class="header">Gap</text>
+  <text x="300" y="30" class="header">Symptom</text>
+  <text x="530" y="30" class="header">Category</text>
+  <text x="40" y="70">Cyclic parentMap</text>
+  <text x="300" y="70">Infinite hang</text>
+  <text x="530" y="70" class="dim">Latent hazard</text>
+  <text x="40" y="105">instanceof cascade</text>
+  <text x="300" y="105">New strategies silently skip</text>
+  <text x="530" y="105" class="dim">Extensibility</text>
+  <text x="40" y="140">Hardcoded "unknown"</text>
+  <text x="300" y="140">Cost dashboard has no model data</text>
+  <text x="530" y="140" class="dim">Observability</text>
+  <text x="40" y="175">Unused event variant</text>
+  <text x="300" y="175">Action dispatch invisible in telemetry</text>
+  <text x="530" y="175" class="dim">Observability</text>
+</svg>
