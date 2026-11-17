@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="400" fill="#fafafa" rx="4"/>
+
+  <!-- DegradedEvent box -->
+  <rect x="20" y="150" width="160" height="80" rx="6" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="100" y="180" text-anchor="middle" font-weight="600" fill="#1a73e8">DegradedEvent</text>
+  <text x="100" y="200" text-anchor="middle" font-size="11" fill="#5f6368">fallbackActive + collapsed</text>
+
+  <!-- degradedLoops box -->
+  <rect x="260" y="60" width="160" height="70" rx="6" fill="#fef7e0" stroke="#f9ab00" stroke-width="1.5"/>
+  <text x="340" y="88" text-anchor="middle" font-weight="600" fill="#e37400">degradedLoops</text>
+  <text x="340" y="108" text-anchor="middle" font-size="11" fill="#5f6368">from fallbackActive</text>
+
+  <!-- collapsedLoops box -->
+  <rect x="260" y="250" width="160" height="70" rx="6" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="340" y="278" text-anchor="middle" font-weight="600" fill="#c5221f">collapsedLoops</text>
+  <text x="340" y="298" text-anchor="middle" font-size="11" fill="#5f6368">from collapsed</text>
+
+  <!-- Cascade threshold box -->
+  <rect x="500" y="40" width="190" height="90" rx="6" fill="#fff" stroke="#dadce0" stroke-width="1.5"/>
+  <text x="595" y="68" text-anchor="middle" font-weight="600" fill="#202124">Cascade Threshold</text>
+  <text x="595" y="88" text-anchor="middle" font-size="11" fill="#5f6368">System-wide circuit breaker</text>
+  <text x="595" y="106" text-anchor="middle" font-size="11" fill="#5f6368">All heuristics activated</text>
+
+  <!-- Scope absorber box -->
+  <rect x="500" y="250" width="190" height="90" rx="6" fill="#fff" stroke="#dadce0" stroke-width="1.5"/>
+  <text x="595" y="278" text-anchor="middle" font-weight="600" fill="#202124">resolveAbsorber()</text>
+  <text x="595" y="298" text-anchor="middle" font-size="11" fill="#5f6368">Per-agent scope redirect</text>
+  <text x="595" y="316" text-anchor="middle" font-size="11" fill="#5f6368">Parent takes child's work</text>
+
+  <!-- Arrow: event → degradedLoops -->
+  <line x1="180" y1="175" x2="258" y2="105" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Arrow: event → collapsedLoops -->
+  <line x1="180" y1="210" x2="258" y2="275" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Arrow: degradedLoops → cascade -->
+  <line x1="420" y1="95" x2="498" y2="85" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Arrow: collapsedLoops → absorber -->
+  <line x1="420" y1="285" x2="498" y2="285" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Labels on arrows -->
+  <text x="210" y="128" text-anchor="middle" font-size="10" fill="#888" transform="rotate(-25, 210, 128)">fallbackActive</text>
+  <text x="210" y="260" text-anchor="middle" font-size="10" fill="#888" transform="rotate(25, 210, 260)">collapsed</text>
+
+  <!-- Legend -->
+  <text x="20" y="380" font-size="11" fill="#888">Old model: both sets updated identically from fallbackActive</text>
+  <text x="20" y="395" font-size="11" fill="#888">New model: independent tracking — degradation ≠ collapse</text>
+</svg>
