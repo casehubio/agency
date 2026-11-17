@@ -1,6 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionContext;
@@ -9,12 +10,8 @@ import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EventStreamBus;
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
@@ -24,6 +21,9 @@ import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -185,7 +185,7 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void collapsed_middle_reroutes_to_root() {
-        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true, true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
 
@@ -194,13 +194,42 @@ class HierarchicalTopologySwarmEventTest {
 
     @Test
     void multi_level_collapse_walks_up_to_root() {
-        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true));
-        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true, true));
+        topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true, true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.RoleChanged(
                 SWARM_ID, List.of(), SwarmProgress.EMPTY));
 
         assertThat(agentIdsFromCaptured()).containsExactly("root");
+    }
+
+
+    @Test
+    void degradation_without_collapse_does_not_trigger_absorption() {
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true));
+
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
+
+        assertThat(agentIdsFromCaptured()).containsExactly("middle");
+    }
+
+    @Test
+    void explicit_collapse_triggers_absorption() {
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true, true));
+
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
+
+        assertThat(agentIdsFromCaptured()).containsExactly("root");
+    }
+
+    @Test
+    void collapse_recovery_restores_routing() {
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "latency", true, true));
+        topology.onDegradation(new DegradedEvent("hierarchical-middle", "recovered", false, false));
+
+        topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
+
+        assertThat(agentIdsFromCaptured()).containsExactly("middle");
     }
 
     @Test

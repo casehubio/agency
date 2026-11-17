@@ -4,6 +4,7 @@ import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
@@ -12,7 +13,6 @@ import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
@@ -263,9 +263,12 @@ public class HierarchicalTopology implements SwarmAwareTopology {
     public void onDegradation(DegradedEvent event) {
         if (event.fallbackActive()) {
             degradedLoops.add(event.capability());
-            collapsedLoops.add(event.capability());
         } else {
             degradedLoops.remove(event.capability());
+        }
+        if (event.collapsed()) {
+            collapsedLoops.add(event.capability());
+        } else if (!event.fallbackActive()) {
             collapsedLoops.remove(event.capability());
         }
         if (event.fallbackActive() && !cascadeTriggered.get()
