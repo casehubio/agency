@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="Inter, system-ui, sans-serif">
+  <style>
+    .tier-label { font-size: 13px; font-weight: 600; fill: #1a1a2e; }
+    .tier-desc { font-size: 11px; fill: #555; }
+    .box { rx: 6; ry: 6; stroke-width: 1.5; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .observable { fill: #e8f4e8; stroke: #4a9; }
+    .internal { fill: #f0f0f5; stroke: #999; }
+    .dead { fill: #fde8e8; stroke: #c66; }
+    .badge { font-size: 9px; font-weight: 600; }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a2e">Multi-Swarm Signal Pipeline</text>
+
+  <!-- L0 -->
+  <rect x="30" y="55" width="200" height="70" class="box observable"/>
+  <text x="130" y="78" text-anchor="middle" class="tier-label">L0: Signal Bus</text>
+  <text x="130" y="96" text-anchor="middle" class="tier-desc">Pub/sub with ring buffer replay</text>
+  <text x="130" y="112" text-anchor="middle" class="tier-desc">Finding | Progress | Completion</text>
+  <rect x="170" y="57" width="55" height="16" rx="8" fill="#4a9"/>
+  <text x="197" y="68" text-anchor="middle" class="badge" fill="white">OBSERVE</text>
+
+  <!-- L1 -->
+  <rect x="260" y="55" width="200" height="70" class="box internal"/>
+  <text x="360" y="78" text-anchor="middle" class="tier-label">L1: Relevance Scoring</text>
+  <text x="360" y="96" text-anchor="middle" class="tier-desc">Per-swarm scorer (Weighted or BJT)</text>
+  <text x="360" y="112" text-anchor="middle" class="tier-desc">Capability overlap + domain match</text>
+  <rect x="400" y="57" width="55" height="16" rx="8" fill="#999"/>
+  <text x="427" y="68" text-anchor="middle" class="badge" fill="white">INTERNAL</text>
+
+  <!-- L2 -->
+  <rect x="490" y="55" width="200" height="70" class="box observable"/>
+  <text x="590" y="78" text-anchor="middle" class="tier-label">L2: Belief Revision</text>
+  <text x="590" y="96" text-anchor="middle" class="tier-desc">AGM expand / contract / revise</text>
+  <text x="590" y="112" text-anchor="middle" class="tier-desc">Consistency checker resolves conflicts</text>
+  <rect x="630" y="57" width="55" height="16" rx="8" fill="#4a9"/>
+  <text x="657" y="68" text-anchor="middle" class="badge" fill="white">OBSERVE</text>
+
+  <!-- Arrows L0->L1->L2 -->
+  <path d="M230,90 L258,90" class="arrow"/>
+  <path d="M460,90 L488,90" class="arrow"/>
+
+  <!-- What's observable -->
+  <rect x="30" y="160" width="300" height="80" class="box observable"/>
+  <text x="180" y="183" text-anchor="middle" class="tier-label">Observable via Public API</text>
+  <text x="180" y="202" text-anchor="middle" class="tier-desc">currentBeliefs() -- belief set state</text>
+  <text x="180" y="218" text-anchor="middle" class="tier-desc">signalBus().replayBuffer() -- signal history</text>
+  <text x="180" y="234" text-anchor="middle" class="tier-desc">hasScorer() -- registration state</text>
+
+  <!-- What's dead -->
+  <rect x="390" y="160" width="300" height="80" class="box dead"/>
+  <text x="540" y="183" text-anchor="middle" class="tier-label">Dead Paths (found by behavioral tests)</text>
+  <text x="540" y="202" text-anchor="middle" class="tier-desc">drainNotifications() -- always empty</text>
+  <text x="540" y="218" text-anchor="middle" class="tier-desc">CONFLICT notifications -- never produced</text>
+  <text x="540" y="234" text-anchor="middle" class="tier-desc">Escalation gate -- inputs always zero</text>
+
+  <!-- Bottom note -->
+  <rect x="30" y="275" width="660" height="50" rx="6" fill="#fff8e8" stroke="#d4a" stroke-width="1"/>
+  <text x="360" y="296" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1a2e">AGM belief revision restores consistency by construction.</text>
+  <text x="360" y="314" text-anchor="middle" font-size="11" fill="#555">The post-revision inconsistency check can never be true -- contradictions are resolved during revision, not after.</text>
+</svg>

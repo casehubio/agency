@@ -116,7 +116,6 @@ public class LatencyDegradationTrigger implements StatefulDegradationTrigger, Co
         }
     }
 
-
     private static int restrictiveness(CircuitBreakerState s) {
         return switch (s) {
             case CLOSED -> 0;

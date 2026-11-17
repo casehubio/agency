@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" font-family="'SF Mono','Fira Code','Cascadia Code',monospace" font-size="13">
+  <defs>
+    <marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#475569" stroke-width="1.5"/>
+    </marker>
+  </defs>
+
+  <rect width="680" height="300" fill="#f8fafc" rx="8"/>
+  <text x="340" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">Escalation Gate: Three Inputs</text>
+
+  <!-- Input 1: conflictLevel -->
+  <rect x="30" y="55" width="180" height="70" rx="6" fill="#dcfce7" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="120" y="78" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">conflictLevel</text>
+  <text x="120" y="95" text-anchor="middle" font-size="10" fill="#166534">CONFLICT notifications</text>
+  <text x="120" y="110" text-anchor="middle" font-size="10" fill="#166534">/ scorer count</text>
+
+  <!-- Input 2: resourceContention -->
+  <rect x="30" y="140" width="180" height="70" rx="6" fill="#dcfce7" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="120" y="163" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">resourceContention</text>
+  <text x="120" y="180" text-anchor="middle" font-size="10" fill="#166534">Jaccard overlap of</text>
+  <text x="120" y="195" text-anchor="middle" font-size="10" fill="#166534">claimed agent IDs</text>
+
+  <!-- Input 3: dependencyStrength -->
+  <rect x="30" y="225" width="180" height="55" rx="6" fill="#e0e7ff" stroke="#818cf8" stroke-width="1"/>
+  <text x="120" y="248" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">dependencyStrength</text>
+  <text x="120" y="265" text-anchor="middle" font-size="10" fill="#3730a3">capability overlap</text>
+
+  <!-- Gate -->
+  <rect x="300" y="100" width="160" height="120" rx="8" fill="#fefce8" stroke="#facc15" stroke-width="2"/>
+  <text x="380" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="#854d0e">ESCALATION</text>
+  <text x="380" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#854d0e">GATE</text>
+  <text x="380" y="185" text-anchor="middle" font-size="10" fill="#a16207">0.50w + 0.25w + 0.25w</text>
+  <text x="380" y="200" text-anchor="middle" font-size="10" fill="#a16207">threshold: 0.6</text>
+
+  <!-- Arrows in -->
+  <line x1="210" y1="90" x2="300" y2="140" stroke="#475569" stroke-width="1.2" marker-end="url(#arr2)"/>
+  <line x1="210" y1="175" x2="300" y2="160" stroke="#475569" stroke-width="1.2" marker-end="url(#arr2)"/>
+  <line x1="210" y1="252" x2="300" y2="195" stroke="#475569" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+  <!-- Weight labels -->
+  <text x="250" y="105" text-anchor="middle" font-size="10" fill="#64748b">w=0.50</text>
+  <text x="248" y="162" text-anchor="middle" font-size="10" fill="#64748b">w=0.25</text>
+  <text x="248" y="228" text-anchor="middle" font-size="10" fill="#64748b">w=0.25</text>
+
+  <!-- Output -->
+  <rect x="530" y="130" width="130" height="60" rx="6" fill="#fef2f2" stroke="#f87171" stroke-width="1.5"/>
+  <text x="595" y="155" text-anchor="middle" font-size="12" font-weight="600" fill="#991b1b">DEPENDENCY</text>
+  <text x="595" y="172" text-anchor="middle" font-size="12" font-weight="600" fill="#991b1b">notification</text>
+
+  <line x1="460" y1="160" x2="530" y2="160" stroke="#475569" stroke-width="1.2" marker-end="url(#arr2)"/>
+  <text x="495" y="150" text-anchor="middle" font-size="10" fill="#64748b">&gt; 0.6</text>
+
+  <!-- Legend -->
+  <rect x="490" y="60" width="12" height="12" rx="2" fill="#dcfce7" stroke="#4ade80" stroke-width="1"/>
+  <text x="508" y="71" font-size="10" fill="#475569">fixed this session</text>
+  <rect x="490" y="80" width="12" height="12" rx="2" fill="#e0e7ff" stroke="#818cf8" stroke-width="1"/>
+  <text x="508" y="91" font-size="10" fill="#475569">already working</text>
+</svg>

@@ -22,7 +22,9 @@ public record DegradationPolicy(
         }
         Objects.requireNonNull(priorityWeights, "priorityWeights must not be null");
         priorityWeights = Map.copyOf(priorityWeights);
-        if (latencyBreachCount < 1) {throw new IllegalArgumentException("latencyBreachCount must be >= 1");}
+        if (latencyBreachCount < 1) {
+            throw new IllegalArgumentException("latencyBreachCount must be >= 1");
+        }
         Objects.requireNonNull(latencyBreachWindowDuration,
                                "latencyBreachWindowDuration must not be null");
         if (latencyBreachWindowDuration.isNegative() || latencyBreachWindowDuration.isZero()) {
@@ -33,7 +35,9 @@ public record DegradationPolicy(
         if (recoveryTimeout.isNegative() || recoveryTimeout.isZero()) {
             throw new IllegalArgumentException("recoveryTimeout must be positive");
         }
-        if (probeSuccessThreshold < 1) {throw new IllegalArgumentException("probeSuccessThreshold must be >= 1");}
+        if (probeSuccessThreshold < 1) {
+            throw new IllegalArgumentException("probeSuccessThreshold must be >= 1");
+        }
     }
 
     public LatencyCircuitBreakerConfig toLatencyConfig() {

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" font-family="Inter, system-ui, sans-serif">
+  <style>
+    .header { font-size: 14px; font-weight: 700; fill: #1a1a2e; }
+    .item { font-size: 11px; fill: #333; }
+    .check { font-size: 13px; fill: #4a9; }
+    .cross { font-size: 13px; fill: #c66; }
+    .question { font-size: 13px; fill: #d90; }
+    .col-head { font-size: 11px; font-weight: 600; fill: #666; }
+    .divider { stroke: #ddd; stroke-width: 1; }
+  </style>
+
+  <!-- Column headers -->
+  <text x="30" y="30" class="header">What</text>
+  <text x="310" y="30" class="col-head" text-anchor="middle">Component Tests</text>
+  <text x="520" y="30" class="col-head" text-anchor="middle">Behavioral Tests</text>
+
+  <line x1="20" y1="40" x2="700" y2="40" class="divider"/>
+
+  <!-- Row 1 -->
+  <text x="30" y="65" class="item">CoordinationBus delivers signals</text>
+  <text x="310" y="65" text-anchor="middle" class="check">✓ passes</text>
+  <text x="520" y="65" text-anchor="middle" class="check">✓ passes</text>
+
+  <!-- Row 2 -->
+  <text x="30" y="95" class="item">DomainConsistencyChecker detects contradictions</text>
+  <text x="310" y="95" text-anchor="middle" class="check">✓ passes</text>
+  <text x="520" y="95" text-anchor="middle" class="check">✓ passes</text>
+
+  <!-- Row 3 -->
+  <text x="30" y="125" class="item">BJT scorer returns correct probabilities</text>
+  <text x="310" y="125" text-anchor="middle" class="check">✓ passes</text>
+  <text x="520" y="125" text-anchor="middle" class="question">⚠ sensitive to overlap</text>
+
+  <!-- Row 4 -->
+  <text x="30" y="155" class="item">CONFLICT notifications produced on contradiction</text>
+  <text x="310" y="155" text-anchor="middle" class="question">⚠ untested path</text>
+  <text x="520" y="155" text-anchor="middle" class="cross">✗ never produced</text>
+
+  <!-- Row 5 -->
+  <text x="30" y="185" class="item">Escalation gate fires on dependency</text>
+  <text x="310" y="185" text-anchor="middle" class="question">⚠ untested path</text>
+  <text x="520" y="185" text-anchor="middle" class="cross">✗ inputs always zero</text>
+
+  <!-- Row 6 -->
+  <text x="30" y="215" class="item">Consumer setup → register → publish → observe</text>
+  <text x="310" y="215" text-anchor="middle" class="cross">✗ not tested</text>
+  <text x="520" y="215" text-anchor="middle" class="check">✓ full workflow</text>
+
+  <line x1="20" y1="235" x2="700" y2="235" class="divider"/>
+
+  <!-- Summary -->
+  <text x="360" y="262" text-anchor="middle" font-size="12" font-weight="600" fill="#1a1a2e">Component tests verified the parts. Behavioral tests found that two integrated paths produce nothing.</text>
+</svg>
