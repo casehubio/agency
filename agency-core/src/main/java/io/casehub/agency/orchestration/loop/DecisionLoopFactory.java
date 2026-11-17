@@ -22,7 +22,6 @@ public class DecisionLoopFactory {
     private final EventStreamBus<DecisionOutcome> outputBus;
     private final String                          modelId;
 
-
     public DecisionLoopFactory(PromptSectionRegistry sectionRegistry,
                                EventStreamBus<DecisionOutcome> outputBus) {
         this(sectionRegistry, outputBus, "unknown");
@@ -33,7 +32,7 @@ public class DecisionLoopFactory {
                                String modelId) {
         this.sectionRegistry = sectionRegistry;
         this.outputBus       = outputBus;
-        this.modelId         = modelId;
+        this.modelId         = java.util.Objects.requireNonNull(modelId, "modelId");
     }
 
     public String modelId() {
