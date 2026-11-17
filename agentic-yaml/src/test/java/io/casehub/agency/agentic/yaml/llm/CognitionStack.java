@@ -173,8 +173,11 @@ public class CognitionStack {
                     mood, composer, config.drive());
         }
 
-        var core = new CognitionCore(mood, drives, userModel, mentalModel,
-                strategy, narrative, goals, hygieneAdapter);
+        var core = io.casehub.neocortex.cognition.core.CognitivePipelineBuilder
+                .create(mood, drives)
+                .userModel(userModel).mentalModel(mentalModel).strategy(strategy)
+                .narrative(narrative).goals(goals).memoryHygiene(hygieneAdapter)
+                .build();
         return new CognitionStack(core, stage, narrativeMemory, agentProvider,
                 cbrStore, strategy != null ? config.strategyLearning() : null);
     }
