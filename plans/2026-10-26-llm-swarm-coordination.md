@@ -820,7 +820,7 @@ git commit -m "feat(#285): LlmSwarmCoordinator composition root + SwarmProvision
 - Modify: `agency-core/src/main/java/io/casehub/agency/orchestration/pattern/Patterns.java:5` — add `swarm()` method
 - Create: `agency-core/src/main/java/io/casehub/agency/orchestration/swarm/SwarmBuilder.java`
 - Modify: `agency-core/src/main/java/io/casehub/agency/orchestration/execution/AbstractExecutionDriver.java` — add SwarmAssignment case
-- Modify: `agency-core/src/main/java/io/casehub/agency/orchestration/execution/ExecutionEventListener.java` — add `onSwarmDegraded` default method
+- Modify: `agency-core/src/main/java/io/casehub/agency/orchestration/execution/ExecutionEventListener.java` — add `onDegraded` default method
 - Modify: `agentic-yaml/src/test/java/io/casehub/agency/agentic/yaml/compiler/PatternCompilerTest.java` — add swarm compilation test
 
 **Interfaces:**

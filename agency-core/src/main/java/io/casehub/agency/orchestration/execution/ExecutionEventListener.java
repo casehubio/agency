@@ -25,7 +25,7 @@ public interface ExecutionEventListener {
     default void onExecutionStart(ExecutionModel<?> model) {}
     default void onExecutionComplete(ExecutionResult result, Duration executionDuration,
                                      int iterationCount) {}
-    default void onSwarmDegraded(DegradedEvent event) {}
+    default void onDegraded(DegradedEvent event) {}
 
     default void onDecisionLoopEvent(io.casehub.agency.orchestration.loop.DecisionLoopEvent event) {}
 
