@@ -146,4 +146,20 @@ class DecisionLoopFactoryTest {
         assertThat(DecisionLoopFactory.estimateTokens(route)).isZero();
     }
 
+
+    @Test
+    void create_withModelId_passesModelToTelemetry() {
+        var registry = new MapPromptSectionRegistry(Map.of());
+        var bus      = new EventStreamBus<DecisionOutcome>();
+        var factory  = new DecisionLoopFactory(registry, bus, "claude-sonnet-4");
+        assertThat(factory.modelId()).isEqualTo("claude-sonnet-4");
+    }
+
+    @Test
+    void create_defaultModelId_isUnknown() {
+        var registry = new MapPromptSectionRegistry(Map.of());
+        var bus      = new EventStreamBus<DecisionOutcome>();
+        var factory  = new DecisionLoopFactory(registry, bus);
+        assertThat(factory.modelId()).isEqualTo("unknown");
+    }
 }

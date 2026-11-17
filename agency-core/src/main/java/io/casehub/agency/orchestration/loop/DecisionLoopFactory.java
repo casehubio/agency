@@ -20,11 +20,24 @@ public class DecisionLoopFactory {
 
     private final PromptSectionRegistry           sectionRegistry;
     private final EventStreamBus<DecisionOutcome> outputBus;
+    private final String                          modelId;
+
 
     public DecisionLoopFactory(PromptSectionRegistry sectionRegistry,
                                EventStreamBus<DecisionOutcome> outputBus) {
+        this(sectionRegistry, outputBus, "unknown");
+    }
+
+    public DecisionLoopFactory(PromptSectionRegistry sectionRegistry,
+                               EventStreamBus<DecisionOutcome> outputBus,
+                               String modelId) {
         this.sectionRegistry = sectionRegistry;
         this.outputBus       = outputBus;
+        this.modelId         = modelId;
+    }
+
+    public String modelId() {
+        return modelId;
     }
 
     public AgentDecisionLoop create(
@@ -86,7 +99,7 @@ public class DecisionLoopFactory {
                 new SectionAwareContentSummariser(reasoner, sections, context);
 
         ContentSummariser<ObservationEvent, DecisionOutcome> budgetAware =
-                new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetBridge, DecisionLoopFactory::estimateTokens, "unknown");
+                new io.casehub.agency.orchestration.budget.BudgetAwareSummariser<>(withSections, view, budgetBridge, DecisionLoopFactory::estimateTokens, modelId);
 
         var degradationAware = new io.casehub.agency.orchestration.degradation.DegradationAwareSummariser<>(
                 budgetAware, heuristic, compositeTrigger, degradationBridge, descriptor.name());
