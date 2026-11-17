@@ -2,12 +2,12 @@ package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.bridging.BridgedRoleState;
 import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.CascadeHandler;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
@@ -15,41 +15,36 @@ import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
-import io.casehub.api.model.coordination.SwarmCoordinationEvent;
-import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.AgentRole;
-import io.casehub.api.model.coordination.RoleSuggestion;
-import io.casehub.api.spi.coordination.RoleBridgingStrategy;
-import io.casehub.platform.api.path.Path;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
+import io.casehub.api.model.coordination.RoleSuggestion;
 import io.casehub.api.model.coordination.StructuralRole;
+import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.api.spi.coordination.RoleBridgingStrategy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
+import io.casehub.platform.api.path.Path;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HiveTopology implements SwarmAwareTopology {
 
     private final Map<String, AgentRole> agentRoles;
     private final HivePatternAdapter patternAdapter;
     private volatile OrchestrationPatternType patternType;
-    private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
-    private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
-    private CascadeThreshold cascadeThreshold;
-    private Map<String, BudgetPriority> loopPriorities;
-    private List<CascadeDegradationTrigger> cascadeTriggers;
+    private CascadeHandler cascadeHandler = new CascadeHandler(null, Map.of(), List.of());
     private volatile @org.jspecify.annotations.Nullable String groupId;
     private volatile @org.jspecify.annotations.Nullable String tenancyId;
     private final @org.jspecify.annotations.Nullable RoleBridgingStrategy bridgingStrategy;
@@ -95,7 +90,7 @@ public class HiveTopology implements SwarmAwareTopology {
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
         var dp   = context.degradationPolicy();
 
-        this.cascadeThreshold = switch (dp.thresholdType()) {
+        CascadeThreshold cascadeThreshold = switch (dp.thresholdType()) {
             case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
             case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
         };
@@ -125,7 +120,7 @@ public class HiveTopology implements SwarmAwareTopology {
         allDescriptors.add(coordinatorDescriptor);
         allDescriptors.addAll(workerDescriptors);
 
-        this.loopPriorities = new LinkedHashMap<>();
+        var loopPriorities = new LinkedHashMap<String, BudgetPriority>();
         for (var d : allDescriptors) {
             loopPriorities.put(d.name(), d.budgetPriority());
         }
@@ -148,7 +143,12 @@ public class HiveTopology implements SwarmAwareTopology {
             heuristics.put(wd.name(), new NoOpHeuristicSummariser<>());
         }
 
-        this.cascadeTriggers = List.copyOf(cascadeList);
+        this.cascadeHandler = new CascadeHandler(cascadeThreshold, loopPriorities, List.copyOf(cascadeList), () -> {
+            patternType = switch (patternType) {
+                case DEBATE -> OrchestrationPatternType.VOTING;
+                case VOTING, SUPERVISOR -> OrchestrationPatternType.SUPERVISOR;
+            };
+        });
 
         DecisionOutcomeExecutor executor = (agentId, outcome, ctx) ->
                                                    patternAdapter.execute(patternType, agentId, outcome, ctx);
@@ -261,24 +261,7 @@ public class HiveTopology implements SwarmAwareTopology {
     }
 
     @Override
-    public void onDegradation(DegradedEvent event) {
-        if (event.fallbackActive()) {
-            degradedLoops.add(event.capability());
-        } else {
-            degradedLoops.remove(event.capability());
-        }
-        if (event.fallbackActive() && !cascadeTriggered.get()
-            && cascadeThreshold != null
-            && cascadeThreshold.isBreached(degradedLoops, loopPriorities.size(), loopPriorities)
-            && cascadeTriggered.compareAndSet(false, true)) {
-            patternType = switch (patternType) {
-                case DEBATE -> OrchestrationPatternType.VOTING;
-                case VOTING -> OrchestrationPatternType.SUPERVISOR;
-                case SUPERVISOR -> OrchestrationPatternType.SUPERVISOR;
-            };
-            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
-        }
-    }
+    public void onDegradation(DegradedEvent event) {cascadeHandler.onDegradation(event);}
 
 
     public OrchestrationPatternType patternType() {return patternType;}

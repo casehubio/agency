@@ -1,6 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.CascadeHandler;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
@@ -36,19 +37,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HierarchicalTopology implements SwarmAwareTopology {
 
     private final Map<String, AgentRole>                       agentRoles;
     private final Map<String, String>                          parentMap;
-    private final Set<String>                                  degradedLoops    = ConcurrentHashMap.newKeySet();
     private final Set<String>                                  collapsedLoops   = ConcurrentHashMap.newKeySet();
-    private final AtomicBoolean                                cascadeTriggered = new AtomicBoolean(false);
     private final ConcurrentHashMap<String, AgentDecisionLoop> loops            = new ConcurrentHashMap<>();
-    private       CascadeThreshold                             cascadeThreshold;
-    private       Map<String, BudgetPriority>                  loopPriorities;
-    private       List<CascadeDegradationTrigger>              cascadeTriggers;
+    private       CascadeHandler                               cascadeHandler = new CascadeHandler(null, Map.of(), List.of());
 
     public HierarchicalTopology(Map<String, AgentRole> agentRoles,
                                 Map<String, String> parentMap) {
@@ -72,7 +68,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-HIERARCHICAL");
         var dp   = context.degradationPolicy();
 
-        this.cascadeThreshold = switch (dp.thresholdType()) {
+        CascadeThreshold cascadeThreshold = switch (dp.thresholdType()) {
             case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
             case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
         };
@@ -112,7 +108,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
                     List.of("hierarchy-context")));
         }
 
-        this.loopPriorities = new LinkedHashMap<>();
+        var loopPriorities = new LinkedHashMap<String, BudgetPriority>();
         for (var d : descriptors) {
             loopPriorities.put(d.name(), d.budgetPriority());
         }
@@ -138,7 +134,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             heuristics.put(loopName, new NoOpHeuristicSummariser<>());
         }
 
-        this.cascadeTriggers = List.copyOf(cascadeList);
+        this.cascadeHandler = new CascadeHandler(cascadeThreshold, loopPriorities, List.copyOf(cascadeList));
 
         DecisionOutcomeExecutor executor = this::executeDelegated;
         return new CoordinationPlan(descriptors, executor, pool, triggers, heuristics);
@@ -268,22 +264,12 @@ public class HierarchicalTopology implements SwarmAwareTopology {
 
     @Override
     public void onDegradation(DegradedEvent event) {
-        if (event.fallbackActive()) {
-            degradedLoops.add(event.capability());
-        } else {
-            degradedLoops.remove(event.capability());
-        }
         if (event.collapsed()) {
             collapsedLoops.add(event.capability());
         } else if (!event.fallbackActive()) {
             collapsedLoops.remove(event.capability());
         }
-        if (event.fallbackActive() && !cascadeTriggered.get()
-            && cascadeThreshold != null
-            && cascadeThreshold.isBreached(degradedLoops, loopPriorities.size(), loopPriorities)
-            && cascadeTriggered.compareAndSet(false, true)) {
-            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
-        }
+        cascadeHandler.onDegradation(event);
     }
 
 }

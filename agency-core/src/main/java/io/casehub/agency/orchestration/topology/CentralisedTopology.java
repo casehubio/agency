@@ -3,6 +3,7 @@ package io.casehub.agency.orchestration.topology;
 import io.casehub.agency.core.RoutingCandidate;
 import io.casehub.agency.orchestration.aggregation.AggregationStrategy;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
+import io.casehub.agency.orchestration.degradation.CascadeHandler;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
@@ -34,12 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -60,11 +58,7 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
     private @Nullable Consumer<DecisionLoopEvent>                                loopEventSink;
 
 
-    private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
-    private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
-    private CascadeThreshold cascadeThreshold;
-    private Map<String, BudgetPriority> loopPriorities;
-    private List<CascadeDegradationTrigger> cascadeTriggers;
+    private CascadeHandler cascadeHandler = new CascadeHandler(null, Map.of(), List.of());
 
     public CentralisedTopology(
             C coordinationContext,
@@ -137,22 +131,24 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
         var factory      = context.loopFactory();
         var dp           = context.degradationPolicy();
 
-        this.cascadeThreshold = switch (dp.thresholdType()) {
+        CascadeThreshold cascadeThreshold = switch (dp.thresholdType()) {
             case SIMPLE_FRACTION -> new SimpleFractionThreshold(dp.cascadeThreshold());
             case PRIORITY_WEIGHTED -> new PriorityWeightedThreshold(dp.cascadeThreshold(), dp.priorityWeights());
         };
 
-        this.loopPriorities = new LinkedHashMap<>();
+        var loopPriorities = new LinkedHashMap<String, BudgetPriority>();
         loopPriorities.put(teamFormation.name(), teamFormation.budgetPriority());
         loopPriorities.put(collectiveReasoning.name(), collectiveReasoning.budgetPriority());
         loopPriorities.put(provisioning.name(), provisioning.budgetPriority());
 
-        Consumer<DegradedEvent> degradationSink = this::onDegradation;
-
         var routingCascade      = new CascadeDegradationTrigger();
         var aggregationCascade  = new CascadeDegradationTrigger();
         var provisioningCascade = new CascadeDegradationTrigger();
-        this.cascadeTriggers = List.of(routingCascade, aggregationCascade, provisioningCascade);
+        var cascadeTriggers = List.of(routingCascade, aggregationCascade, provisioningCascade);
+
+        this.cascadeHandler = new CascadeHandler(cascadeThreshold, loopPriorities, cascadeTriggers);
+
+        Consumer<DegradedEvent> degradationSink = this::onDegradation;
 
         var defaultLlmPolicy    = io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10));
         var routingLatency      = LatencyDegradationTrigger.builder(defaultLlmPolicy, dp.toLatencyConfig()).build();
@@ -268,19 +264,7 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
     }
 
     @Override
-    public void onDegradation(DegradedEvent event) {
-        if (event.fallbackActive()) {
-            degradedLoops.add(event.capability());
-        } else {
-            degradedLoops.remove(event.capability());
-        }
-        if (event.fallbackActive() && !cascadeTriggered.get()
-            && cascadeThreshold != null
-            && cascadeThreshold.isBreached(degradedLoops, loopPriorities.size(), loopPriorities)
-            && cascadeTriggered.compareAndSet(false, true)) {
-            cascadeTriggers.forEach(CascadeDegradationTrigger::activate);
-        }
-    }
+    public void onDegradation(DegradedEvent event) {cascadeHandler.onDegradation(event);}
 
 
     public C coordinationContext()                       {return coordinationContext;}
