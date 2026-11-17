@@ -81,7 +81,7 @@ public class GraduatedTopology implements CoordinationTopology {
         var triggers   = new LinkedHashMap<String, DegradationTrigger>();
         var heuristics = new LinkedHashMap<String, ContentSummariser<ObservationEvent, DecisionOutcome>>();
         for (var d : descriptors) {
-            triggers.put(d.name(), new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration()));
+            triggers.put(d.name(), LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build());
             heuristics.put(d.name(), new NoOpHeuristicSummariser<>());
         }
 

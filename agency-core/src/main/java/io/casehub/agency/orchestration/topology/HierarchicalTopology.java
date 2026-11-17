@@ -126,7 +126,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             String  loopName = "hierarchical-" + agentId;
             boolean isLeaf   = isLeaf(agentId, roles.keySet());
 
-            var latency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+            var latency = LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build();
 
             if (isLeaf) {
                 var cascade = new CascadeDegradationTrigger();

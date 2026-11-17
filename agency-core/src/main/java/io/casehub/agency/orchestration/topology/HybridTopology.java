@@ -99,7 +99,7 @@ public class HybridTopology implements CoordinationTopology {
         var cascadeList = new ArrayList<CascadeDegradationTrigger>();
 
         // Coordinator: latency only, no cascade trigger
-        var coordLatency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        var coordLatency = LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build();
         triggers.put(globalDescriptor.name(), coordLatency);
         heuristics.put(globalDescriptor.name(), new NoOpHeuristicSummariser<>());
 
@@ -107,7 +107,7 @@ public class HybridTopology implements CoordinationTopology {
         for (var ld : localDescriptors) {
             var cascade = new CascadeDegradationTrigger();
             cascadeList.add(cascade);
-            var latency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+            var latency = LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build();
             triggers.put(ld.name(), new CompositeDegradationTrigger(List.of(cascade, latency)));
             heuristics.put(ld.name(), new NoOpHeuristicSummariser<>());
         }

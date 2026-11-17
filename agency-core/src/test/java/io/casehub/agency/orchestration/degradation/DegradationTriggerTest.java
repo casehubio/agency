@@ -1,11 +1,15 @@
 package io.casehub.agency.orchestration.degradation;
 
-import io.casehub.platform.agent.budget.AgentBudgetView;
+import io.casehub.api.model.stigmergy.CircuitBreakerState;
+import io.casehub.agency.stigmergy.llm.LlmInvocationPolicy;
 import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.platform.agent.budget.AutonomyBudgetPool;
 import io.casehub.platform.agent.budget.BudgetPriority;
+import io.casehub.platform.agent.budget.BudgetTelemetryEvent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,5 +67,40 @@ class DegradationTriggerTest {
         var trigger = new CascadeDegradationTrigger();
         trigger.activate();
         assertThat(trigger.shouldDegrade()).isTrue();
+    }
+
+    @Test
+    void composite_state_derivesMostRestrictiveFromChildren() {
+        var open = new CascadeDegradationTrigger();
+        open.activate();
+        var closed    = new CascadeDegradationTrigger();
+        var composite = new CompositeDegradationTrigger(List.of(open, closed));
+        assertThat(composite.state()).isEqualTo(CircuitBreakerState.OPEN);
+    }
+
+    @Test
+    void composite_state_closedWhenAllChildrenClosed() {
+        var composite = new CompositeDegradationTrigger(
+                List.of(() -> false, () -> false));
+        assertThat(composite.state()).isEqualTo(CircuitBreakerState.CLOSED);
+    }
+
+    @Test
+    void composite_state_delegatesToStatefulChildren() {
+        var config = new LatencyCircuitBreakerConfig(1, Duration.ofMinutes(2),
+                                                     Duration.ofMillis(50), 1);
+        var policy = LlmInvocationPolicy.of(
+                Duration.ofSeconds(5), Duration.ofSeconds(8), Duration.ofSeconds(10));
+        var latency = LatencyDegradationTrigger.builder(policy, config).build();
+        latency.accept(new BudgetTelemetryEvent.Outcome("c", "m", 100, 11_000, Instant.now()));
+
+        var composite = new CompositeDegradationTrigger(List.of(latency, () -> false));
+        assertThat(composite.state()).isEqualTo(CircuitBreakerState.OPEN);
+    }
+
+    @Test
+    void composite_state_emptyList_returnsClosed() {
+        var composite = new CompositeDegradationTrigger(List.of());
+        assertThat(composite.state()).isEqualTo(CircuitBreakerState.CLOSED);
     }
 }

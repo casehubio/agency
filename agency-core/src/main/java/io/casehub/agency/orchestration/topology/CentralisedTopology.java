@@ -151,9 +151,10 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
         var provisioningCascade = new CascadeDegradationTrigger();
         this.cascadeTriggers = List.of(routingCascade, aggregationCascade, provisioningCascade);
 
-        var routingLatency      = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
-        var aggregationLatency  = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
-        var provisioningLatency = new LatencyDegradationTrigger(io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10)), dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        var defaultLlmPolicy    = io.casehub.agency.stigmergy.llm.LlmInvocationPolicy.of(java.time.Duration.ofSeconds(5), java.time.Duration.ofSeconds(8), java.time.Duration.ofSeconds(10));
+        var routingLatency      = LatencyDegradationTrigger.builder(defaultLlmPolicy, dp.toLatencyConfig()).build();
+        var aggregationLatency  = LatencyDegradationTrigger.builder(defaultLlmPolicy, dp.toLatencyConfig()).build();
+        var provisioningLatency = LatencyDegradationTrigger.builder(defaultLlmPolicy, dp.toLatencyConfig()).build();
 
         DegradationTrigger routingAdditional      = new CompositeDegradationTrigger(List.of(routingCascade, routingLatency));
         DegradationTrigger aggregationAdditional   = new CompositeDegradationTrigger(List.of(aggregationCascade, aggregationLatency));

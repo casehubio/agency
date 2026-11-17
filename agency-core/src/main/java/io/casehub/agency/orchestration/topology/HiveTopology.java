@@ -135,7 +135,7 @@ public class HiveTopology implements SwarmAwareTopology {
         var cascadeList = new ArrayList<CascadeDegradationTrigger>();
 
         // Coordinator: latency only, no cascade trigger
-        var coordLatency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+        var coordLatency = LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build();
         triggers.put(coordinatorDescriptor.name(), coordLatency);
         heuristics.put(coordinatorDescriptor.name(), new NoOpHeuristicSummariser<>());
 
@@ -143,7 +143,7 @@ public class HiveTopology implements SwarmAwareTopology {
         for (var wd : workerDescriptors) {
             var cascade = new CascadeDegradationTrigger();
             cascadeList.add(cascade);
-            var latency = new LatencyDegradationTrigger(defaultPolicy, dp.latencyBreachWindow(), dp.latencyBreachCount(), dp.latencyBreachWindowDuration());
+            var latency = LatencyDegradationTrigger.builder(defaultPolicy, dp.toLatencyConfig()).build();
             triggers.put(wd.name(), new CompositeDegradationTrigger(List.of(cascade, latency)));
             heuristics.put(wd.name(), new NoOpHeuristicSummariser<>());
         }
