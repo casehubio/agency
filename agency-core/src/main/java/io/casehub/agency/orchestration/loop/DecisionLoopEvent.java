@@ -112,6 +112,7 @@ public sealed interface DecisionLoopEvent {
         String capability,
         String reason,
         boolean fallbackActive,
+        boolean collapsed,
         Instant timestamp
     ) implements DecisionLoopEvent {
         public Degraded {

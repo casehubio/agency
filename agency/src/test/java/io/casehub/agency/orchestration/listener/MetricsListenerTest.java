@@ -188,7 +188,7 @@ class MetricsListenerTest {
         @Test
         void degraded_incrementsCounter() {
             var event = new io.casehub.agency.orchestration.loop.DecisionLoopEvent.Degraded(
-                    CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, NOW);
+                    CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, false, NOW);
             listener.onDecisionLoopEvent(event);
 
             var metrics = reader.collectAllMetrics();

@@ -1,9 +1,9 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.platform.agent.budget.BudgetPressure;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.api.model.coordination.CommunicationMode;
 import io.casehub.api.model.coordination.DecisionScope;
+import io.casehub.platform.agent.budget.BudgetPressure;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -100,10 +100,22 @@ class DecisionLoopEventTest {
     @Test
     void degraded_validConstruction() {
         var event = new DecisionLoopEvent.Degraded(
-                CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, NOW);
+                CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, false, NOW);
         assertThat(event.capability()).isEqualTo("reasoning");
         assertThat(event.fallbackActive()).isTrue();
     }
+
+    @Test
+    void degraded_carriesCollapsedFlag() {
+        var collapsed = new DecisionLoopEvent.Degraded(
+                CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, true, NOW);
+        assertThat(collapsed.collapsed()).isTrue();
+
+        var notCollapsed = new DecisionLoopEvent.Degraded(
+                CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, false, NOW);
+        assertThat(notCollapsed.collapsed()).isFalse();
+    }
+
 
     @Test
     void sealedInterfaceCommonFields() {
@@ -126,7 +138,7 @@ class DecisionLoopEventTest {
                 new DecisionLoopEvent.ActionDispatched(CASE_ID, AGENT_ID, "Route", NOW),
                 new DecisionLoopEvent.BudgetExhausted(CASE_ID, AGENT_ID, "r",
                         new BudgetPressure(0.5, BudgetPriority.NORMAL), NOW),
-                new DecisionLoopEvent.Degraded(CASE_ID, AGENT_ID, "c", "r", false, NOW),
+                new DecisionLoopEvent.Degraded(CASE_ID, AGENT_ID, "c", "r", false, false, NOW),
         };
         for (DecisionLoopEvent e : events) {
             String label = switch (e) {

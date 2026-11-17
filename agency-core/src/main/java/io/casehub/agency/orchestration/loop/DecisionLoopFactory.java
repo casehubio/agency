@@ -91,7 +91,7 @@ public class DecisionLoopFactory {
             degradationSink.accept(event);
             loopEventSink.accept(new DecisionLoopEvent.Degraded(
                     context.caseId(), context.agentId(), event.capability(),
-                    event.reason(), event.fallbackActive(), Instant.now()));
+                    event.reason(), event.fallbackActive(), event.collapsed(), Instant.now()));
         };
 
         ContentSummariser<ObservationEvent, DecisionOutcome> withSections =
