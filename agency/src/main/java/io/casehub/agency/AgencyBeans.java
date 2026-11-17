@@ -1,20 +1,10 @@
 package io.casehub.agency;
 
-import io.casehub.api.spi.routing.RoutingPromptAssembler;
-import io.casehub.api.spi.routing.RoutingSignalAssembler;
-import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
-import io.casehub.agency.social.cognition.CognitionAvatarAdapter;
-import io.casehub.agency.governance.attestation.NoOpAttestationIntentWriter;
 import io.casehub.agency.communication.channel.summary.ChannelSummariser;
 import io.casehub.agency.communication.channel.summary.HeuristicMessageSummariser;
 import io.casehub.agency.communication.channel.summary.NoOpThreadSummaryStore;
 import io.casehub.agency.communication.channel.summary.ThreadSummaryObserver;
-import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
-import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
-import io.casehub.agency.social.memory.NoOpReflectionStore;
-import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
-import io.casehub.agency.social.memory.ReflectionQueryStore;
-import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
+import io.casehub.agency.governance.attestation.NoOpAttestationIntentWriter;
 import io.casehub.agency.governance.routing.agent.CbrAgentRoutingStrategy;
 import io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights;
 import io.casehub.agency.governance.routing.agent.CbrOutcomeWeights;
@@ -28,9 +18,19 @@ import io.casehub.agency.governance.routing.agent.DispositionAwareRouting;
 import io.casehub.agency.governance.routing.agent.LlmAgentRoutingStrategy;
 import io.casehub.agency.governance.routing.agent.PlanCompositionAnalyser;
 import io.casehub.agency.governance.routing.agent.PredecessorAnalyser;
-import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.perception.narrative.DecisionNarrativePipeline;
 import io.casehub.agency.perception.narrative.DecisionNarrativeSummariser;
+import io.casehub.agency.social.cognition.CognitionAvatarAdapter;
+import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
+import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
+import io.casehub.agency.social.memory.NoOpReflectionStore;
+import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
+import io.casehub.agency.social.memory.ReflectionQueryStore;
+import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.api.spi.routing.RoutingPromptAssembler;
+import io.casehub.api.spi.routing.RoutingSignalAssembler;
+import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.eidos.api.AgentGraphQuery;
 import io.casehub.eidos.api.AgentRegistry;
 import io.casehub.eidos.api.DispositionEvolution;
@@ -40,21 +40,13 @@ import io.casehub.eidos.api.DispositionSignalStore;
 import io.casehub.eidos.api.GoalSignalStore;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
-import io.casehub.neocortex.cognition.core.CognitionCore;
-import io.casehub.neocortex.cognition.core.CognitionPhase;
-import io.casehub.neocortex.cognition.core.CognitiveAttentionMediator;
-import io.casehub.neocortex.cognition.core.CognitiveProfileParticipant;
-import io.casehub.neocortex.cognition.core.ConsolidationMediator;
-import io.casehub.neocortex.cognition.core.DomainActivationParticipant;
-import io.casehub.neocortex.cognition.drive.DriveComposer;
 import io.casehub.neocortex.cognition.drive.CuriosityDrive;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
-import io.casehub.neocortex.cognition.drive.DriveIntensity;
-import io.casehub.neocortex.cognition.drive.DriveSource;
-import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
-import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
+import io.casehub.neocortex.cognition.drive.DriveComposer;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
+import io.casehub.neocortex.cognition.drive.DriveIntensity;
 import io.casehub.neocortex.cognition.drive.DriveOrchestrator;
+import io.casehub.neocortex.cognition.drive.DriveSource;
 import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
 import io.casehub.neocortex.cognition.goal.CrossAxisGoalEnricher;
 import io.casehub.neocortex.cognition.goal.DriveGoalFormationStrategy;
@@ -79,10 +71,7 @@ import io.casehub.neocortex.cognition.narrative.NarrativePipeline;
 import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
 import io.casehub.neocortex.cognition.personality.PersonalityEvolutionOrchestrator;
 import io.casehub.neocortex.cognition.personality.TraitPressureSource;
-import io.casehub.neocortex.cognition.prompt.DomainActivationPromptSection;
 import io.casehub.neocortex.cognition.prompt.EmergentGoalPromptSection;
-import io.casehub.neocortex.cognition.prompt.EntityKnowledgePromptSection;
-import io.casehub.neocortex.cognition.prompt.SocialComparisonPromptSection;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningOrchestrator;
 import io.casehub.neocortex.cognition.strategy.StrategyMemory;
@@ -91,6 +80,8 @@ import io.casehub.neocortex.cognition.usermodel.UserModelOrchestrator;
 import io.casehub.neocortex.cognition.usermodel.UserProfileMemory;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
+import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
+import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.session.SessionPipeline;
 import io.casehub.qhorus.api.channel.ThreadSummaryUpdatedEvent;
@@ -119,8 +110,6 @@ public class AgencyBeans {
 
     @Inject Instance<MemoryHygieneOrchestrator> hygieneOrchestratorInstance;
     @Inject Instance<NarrativeOrchestrator> narrativeOrchestratorInstance;
-    @Inject Instance<GoalProposalOrchestrator> goalProposalOrchestratorInstance;
-    @Inject Instance<InnerLifeOrchestrator> innerLifeOrchestratorInstance;
     @Inject Instance<AgentRegistry> agentRegistryInstance;
     @Inject Instance<CivilityConstraint> civilityConstraintInstance;
     @Inject Instance<TraitPressureSource<?>> traitPressureSourceInstance;
@@ -134,17 +123,10 @@ public class AgencyBeans {
     @Inject Instance<TrustScoreSource> scoreSourceInstance;
     @Inject Instance<TrustRoutingPolicyProvider> policyProviderInstance;
     @Inject Instance<SystemPromptCustomiser> systemPromptCustomiserInstance;
-    @Inject Instance<CognitiveAttentionMediator> attentionMediatorInstance;
     @Inject Instance<io.casehub.neocortex.memory.engagement.runtime.EngagementRecorderCore> engagementRecorderInstance;
-    @Inject Instance<io.casehub.neocortex.cognition.temporal.TemporalFocusOrchestrator> temporalFocusOrchestratorInstance;
-    @Inject Instance<io.casehub.neocortex.cognition.temporal.ReflectionRetrievalOrchestrator> reflectionOrchestratorInstance;
-    @Inject Instance<ConsolidationMediator> consolidationMediatorInstance;
     @Inject Instance<io.casehub.neocortex.mindmap.MindMapStore> mindMapStoreInstance;
     @Inject Instance<io.casehub.neocortex.mindmap.GoalAppraisal> goalAppraisalInstance;
     @Inject Instance<io.casehub.neocortex.memory.CaseMemoryStore> caseMemoryStoreInstance;
-    @Inject Instance<io.casehub.neocortex.cognitive.index.CognitiveProfile> cognitiveProfileInstance;
-    @Inject Instance<io.casehub.neocortex.cognitive.index.DomainActivation> domainActivationInstance;
-    @Inject Instance<io.casehub.neocortex.cognition.subthought.SubThoughtTickParticipant> subThoughtParticipantInstance;
     @Inject Instance<AgentGraphQuery> agentGraphQueryInstance;
     @Inject Instance<RoutingSignalAssembler> routingSignalAssemblerInstance;
     @Inject Instance<SessionPipeline> sessionPipelineInstance;
@@ -348,102 +330,65 @@ public class AgencyBeans {
     @SuppressWarnings("unused")
     private void socialNormDetectorPlaceholder() {}
 
+
+// ── Cognition SPI bridges — make agency's adapters visible to CognitionCoreFactory ──
+
+    @Produces
+    public io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator neocortexMemoryHygieneSpi() {
+        return hygieneOrchestratorInstance.isResolvable()
+               ? new io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter(hygieneOrchestratorInstance.get())
+               : null;
+    }
+
+    @Produces
+    public java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent> engagementEventConsumer() {
+        return engagementRecorderInstance.isResolvable()
+               ? engagementRecorderInstance.get()::record
+               : null;
+    }
+
+    @Produces
+    public io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator cognitiveGoalOrchestrator(
+            MoodOrchestrator mood, CognitiveGoalConfig cognitiveGoalConfig) {
+        if (!mindMapStoreInstance.isResolvable() || !goalAppraisalInstance.isResolvable()
+            || !caseMemoryStoreInstance.isResolvable()) {
+            return null;
+        }
+        return new io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator(
+                mindMapStoreInstance.get(), goalAppraisalInstance.get(),
+                caseMemoryStoreInstance.get(), cognitiveGoalConfig,
+                (agentId, tenantId) -> mood.currentMood(agentId, tenantId)
+                                           .map(ms -> new io.casehub.neocortex.cognitive.PadProjection(
+                                                   ms.pleasure(), ms.arousal(), ms.dominance()))
+                                           .orElse(io.casehub.neocortex.cognitive.PadProjection.NEUTRAL),
+                java.time.Clock.systemUTC());
+    }
+
     @Produces
     @ApplicationScoped
     public CognitionAvatarAdapter cognitionAvatarAdapter(
-            MoodOrchestrator mood, DriveOrchestrator drives,
-            MentalModelOrchestrator mentalModel,
-            UserModelOrchestrator userModel,
-            StrategyLearningOrchestrator strategy,
-            CognitiveGoalConfig cognitiveGoalConfig) {
-        var hygieneAdapterForCore = hygieneOrchestratorInstance.isResolvable()
-                ? new io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter(hygieneOrchestratorInstance.get())
-                : null;
-        var core = new CognitionCore(mood, drives, userModel, mentalModel, strategy,
-                                     nullableFrom(narrativeOrchestratorInstance),
-                                     nullableFrom(goalProposalOrchestratorInstance),
-                                     hygieneAdapterForCore,
-                                     nullableFrom(innerLifeOrchestratorInstance),
-                                     io.casehub.neocortex.cognition.core.CognitionConfig.all(),
-                                     nullableFrom(mindMapStoreInstance), null,
-                                     nullableFrom(attentionMediatorInstance),
-                                     optionalFrom(engagementRecorderInstance)
-                                             .map(r -> (java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent>) r::record)
-                                             .orElse(null),
-                                     nullableFrom(temporalFocusOrchestratorInstance),
-                                     nullableFrom(reflectionOrchestratorInstance),
-                                     nullableFrom(consolidationMediatorInstance),
-                                     nullableFrom(sessionPipelineInstance));
+            io.casehub.neocortex.cognition.core.CognitionCoreFactory coreFactory,
+            GoalProposalOrchestrator goalProposal,
+            CognitiveGoalConfig cognitiveGoalConfig,
+            Instance<io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator> cgoInstance) {
+        var core = coreFactory.create(io.casehub.neocortex.cognition.core.CognitionConfig.all());
 
-        optionalFrom(subThoughtParticipantInstance).ifPresent(core::configureSubThoughts);
-
-        io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator cognitiveGoals = null;
-        if (mindMapStoreInstance.isResolvable() && goalAppraisalInstance.isResolvable()
-            && caseMemoryStoreInstance.isResolvable()) {
-            cognitiveGoals = new io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator(
-                    mindMapStoreInstance.get(),
-                    goalAppraisalInstance.get(),
-                    caseMemoryStoreInstance.get(),
-                    cognitiveGoalConfig,
-                    (agentId, tenantId) -> mood.currentMood(agentId, tenantId)
-                                               .map(ms -> new io.casehub.neocortex.cognitive.PadProjection(
-                                                       ms.pleasure(), ms.arousal(), ms.dominance()))
-                                               .orElse(io.casehub.neocortex.cognitive.PadProjection.NEUTRAL),
-                    java.time.Clock.systemUTC());
-            core.addParticipant(CognitionPhase.TERMINAL, cognitiveGoals);
-            var cgo           = cognitiveGoals;
-            var driveGoalOrch = nullableFrom(goalProposalOrchestratorInstance);
+        var cgo = nullableFrom(cgoInstance);
+        if (cgo != null) {
             core.chainSectionCustomizer(sections -> {
                 var result = new java.util.ArrayList<>(sections);
                 for (int i = 0; i < result.size(); i++) {
                     if (result.get(i) instanceof EmergentGoalPromptSection) {
-                        result.set(i, new EmergentGoalPromptSection(driveGoalOrch, cgo, cognitiveGoalConfig));
+                        result.set(i, new EmergentGoalPromptSection(goalProposal, cgo, cognitiveGoalConfig));
                         return result;
                     }
                 }
-                result.add(new EmergentGoalPromptSection(driveGoalOrch, cgo, cognitiveGoalConfig));
+                result.add(new EmergentGoalPromptSection(goalProposal, cgo, cognitiveGoalConfig));
                 return result;
             });
         }
 
-        optionalFrom(cognitiveProfileInstance).ifPresent(cp -> {
-            var profileParticipant = new CognitiveProfileParticipant(
-                    cp, nullableFrom(temporalFocusOrchestratorInstance),
-                    io.casehub.neocortex.cognition.core.CognitionConfig.all());
-            core.addParticipant(CognitionPhase.TERMINAL, profileParticipant);
-            core.chainSectionCustomizer(sections -> {
-                var result    = new java.util.ArrayList<>(sections);
-                var knowledge = profileParticipant.lastEntityKnowledge();
-                if (!knowledge.isEmpty()) {
-                    result.add(new EntityKnowledgePromptSection(knowledge));
-                }
-                var socialComparisons = profileParticipant.lastSocialComparisons();
-                if (!socialComparisons.isEmpty()) {
-                    result.add(new SocialComparisonPromptSection(socialComparisons));
-                }
-                return result;
-            });
-        });
-
-        if (domainActivationInstance.isResolvable() && mindMapStoreInstance.isResolvable()) {
-            var domainActivationParticipant = new DomainActivationParticipant(
-                    domainActivationInstance.get(),
-                    mindMapStoreInstance.get(),
-                    nullableFrom(consolidationMediatorInstance),
-                    io.casehub.neocortex.cognition.core.CognitionConfig.all());
-            core.addParticipant(CognitionPhase.TERMINAL, domainActivationParticipant);
-            core.chainSectionCustomizer(sections -> {
-                var result   = new java.util.ArrayList<>(sections);
-                var snapshot = domainActivationParticipant.lastSnapshot();
-                if (snapshot != null && snapshot.hasRenderableCorrelations()) {
-                    result.add(new DomainActivationPromptSection(snapshot));
-                }
-                return result;
-            });
-        }
-
-        return new CognitionAvatarAdapter(core,
-                                          nullableFrom(agentRegistryInstance), cognitiveGoals);
+        return new CognitionAvatarAdapter(core, nullableFrom(agentRegistryInstance), cgo);
     }
 
     // ── Goal ──
