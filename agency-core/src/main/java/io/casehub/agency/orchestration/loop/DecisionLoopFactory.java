@@ -108,9 +108,17 @@ public class DecisionLoopFactory {
         EmissionPolicy<ObservationEvent, ?> emissionPolicy = buildEmissionPolicy(
                 descriptor.observationStrategy());
 
+        var loopBus = new EventStreamBus<DecisionOutcome>();
+        loopBus.subscribe(e -> true, event -> {
+            outputBus.publish(event);
+            loopEventSink.accept(new DecisionLoopEvent.ActionDispatched(
+                    context.caseId(), context.agentId(),
+                    event.payload().getClass().getSimpleName(), Instant.now()));
+        });
+
         var runner = SummarisationRunner.<ObservationEvent, DecisionOutcome>builder(
                                                 gate.summariser().asSummariser(),
-                                                outputBus,
+                                                loopBus,
                                                 DecisionLoopLevels.DECISION)
                                         .emissionPolicy(gate.gating(emissionPolicy))
                                         .build();

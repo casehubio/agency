@@ -1,8 +1,5 @@
 package io.casehub.agency.orchestration.loop;
 
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
-import io.casehub.platform.agent.budget.AutonomyBudgetPool;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.api.model.coordination.CommunicationMode;
@@ -10,6 +7,9 @@ import io.casehub.api.model.coordination.DecisionScope;
 import io.casehub.api.model.coordination.ObservationStrategy;
 import io.casehub.api.model.coordination.TopologyDescriptor;
 import io.casehub.api.model.coordination.TopologyType;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.AutonomyBudgetPool;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -334,5 +334,37 @@ class AgentDecisionLoopTest {
                              .filter(DecisionLoopEvent.Degraded.class::isInstance)
                              .toList();
         assertThat(degraded).hasSize(1);
+    }
+
+    @Test
+    void tick_emitsActionDispatched() {
+        var events  = new ArrayList<DecisionLoopEvent>();
+        var outcome = new DecisionOutcome.WriteBack(List.of(), List.of(), List.of());
+        var bus     = new EventStreamBus<DecisionOutcome>();
+        var factory = new DecisionLoopFactory(
+                new MapPromptSectionRegistry(Map.of()), bus);
+        var descriptor = new DecisionLoopDescriptor(
+                "test", ObservationStrategy.EVENT_DRIVEN,
+                DecisionScope.FULL_AUTONOMY, CommunicationMode.STIGMERGY,
+                BudgetPriority.NORMAL, List.of());
+
+        var loop = factory.create(descriptor, CTX,
+                                  (items, prev) -> CompletableFuture.completedFuture(outcome),
+                                  new io.casehub.agency.orchestration.degradation.NoOpHeuristicSummariser<>(),
+                                  new AutonomyBudgetPool(AutonomyBudgetPolicy.defaults(), "test"),
+                                  () -> false, e -> {}, e -> {}, events::add);
+
+        events.clear();
+        loop.collect(ObservationEvent.of("s", 1));
+        loop.tick(System.currentTimeMillis()).toCompletableFuture().join();
+
+        var dispatched = events.stream()
+                               .filter(DecisionLoopEvent.ActionDispatched.class::isInstance)
+                               .map(DecisionLoopEvent.ActionDispatched.class::cast)
+                               .toList();
+        assertThat(dispatched).hasSize(1);
+        assertThat(dispatched.get(0).caseId()).isEqualTo(CTX.caseId());
+        assertThat(dispatched.get(0).agentId()).isEqualTo(CTX.agentId());
+        assertThat(dispatched.get(0).outcomeType()).isEqualTo("WriteBack");
     }
 }
