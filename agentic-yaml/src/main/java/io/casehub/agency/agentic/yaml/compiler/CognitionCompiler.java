@@ -68,7 +68,8 @@ public class CognitionCompiler {
                 spec.autonomyConfidenceFloor() != null ? spec.autonomyConfidenceFloor() : d.autonomyConfidenceFloor(),
                 spec.narrativeModulationStrength() != null ? spec.narrativeModulationStrength() : d.narrativeModulationStrength(),
                 d.subThoughtModulationStrength(),
-                d.secondaryPleasureModulationFactor());
+                d.secondaryPleasureModulationFactor(),
+                d.smoothingAlpha());
     }
 
     private MoodConfig compileMood(@Nullable MoodConfigSpec spec) {
