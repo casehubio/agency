@@ -55,6 +55,7 @@ public class HierarchicalTopology implements SwarmAwareTopology {
         this.agentRoles = Map.copyOf(Objects.requireNonNull(agentRoles));
         this.parentMap  = Map.copyOf(Objects.requireNonNull(parentMap));
         validateAcyclic(this.parentMap);
+        validateKnownParents(this.parentMap, this.agentRoles);
     }
 
     public void registerLoop(String agentId, AgentDecisionLoop loop) {
@@ -232,6 +233,17 @@ public class HierarchicalTopology implements SwarmAwareTopology {
             }
         }
     }
+
+    private static void validateKnownParents(Map<String, String> parentMap,
+                                             Map<String, AgentRole> agentRoles) {
+        for (var entry : parentMap.entrySet()) {
+            if (!agentRoles.containsKey(entry.getValue())) {
+                throw new IllegalArgumentException(
+                        "parentMap references unknown agent: " + entry.getValue());
+            }
+        }
+    }
+
 
     private CompletionStage<CoordinationFeedback> executeDelegated(
             String agentId, DecisionOutcome outcome, TopologyContext ctx) {

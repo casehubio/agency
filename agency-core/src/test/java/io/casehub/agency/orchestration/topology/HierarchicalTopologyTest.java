@@ -104,6 +104,19 @@ class HierarchicalTopologyTest {
         assertThat(plan.pool().callsUsed()).isZero();
     }
 
+
+    @Test
+    void constructor_rejects_dangling_parent_reference() {
+        Map<String, AgentRole> roles = Map.of(
+                "a", AgentRole.of("a", StructuralRole.CONTRACTOR),
+                "b", AgentRole.of("b", StructuralRole.CONTRACTOR));
+        Map<String, String> dangling = Map.of("a", "phantom");
+
+        org.assertj.core.api.Assertions.assertThatIllegalArgumentException()
+                                       .isThrownBy(() -> new HierarchicalTopology(roles, dangling))
+                                       .withMessageContaining("phantom");
+    }
+
     @Test
     void constructor_rejects_cyclic_parentMap() {
         Map<String, AgentRole> roles = Map.of(
