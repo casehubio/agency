@@ -103,4 +103,61 @@ class DegradationAwareSummariserTest {
         summariser.summarise(List.of("b"), null).toCompletableFuture().get();
         assertThat(events).hasSize(1);
     }
+
+    @Test
+    void emitsCollapsed_afterConsecutiveDegradedCalls() throws Exception {
+        var llm       = new StubSummariser();
+        var heuristic = new HeuristicStub();
+        var events    = new ArrayList<DegradedEvent>();
+        var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> true, events::add, "test-loop",
+                                                          CollapsePolicy.afterCalls(3));
+
+        summariser.summarise(List.of("a"), null).toCompletableFuture().get();
+        assertThat(events).hasSize(1);
+        assertThat(events.get(0).collapsed()).isFalse();
+
+        summariser.summarise(List.of("b"), null).toCompletableFuture().get();
+        assertThat(events).hasSize(1);
+
+        summariser.summarise(List.of("c"), null).toCompletableFuture().get();
+        assertThat(events).hasSize(2);
+        assertThat(events.get(1).collapsed()).isTrue();
+    }
+
+    @Test
+    void recoveryResetsCollapseCounter() throws Exception {
+        var       llm       = new StubSummariser();
+        var       heuristic = new HeuristicStub();
+        var       events    = new ArrayList<DegradedEvent>();
+        boolean[] degraded  = {true};
+        var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> degraded[0], events::add, "test-loop",
+                                                          CollapsePolicy.afterCalls(3));
+
+        summariser.summarise(List.of("a"), null).toCompletableFuture().get();
+        summariser.summarise(List.of("b"), null).toCompletableFuture().get();
+
+        degraded[0] = false;
+        summariser.summarise(List.of("c"), null).toCompletableFuture().get();
+
+        degraded[0] = true;
+        summariser.summarise(List.of("d"), null).toCompletableFuture().get();
+        summariser.summarise(List.of("e"), null).toCompletableFuture().get();
+
+        assertThat(events.stream().filter(DegradedEvent::collapsed).count()).isZero();
+    }
+
+    @Test
+    void defaultCollapsePolicy_neverCollapses() throws Exception {
+        var llm        = new StubSummariser();
+        var heuristic  = new HeuristicStub();
+        var events     = new ArrayList<DegradedEvent>();
+        var summariser = new DegradationAwareSummariser<>(llm, heuristic, () -> true, events::add, "test-loop");
+
+        for (int i = 0; i < 20; i++) {
+            summariser.summarise(List.of("x"), null).toCompletableFuture().get();
+        }
+        assertThat(events.stream().filter(DegradedEvent::collapsed).count()).isZero();
+    }
+
+
 }
