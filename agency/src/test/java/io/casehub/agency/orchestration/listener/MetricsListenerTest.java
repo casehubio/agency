@@ -186,16 +186,35 @@ class MetricsListenerTest {
         }
 
         @Test
-        void degraded_incrementsCounter() {
+        void degraded_incrementsCounterWithCollapsedFalse() {
             var event = new io.casehub.agency.orchestration.loop.DecisionLoopEvent.Degraded(
                     CASE_ID, AGENT_ID, "reasoning", "latency exceeded", true, false, NOW);
             listener.onDecisionLoopEvent(event);
 
             var metrics = reader.collectAllMetrics();
-            var counter = metrics.stream()
-                                 .filter(m -> m.getName().equals("casehub.agentic.loop.degradations"))
-                                 .findFirst();
-            assertThat(counter).isPresent();
+            var point = metrics.stream()
+                               .filter(m -> m.getName().equals("casehub.agentic.loop.degradations"))
+                               .flatMap(m -> m.getLongSumData().getPoints().stream())
+                               .findFirst();
+            assertThat(point).isPresent();
+            assertThat(point.get().getAttributes().get(io.opentelemetry.api.common.AttributeKey.booleanKey("collapsed")))
+                    .isFalse();
+        }
+
+        @Test
+        void degraded_incrementsCounterWithCollapsedTrue() {
+            var event = new io.casehub.agency.orchestration.loop.DecisionLoopEvent.Degraded(
+                    CASE_ID, AGENT_ID, "reasoning", "sustained failure", true, true, NOW);
+            listener.onDecisionLoopEvent(event);
+
+            var metrics = reader.collectAllMetrics();
+            var point = metrics.stream()
+                               .filter(m -> m.getName().equals("casehub.agentic.loop.degradations"))
+                               .flatMap(m -> m.getLongSumData().getPoints().stream())
+                               .findFirst();
+            assertThat(point).isPresent();
+            assertThat(point.get().getAttributes().get(io.opentelemetry.api.common.AttributeKey.booleanKey("collapsed")))
+                    .isTrue();
         }
 
         @Test

@@ -25,6 +25,7 @@ public class MetricsListener implements ExecutionEventListener {
     private static final AttributeKey<String> OUTCOME = AttributeKey.stringKey("outcome");
     private static final AttributeKey<String> SCOPE = AttributeKey.stringKey("scope");
     private static final AttributeKey<String> CAPABILITY = AttributeKey.stringKey("capability");
+    private static final AttributeKey<Boolean> COLLAPSED = AttributeKey.booleanKey("collapsed");
 
 
     private final DoubleHistogram agentDuration;
@@ -142,7 +143,8 @@ public class MetricsListener implements ExecutionEventListener {
             case io.casehub.agency.orchestration.loop.DecisionLoopEvent.BudgetExhausted e -> budgetExhaustions.add(1, Attributes.of(AGENT, e.agentId()));
             case io.casehub.agency.orchestration.loop.DecisionLoopEvent.Degraded e -> loopDegradations.add(1, Attributes.of(
                     AGENT, e.agentId(),
-                    CAPABILITY, e.capability()));
+                    CAPABILITY, e.capability(),
+                    COLLAPSED, e.collapsed()));
             default -> {}
         }
     }
