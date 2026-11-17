@@ -185,7 +185,7 @@ class HierarchicalTopologySwarmEventTest {
     // --- Scope absorption ---
 
     @Test
-    void leaf_collapse_does_not_affect_parent_routing() {
+    void leaf_degradation_does_not_affect_parent_routing() {
         topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
 
         topology.onSwarmEvent(new SwarmCoordinationEvent.MemberCompleted(SWARM_ID, "leaf", "done"));
@@ -243,7 +243,7 @@ class HierarchicalTopologySwarmEventTest {
     }
 
     @Test
-    void recovery_removes_from_collapsed_set() {
+    void recovery_from_degradation_restores_normal_routing() {
         topology.onDegradation(new DegradedEvent("hierarchical-leaf", "latency", true));
         topology.onDegradation(new DegradedEvent("hierarchical-leaf", "recovered", false));
 
