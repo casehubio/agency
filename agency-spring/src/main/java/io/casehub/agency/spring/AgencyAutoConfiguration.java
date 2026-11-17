@@ -333,48 +333,77 @@ public class AgencyAutoConfiguration {
             io.casehub.neocortex.cognition.goal.CognitiveGoalConfig cognitiveGoalConfig,
             Optional<io.casehub.neocortex.cognitive.index.CognitiveProfile> cognitiveProfile,
             Optional<io.casehub.neocortex.cognitive.index.DomainActivation> domainActivation,
+            Optional<io.casehub.neocortex.cognition.subthought.SubThoughtTickParticipant> subThought,
+            Optional<io.casehub.neocortex.knowledge.TermNormalizer> termNormalizer,
+            Optional<io.casehub.neocortex.cognitive.index.EffectiveCognitiveDefaults> effectiveDefaults,
+            Optional<io.casehub.neocortex.cognition.appraisal.AppraisalStrategy> appraisalStrategy,
+            Optional<io.casehub.neocortex.cognition.appraisal.SalienceStrategy> salienceStrategy,
+            Optional<io.casehub.neocortex.cognitive.index.CognitiveMemoryRetriever> cogMemRetriever,
+            Optional<io.casehub.neocortex.entity.token.cdi.EntityIdentityCache> entityCache,
+            Optional<io.casehub.neocortex.cognition.journal.CognitiveJournal> cogJournal,
+            Optional<io.casehub.neocortex.cognition.mood.GoalEmotionMoodBridge> goalEmotionBridge,
             @Nullable SessionPipeline sessionPipeline) {
-        var hygieneAdapter = hygieneOrchestrator
-                                     .map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new)
-                                     .orElse(null);
-        var core = new io.casehub.neocortex.cognition.core.CognitionCore(
-                mood, drives, userModel, mentalModel, strategy,
-                narrativeOrchestrator.orElse(null),
-                goalProposalOrchestrator.orElse(null),
-                hygieneAdapter,
-                innerLifeOrchestrator.orElse(null),
-                io.casehub.neocortex.cognition.core.CognitionConfig.all(),
-                mindMapStore.orElse(null), null,
-                attentionMediator.orElse(null),
-                engagementRecorder.map(r -> (java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent>) r::record).orElse(null),
-                temporalFocus.orElse(null),
-                reflectionOrchestrator.orElse(null),
-                consolidationMediator.orElse(null),
-                sessionPipeline);
+        var builder = io.casehub.neocortex.cognition.core.CognitivePipelineBuilder
+                .create(mood, drives)
+                .userModel(userModel).mentalModel(mentalModel).strategy(strategy)
+                .narrative(narrativeOrchestrator.orElse(null))
+                .goals(goalProposalOrchestrator.orElse(null))
+                .memoryHygiene(hygieneOrchestrator.map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new).orElse(null))
+                .innerLife(innerLifeOrchestrator.orElse(null))
+                .config(io.casehub.neocortex.cognition.core.CognitionConfig.all())
+                .mindMapStore(mindMapStore.orElse(null))
+                .attentionMediator(attentionMediator.orElse(null))
+                .engagementPersister(engagementRecorder
+                        .map(r -> (java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent>) r::record)
+                        .orElse(null))
+                .temporalFocus(temporalFocus.orElse(null))
+                .reflectionOrchestrator(reflectionOrchestrator.orElse(null))
+                .consolidationMediator(consolidationMediator.orElse(null))
+                .sessionPipeline(sessionPipeline);
+
+        effectiveDefaults.ifPresent(ed -> builder.effectiveDefaults(ed));
+        if (appraisalStrategy.isPresent() && salienceStrategy.isPresent()) {
+            builder.appraisal(appraisalStrategy.get(), salienceStrategy.get());
+        }
+        memoryStore.ifPresent(ms -> builder.gutFeeling(ms));
+        subThought.ifPresent(st -> builder.subThoughts(st));
+        if (mindMapStore.isPresent() && termNormalizer.isPresent()) {
+            builder.driveGoalBridge(mindMapStore.get(), termNormalizer.get());
+        }
+        cognitiveProfile.ifPresent(cp -> builder.cognitiveProfile(cp));
+        domainActivation.ifPresent(da -> builder.domainActivation(da));
+        cogMemRetriever.ifPresent(cr -> builder.cognitiveMemoryRetriever(cr));
+        entityCache.ifPresent(c -> builder.entityRendering(
+                (entityId, tenantId) -> c.getIdentity(entityId, tenantId)));
+        cogJournal.ifPresent(cj -> builder.cognitiveJournal(cj));
+        goalEmotionBridge.ifPresent(gb -> builder.goalEmotionMoodBridge(gb));
+
+        var core = builder.build();
 
         io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator cognitiveGoals = null;
         if (mindMapStore.isPresent() && goalAppraisal.isPresent() && memoryStore.isPresent()) {
             cognitiveGoals = new io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator(
                     mindMapStore.get(), goalAppraisal.get(), memoryStore.get(), cognitiveGoalConfig,
                     (agentId, tenantId) -> mood.currentMood(agentId, tenantId)
-                                               .map(ms -> new io.casehub.neocortex.cognitive.PadProjection(ms.pleasure(), ms.arousal(), ms.dominance()))
-                                               .orElse(io.casehub.neocortex.cognitive.PadProjection.NEUTRAL),
+                            .map(ms -> new io.casehub.neocortex.cognitive.PadProjection(ms.pleasure(), ms.arousal(), ms.dominance()))
+                            .orElse(io.casehub.neocortex.cognitive.PadProjection.NEUTRAL),
                     java.time.Clock.systemUTC());
-            core.addParticipant(io.casehub.neocortex.cognition.core.CognitionPhase.TERMINAL, cognitiveGoals);
-        }
-
-        cognitiveProfile.ifPresent(cp -> {
-            var profileParticipant = new io.casehub.neocortex.cognition.core.CognitiveProfileParticipant(
-                    cp, temporalFocus.orElse(null),
-                    io.casehub.neocortex.cognition.core.CognitionConfig.all());
-            core.addParticipant(io.casehub.neocortex.cognition.core.CognitionPhase.TERMINAL, profileParticipant);
-        });
-
-        if (domainActivation.isPresent() && mindMapStore.isPresent()) {
-            var domainParticipant = new io.casehub.neocortex.cognition.core.DomainActivationParticipant(
-                    domainActivation.get(), mindMapStore.get(), consolidationMediator.orElse(null),
-                    io.casehub.neocortex.cognition.core.CognitionConfig.all());
-            core.addParticipant(io.casehub.neocortex.cognition.core.CognitionPhase.TERMINAL, domainParticipant);
+            core.configureCognitiveGoalOrchestrator(cognitiveGoals);
+            var cgo = cognitiveGoals;
+            var driveGoalOrch = goalProposalOrchestrator.orElse(null);
+            core.chainSectionCustomizer(sections -> {
+                var result = new java.util.ArrayList<>(sections);
+                for (int i = 0; i < result.size(); i++) {
+                    if (result.get(i) instanceof io.casehub.neocortex.cognition.prompt.EmergentGoalPromptSection) {
+                        result.set(i, new io.casehub.neocortex.cognition.prompt.EmergentGoalPromptSection(
+                                driveGoalOrch, cgo, cognitiveGoalConfig));
+                        return result;
+                    }
+                }
+                result.add(new io.casehub.neocortex.cognition.prompt.EmergentGoalPromptSection(
+                        driveGoalOrch, cgo, cognitiveGoalConfig));
+                return result;
+            });
         }
 
         return new io.casehub.agency.social.cognition.CognitionAvatarAdapter(
