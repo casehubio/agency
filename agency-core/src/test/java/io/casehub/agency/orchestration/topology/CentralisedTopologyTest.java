@@ -1,8 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
-import io.casehub.platform.agent.budget.BudgetPriority;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
+import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.swarm.CollectiveReasoningAggregation;
@@ -21,6 +20,8 @@ import io.casehub.api.model.coordination.TopologyType;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.api.spi.stigmergy.SwarmProvisioningAdvisor;
 import io.casehub.platform.agent.AgentProvider;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
+import io.casehub.platform.agent.budget.BudgetPriority;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -239,5 +240,35 @@ class CentralisedTopologyTest {
                 .extracting("tokenRecorder")
                 .isNotNull();
     }
+
+    @Test
+    void configure_uses_topology_loopEventSink_when_set() {
+        var captured = new java.util.ArrayList<DecisionLoopEvent>();
+        topology.loopEventSink(captured::add);
+        topology.configure(topologyContext);
+
+        assertThat(captured)
+                .filteredOn(e -> e instanceof DecisionLoopEvent.LoopTriggered)
+                .hasSize(3);
+    }
+
+    @Test
+    void configure_prefers_topology_sink_over_context_sink() {
+        var topologySinkEvents = new java.util.ArrayList<DecisionLoopEvent>();
+        var contextSinkEvents  = new java.util.ArrayList<DecisionLoopEvent>();
+
+        topology.loopEventSink(topologySinkEvents::add);
+
+        var ctxWithSink = new TopologyContext(
+                topologyContext.caseId(), topologyContext.descriptor(),
+                topologyContext.agentProvider(), topologyContext.loopFactory(),
+                topologyContext.budgetPolicy(), topologyContext.degradationPolicy(),
+                null, null, null, contextSinkEvents::add);
+        topology.configure(ctxWithSink);
+
+        assertThat(topologySinkEvents).isNotEmpty();
+        assertThat(contextSinkEvents).isEmpty();
+    }
+
 
 }

@@ -3,15 +3,16 @@ package io.casehub.agency.orchestration.swarm;
 import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.optimisation.prompt.VariantSelector;
 import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
-import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.swarm.prompt.SwarmPromptOutcomeProvider;
 import io.casehub.api.model.coordination.SwarmCoordinationEvent;
 import io.casehub.platform.agent.AgentProvider;
+import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class SwarmCoordinatorBuilder {
 
@@ -24,6 +25,7 @@ public class SwarmCoordinatorBuilder {
     private           SystemPromptCustomiser     promptCustomiser;
     private @Nullable VariantSelector            variantSelector;
     private @Nullable SwarmPromptOutcomeProvider outcomeProvider;
+    private @Nullable Consumer<DecisionLoopEvent> loopEventSink;
 
 
     public SwarmCoordinatorBuilder agentProvider(AgentProvider agentProvider) {
@@ -78,6 +80,12 @@ public class SwarmCoordinatorBuilder {
         return this;
     }
 
+    public SwarmCoordinatorBuilder loopEventSink(Consumer<DecisionLoopEvent> sink) {
+        this.loopEventSink = Objects.requireNonNull(sink);
+        return this;
+    }
+
+
     public io.casehub.agency.orchestration.topology.CentralisedTopology<SwarmContext> buildTopology() {
         Objects.requireNonNull(agentProvider, "agentProvider is required");
 
@@ -113,7 +121,7 @@ public class SwarmCoordinatorBuilder {
         var aggregationHeuristic  = new io.casehub.agency.orchestration.degradation.HeuristicAggregationSummariser(fallback);
         var provisioningHeuristic = new io.casehub.agency.orchestration.degradation.HeuristicProvisioningSummariser(fallback, swarmContext::currentSize, swarmContext::maxSize);
 
-        return new io.casehub.agency.orchestration.topology.CentralisedTopology<>(
+        var topology = new io.casehub.agency.orchestration.topology.CentralisedTopology<>(
                 swarmContext, routingStrategy, aggregation,
                 termination, sections, provisioner, java.util.List::of,
                 routingHeuristic, aggregationHeuristic, provisioningHeuristic,
@@ -127,6 +135,10 @@ public class SwarmCoordinatorBuilder {
                         case SwarmCoordinationEvent.ProvisioningChanged p -> swarmContext.onProvisioningChanged(p.currentSize(), p.maxSize());
                     }
                 });
+        if (loopEventSink != null) {
+            topology.loopEventSink(loopEventSink);
+        }
+        return topology;
     }
 
 }

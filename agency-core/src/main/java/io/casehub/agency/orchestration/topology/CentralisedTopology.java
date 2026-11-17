@@ -6,16 +6,17 @@ import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
 import io.casehub.agency.orchestration.degradation.CompositeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.DegradationTrigger;
+import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.degradation.LatencyDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.PriorityWeightedThreshold;
 import io.casehub.agency.orchestration.degradation.SimpleFractionThreshold;
 import io.casehub.agency.orchestration.loop.AgentDecisionLoop;
 import io.casehub.agency.orchestration.loop.DecisionContext;
 import io.casehub.agency.orchestration.loop.DecisionLoopDescriptor;
+import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
 import io.casehub.agency.orchestration.loop.DecisionOutcome;
 import io.casehub.agency.orchestration.loop.ObservationEvent;
 import io.casehub.agency.orchestration.routing.RoutingStrategy;
-import io.casehub.agency.orchestration.degradation.DegradedEvent;
 import io.casehub.agency.orchestration.termination.TerminationCondition;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.model.coordination.CommunicationMode;
@@ -56,6 +57,8 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
     private final ContentSummariser<ObservationEvent, DecisionOutcome>           provisioningHeuristic;
     private final @Nullable Consumer<SwarmCoordinationEvent>                     swarmEventHandler;
     private       List<AgentDecisionLoop>                                        loops = List.of();
+    private @Nullable Consumer<DecisionLoopEvent>                                loopEventSink;
+
 
     private final Set<String> degradedLoops = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean cascadeTriggered = new AtomicBoolean(false);
@@ -95,7 +98,7 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
 
     @Override
     public CoordinationPlan configure(TopologyContext context) {
-        var loopEventSink = context.loopEventSinkOrDefault();
+        var loopEventSink = this.loopEventSink != null ? this.loopEventSink : context.loopEventSinkOrDefault();
         var pool = new AutonomyBudgetPool(context.budgetPolicy(), context.caseId() + "-CENTRALISED");
 
         wireTokenRecorder(routingStrategy, "routing", pool);
@@ -289,6 +292,9 @@ public class CentralisedTopology<C> implements SwarmAwareTopology {
     public TerminationCondition<C> terminationCondition() {return terminationCondition;}
 
     public List<AgentDecisionLoop> loops()                {return loops;}
+
+    public void loopEventSink(Consumer<DecisionLoopEvent> sink) {this.loopEventSink = sink;}
+
 
     private static void wireTokenRecorder(Object target, String label, AutonomyBudgetPool pool) {
         if (target instanceof TokenRecordable tr) {
