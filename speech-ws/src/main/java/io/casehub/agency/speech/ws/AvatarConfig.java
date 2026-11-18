@@ -22,4 +22,13 @@ public interface AvatarConfig {
 
     @WithDefault("30")
     int proactiveTickIntervalSeconds();
+
+    @WithDefault("false")
+    boolean attentionEnabled();
+
+    @WithDefault("30")
+    int attentionSubtleSeconds();
+
+    @WithDefault("75")
+    int attentionStrongSeconds();
 }

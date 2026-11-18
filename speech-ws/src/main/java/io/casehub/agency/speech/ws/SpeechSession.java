@@ -186,6 +186,9 @@ public class SpeechSession {
 
     public boolean isClosed() { return isClosed; }
 
+    FloorState floorState()   {return floorState;}
+
+
     public int historySize() { return turnExecutor.historySize(); }
 
     public boolean shouldSuppressProactive() {

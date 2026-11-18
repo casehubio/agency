@@ -1,11 +1,11 @@
 package io.casehub.agency.speech.ws;
 
 import io.casehub.eidos.api.AssembledPrompt;
+import io.casehub.agency.speech.ws.protocol.AvatarMessage;
+import io.casehub.agency.speech.ws.protocol.MessageCodec;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextToSpeech;
-import io.casehub.agency.speech.ws.protocol.AvatarMessage;
-import io.casehub.agency.speech.ws.protocol.MessageCodec;
 import io.quarkus.websockets.next.OnBinaryMessage;
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
@@ -51,6 +51,7 @@ public class SpeechWebSocket {
 
     private SpeechSession session;
     private @org.jspecify.annotations.Nullable Thread proactiveThread;
+    private @org.jspecify.annotations.Nullable SilenceAttentionPolicy attentionPolicy;
 
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
@@ -154,6 +155,13 @@ public class SpeechWebSocket {
             session.withAvatarCognition(cog, agentId, tenantId);
             cog.initialize(agentId, tenantId);
             startProactiveTick(cog, agentId, tenantId, avatarConfig.proactiveTickIntervalSeconds());
+        } else if (avatarConfig.attentionEnabled()) {
+            attentionPolicy = new SilenceAttentionPolicy(
+                    session.floorState(),
+                    text -> connection.sendTextAndAwait(text),
+                    avatarConfig.attentionSubtleSeconds(),
+                    avatarConfig.attentionStrongSeconds());
+            attentionPolicy.start();
         }
     }
 
@@ -216,6 +224,9 @@ public class SpeechWebSocket {
         }
         if (proactiveThread != null) {
             proactiveThread.interrupt();
+        }
+        if (attentionPolicy != null) {
+            attentionPolicy.stop();
         }
     }
 
