@@ -1241,6 +1241,13 @@ class TalkingHead {
       throw new Error("Invalid parameter. The avatar must have at least 'url' specified.");
     }
 
+    // Invalidate extension point caches on avatar change
+    this._morphMeshes = null;
+    for ( const entry of this._registeredMixers ) {
+      if (entry.boneClaim.length > 0) this.releaseBones(entry.boneClaim);
+    }
+    this._registeredMixers = [];
+
     // Loader
     const loader = new GLTFLoader();
 

@@ -23,7 +23,7 @@ public class JsonPerformanceVocabulary implements PerformanceVocabulary {
 
     public JsonPerformanceVocabulary(InputStream json) {
         var mapper = new ObjectMapper();
-        try {
+        try (json) {
             var root = mapper.readTree(json);
 
             var clips = new HashSet<String>();
