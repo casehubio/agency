@@ -276,8 +276,8 @@ function connect() {
           }
           if (!head || !msg.hasAudio) {
             for (const cue of (msg.cues || [])) {
-              if (cue.tag && bodyAnim) bodyAnim.triggerGesture(cue.tag);
-              if (cue.mood && head) head.setMood(cue.mood);
+              if (cue.type === 'gesture' && bodyAnim) bodyAnim.triggerGesture(cue.tag);
+              if (cue.type === 'mood' && head) head.setMood(cue.mood);
             }
           }
           if (!msg.hasAudio) {
@@ -382,12 +382,12 @@ async function handleAudioFrame(blob) {
       const markers = [];
       const mtimes = [];
       for (const cue of (seg?.cues || [])) {
-        if (cue.tag && bodyAnim) {
+        if (cue.type === 'gesture' && bodyAnim) {
           const tag = cue.tag;
           markers.push(() => bodyAnim.triggerGesture(tag));
           mtimes.push(cue.offsetMs || 0);
         }
-        if (cue.mood) {
+        if (cue.type === 'mood') {
           const mood = cue.mood;
           markers.push(() => head.setMood(mood));
           mtimes.push(cue.offsetMs || 0);

@@ -95,7 +95,7 @@ class MessageCodecTest {
 
     @Test
     void encodesSegmentMessage() {
-        List<Cue> cues = List.of(new Cue.GestureCue("nod", 450L));
+        List<Cue> cues = List.of(new Cue.GestureCue("nod", 450L), new Cue.MoodCue("happy", 200L));
         var    visemes = List.of(new VisemeFrame("aa", 0, 200));
         var    segment = new AvatarMessage.Segment(1, 0, "Hello world", true, visemes, cues);
         String json    = MessageCodec.encode(segment);
@@ -106,7 +106,15 @@ class MessageCodecTest {
         assertThat(obj.get("text").getAsString()).isEqualTo("Hello world");
         assertThat(obj.get("hasAudio").getAsBoolean()).isTrue();
         assertThat(obj.getAsJsonArray("visemes")).hasSize(1);
-        assertThat(obj.getAsJsonArray("cues")).hasSize(1);
+        assertThat(obj.getAsJsonArray("cues")).hasSize(2);
+        var gestureCue = obj.getAsJsonArray("cues").get(0).getAsJsonObject();
+        assertThat(gestureCue.get("type").getAsString()).isEqualTo("gesture");
+        assertThat(gestureCue.get("tag").getAsString()).isEqualTo("nod");
+        assertThat(gestureCue.get("offsetMs").getAsLong()).isEqualTo(450L);
+        var moodCue = obj.getAsJsonArray("cues").get(1).getAsJsonObject();
+        assertThat(moodCue.get("type").getAsString()).isEqualTo("mood");
+        assertThat(moodCue.get("mood").getAsString()).isEqualTo("happy");
+        assertThat(moodCue.get("offsetMs").getAsLong()).isEqualTo(200L);
     }
 
     @Test

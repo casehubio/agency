@@ -1,6 +1,7 @@
 package io.casehub.agency.speech.ws.protocol;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -56,7 +57,7 @@ public final class MessageCodec {
                 obj.addProperty("text", seg.text());
                 obj.addProperty("hasAudio", seg.hasAudio());
                 obj.add("visemes", GSON.toJsonTree(seg.visemes()));
-                obj.add("cues", GSON.toJsonTree(seg.cues()));
+                obj.add("cues", encodeCues(seg.cues()));
             }
             case AvatarMessage.TurnComplete tc -> {
                 obj.addProperty("type", "turnComplete");
@@ -106,5 +107,26 @@ public final class MessageCodec {
                     UserActivityKind.valueOf(obj.get("kind").getAsString()));
             default -> throw new IllegalArgumentException("Unknown client message type: " + type);
         };
+    }
+
+    private static JsonArray encodeCues(java.util.List<Cue> cues) {
+        var arr = new JsonArray();
+        for (var cue : cues) {
+            var o = new JsonObject();
+            switch (cue) {
+                case Cue.GestureCue g -> {
+                    o.addProperty("type", "gesture");
+                    o.addProperty("tag", g.tag());
+                    o.addProperty("offsetMs", g.offsetMs());
+                }
+                case Cue.MoodCue m -> {
+                    o.addProperty("type", "mood");
+                    o.addProperty("mood", m.mood());
+                    o.addProperty("offsetMs", m.offsetMs());
+                }
+            }
+            arr.add(o);
+        }
+        return arr;
     }
 }
