@@ -655,37 +655,33 @@ Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly
 | `ConversationTurn` | record | `role`, `content` — conversation history entry |
 | `AvatarCognition` | interface | Extends `CognitiveLifecycle` (cognition-api) with speech-specific `wrapAssembler()`. speech-ws injects via `Instance<AvatarCognition>`. Cognitive lifecycle methods (`initialize`, `tick`, `evaluateProactive`, `recordInteraction`, `promptSections`) inherited from `CognitiveLifecycle`. |
 
-### `io.casehub.agency.core.social.prompt` (module: `casehub-agency`)
+### `io.casehub.agency.social.cognition` (module: `casehub-agency`)
 
-Social cognition speech integration — wires all social cognition orchestrators + attention mediator into the speech pipeline via the `AvatarCognition` SPI.
+Cognition bridge — adapts neocortex `CognitionCore` to the speech pipeline's `AvatarCognition` SPI. All prompt sections, orchestrators, and config defaults now live in `casehub-neocortex-cognition` (`io.casehub.neocortex.cognition.prompt`).
 
 | Class | Type | What it does |
 |-------|------|-------------|
-| `SocialAvatarCognition` | @ApplicationScoped | `AvatarCognition` implementation. Wires MoodOrchestrator, DriveOrchestrator, MentalModelOrchestrator, UserModelOrchestrator, StrategyLearningOrchestrator, NarrativeOrchestrator (optional), GoalProposalOrchestrator (optional), InnerLifeOrchestrator (optional). Constructs PromptSections, handles signal recording and proactive evaluation. |
-| `SocialPromptAssembler` | class | Wraps a base `SpeechPromptAssembler`, appends all `CognitionPromptRenderer` contributions to the system prompt. Fault-tolerant — a failing section is logged and skipped. |
-| `ProactiveSpeechSupport` | class | Encapsulates `InnerLifeOrchestrator` integration for proactive initiation. Returns content from `InnerLifeTick.Initiated` or null from `Silent`. |
-| `MoodPromptSection` | CognitionPromptRenderer | PAD emotional state with natural-language interpretation (positive/negative/energetic/calm/confident/submissive). |
-| `DrivePromptSection` | CognitionPromptRenderer | Motivational state via `CognitiveObservationSections.motivationalStateSection()`. |
-| `PersonalityPromptSection` | CognitionPromptRenderer | Session-static personality traits from `AgentDescriptor.disposition()`. |
-| `MentalModelPromptSection` | CognitionPromptRenderer | BDI Theory of Mind — beliefs, desires, intentions with confidence filtering. Subject-scoped. |
-| `UserModelPromptSection` | CognitionPromptRenderer | Per-subject user profile — familiarity, relationship stage, preferences. Subject-scoped. |
-| `StrategyPromptSection` | PromptSection | Learned interaction strategies via `StrategyProfile.toPromptSection()`. |
-| `NarrativePromptSection` | PromptSection | Self-narrative via `CognitiveObservationSections`. Optional (requires NarrativeOrchestrator). |
-| `EmergentGoalPromptSection` | CognitionPromptRenderer | Autonomous drive-generated goal proposals. Optional (requires GoalProposalOrchestrator). |
-| `AttentionPromptSection` | CognitionPromptRenderer | Renders neocortex attention signals (URGENCY_SPIKE, DECAY_DETECTED, GOAL_RECOGNIZED, etc.) when `CognitiveAttentionMediator` drains a briefing during `CognitionCore.tick()`. Automatic — appears when attention signals are present, absent when queue is empty. |
+| `CognitionAvatarAdapter` | class | `AvatarCognition` implementation. Delegates `promptSections()` to `CognitionCore`, wraps `SpeechPromptAssembler` with cognitive prompt enrichment via `CognitionRenderContext`. Integrates optional `CognitiveGoalOrchestrator` and `CognitiveEvolutionAdapter`. |
+
+#### `io.casehub.agency.social.cognition.evolution`
+
+Cognitive evolution ticker — wires the engine's `EvolutionTicker` into the cognitive agent's tick cycle. CURIOSITY drive modulates tick frequency; circuit breaker state feeds PAD mood signals.
+
+| Class | Type | What it does |
+|-------|------|-------------|
+| `CognitiveEvolutionAdapter` | class | Composition root: queries `DriveOrchestrator` for CURIOSITY intensity, applies frequency modulation, calls `EvolutionTickBridge.tick()`, feeds circuit breaker signals to `MoodOrchestrator`. |
+| `EvolutionTickBridge` | @FunctionalInterface | SPI: `TickTrace tick()`. Consumer binds `EvolutionTicker.tick()` at construction. |
+| `CognitiveEvolutionConfig` | record | `curiosityFloor` (0.3), `curiosityFullEngage` (0.7), `circuitBreakerMoodEnabled` (true). `alwaysTick()` factory for testing. |
+| `CircuitBreakerMoodMapper` | class | Maps `TickTrace` circuit breaker gate to `MoodSignal.DirectShift`. Tracks previous blocked state for recovery detection. |
 
 **Quick start — avatar cognition:**
 ```java
-// Consumer adds agency as compile dep + Jandex indexing:
-// quarkus.index-dependency.casehub-agency.group-id=io.casehub
-// quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
+// All prompt sections and cognitive orchestrators come from
+// casehub-neocortex-cognition (provided dep in agency).
+// Agency provides CognitionAvatarAdapter as the AvatarCognition bridge.
 //
-// Configure in application.properties:
-// casehub.avatar.agent-id=my-avatar
-// casehub.avatar.tenant-id=my-tenant
-//
-// SocialAvatarCognition is auto-discovered via CDI.
 // speech-ws injects Instance<AvatarCognition> and wraps the base assembler.
+// CognitionCore is built via CognitivePipelineBuilder (neocortex).
 ```
 
 ### `io.casehub.agency.speech.sherpa` (module: `casehub-agency-speech-sherpa`)
@@ -778,20 +774,7 @@ quarkus.index-dependency.casehub-agency.artifact-id=casehub-agency
 ```
 Consumers that only use agency's pure types (records, sealed interfaces, plain classes) need no configuration.
 
-**Social cognition config defaults:** All social cognition config types (`DriveConfig`, `MoodConfig`, `PersonalityEvolutionConfig`, `InnerLifeConfig`, `MentalModelConfig`, `UserModelConfig`, `StrategyLearningConfig`, `NarrativeConfig`, `GoalProposalConfig`, `GoalEscalationConfig`, `NormDetectionConfig`) and `EventStreamBus<DecisionSignal>` have `@DefaultBean` producers via `SocialCognitionDefaultBeans`. Consumers with agency on their classpath get safe defaults automatically — no config required to use social cognition features. Override any config by providing your own `@ApplicationScoped` bean for that type.
-
-**Situational context SPIs:** Three `@FunctionalInterface` SPIs let consumers adapt CognitionCore to their domain:
-- `SubjectResolver` — determines which subjects are contextually relevant (replaces `Set<String> activeSubjects` parameter on `CognitionCore.tick()`)
-- `InteractionMapper` — maps domain events to `CognitiveImpact` records that control all 4 orchestrator channels (userModel, mood, BDI extraction, strategy)
-- `NormFilter` — filters detected `SocialNorm`s by situational context before prompt rendering
-
-All three have `@DefaultBean` passthrough producers. Override by providing your own `@ApplicationScoped` bean. `CognitiveImpact.fromText(description)` is the common-case factory for simple text interactions.
-
-**CognitionCore prompt sections:** `CognitionCore.promptSections()` includes `PersonalityPromptSection` (from `AgentDescriptor.disposition()`) and `ConstraintPromptSection` (from `AgentDescriptor.constraints()`) when available, plus `AttentionPromptSection` when neocortex attention signals are present. These are populated after the first `tick()` call.
-
-**Attention signals:** `CognitiveAttentionMediator` (`@ApplicationScoped`) observes `CognitiveAttentionRequired` CDI events from neocortex and queues `AttentionBriefing`s per-principal. During `CognitionCore.tick()`, the queue is drained and the briefing is rendered as an `AttentionPromptSection`. When attention signals are present, disabled sections that are relevant to the signals are force-included (e.g., an URGENCY_SPIKE signal forces the goals section even when `goalsEnabled=false`). The mediator is optional — when absent, no attention processing occurs. Disable attention processing via `CognitionConfig.with("attention", false)` (the queue is still drained to prevent growth, but the briefing is discarded).
-
-**External goal registration:** `GoalProposalOrchestrator.registerGoals(agentId, tenantId, goals)` lets consumers inject character-specific goals alongside drive-derived proposals. Registered goals appear in `currentProposals()` and render via `EmergentGoalPromptSection`.
+**Social cognition:** Config types, prompt sections, default bean producers, situational context SPIs (`SubjectResolver`, `InteractionMapper`, `NormFilter`), `CognitiveAttentionMediator`, and `GoalProposalOrchestrator` now live in `casehub-neocortex-cognition`. Agency retains only the `CognitionAvatarAdapter` bridge (see `io.casehub.agency.social.cognition` above) and the cognitive evolution ticker.
 
 **Payload normalization:** `CloudEventIngestionAdapter` accepts an optional `Function<E, E>` normalizer (5th constructor parameter) applied after deserialization before publishing. Use when mixed CloudEvent types have different map shapes to ensure all expected keys are present.
 
