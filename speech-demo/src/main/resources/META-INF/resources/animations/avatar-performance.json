@@ -1,0 +1,296 @@
+{
+  "clips": {
+    "idle-a": { "strokeMs": 0 },
+    "idle-subtle": { "strokeMs": 0 },
+    "idle-foldarms": { "strokeMs": 0 },
+    "idle-listening": { "strokeMs": 0 },
+    "idle-talking": { "strokeMs": 200 },
+    "idle-hurt": { "strokeMs": 0 },
+    "idle-shakeoff": { "strokeMs": 0 },
+    "hands-clasped-front": { "strokeMs": 0 },
+    "hands-behind-back": { "strokeMs": 0 },
+    "hands-on-hips": { "strokeMs": 0 },
+    "hands-expand": { "strokeMs": 250 },
+    "hands-converge": { "strokeMs": 250 },
+    "head-nod": { "strokeMs": 150 },
+    "head-shake": { "strokeMs": 150 },
+    "head-shake-casual": { "strokeMs": 150 },
+    "clapping": { "strokeMs": 200 },
+    "thumbs-up": { "strokeMs": 250 },
+    "reject": { "strokeMs": 200 },
+    "finger-wag": { "strokeMs": 200 },
+    "finger-pointing-up": { "strokeMs": 200 },
+    "finger-pointing-forward": { "strokeMs": 200 },
+    "one-hand-raised": { "strokeMs": 200 },
+    "knock": { "strokeMs": 200 },
+    "confused": { "strokeMs": 250 },
+    "shrug": { "strokeMs": 300 },
+    "shrug-casual": { "strokeMs": 300 },
+    "dizzy": { "strokeMs": 250 },
+    "victory": { "strokeMs": 300 },
+    "victory-fist-pump": { "strokeMs": 300 },
+    "dab": { "strokeMs": 200 },
+    "arms-wide-open": { "strokeMs": 300 },
+    "power-burst": { "strokeMs": 250 },
+    "angry": { "strokeMs": 250 },
+    "self-hug": { "strokeMs": 300 },
+    "facepalm": { "strokeMs": 300 },
+    "double-facepalm": { "strokeMs": 300 },
+    "greeting": { "strokeMs": 250 },
+    "hands-over-mouth": { "strokeMs": 250 },
+    "hand-over-mouth": { "strokeMs": 250 },
+    "hands-on-head": { "strokeMs": 250 },
+    "shiver": { "strokeMs": 200 },
+    "death-a": { "strokeMs": 300 },
+    "death-b": { "strokeMs": 300 },
+    "death-c": { "strokeMs": 300 },
+    "hit-knockback": { "strokeMs": 200 },
+    "zombie-idle": { "strokeMs": 0 },
+    "drunk-walk": { "strokeMs": 0 },
+    "power-up": { "strokeMs": 300 },
+    "chest-open": { "strokeMs": 300 },
+    "push": { "strokeMs": 250 },
+    "guitar-playing": { "strokeMs": 0 },
+    "drumming": { "strokeMs": 0 },
+    "singing": { "strokeMs": 0 },
+    "meditate": { "strokeMs": 0 },
+    "pray": { "strokeMs": 250 },
+    "moonwalk": { "strokeMs": 0 },
+    "tightrope-walk": { "strokeMs": 0 },
+    "ninjajump": { "strokeMs": 200 },
+    "backflip": { "strokeMs": 200 },
+    "jumping-jacks": { "strokeMs": 200 },
+    "dance-charleston": { "strokeMs": 0 },
+    "dance-arm-pump": { "strokeMs": 0 },
+    "dance-body-roll": { "strokeMs": 0 },
+    "dance-reach-hip": { "strokeMs": 0 },
+    "dance-simple": { "strokeMs": 0 },
+    "interact": { "strokeMs": 200 },
+    "sitting-idle": { "strokeMs": 0 },
+    "sitting-talking": { "strokeMs": 0 }
+  },
+
+  "taxonomy": {
+    "conversational": {
+      "stance": [
+        { "clip": "idle-subtle", "weight": 10 },
+        { "clip": "idle-foldarms", "weight": 6 },
+        { "clip": "idle-listening", "weight": 8 },
+        { "clip": "hands-clasped-front", "weight": 8 },
+        { "clip": "hands-behind-back", "weight": 6 },
+        { "clip": "hands-on-hips", "weight": 5 }
+      ],
+      "hand-gesture": [
+        { "clip": "idle-talking", "weight": 12 },
+        { "clip": "hands-expand", "weight": 8 },
+        { "clip": "hands-converge", "weight": 7 }
+      ],
+      "agreement": [
+        { "clip": "head-nod", "weight": 8 },
+        { "clip": "clapping", "weight": 3 },
+        { "clip": "thumbs-up", "weight": 8 }
+      ],
+      "disagreement": [
+        { "clip": "reject", "weight": 8 },
+        { "clip": "head-shake", "weight": 7 },
+        { "clip": "head-shake-casual", "weight": 5 },
+        { "clip": "finger-wag", "weight": 4 }
+      ],
+      "emphasis": [
+        { "clip": "finger-pointing-up", "weight": 5 },
+        { "clip": "finger-pointing-forward", "weight": 5 },
+        { "clip": "one-hand-raised", "weight": 5 },
+        { "clip": "knock", "weight": 4 }
+      ],
+      "uncertainty": [
+        { "clip": "confused", "weight": 8 },
+        { "clip": "shrug", "weight": 7 },
+        { "clip": "shrug-casual", "weight": 5 },
+        { "clip": "dizzy", "weight": 4 }
+      ]
+    },
+    "idle": {
+      "relaxed": [
+        { "clip": "idle-a", "weight": 10 },
+        { "clip": "idle-subtle", "weight": 10 },
+        { "clip": "idle-foldarms", "weight": 6 },
+        { "clip": "idle-listening", "weight": 6 }
+      ],
+      "restless": [
+        { "clip": "idle-hurt", "weight": 3 },
+        { "clip": "idle-shakeoff", "weight": 4 },
+        { "clip": "jumping-jacks", "weight": 2 }
+      ],
+      "self-amusing": [
+        { "clip": "guitar-playing", "weight": 3 },
+        { "clip": "drumming", "weight": 3 },
+        { "clip": "singing", "weight": 3 },
+        { "clip": "meditate", "weight": 4 },
+        { "clip": "pray", "weight": 3 },
+        { "clip": "moonwalk", "weight": 1 },
+        { "clip": "tightrope-walk", "weight": 1 },
+        { "clip": "ninjajump", "weight": 2 },
+        { "clip": "backflip", "weight": 1 },
+        { "clip": "dab", "weight": 2 }
+      ],
+      "dance": [
+        { "clip": "dance-charleston", "weight": 3 },
+        { "clip": "dance-arm-pump", "weight": 3 },
+        { "clip": "dance-body-roll", "weight": 3 },
+        { "clip": "dance-reach-hip", "weight": 2 },
+        { "clip": "dance-simple", "weight": 4 }
+      ],
+      "attention": [
+        { "clip": "knock", "weight": 8 },
+        { "clip": "interact", "weight": 6 }
+      ]
+    },
+    "reactive": {
+      "positive": [
+        { "clip": "victory", "weight": 6 },
+        { "clip": "victory-fist-pump", "weight": 5 },
+        { "clip": "dab", "weight": 3 },
+        { "clip": "arms-wide-open", "weight": 5 },
+        { "clip": "power-burst", "weight": 3 },
+        { "clip": "clapping", "weight": 4 },
+        { "clip": "dance-simple", "weight": 2 },
+        { "clip": "dance-arm-pump", "weight": 2 }
+      ],
+      "negative": [
+        { "clip": "angry", "weight": 6 },
+        { "clip": "self-hug", "weight": 5 },
+        { "clip": "facepalm", "weight": 4 },
+        { "clip": "double-facepalm", "weight": 3 }
+      ],
+      "greeting": [
+        { "clip": "greeting", "weight": 10 }
+      ],
+      "distress": [
+        { "clip": "hands-over-mouth", "weight": 6 },
+        { "clip": "hand-over-mouth", "weight": 5 },
+        { "clip": "hands-on-head", "weight": 5 },
+        { "clip": "shiver", "weight": 4 }
+      ]
+    },
+    "dramatic": {
+      "death": [
+        { "clip": "death-a", "weight": 3 },
+        { "clip": "death-b", "weight": 3 },
+        { "clip": "death-c", "weight": 3 }
+      ],
+      "combat": [
+        { "clip": "hit-knockback", "weight": 4 }
+      ],
+      "theatrical": [
+        { "clip": "zombie-idle", "weight": 4 },
+        { "clip": "drunk-walk", "weight": 4 },
+        { "clip": "power-up", "weight": 3 },
+        { "clip": "chest-open", "weight": 3 },
+        { "clip": "push", "weight": 3 }
+      ]
+    },
+    "seated": {
+      "idle": [
+        { "clip": "sitting-idle", "weight": 8 }
+      ],
+      "talking": [
+        { "clip": "sitting-talking", "weight": 8 }
+      ]
+    }
+  },
+
+  "pools": {
+    "idle": [
+      { "subcategory": "idle.relaxed", "weight": 14 },
+      { "subcategory": "idle.self-amusing", "weight": 4 },
+      { "subcategory": "idle.restless", "weight": 4 },
+      { "subcategory": "idle.dance", "weight": 2 },
+      { "subcategory": "conversational.stance", "weight": 4 }
+    ],
+    "listening": [
+      { "subcategory": "idle.relaxed", "weight": 14 },
+      { "subcategory": "conversational.stance", "weight": 8 }
+    ],
+    "thinking": [
+      { "subcategory": "conversational.stance", "weight": 10 }
+    ],
+    "speaking": [
+      { "subcategory": "conversational.hand-gesture", "weight": 16 },
+      { "subcategory": "conversational.stance", "weight": 14 },
+      { "subcategory": "conversational.agreement", "weight": 4 },
+      { "subcategory": "conversational.uncertainty", "weight": 4 },
+      { "subcategory": "conversational.emphasis", "weight": 4 },
+      { "subcategory": "idle.dance", "weight": 1 }
+    ]
+  },
+
+  "gestures": [
+    { "tag": "nod", "description": "head nod — agreement, acknowledgement", "target": { "clip": "head-nod" }, "promptable": true },
+    { "tag": "bow", "description": "head nod — a small bow or acknowledgement", "target": { "clip": "head-nod" }, "promptable": true },
+    { "tag": "no", "description": "head shake — disagreement, refusal", "target": { "clip": "head-shake" }, "promptable": true },
+    { "tag": "naughty", "description": "finger wag — playful scolding", "target": { "clip": "finger-wag" }, "promptable": true },
+    { "tag": "shrug", "description": "shoulder shrug — uncertainty, 'I don't know'", "target": { "clip": "shrug" }, "promptable": true },
+    { "tag": "wait", "description": "one hand raised — 'hold on', 'wait a moment'", "target": { "clip": "one-hand-raised" }, "promptable": true },
+    { "tag": "aha", "description": "finger pointing up — a realisation or key point", "target": { "clip": "finger-pointing-up" }, "promptable": true },
+    { "tag": "point", "description": "finger pointing forward — directing attention", "target": { "clip": "finger-pointing-forward" }, "promptable": true },
+    { "tag": "thumbsup", "description": "thumbs up — approval, 'yes'", "target": { "clip": "thumbs-up" }, "promptable": true },
+    { "tag": "yes", "description": "thumbs up — strong agreement", "target": { "clip": "thumbs-up" }, "promptable": true },
+    { "tag": "reject", "description": "palm-out reject — 'no way', firm refusal", "target": { "clip": "reject" }, "promptable": true },
+    { "tag": "knock", "description": "knocking gesture — getting attention", "target": { "clip": "knock" }, "promptable": true },
+    { "tag": "thinking", "description": "hands converging — concentrating, pondering", "target": { "clip": "hands-converge" }, "promptable": true },
+    { "tag": "confused", "description": "confused gesture — bewilderment", "target": { "clip": "confused" }, "promptable": true },
+    { "tag": "dizzy", "description": "dizzy, disoriented — overwhelmed or spinning", "target": { "clip": "dizzy" }, "promptable": true },
+    { "tag": "clapping", "description": "applause — celebration, approval", "target": { "clip": "clapping" }, "promptable": true },
+    { "tag": "angry", "description": "angry stance — frustration, stern", "target": { "clip": "angry" }, "promptable": true },
+    { "tag": "greeting", "description": "friendly wave — hello, welcome", "target": { "clip": "greeting" }, "promptable": true },
+    { "tag": "victory", "description": "arms-up victory — triumph, success", "target": { "clip": "victory" }, "promptable": true },
+    { "tag": "fistpump", "description": "fist pump — excitement, 'yes!'", "target": { "clip": "victory-fist-pump" }, "promptable": true },
+    { "tag": "dab", "description": "dab — playful celebration", "target": { "clip": "dab" }, "promptable": true },
+    { "tag": "sad", "description": "self-hug — comfort, sadness", "target": { "clip": "self-hug" }, "promptable": true },
+    { "tag": "joyful", "description": "arms wide open — joy, freedom, delight", "target": { "clip": "arms-wide-open" }, "promptable": true },
+    { "tag": "facepalm", "description": "facepalm — disbelief, embarrassment", "target": { "clip": "facepalm" }, "promptable": true },
+    { "tag": "doublefacepalm", "description": "double facepalm — extreme disbelief", "target": { "clip": "double-facepalm" }, "promptable": true },
+    { "tag": "shocked", "description": "hands on head — shock, surprise", "target": { "clip": "hands-on-head" }, "promptable": true },
+    { "tag": "overwhelmed", "description": "hands on head — feeling overwhelmed", "target": { "clip": "hands-on-head" }, "promptable": true },
+    { "tag": "horror", "description": "hands over mouth — horror, disbelief", "target": { "clip": "hands-over-mouth" }, "promptable": true },
+    { "tag": "oops", "description": "hand over mouth — oops, minor mistake", "target": { "clip": "hand-over-mouth" }, "promptable": true },
+    { "tag": "nervous", "description": "hands clasped — nervous, anxious", "target": { "clip": "hands-clasped-front" }, "promptable": true },
+    { "tag": "shiver", "description": "shivering — cold or fear", "target": { "clip": "shiver" }, "promptable": true },
+    { "tag": "careful", "description": "tightrope walk — being careful, walking a fine line. Only for playful or role-play contexts.", "target": { "clip": "tightrope-walk" }, "promptable": true },
+    { "tag": "sneaky", "description": "ninja jump — stealth, sneaking. Only for playful or role-play contexts.", "target": { "clip": "ninjajump" }, "promptable": true },
+    { "tag": "rewind", "description": "moonwalk — going back, reversing. Only for playful or role-play contexts.", "target": { "clip": "moonwalk" }, "promptable": true },
+    { "tag": "meditate", "description": "meditation pose — calm, mindfulness", "target": { "clip": "meditate" }, "promptable": true },
+    { "tag": "pray", "description": "prayer hands — hoping, pleading", "target": { "clip": "pray" }, "promptable": true },
+    { "tag": "guitar", "description": "air guitar — rocking out. Only for playful contexts.", "target": { "clip": "guitar-playing" }, "promptable": true },
+    { "tag": "drumroll", "description": "drumming — suspense, announcement", "target": { "clip": "drumming" }, "promptable": true },
+    { "tag": "sing", "description": "singing pose — musical, expressive", "target": { "clip": "singing" }, "promptable": true },
+    { "tag": "death", "description": "dramatic death fall — only for playful or role-play contexts", "target": { "clip": "death-a" }, "promptable": true },
+    { "tag": "hit", "description": "hit knockback — only for playful or role-play contexts", "target": { "clip": "hit-knockback" }, "promptable": true },
+    { "tag": "zombie", "description": "zombie stance — only for playful or role-play contexts", "target": { "clip": "zombie-idle" }, "promptable": true },
+    { "tag": "drunk", "description": "drunk walk — only for playful or role-play contexts", "target": { "clip": "drunk-walk" }, "promptable": true },
+    { "tag": "backflip", "description": "backflip — only for playful or role-play contexts", "target": { "clip": "backflip" }, "promptable": true },
+    { "tag": "powerup", "description": "power up charge — only for playful or role-play contexts", "target": { "clip": "power-up" }, "promptable": true },
+    { "tag": "agreement", "description": "agreement (random: nod, clap, thumbs-up)", "target": { "subcategory": "conversational.agreement" }, "promptable": true },
+    { "tag": "disagreement", "description": "disagreement (random: reject, head-shake, finger-wag)", "target": { "subcategory": "conversational.disagreement" }, "promptable": true },
+    { "tag": "emphasis", "description": "emphasis gesture (random: pointing, hand-raised, knock)", "target": { "subcategory": "conversational.emphasis" }, "promptable": true },
+    { "tag": "uncertainty", "description": "uncertainty (random: confused, shrug, dizzy)", "target": { "subcategory": "conversational.uncertainty" }, "promptable": true },
+    { "tag": "celebrate", "description": "celebration (random: victory, dab, dance)", "target": { "subcategory": "reactive.positive" }, "promptable": true },
+    { "tag": "surprise", "description": "positive surprise (random from celebration set)", "target": { "subcategory": "reactive.positive" }, "promptable": true },
+    { "tag": "distress", "description": "distress (random: hands-over-mouth, shiver)", "target": { "subcategory": "reactive.distress" }, "promptable": true },
+    { "tag": "dance", "description": "dance (random from dance set)", "target": { "subcategory": "idle.dance" }, "promptable": true },
+    { "tag": "attention", "description": "attention bid (knock or interact)", "target": { "subcategory": "idle.attention" }, "promptable": false },
+    { "tag": "happy", "description": "happy expression (random from positive set)", "target": { "subcategory": "reactive.positive" }, "promptable": false },
+    { "tag": "explaining", "description": "explaining gesture (random hand gesture)", "target": { "subcategory": "conversational.hand-gesture" }, "promptable": false }
+  ],
+
+  "moods": [
+    { "name": "neutral", "description": "calm baseline", "promptable": false },
+    { "name": "happy", "description": "cheerful, smiling", "promptable": true },
+    { "name": "sad", "description": "downcast, sympathetic", "promptable": true },
+    { "name": "angry", "description": "frustrated, stern", "promptable": true },
+    { "name": "fear", "description": "worried, anxious", "promptable": true },
+    { "name": "love", "description": "warm, affectionate", "promptable": true },
+    { "name": "disgust", "description": "repulsed, disapproving", "promptable": true },
+    { "name": "sleep", "description": "drowsy, eyes closing — not for conversation", "promptable": false }
+  ]
+}
