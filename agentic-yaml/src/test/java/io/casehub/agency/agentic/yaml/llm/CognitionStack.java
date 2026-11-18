@@ -124,7 +124,7 @@ public class CognitionStack {
                             new WeightedScorer(new SurpriseScorer(), 0.5))),
                     new TemporalDecay.HalfLife(java.time.Duration.ofDays(365)),
                     new ScopeDecay.Step(1.0),
-                    null,
+                    texts -> texts.isEmpty() ? "" : texts.getFirst(),
                     config.strategyLearning().memoryDomain(),
                     List.of(config.strategyLearning().engagementCaseType()),
                     RetentionConfig.DEFAULT,
