@@ -2,6 +2,8 @@ package io.casehub.agency.speech.ws;
 
 import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
+import io.casehub.agency.speech.PromptContext;
+import io.casehub.agency.speech.PromptSection;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -103,5 +105,53 @@ class DefaultPromptAssemblerTest {
     void conversationTurnWithoutSpeaker() {
         var turn = new ConversationTurn("user", "hello");
         assertThat(turn.speaker()).isNull();
+    }
+
+    // --- PromptSection composition tests ---
+
+    @Test
+    void assembleWithSectionsAppendsToSystemPrompt() {
+        PromptSection section = ctx -> "## Gestures\n[gesture:nod] — agreement";
+        var assembler = new DefaultPromptAssembler("You are helpful.", List.of(section));
+        var context = new PromptContext("agent-1", "tenant-1", "user-1");
+
+        var result = assembler.assemble("hello", List.of(), context);
+
+        assertThat(result.systemPrompt()).contains("You are helpful.");
+        assertThat(result.systemPrompt()).contains("## Gestures");
+        assertThat(result.systemPrompt()).contains("[gesture:nod]");
+    }
+
+    @Test
+    void assembleWithoutContextSkipsSections() {
+        PromptSection section = ctx -> "should not appear";
+        var assembler = new DefaultPromptAssembler("Base.", List.of(section));
+
+        var result = assembler.assemble("hello", List.of());
+
+        assertThat(result.systemPrompt()).isEqualTo("Base.");
+    }
+
+    @Test
+    void assembleSkipsNullSectionContributions() {
+        PromptSection returnsNull = ctx -> null;
+        PromptSection returnsText = ctx -> "visible section";
+        var assembler = new DefaultPromptAssembler("Base.", List.of(returnsNull, returnsText));
+        var context = new PromptContext("a", "t", null);
+
+        var result = assembler.assemble("hello", List.of(), context);
+
+        assertThat(result.systemPrompt()).contains("visible section");
+        assertThat(result.systemPrompt()).doesNotContain("null");
+    }
+
+    @Test
+    void assembleWithEmptySectionsListUnchanged() {
+        var assembler = new DefaultPromptAssembler("Base.", List.of());
+        var context = new PromptContext("a", "t", null);
+
+        var result = assembler.assemble("hello", List.of(), context);
+
+        assertThat(result.systemPrompt()).isEqualTo("Base.");
     }
 }
