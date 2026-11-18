@@ -4,11 +4,11 @@ import io.casehub.agency.speech.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.SpeechPromptAssembler;
-import io.casehub.connectors.voice.model.SynthesisOptions;
-import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
 import io.casehub.agency.speech.ws.protocol.TurnOrigin;
+import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -79,6 +79,16 @@ public class TurnExecutor implements AutoCloseable {
 
     int historySize() { return history.size(); }
 
+    @Nullable String lastAssistantText() {
+        for (int i = history.size() - 1; i >= 0; i--) {
+            if ("assistant".equals(history.get(i).role())) {
+                return history.get(i).text();
+            }
+        }
+        return null;
+    }
+
+
     @Override
     public void close() {
         executor.shutdownNow();
@@ -123,9 +133,9 @@ public class TurnExecutor implements AutoCloseable {
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         } finally {
-            floorState.onTurnEnd();
             long expiresAt = System.currentTimeMillis() + DEFAULT_EXPIRY_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
+            floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
                     TurnOrigin.USER));
         }
@@ -157,9 +167,9 @@ public class TurnExecutor implements AutoCloseable {
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         } finally {
-            floorState.onTurnEnd();
             long expiresAt = System.currentTimeMillis() + DEFAULT_EXPIRY_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
+            floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
                     TurnOrigin.PROACTIVE));
         }

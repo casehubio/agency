@@ -315,8 +315,8 @@ public class SpeechSession {
 
     private void recordCognitionInteraction(String userMessage) {
         if (cognition != null && cognitionAgentId != null && cognitionTenantId != null) {
-            int size = turnExecutor.historySize();
-            var lastAssistant = size == 0 ? "" : "";
+            var text = turnExecutor.lastAssistantText();
+            var lastAssistant = text != null ? text : "";
             try {
                 cognition.recordInteraction(cognitionAgentId, cognitionTenantId,
                         currentSubjectId(), userMessage, lastAssistant);
