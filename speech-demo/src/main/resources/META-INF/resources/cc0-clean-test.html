@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CC0 Clean Export Test</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+} }
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+  #viewport { flex: 1; min-height: 400px; }
+  #status { padding: 0.5rem; text-align: center; font-size: 0.85rem; color: #999; }
+</style>
+</head>
+<body>
+<div id="viewport"></div>
+<div id="status">Loading...</div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { retargetClipToObject } from "./animations/retarget.mjs";
+
+var statusEl = document.getElementById('status');
+var viewportEl = document.getElementById('viewport');
+
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+var camera = new THREE.PerspectiveCamera(35, viewportEl.clientWidth / viewportEl.clientHeight, 0.01, 100);
+camera.position.set(0, 1.2, 2.5);
+var renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(viewportEl.clientWidth, viewportEl.clientHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+viewportEl.appendChild(renderer.domElement);
+var orbit = new OrbitControls(camera, renderer.domElement);
+orbit.target.set(0, 1.0, 0);
+orbit.update();
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+var dl = new THREE.DirectionalLight(0xffffff, 1.2);
+dl.position.set(2, 3, 2);
+scene.add(dl);
+
+var mixer = null, clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  if (mixer) mixer.update(clock.getDelta());
+  renderer.render(scene, camera);
+}
+animate();
+
+async function init() {
+  var loader = new GLTFLoader();
+  statusEl.textContent = 'Loading avatar...';
+  var avatarGltf = await new Promise(function(r, e) { loader.load('avatar.glb', r, null, e); });
+  var avatarModel = avatarGltf.scene;
+  scene.add(avatarModel);
+  mixer = new THREE.AnimationMixer(avatarModel);
+
+  statusEl.textContent = 'Loading clean M2M export...';
+  var animGltf = await new Promise(function(r, e) { loader.load('m2m-clean-greeting.glb', r, null, e); });
+
+  // Log what bones are in the clean export
+  console.log('Clean export bones:');
+  animGltf.scene.traverse(function(n) {
+    if (n.isBone) console.log('  ' + n.name);
+  });
+  console.log('Clips:', animGltf.animations.length);
+  animGltf.animations.forEach(function(clip) {
+    console.log('  ' + clip.name + ' (' + clip.tracks.length + ' tracks, ' + clip.duration.toFixed(2) + 's)');
+  });
+
+  // Just use retargetClipToObject directly — no pre-correction
+  var clip = animGltf.animations[0];
+  if (!clip) { statusEl.textContent = 'No animation in GLB'; return; }
+
+  var result = retargetClipToObject(clip, avatarModel, { minCoverage: 0.1 });
+  console.log('Retarget result:', result ? { coverage: result.coverage, matched: result.matched, total: result.total, dropped: result.dropped } : 'null');
+
+  if (result && result.clip) {
+    var action = mixer.clipAction(result.clip);
+    action.play();
+    statusEl.textContent = 'Playing: ' + clip.name + ' (coverage: ' + (result.coverage * 100).toFixed(0) + '%)';
+  } else {
+    statusEl.textContent = 'Retarget failed — coverage too low';
+  }
+}
+
+init().catch(function(e) { statusEl.textContent = 'Error: ' + e.message; console.error(e); });
+</script>
+</body>
+</html>
