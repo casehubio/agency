@@ -48,15 +48,15 @@ public class ModelProvisioningService {
             provisionEntry(entry.getKey(), () -> provisionKokoro(entry.getValue()));
         }
         provisionEntry("streaming-stt", this::provisionStreamingStt);
-        provisionEntry("qwen3-lib", this::provisionQwen3SharedLibrary);
+        provisionEntry("qwen3-lib", this::provisionQwen3Binary);
         provisionEntry("qwen3-model", this::provisionQwen3Model);}
 
     void provision(String modelName) {
         VitsTextToSpeech.ensureProvisioned(modelName);
     }
 
-    void provisionQwen3SharedLibrary() {
-        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3SharedLibrary();
+    void provisionQwen3Binary() {
+        io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Binary();
     }
 
     void provisionQwen3Model() {io.casehub.connectors.voice.sherpa.Provisioner.ensureQwen3Model("0.6b-customvoice-q4");}
