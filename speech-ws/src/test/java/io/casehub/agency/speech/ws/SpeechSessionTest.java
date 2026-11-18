@@ -564,7 +564,7 @@ class SpeechSessionTest {
     }
 
     @Test
-    void stopWithStreamingGeneratorSendsTimingMessage() {
+    void stopWithStreamingGeneratorSendsTurnComplete() {
         when(recognitionStream.finalResult()).thenReturn(
                 new TranscriptionResult("timing test", "en", 0.9));
         when(ttsService.synthesise(any(), any())).thenReturn(
@@ -589,7 +589,7 @@ class SpeechSessionTest {
         session.handleStop();
 
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"timing\""));
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
     }
 
     @Test
@@ -722,12 +722,12 @@ class SpeechSessionTest {
             assertThat(json).contains("Streamed text reply.");
         });
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"timing\""));
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
         assertThat(sentBinaryMessages).isNotEmpty();
     }
 
     @Test
-    void handleTextWithStreamingGeneratorSendsTimingWithLlmAndTtsSplit() {
+    void handleTextWithStreamingGeneratorSendsTurnComplete() {
         when(ttsService.synthesise(any(), any())).thenReturn(
                 new SynthesisResult(new byte[]{1}, "wav", List.of()));
 
@@ -748,16 +748,8 @@ class SpeechSessionTest {
 
         session.handleText("Timing check");
 
-        String timingJson = sentTextMessages.stream()
-                                            .filter(json -> json.contains("\"type\":\"timing\""))
-                                            .findFirst()
-                                            .orElseThrow(() -> new AssertionError("No timing message sent"));
-
-        // timing message should have cleanup, llm, tts, and total fields
-        assertThat(timingJson).contains("\"cleanupMs\":");
-        assertThat(timingJson).contains("\"llmMs\":");
-        assertThat(timingJson).contains("\"ttsMs\":");
-        assertThat(timingJson).contains("\"totalMs\":");
+        assertThat(sentTextMessages).anySatisfy(json ->
+                assertThat(json).contains("\"type\":\"turnComplete\""));
     }
 
 // --- Full demo configuration: streaming + speaker ID + cleanup ---
@@ -810,7 +802,7 @@ class SpeechSessionTest {
             assertThat(json).contains("Response with speaker.");
         });
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"timing\""));
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
     }
 
 

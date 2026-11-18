@@ -168,6 +168,7 @@ public class SpeechWebSocket {
                     return;
                 }
                 if (session.isClosed()) return;
+                if (session.shouldSuppressProactive()) continue;
                 try {
                     cog.tick(agentId, tenantId, java.util.Set.of(session.currentSubjectId()));
                     String channelContext = "Channel: WebSocket speech session\nTurn count: "
@@ -194,6 +195,8 @@ public class SpeechWebSocket {
             case AvatarMessage.Stop s -> session.handleStop();
             case AvatarMessage.Text t -> session.handleText(t.text(), t.llmModel(), t.ttsModel());
             case AvatarMessage.SpeakerIdentify si -> session.handleSpeakerIdentify(si.name());
+            case AvatarMessage.PlaybackComplete pc -> session.handlePlaybackComplete(pc.turnSeq());
+            case AvatarMessage.UserActivity ua -> session.handleUserActivity();
             default -> {}
         }
     }
