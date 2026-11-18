@@ -21,53 +21,66 @@ public class UtteranceSegmenter {
     }
 
     public List<ParsedSegment> segment(String text) {
-        if (text == null || text.isBlank()) return List.of();
+        if (text == null || text.isBlank()) {return List.of();}
 
         text = MALFORMED_TAIL.matcher(text).replaceAll("");
 
-        var tagInfos = extractTags(text);
+        var tagInfos  = extractTags(text);
         var cleanFull = removeTags(text);
 
         var sentences = SENTENCE_END.split(cleanFull);
-        if (sentences.length == 0) return List.of();
+        if (sentences.length == 0) {return List.of();}
 
         var results = new ArrayList<ParsedSegment>();
-        int cleanOffset = 0;
 
-        for (var sentence : sentences) {
-            var trimmed = sentence.trim();
-            if (trimmed.isEmpty()) {
-                cleanOffset += sentence.length() + 1;
-                continue;
-            }
+        // Compute sentence boundaries by cumulative offset instead of indexOf (#492 fix 1)
+        int[] sentenceStarts = new int[sentences.length];
+        int[] sentenceEnds   = new int[sentences.length];
+        int   cursor         = 0;
+        for (int i = 0; i < sentences.length; i++) {
+            int idx = cleanFull.indexOf(sentences[i].trim(), cursor);
+            if (idx < 0) {idx = cursor;}
+            sentenceStarts[i] = idx;
+            sentenceEnds[i]   = idx + sentences[i].trim().length();
+                                cursor = sentenceEnds[i];
+        }
+
+        var consumed = new java.util.HashSet<Integer>();
+
+        for (int i = 0; i < sentences.length; i++) {
+            var trimmed = sentences[i].trim();
+            if (trimmed.isEmpty()) {continue;}
+
+            int sentenceStart     = sentenceStarts[i];
+            int sentenceEnd       = sentenceEnds[i];
+            int nextSentenceStart = (i + 1 < sentences.length) ? sentenceStarts[i + 1] : Integer.MAX_VALUE;
 
             var cues = new ArrayList<Cue>();
-            int sentenceStart = cleanFull.indexOf(trimmed, cleanOffset);
-            int sentenceEnd = sentenceStart + trimmed.length();
 
-            for (var tag : tagInfos) {
-                if (tag.cleanPosition >= sentenceStart && tag.cleanPosition < sentenceEnd) {
+            // Inline tags: within this sentence's text span
+            for (int t = 0; t < tagInfos.size(); t++) {
+                var tag = tagInfos.get(t);
+                if (!consumed.contains(t) && tag.cleanPosition >= sentenceStart && tag.cleanPosition < sentenceEnd) {
                     var cue = tag.toCue();
-                    if (cue != null) cues.add(cue);
+                    if (cue != null) {cues.add(cue);}
+                    consumed.add(t);
                 }
             }
 
-            // Trailing tags: tags after the last word of this sentence but before the next sentence
-            // bind to the first word of this sentence (D2 rule 3)
-            for (var tag : tagInfos) {
-                if (tag.cleanPosition >= sentenceEnd && tag.cleanPosition < sentenceEnd + 2) {
+            // Trailing tags: between this sentence end and the next sentence start (inclusive)
+            // bind to this sentence (D2 rule 3, #492 fix 2)
+            for (int t = 0; t < tagInfos.size(); t++) {
+                var tag = tagInfos.get(t);
+                if (!consumed.contains(t) && tag.cleanPosition >= sentenceEnd && tag.cleanPosition <= nextSentenceStart) {
                     var cue = tag.toCueAtWord(0);
-                    if (cue != null) cues.add(cue);
+                    if (cue != null) {cues.add(cue);}
+                    consumed.add(t);
                 }
             }
 
             var canonical = buildCanonical(trimmed, cues);
             results.add(new ParsedSegment(trimmed, cues, canonical));
-            cleanOffset = sentenceEnd;
         }
-
-        // Handle tags with no sentence (pure markup input)
-        // These are dropped — no empty segments (D2 rule 4)
 
         return List.copyOf(results);
     }
@@ -86,18 +99,21 @@ public class UtteranceSegmenter {
     }
 
     private List<TagInfo> extractTags(String text) {
-        var tags = new ArrayList<TagInfo>();
-        Matcher m = TAG_RE.matcher(text);
+        var     tags = new ArrayList<TagInfo>();
+        Matcher m    = TAG_RE.matcher(text);
 
-        int tagBytesBeforeCurrent = 0;
         while (m.find()) {
-            String type = m.group(1).toLowerCase();
-            String value = m.group(2).toLowerCase();
+            String  type  = m.group(1).toLowerCase();
+            String  value = m.group(2).toLowerCase();
             boolean valid = "gesture".equals(type) ? vocabulary.isValidGesture(value) : vocabulary.isValidMood(value);
 
-            int cleanPos = m.start() - tagBytesBeforeCurrent;
+            // Compute clean position by removing all tags from the prefix,
+            // then applying the same space collapse as removeTags (#492 fix 3)
+            String prefix      = text.substring(0, m.start());
+            String cleanPrefix = TAG_RE.matcher(prefix).replaceAll("").replaceAll("\\s{2,}", " ");
+            int    cleanPos    = cleanPrefix.length();
+
             tags.add(new TagInfo(type, value, m.start(), cleanPos, valid));
-            tagBytesBeforeCurrent += m.end() - m.start();
         }
         return tags;
     }

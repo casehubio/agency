@@ -115,6 +115,42 @@ class UtteranceSegmenterTest {
         assertThat(segs.get(0).wordCount()).isEqualTo(3);
     }
 
+    @Test
+    void duplicateSentencesAssignCuesCorrectly() {
+        // Tag between duplicate sentences: D2 forward binding → tag belongs to next sentence.
+        // But D2 rule 3 (trailing tag with no following word in its sentence) means the tag
+        // trails to the first sentence when it falls between sentenceEnd and nextSentenceStart.
+        // Both assignments are defensible; the current behaviour is trailing-to-previous.
+        var segs = segmenter.segment("Yes. [gesture:nod] Yes.");
+        assertThat(segs).hasSize(2);
+        assertThat(segs.get(0).cleanText()).isEqualTo("Yes.");
+        assertThat(segs.get(0).cues()).hasSize(1);
+        assertThat(((Cue.GestureCue) segs.get(0).cues().get(0)).tag()).isEqualTo("nod");
+        assertThat(segs.get(1).cleanText()).isEqualTo("Yes.");
+        assertThat(segs.get(1).cues()).isEmpty();
+    }
+
+    @Test
+    void trailingTagWithVariableWhitespace() {
+        var segs = segmenter.segment("Hello!   [gesture:greeting]   Goodbye.");
+        assertThat(segs).hasSize(2);
+        assertThat(segs.get(0).cleanText()).isEqualTo("Hello!");
+        assertThat(segs.get(0).cues()).hasSize(1);
+        assertThat(((Cue.GestureCue) segs.get(0).cues().get(0)).tag()).isEqualTo("greeting");
+        assertThat(segs.get(1).cleanText()).isEqualTo("Goodbye.");
+        assertThat(segs.get(1).cues()).isEmpty();
+    }
+
+    @Test
+    void spaceCollapseDoesNotShiftTagAssignment() {
+        var segs = segmenter.segment("Hello  [gesture:greeting]  world.");
+        assertThat(segs).hasSize(1);
+        assertThat(segs.get(0).cleanText()).isEqualTo("Hello world.");
+        assertThat(segs.get(0).cues()).hasSize(1);
+        assertThat(((Cue.GestureCue) segs.get(0).cues().get(0)).tag()).isEqualTo("greeting");
+    }
+
+
     static class TestVocabulary implements PerformanceVocabulary {
         private static final Set<String> GESTURES = Set.of("greeting", "nod", "shrug", "angry");
         private static final Set<String> MOODS = Set.of("happy", "sad", "neutral");
