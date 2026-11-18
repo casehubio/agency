@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 280" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Timeline axis -->
+  <line x1="60" y1="230" x2="580" y2="230" stroke="#666" stroke-width="1"/>
+  <text x="320" y="260" text-anchor="middle" font-size="11" fill="#888">time →</text>
+
+  <!-- Base layer -->
+  <rect x="60" y="160" width="520" height="40" rx="4" fill="#2d5aa0" opacity="0.3" stroke="#2d5aa0" stroke-width="1"/>
+  <text x="70" y="183" font-size="11" fill="#2d5aa0" font-weight="600">Base layer (looping pool clip)</text>
+
+  <!-- Gesture comes in — base ducks -->
+  <rect x="200" y="160" width="140" height="40" rx="4" fill="#2d5aa0" opacity="0.08" stroke="#2d5aa0" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Gesture layer -->
+  <rect x="200" y="80" width="140" height="60" rx="4" fill="#d64" opacity="0.25" stroke="#d64" stroke-width="1.5"/>
+  <text x="210" y="103" font-size="11" fill="#d64" font-weight="600">Gesture layer</text>
+  <text x="210" y="118" font-size="10" fill="#d64">(one-shot clip)</text>
+
+  <!-- Weight annotations -->
+  <text x="130" y="150" text-anchor="middle" font-size="10" fill="#2d5aa0">weight: 1.0</text>
+  <text x="270" y="150" text-anchor="middle" font-size="10" fill="#888">ducked: 0.0</text>
+  <text x="460" y="150" text-anchor="middle" font-size="10" fill="#2d5aa0">weight: 1.0</text>
+  <text x="270" y="72" text-anchor="middle" font-size="10" fill="#d64">weight: 1.0</text>
+
+  <!-- Duck/unduck markers -->
+  <line x1="200" y1="70" x2="200" y2="210" stroke="#888" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="340" y1="70" x2="340" y2="210" stroke="#888" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+  <text x="200" y="50" text-anchor="middle" font-size="9" fill="#888">gesture start</text>
+  <text x="200" y="60" text-anchor="middle" font-size="9" fill="#888">↓ duck base</text>
+  <text x="340" y="50" text-anchor="middle" font-size="9" fill="#888">gesture ends</text>
+  <text x="340" y="60" text-anchor="middle" font-size="9" fill="#888">↓ unduck base</text>
+
+  <!-- Pool change during gesture -->
+  <line x1="280" y1="160" x2="280" y2="210" stroke="#4a9" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="280" y="225" text-anchor="middle" font-size="9" fill="#4a9">pool change</text>
+  <text x="280" y="245" text-anchor="middle" font-size="9" fill="#4a9">(invisible — base</text>
+  <text x="280" y="255" text-anchor="middle" font-size="9" fill="#4a9">is ducked)</text>
+
+  <!-- Label -->
+  <text x="60" y="30" font-size="13" fill="#333" font-weight="600">Base + Gesture layering with weight ducking</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- States -->
+  <rect x="40" y="140" width="120" height="50" rx="8" fill="#2d5aa0" stroke="#1a3d6e" stroke-width="1.5"/>
+  <text x="100" y="170" text-anchor="middle" fill="white" font-size="14" font-weight="600">IDLE</text>
+
+  <rect x="220" y="40" width="120" height="50" rx="8" fill="#4a9" stroke="#38876d" stroke-width="1.5"/>
+  <text x="280" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="600">LISTENING</text>
+
+  <rect x="420" y="40" width="120" height="50" rx="8" fill="#d9a547" stroke="#b8873a" stroke-width="1.5"/>
+  <text x="480" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="600">THINKING</text>
+
+  <rect x="420" y="240" width="120" height="50" rx="8" fill="#d64" stroke="#b53" stroke-width="1.5"/>
+  <text x="480" y="270" text-anchor="middle" fill="white" font-size="14" font-weight="600">SPEAKING</text>
+
+  <!-- Transitions -->
+  <!-- idle → listening (mic start) -->
+  <path d="M160,150 Q200,80 220,65" fill="none" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="160" y="98" font-size="10" fill="#888">mic start</text>
+
+  <!-- listening → thinking (mic stop) -->
+  <line x1="340" y1="65" x2="420" y2="65" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="365" y="55" font-size="10" fill="#888" text-anchor="middle">stop</text>
+
+  <!-- idle → thinking (text send) -->
+  <path d="M160,155 Q340,120 420,55" fill="none" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="290" y="130" font-size="10" fill="#888">text send</text>
+
+  <!-- thinking → speaking (first audio plays) -->
+  <line x1="480" y1="90" x2="480" y2="240" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="490" y="170" font-size="10" fill="#888">first audio</text>
+
+  <!-- speaking → idle (turn complete + all played) -->
+  <path d="M420,265 Q200,300 100,190" fill="none" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="220" y="285" font-size="10" fill="#888">TurnComplete + all audio played</text>
+
+  <!-- Pool labels -->
+  <text x="100" y="210" text-anchor="middle" font-size="10" fill="#2d5aa0" font-style="italic">relaxed, self-amusing</text>
+  <text x="280" y="110" text-anchor="middle" font-size="10" fill="#4a9" font-style="italic">relaxed, stance</text>
+  <text x="480" y="110" text-anchor="middle" font-size="10" fill="#d9a547" font-style="italic">attentive stance</text>
+  <text x="480" y="308" text-anchor="middle" font-size="10" fill="#d64" font-style="italic">hand gesture, stance</text>
+</svg>
