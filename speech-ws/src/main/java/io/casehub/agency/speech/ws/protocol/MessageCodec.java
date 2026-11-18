@@ -21,21 +21,6 @@ public final class MessageCodec {
                 obj.addProperty("type", "transcript");
                 obj.addProperty("text", t.text());
             }
-            case AvatarMessage.Response r -> {
-                obj.addProperty("type", "response");
-                obj.addProperty("text", r.text());
-            }
-            case AvatarMessage.Phonemes ph -> {
-                obj.addProperty("type", "phonemes");
-                obj.add("data", GSON.toJsonTree(ph.data()));
-            }
-            case AvatarMessage.Timing t -> {
-                obj.addProperty("type", "timing");
-                obj.addProperty("cleanupMs", t.cleanupMs());
-                obj.addProperty("llmMs", t.llmMs());
-                obj.addProperty("ttsMs", t.ttsMs());
-                obj.addProperty("totalMs", t.totalMs());
-            }
             case AvatarMessage.Error e -> {
                 obj.addProperty("type", "error");
                 obj.addProperty("message", e.message());
@@ -63,12 +48,6 @@ public final class MessageCodec {
                 obj.addProperty("type", "speakerIdentified");
                 obj.addProperty("name", si.name());
                 obj.addProperty("confidence", si.confidence());
-            }
-            case AvatarMessage.Animation a -> {
-                obj.addProperty("type", "animation");
-                obj.addProperty("category", a.category());
-                if (a.url() != null) {obj.addProperty("url", a.url());}
-                if (a.durationSec() != null) {obj.addProperty("durationSec", a.durationSec());}
             }
             case AvatarMessage.Segment seg -> {
                 obj.addProperty("type", "segment");

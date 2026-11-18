@@ -19,14 +19,6 @@ public sealed interface AvatarMessage {
 
     record Transcript(String text) implements AvatarMessage {}
 
-    record Response(String text) implements AvatarMessage {}
-
-    record Phonemes(List<VisemeFrame> data) implements AvatarMessage {
-        public Phonemes {data = List.copyOf(data);}
-    }
-
-    record Timing(long cleanupMs, long llmMs, long ttsMs, long totalMs) implements AvatarMessage {}
-
     record Error(String message) implements AvatarMessage {}
 
     record SpeakerPrompt(String message) implements AvatarMessage {}
@@ -34,9 +26,6 @@ public sealed interface AvatarMessage {
     record SpeakerIdentify(String name) implements AvatarMessage {}
 
     record SpeakerIdentified(String name, double confidence) implements AvatarMessage {}
-
-    record Animation(String category, @org.jspecify.annotations.Nullable String url,
-                     @org.jspecify.annotations.Nullable Integer durationSec) implements AvatarMessage {}
 
     // Turn-framed protocol (D3)
     record Segment(int turnSeq, int index, String text, boolean hasAudio,
