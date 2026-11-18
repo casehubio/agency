@@ -7,13 +7,26 @@ public sealed interface AvatarMessage {
                  @org.jspecify.annotations.Nullable String ttsModel) implements AvatarMessage {
         public Start(int sampleRate) {this(sampleRate, null, null);}
     }
+
     record Stop() implements AvatarMessage {}
-    record Text(String text, @org.jspecify.annotations.Nullable String llmModel, @org.jspecify.annotations.Nullable String ttsModel) implements AvatarMessage { public Text(String text) { this(text, null, null); } }
+
+    record Text(String text, @org.jspecify.annotations.Nullable String llmModel,
+                @org.jspecify.annotations.Nullable String ttsModel) implements AvatarMessage {
+        public Text(String text) {this(text, null, null);}
+    }
+
     record Partial(String text) implements AvatarMessage {}
+
     record Transcript(String text) implements AvatarMessage {}
+
     record Response(String text) implements AvatarMessage {}
-    record Phonemes(List<VisemeFrame> data) implements AvatarMessage { public Phonemes { data = List.copyOf(data); } }
+
+    record Phonemes(List<VisemeFrame> data) implements AvatarMessage {
+        public Phonemes {data = List.copyOf(data);}
+    }
+
     record Timing(long cleanupMs, long llmMs, long ttsMs, long totalMs) implements AvatarMessage {}
+
     record Error(String message) implements AvatarMessage {}
 
     record SpeakerPrompt(String message) implements AvatarMessage {}
@@ -25,5 +38,22 @@ public sealed interface AvatarMessage {
     record Animation(String category, @org.jspecify.annotations.Nullable String url,
                      @org.jspecify.annotations.Nullable Integer durationSec) implements AvatarMessage {}
 
+    // Turn-framed protocol (D3)
+    record Segment(int turnSeq, int index, String text, boolean hasAudio,
+                   List<VisemeFrame> visemes, List<Cue> cues) implements AvatarMessage {
+        public Segment {
+                           visemes = List.copyOf(visemes);
+                           cues    = List.copyOf(cues);
+                       }
+    }
 
+    record TurnComplete(int turnSeq, int segmentCount, TurnOrigin origin) implements AvatarMessage {}
+
+    record Gesture(String tag, GestureOrigin origin) implements AvatarMessage {}
+
+    record Mood(String state) implements AvatarMessage {}
+
+    record PlaybackComplete(int turnSeq) implements AvatarMessage {}
+
+    record UserActivity(UserActivityKind kind) implements AvatarMessage {}
 }

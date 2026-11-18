@@ -144,4 +144,62 @@ class MessageCodecTest {
         assertThat(msg).isInstanceOf(AvatarMessage.SpeakerIdentify.class);
         assertThat(((AvatarMessage.SpeakerIdentify) msg).name()).isEqualTo("Mark");
     }
+
+    @Test
+    void encodesSegmentMessage() {
+        List<Cue> cues = List.of(new Cue.GestureCue("nod", 450L));
+        var    visemes = List.of(new VisemeFrame("aa", 0, 200));
+        var    segment = new AvatarMessage.Segment(1, 0, "Hello world", true, visemes, cues);
+        String json    = MessageCodec.encode(segment);
+        var    obj     = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("segment");
+        assertThat(obj.get("turnSeq").getAsInt()).isEqualTo(1);
+        assertThat(obj.get("index").getAsInt()).isEqualTo(0);
+        assertThat(obj.get("text").getAsString()).isEqualTo("Hello world");
+        assertThat(obj.get("hasAudio").getAsBoolean()).isTrue();
+        assertThat(obj.getAsJsonArray("visemes")).hasSize(1);
+        assertThat(obj.getAsJsonArray("cues")).hasSize(1);
+    }
+
+    @Test
+    void encodesTurnCompleteMessage() {
+        var    msg  = new AvatarMessage.TurnComplete(1, 2, TurnOrigin.USER);
+        String json = MessageCodec.encode(msg);
+        var    obj  = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("turnComplete");
+        assertThat(obj.get("turnSeq").getAsInt()).isEqualTo(1);
+        assertThat(obj.get("segmentCount").getAsInt()).isEqualTo(2);
+        assertThat(obj.get("origin").getAsString()).isEqualTo("USER");
+    }
+
+    @Test
+    void encodesGestureMessage() {
+        String json = MessageCodec.encode(new AvatarMessage.Gesture("nod", GestureOrigin.ATTENTION));
+        var    obj  = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("gesture");
+        assertThat(obj.get("tag").getAsString()).isEqualTo("nod");
+        assertThat(obj.get("origin").getAsString()).isEqualTo("ATTENTION");
+    }
+
+    @Test
+    void encodesMoodMessage() {
+        String json = MessageCodec.encode(new AvatarMessage.Mood("happy"));
+        var    obj  = JsonParser.parseString(json).getAsJsonObject();
+        assertThat(obj.get("type").getAsString()).isEqualTo("mood");
+        assertThat(obj.get("state").getAsString()).isEqualTo("happy");
+    }
+
+    @Test
+    void decodesPlaybackComplete() {
+        var msg = MessageCodec.decodeClient("{\"type\":\"playbackComplete\",\"turnSeq\":1}");
+        assertThat(msg).isInstanceOf(AvatarMessage.PlaybackComplete.class);
+        assertThat(((AvatarMessage.PlaybackComplete) msg).turnSeq()).isEqualTo(1);
+    }
+
+    @Test
+    void decodesUserActivity() {
+        var msg = MessageCodec.decodeClient("{\"type\":\"userActivity\",\"kind\":\"TYPING\"}");
+        assertThat(msg).isInstanceOf(AvatarMessage.UserActivity.class);
+        assertThat(((AvatarMessage.UserActivity) msg).kind()).isEqualTo(UserActivityKind.TYPING);
+    }
 }

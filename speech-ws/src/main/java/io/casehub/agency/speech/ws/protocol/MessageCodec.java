@@ -67,11 +67,44 @@ public final class MessageCodec {
             case AvatarMessage.Animation a -> {
                 obj.addProperty("type", "animation");
                 obj.addProperty("category", a.category());
-                if (a.url() != null) { obj.addProperty("url", a.url()); }
-                if (a.durationSec() != null) { obj.addProperty("durationSec", a.durationSec()); }
+                if (a.url() != null) {obj.addProperty("url", a.url());}
+                if (a.durationSec() != null) {obj.addProperty("durationSec", a.durationSec());}
+            }
+            case AvatarMessage.Segment seg -> {
+                obj.addProperty("type", "segment");
+                obj.addProperty("turnSeq", seg.turnSeq());
+                obj.addProperty("index", seg.index());
+                obj.addProperty("text", seg.text());
+                obj.addProperty("hasAudio", seg.hasAudio());
+                obj.add("visemes", GSON.toJsonTree(seg.visemes()));
+                obj.add("cues", GSON.toJsonTree(seg.cues()));
+            }
+            case AvatarMessage.TurnComplete tc -> {
+                obj.addProperty("type", "turnComplete");
+                obj.addProperty("turnSeq", tc.turnSeq());
+                obj.addProperty("segmentCount", tc.segmentCount());
+                obj.addProperty("origin", tc.origin().name());
+            }
+            case AvatarMessage.Gesture g -> {
+                obj.addProperty("type", "gesture");
+                obj.addProperty("tag", g.tag());
+                obj.addProperty("origin", g.origin().name());
+            }
+            case AvatarMessage.Mood m -> {
+                obj.addProperty("type", "mood");
+                obj.addProperty("state", m.state());
+            }
+            case AvatarMessage.PlaybackComplete pc -> {
+                obj.addProperty("type", "playbackComplete");
+                obj.addProperty("turnSeq", pc.turnSeq());
+            }
+            case AvatarMessage.UserActivity ua -> {
+                obj.addProperty("type", "userActivity");
+                obj.addProperty("kind", ua.kind().name());
             }
         }
-        return GSON.toJson(obj);}
+        return GSON.toJson(obj);
+    }
 
     public static AvatarMessage decodeClient(String json) {
         var    obj  = JsonParser.parseString(json).getAsJsonObject();
@@ -88,6 +121,11 @@ public final class MessageCodec {
                     obj.has("ttsModel") ? obj.get("ttsModel").getAsString() : null);
             case "speakerIdentify" -> new AvatarMessage.SpeakerIdentify(
                     obj.get("name").getAsString());
+            case "playbackComplete" -> new AvatarMessage.PlaybackComplete(
+                    obj.get("turnSeq").getAsInt());
+            case "userActivity" -> new AvatarMessage.UserActivity(
+                    UserActivityKind.valueOf(obj.get("kind").getAsString()));
             default -> throw new IllegalArgumentException("Unknown client message type: " + type);
-        };}
+        };
+    }
 }
