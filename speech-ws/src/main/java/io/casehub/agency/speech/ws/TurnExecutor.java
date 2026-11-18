@@ -191,7 +191,7 @@ public class TurnExecutor implements AutoCloseable {
         turnEstimatedAudioMs += seg.cleanText().length() * MS_PER_CHAR;
         try {
             if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streamingTts) {
-                long estimatedMs = seg.cleanText().length() * 80L;
+                long estimatedMs = seg.cleanText().length() * MS_PER_CHAR;
                 var  visemes     = VisemeMapping.estimateFromText(seg.cleanText(), estimatedMs);
                 var  timedCues  = estimateMarkTiming(seg.cues(), seg.cleanText().length(), estimatedMs);
                 send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
