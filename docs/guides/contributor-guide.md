@@ -31,7 +31,7 @@ Single module -- `casehub-agency` is a flat library, not a multi-module reactor.
 | `agency-core/src/main/java/io/casehub/agency/perception/llm/` | LLM-backed `ContentSummariser<T>` -- generic synthesis via `AgentProvider` |
 | `agency-core/src/main/java/io/casehub/agency/perception/observation/` | Observation accumulator -- tiered, demand-driven rendering for LLM agent prompts (4 files) |
 | `agency-core/src/main/java/io/casehub/agency/perception/observation/affordance/` | Affordance grounding -- per-entity observation rendering for LLM agents (5 files) |
-| `agency-core/src/main/java/io/casehub/agency/social/cognition/` | Social cognition speech integration -- SocialAvatarCognition, SocialPromptAssembler, ProactiveSpeechSupport, AttentionPromptSection, 10 PromptSection implementations |
+| `agency-core/src/main/java/io/casehub/agency/social/cognition/` | Cognition integration -- `CognitionAvatarAdapter` (`AvatarCognition` impl delegating to neocortex `CognitionCore`) |
 
 Tests mirror source layout under `src/test/java/`. Integration test examples exist in:
 - `summarisation/examples/clinical/` -- L1-L4 clinical pipeline (vital readings -> care phases -> narratives)
@@ -55,7 +55,7 @@ Tests mirror source layout under `src/test/java/`. Integration test examples exi
 
 Key internal state:
 - `AtomicReference<ExecutionState>` -- sealed 7-state machine (Idle -> Running -> WaitingForAgent -> ... -> Complete/Faulted/Cancelled)
-- `Map<AgentRef, Integer> activationCounts` -- per-agent activation tracking
+- `Map<AgentRef, Integer> activationWeights` -- per-agent activation tracking
 - `Map<AgentRef, Integer> consecutiveIdleCounts` -- idle detection for activation context
 - `volatile boolean cancelled` -- cooperative cancellation
 
@@ -215,99 +215,15 @@ Terminal consumer of the summarisation pipeline -- tiered, demand-driven renderi
 
 `ObservationSection` is a sealed interface with three variants: `EntityGroup`, `TextBlock`, `ItemList`. Static factories: `entities()`, `text()`, `items()`.
 
-### Drive Architecture (Compositor Pattern)
+### Cognition Integration
 
-The drive sub-package (`social.drive`) follows a *compositor pattern* that deliberately breaks the universal `record()` + `tick()` contract used by all six social cognition orchestrators. Drives consume derived state from other orchestrators rather than accumulating raw signals, so `record()` has nothing to accumulate.
+Agency retains a thin integration layer for wiring neocortex's `CognitionCore` into the speech pipeline. All orchestrators, prompt sections, drives, goals, narratives, and social emergence types now live in `casehub-neocortex-cognition`.
 
-**Lifecycle:** `DriveOrchestrator.tick(agentId, tenantId, AgentDescriptor)` evaluates four `DriveSource` implementations, delegates modulation and composition to `DriveComposer`, and caches the resulting `DriveProfile`. `currentDrives(agentId, tenantId)` returns the cached state. Per-agent `ReentrantLock` guards `tick()` -- same concurrency model as other orchestrators.
+**CognitionAvatarAdapter** (`AvatarCognition` impl): delegates to neocortex `CognitionCore` for all cognitive operations. Five methods: `wrapAssembler()` enriches prompts via `CognitionRenderContext`, `initialize()` hydrates orchestrator state, `tick()` drives the cognition cycle (plus optional `CognitiveEvolutionAdapter`), `evaluateProactive()` delegates to `ProactiveSpeechSupport`, `recordInteraction()` dispatches per-turn signals. Optional `CognitiveGoalOrchestrator` integration consumes goal decay revisions and transitions eidos goal lifecycle state.
 
-**DriveSource SPI:** `@FunctionalInterface` with `DriveIntensity evaluate(agentId, tenantId)`. Each implementation takes its source orchestrator as a constructor dependency and reads its public accessors. Each concrete implementation caches the intermediate data read during `evaluate()` and exposes it via a typed accessor (`lastGaps()`, `lastTrend()`, `lastProfiles()`, `lastSnapshots()`). Goal mappers consume this cached data instead of re-querying the source orchestrators. `DriveOrchestrator` exposes concrete sources via `curiosityDrive()` etc. (null for lambda fallbacks). Analogous to `TraitPressureSource<E>` in personality evolution, but pull-based (reads at tick-time) rather than push-based (translates events at record-time).
+**Cognitive evolution ticker** (`social.cognition.evolution`): wires engine's `EvolutionTicker` into the cognitive agent's tick cycle. `CognitiveEvolutionAdapter` uses CURIOSITY drive intensity to modulate tick frequency; `CircuitBreakerMoodMapper` feeds circuit breaker state to PAD mood signals. `EvolutionTickBridge` (`@FunctionalInterface`) is the consumer binding point.
 
-**Modulation flow:** Raw intensities from four sources → mood modulation (PAD axes from `MoodOrchestrator.currentMood()`) → personality modulation (`AgentDescriptor.disposition()` weights per `DispositionAxis`) → intensity clamping → weighted composition → `DriveProfile`.
-
-**CDI management:** `DriveOrchestrator` and `DriveComposer` are `@ApplicationScoped`. DriveOrchestrator's `@Inject` constructor takes `Instance<MemoryHygieneOrchestrator>` (optional -- curiosity drive returns zero when hygiene is not CDI-managed), `StrategyLearningOrchestrator`, `UserModelOrchestrator`, `MentalModelOrchestrator`, `MoodOrchestrator`, `DriveComposer`, and `DriveConfig`. Drive sources are constructed internally -- they are not CDI beans. Per-drive config params (affiliation decay threshold, stale duration, autonomy confidence floor) are in `DriveConfig`.
-
-**Lifecycle wiring:** `InnerLifeOrchestrator` injects `DriveOrchestrator` and calls `tick()` at the start of `doTick()`. This ensures drives are computed before inner life logic runs. The scheduler owns the full tick ordering: source orchestrators → `DriveOrchestrator` → `GoalProposalOrchestrator`.
-
-**Observation rendering:** `CognitiveObservationSections.motivationalStateSection(DriveProfile)` renders the drive profile as an `ObservationSection.ItemList`. Per-axis items show intensity (1dp) and trigger provenance. Axes below 0.05 intensity are filtered. Downstream apps include this section in their `WorldObservationProvider` implementation.
-
-**Upstream API additions for drive sources:**
-- `MemoryHygieneOrchestrator.knowledgeGaps()` → `KnowledgeGapSummary` (in `social.memory`)
-- `StrategyLearningOrchestrator.engagementTrend()` → `EngagementTrend` (in `social.cognition`)
-- `UserModelOrchestrator.activeProfiles()` → cross-subject profile aggregation
-- `MentalModelOrchestrator.activeSnapshots()` → cross-subject mental model aggregation
-
-### Goal Proposal (Compositor Pattern)
-
-The goal sub-package (`social.goal`) is Layer 2 of the autonomous intelligence stack. It translates drive signals into concrete `AgentGoal` proposals that the engine's existing goal lifecycle can decompose and execute.
-
-**Compositor guarantee:** `GoalProposalOrchestrator.tick()` evaluates mappers, caches proposals, and returns the result -- no side effects. The scheduler reads `currentProposals()` (or the tick result) and calls `GoalFormationService.propose()` (engine-api) to register goals. This enables inspection of proposals before registration and aligns with the engine's `autoApprove` governance.
-
-**DriveGoalMapper SPI:** `@FunctionalInterface` with `@Nullable DriveGoalProposal evaluate(agentId, tenantId, DriveIntensity)`. Each implementation injects the corresponding concrete `DriveSource` (e.g., `CuriosityGoalMapper` takes `CuriosityDrive`) and reads cached intermediate data via the `last*()` accessor. Returns null when no goal is warranted or cached data is null. Four implementations: `CuriosityGoalMapper`, `CompetenceGoalMapper`, `AffiliationGoalMapper`, `AutonomyGoalMapper`.
-
-**Capacity and lifecycle:** Drive-sourced goals occupy a separate budget (`maxDriveGoals=3` of `MAX_GOALS=10`). Proposals ranked by drive intensity when exceeding capacity. Relevance re-evaluation abandons goals when the originating drive drops below `relevanceThreshold` for longer than `staleAfter`. Failure-abandoned goals (via `GoalSignalStore`) are suppressed from re-proposal.
-
-**Engine integration (Batch 2):** `GoalFormationService` SPI in engine-api extracts case-independent goal registration (validation, deduplication, capacity, audit) from `GoalFormationEvaluator`. `GoalRemovalService` SPI provides reusable goal removal with audit. `ProposedGoal` gains `@Nullable Map<String, String> attributes` for goal provenance. Drive-sourced goals store `{"source": "drive", "driveAxis": "CURIOSITY"}`.
-
-**LLM goal formation:** `DriveGoalFormationStrategy` SPI with `LlmDriveGoalFormationStrategy` implementation provides drive-specific LLM prompt framing as an opt-in alternative to heuristic mappers. Accepts `DriveGoalFormationContext` (axis, intensity, trigger, existing goals, remaining capacity) and produces richer `DriveGoalProposal` descriptions via `AgentProvider`. Graceful degradation on LLM failure. Follows the heuristic/LLM tiering pattern from summarisation.
-
-**Consumer integration:** The scheduler (quarkmind, claudony, etc.) wires the full tick loop -- source orchestrators → NarrativePipeline → NarrativeOrchestrator → DriveOrchestrator → GoalProposalOrchestrator → GoalFormationService. The scheduler reads `GoalProposalTick.Changes` and applies all four signal types: register proposals via GoalFormationService, remove abandoned goals, apply priority adjustments via `AgentGoal.toBuilder().priority()`, apply governance attribute updates via `AgentGoal.toBuilder().attributes()`.
-
-**Governed priority escalation (#166):** GoalProposalOrchestrator pipeline extends with three phases after per-axis mapping: (1) cross-axis composition — detects `DerivedTheme`s with ≥2 positive axis weights above `crossAxisMinWeight`, creates compound proposals with dominant axis; (2) escalation evaluation — `GoalEscalationPolicy` SPI checks narrative alignment, synthesis-cycle tracking counts confirmed alignment cycles before escalating to PRIMARY; (3) demotion evaluation — checks existing PRIMARY drive-sourced goals for lost alignment with their escalation theme, demotes after sustained misalignment. All phases require `Instance<NarrativeOrchestrator>` (optional — when absent, phases are skipped and goals stay SECONDARY).
-
-**GoalEscalationPolicy SPI:** `@FunctionalInterface` returning `@Nullable EscalationResult`. `NarrativeGoalEscalationPolicy` implementation: selects strongest qualifying theme by `salience × axisWeight`, sign-aware (positive weights only), count-based cap via `maxPrimaryDriveGoals`. Escalation provenance flows into `ProposedGoal.attributes` (`escalatedBy`, `escalation.theme`, timestamps). Engine-side defence-in-depth: `DefaultGoalFormationService` rejects PRIMARY on drive-sourced goals without `escalatedBy` attribute.
-
-**Cross-axis composition (#159):** Inline pipeline step with optional `CrossAxisGoalEnricher` SPI for LLM enrichment. `LlmCrossAxisGoalEnricher` via `AgentProvider` with graceful degradation. Heuristic fallback creates template descriptions. Compound proposals carry `crossAxisWeights` in `proposalAttributes`.
-
-**GoalProposalTick.Changes:** Renamed from `Proposed`. Carries four signal types: `newProposals`, `abandonedGoalNames`, `priorityAdjustments` (`List<PriorityAdjustment>`), `governanceUpdates` (`List<GovernanceAttributeUpdate>`). The scheduler applies all four atomically.
-
-### Narrative Identity (Compositor + Effectful Split)
-
-Layer 3a of the autonomous intelligence stack. Agents construct a first-person autobiography from accumulated reflections. The architecture splits into effectful synthesis and side-effect-free orchestration:
-
-- **NarrativePipeline** (`@ApplicationScoped`, factory) -- wires `ReflectionEventAdapter` (pull-to-push from `ReflectionQueryStore`) → `SummarisationRunner` (with `NarrativeEmissionPolicy` for count + novelty + quiet period gating, `CbrStateStore` for persistent state, `NarrativeOutputProcessor` for episode/theme pruning, `NarrativeContentSummariser.asSummariser()` for LLM synthesis). `tick(agentId, tenantId)` drives the full cycle.
-- **NarrativeContentSummariser** (`@ApplicationScoped`, `ContentSummariser<ReflectionEntry, NarrativeState>`) -- LLM synthesis via `AgentProvider`, incremental episode merge + full theme re-derivation. No gate logic, no pruning, no store writes -- those are pipeline SPI concerns.
-- **NarrativeOrchestrator** (`@ApplicationScoped`, compositor) -- reads `NarrativeStore`, caches `NarrativeState` per agent, returns `NarrativeTick` (Updated/NoChange). No LLM, no side effects. Reads independently from `NarrativeMemory` -- no coupling to the pipeline's write-through cache.
-- **GroupNarrativeOrchestrator** (compositor, not CDI-managed) -- GROUP-scoped mirror of NarrativeOrchestrator. Consumer constructs with `Set<String> memberIds`. `tick(groupId, tenantId)` detects new `GroupEpisode`s and themes.
-
-**Persistence:** `NarrativeStore` SPI with `NarrativeMemory` `@DefaultBean`. `NarrativeStateSchema` handles polymorphic `NarrativeFragment` serialization (type discriminators for `IndividualEpisode`/`GroupEpisode`/`DerivedTheme`). `CbrStateStore` adapts `NarrativeMemory` as `StateStore<NarrativeState>` for the pipeline's write-through cache. `ReflectionQueryStore` SPI provides read access to stored reflections for `ReflectionEventAdapter`.
-
-**Drive modulation:** `NarrativeModulation.compute(NarrativeState)` converts themes to per-axis drive coefficients. `DriveOrchestrator` reads from `NarrativeOrchestrator` via `Instance<>` (optional) and passes modulation to `DriveComposer`. Works identically for individual and group narratives.
-
-**Tick ordering:** Source orchestrators → NarrativePipeline → NarrativeOrchestrator → DriveOrchestrator → GoalProposalOrchestrator.
-
-### Social Emergence
-
-Layer 3b -- collective behaviors emerging from multi-agent interaction.
-
-- **SocialNormDetector** (`@ApplicationScoped`, compositor) -- reads `NormObservation` cases from CBR, groups by `behavioralPattern`, computes adherence rates, classifies strength (EMERGING/ESTABLISHED/DECLINING). Per-tenant caching with prior-state tracking for decline detection. `NormObservationSchema` for CBR serialization.
-- **CollectiveGoalFormation** (compositor, not CDI-managed) -- reads N agents' `DriveProfile`s, computes pairwise alignment (`1 - |diff|` per axis), forms groups via connected components, proposes `CollectiveGoalProposal`s when composite alignment exceeds threshold. Per-group cooldown. `toJointIntention()` bridges proposals to `JointIntention.form()`.
-
-**Consumer construction:** `CollectiveGoalFormation` takes `DriveOrchestrator`, `List<String> agentIds`, and `CollectiveGoalConfig` at construction. The agent set is deployment-time configuration -- consumers produce the bean via `@Produces` or construct directly.
-
-### Social Cognition Speech Integration
-
-The prompt sub-package (`social.cognition`) wires all social cognition orchestrators into the speech pipeline. Three-layer architecture: speech-api defines the SPIs, agency provides the integration, speech-ws consumes via `Instance<>`.
-
-**AvatarCognition SPI** (speech-api): composition root with five methods -- `wrapAssembler()` decorates a base `SpeechPromptAssembler` with social context, `initialize()` hydrates orchestrator state at session open, `tick()` processes accumulated signals across all orchestrators, `evaluateProactive()` checks for proactive initiation, `recordInteraction()` dispatches per-turn signals.
-
-**SocialAvatarCognition** (`@ApplicationScoped`): the agency-side implementation. Injects direct orchestrators (Mood, Drives, MentalModel, UserModel, Strategy) and optional orchestrators via `Instance<>` (Narrative, Goals, InnerLife, AgentRegistry, CognitiveAttentionMediator). Constructs `CognitionCore` with all dependencies. `buildSections()` delegates to `CognitionCore.promptSections()`. Exception isolation: a failing section is logged and skipped, not propagated.
-
-**PromptSection lifecycle:** Sections are plain classes (not CDI beans) constructed by `CognitionCore.promptSections()`. Each implements `@Nullable contribute(PromptContext)` -- the context carries `agentId`, `tenantId`, and `@Nullable subjectId` (resolved per-turn by `SpeechSession` via speaker identification). Subject-scoped sections (`MentalModelPromptSection`, `UserModelPromptSection`) return null when `subjectId` is null (no identified speaker).
-
-**Attention-aware section gating:** `CognitionCore.promptSections()` uses `isEnabled(configFlag, relevanceSet)` instead of raw config flags for section inclusion. When an `AttentionBriefing` is present and contains signals relevant to a domain, that domain's section is force-included even when its config flag is `false`. The mapping from signal categories to cognitive domains lives in `AttentionRelevance` (package-private, `io.casehub.agency.core.social`):
-
-- `GOALS` ← URGENCY_SPIKE, GOAL_RECOGNIZED, DECAY_DETECTED, BLOCKER_RESOLVED, PRIORITY_SHIFT
-- `DRIVES` ← DRIVE_SHIFT
-- `MOOD` ← AFFECT_CHANGE
-- `MENTAL_MODEL` ← RELATIONSHIP_STAGE, BELIEF_REVISED
-- `USER_MODEL` ← RELATIONSHIP_STAGE
-
-When adding a new `SignalCategory` in neocortex, add it to the appropriate `AttentionRelevance` constant. When adding a new attention-gated `PromptSection`, add an `isEnabled()` call in `CognitionCore.promptSections()` with the relevant constant. MERGE_CANDIDATE and EXPERIENCE_GRADUATED have no corresponding prompt section — they are informational only.
-
-**Signal recording:** `recordInteraction()` dispatches to four orchestrators with per-call exception isolation. Subject-scoped signals (UserModel, MentalModel, Strategy) require an identified speaker. MoodOrchestrator is intentionally excluded -- computing meaningful PAD deltas from conversation turns requires sentiment analysis not available in the speech pipeline. InnerLifeOrchestrator receives `observeResponse()` to reset proactive initiation counters.
-
-**Proactive speech:** `ProactiveSpeechSupport` wraps `InnerLifeOrchestrator.tick()` and extracts the `content` field from `InnerLifeTick.Initiated`. The proactive path in speech-ws differs from user-initiated turns: no second LLM call (content is the utterance), no signal recording (self-initiated, not user interaction), content added to history as "assistant" role.
+**Memory hygiene evolution loop** (`social.memory.evolution`): registers memory hygiene as a participant in the engine's continuous evolution pipeline. `MemoryHygieneProposalSource` proposes tuning when quality drops. `MemoryHygieneRegressionEvaluator` monitors component scores. `MemoryHygieneCapabilityArea` provides landscape position mapping. Core memory hygiene implementation lives in neocortex `cognition` module.
 
 ## Multi-Swarm Coordination Architecture
 

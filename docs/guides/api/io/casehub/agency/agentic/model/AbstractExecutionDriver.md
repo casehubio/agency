@@ -18,7 +18,7 @@ vs. event-wait semantics.
 
 ### `LOG` (`java.lang.System.Logger`)
 
-### `activationCounts` (`java.util.Map<io.casehub.agency.core.AgentRef,java.lang.Integer>`)
+### `activationWeights` (`java.util.Map<io.casehub.agency.core.AgentRef,java.lang.Integer>`)
 
 ### `cancelled` (`boolean`)
 

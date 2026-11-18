@@ -321,7 +321,7 @@ The largest task. Extract the five-phase loop, state tracking, listener notifica
   - `protected ExecutionResult executeIteration(ExecutionModel<T>, T)`: the five-phase loop body, returns null for Continue
   - `protected List<AgentResult> dispatchAgents(ExecutionModel<T>, List<AgentRef>, T)`: dispatch + activation
   - All `notify*` methods and `transition()` as protected methods
-  - Tracked state: `activationCounts`, `consecutiveIdleCounts`, `lastAggregationResult`
+  - Tracked state: `activationWeights`, `consecutiveIdleCounts`, `lastAggregationResult`
   - `OrchestratedDriver<T>`: thin subclass, no-arg + `(AgentInvoker<T>)` constructors, `while (!cancelled)` loop
   - `ChoreographedDriver<T>`: thin subclass, no-arg + `(AgentInvoker<T>)` constructors, WaitingForEvent transitions
   - `AbstractPatternBuilder.execute()`: uses `new OrchestratedDriver<T>()` (no-arg — default invoker)
