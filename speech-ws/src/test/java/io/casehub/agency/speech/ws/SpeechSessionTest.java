@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.connectors.voice.spi.RecognitionStream;
@@ -330,7 +330,7 @@ class SpeechSessionTest {
 
         assertThat(capturedPrompt[0]).isNotNull();
         assertThat(capturedPrompt[0].systemPrompt()).isEqualTo("Custom system prompt");
-        assertThat(capturedPrompt[0].userPrompt()).contains("test input");
+        assertThat(capturedPrompt[0].userMessage()).contains("test input");
     }
 
     @Test

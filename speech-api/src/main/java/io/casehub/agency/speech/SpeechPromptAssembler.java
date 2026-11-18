@@ -1,5 +1,7 @@
 package io.casehub.agency.speech;
 
+import io.casehub.eidos.api.AssembledPrompt;
+
 import java.util.List;
 
 @FunctionalInterface

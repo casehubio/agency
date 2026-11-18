@@ -651,12 +651,9 @@ Speech pipeline SPIs — provider-agnostic interfaces for audio, prompt assembly
 | `TranscriptionResult` | record | `text`, `language`, `origin` |
 | `SynthesisResult` | record | `audioData` (byte[]), `audioFormat`, `phonemes` (List<PhonemeTiming>) |
 | `PhonemeTiming` | record | `phoneme`, `startMs`, `endMs` — for downstream lip-sync |
-| `SpeechPromptAssembler` | @FunctionalInterface | `assemble(userMessage, history) → AssembledPrompt`. Prompt assembly SPI for speech sessions. |
-| `AssembledPrompt` | record | `systemPrompt`, `userPrompt`, optional `model` override |
+| `SpeechPromptAssembler` | @FunctionalInterface | `assemble(userMessage, history) → AssembledPrompt` (eidos-api). Prompt assembly SPI for speech sessions. |
 | `ConversationTurn` | record | `role`, `content` — conversation history entry |
-| `PromptContext` | record | `agentId`, `tenantId`, `@Nullable subjectId` — per-turn context for PromptSections |
-| `PromptSection` | @FunctionalInterface | `@Nullable contribute(PromptContext)`. Reads orchestrator cached state, returns formatted text section or null. |
-| `AvatarCognition` | interface | Composition root — `wrapAssembler()`, `initialize()`, `tick()`, `evaluateProactive()`, `recordInteraction()`. speech-ws injects via `Instance<AvatarCognition>`. |
+| `AvatarCognition` | interface | Extends `CognitiveLifecycle` (cognition-api) with speech-specific `wrapAssembler()`. speech-ws injects via `Instance<AvatarCognition>`. Cognitive lifecycle methods (`initialize`, `tick`, `evaluateProactive`, `recordInteraction`, `promptSections`) inherited from `CognitiveLifecycle`. |
 
 ### `io.casehub.agency.core.social.prompt` (module: `casehub-agency`)
 
@@ -665,17 +662,17 @@ Social cognition speech integration — wires all social cognition orchestrators
 | Class | Type | What it does |
 |-------|------|-------------|
 | `SocialAvatarCognition` | @ApplicationScoped | `AvatarCognition` implementation. Wires MoodOrchestrator, DriveOrchestrator, MentalModelOrchestrator, UserModelOrchestrator, StrategyLearningOrchestrator, NarrativeOrchestrator (optional), GoalProposalOrchestrator (optional), InnerLifeOrchestrator (optional). Constructs PromptSections, handles signal recording and proactive evaluation. |
-| `SocialPromptAssembler` | class | Wraps a base `SpeechPromptAssembler`, appends all `PromptSection` contributions to the system prompt. Fault-tolerant — a failing section is logged and skipped. |
+| `SocialPromptAssembler` | class | Wraps a base `SpeechPromptAssembler`, appends all `CognitionPromptRenderer` contributions to the system prompt. Fault-tolerant — a failing section is logged and skipped. |
 | `ProactiveSpeechSupport` | class | Encapsulates `InnerLifeOrchestrator` integration for proactive initiation. Returns content from `InnerLifeTick.Initiated` or null from `Silent`. |
-| `MoodPromptSection` | PromptSection | PAD emotional state with natural-language interpretation (positive/negative/energetic/calm/confident/submissive). |
-| `DrivePromptSection` | PromptSection | Motivational state via `CognitiveObservationSections.motivationalStateSection()`. |
-| `PersonalityPromptSection` | PromptSection | Session-static personality traits from `AgentDescriptor.disposition()`. |
-| `MentalModelPromptSection` | PromptSection | BDI Theory of Mind — beliefs, desires, intentions with confidence filtering. Subject-scoped. |
-| `UserModelPromptSection` | PromptSection | Per-subject user profile — familiarity, relationship stage, preferences. Subject-scoped. |
+| `MoodPromptSection` | CognitionPromptRenderer | PAD emotional state with natural-language interpretation (positive/negative/energetic/calm/confident/submissive). |
+| `DrivePromptSection` | CognitionPromptRenderer | Motivational state via `CognitiveObservationSections.motivationalStateSection()`. |
+| `PersonalityPromptSection` | CognitionPromptRenderer | Session-static personality traits from `AgentDescriptor.disposition()`. |
+| `MentalModelPromptSection` | CognitionPromptRenderer | BDI Theory of Mind — beliefs, desires, intentions with confidence filtering. Subject-scoped. |
+| `UserModelPromptSection` | CognitionPromptRenderer | Per-subject user profile — familiarity, relationship stage, preferences. Subject-scoped. |
 | `StrategyPromptSection` | PromptSection | Learned interaction strategies via `StrategyProfile.toPromptSection()`. |
 | `NarrativePromptSection` | PromptSection | Self-narrative via `CognitiveObservationSections`. Optional (requires NarrativeOrchestrator). |
-| `EmergentGoalPromptSection` | PromptSection | Autonomous drive-generated goal proposals. Optional (requires GoalProposalOrchestrator). |
-| `AttentionPromptSection` | PromptSection | Renders neocortex attention signals (URGENCY_SPIKE, DECAY_DETECTED, GOAL_RECOGNIZED, etc.) when `CognitiveAttentionMediator` drains a briefing during `CognitionCore.tick()`. Automatic — appears when attention signals are present, absent when queue is empty. |
+| `EmergentGoalPromptSection` | CognitionPromptRenderer | Autonomous drive-generated goal proposals. Optional (requires GoalProposalOrchestrator). |
+| `AttentionPromptSection` | CognitionPromptRenderer | Renders neocortex attention signals (URGENCY_SPIKE, DECAY_DETECTED, GOAL_RECOGNIZED, etc.) when `CognitiveAttentionMediator` drains a briefing during `CognitionCore.tick()`. Automatic — appears when attention signals are present, absent when queue is empty. |
 
 **Quick start — avatar cognition:**
 ```java

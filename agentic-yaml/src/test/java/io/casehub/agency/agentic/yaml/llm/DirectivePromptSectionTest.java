@@ -1,7 +1,7 @@
 package io.casehub.agency.core.yaml.llm;
 
-import io.casehub.agency.speech.PromptContext;
-import io.casehub.agency.speech.PromptSection;
+import io.casehub.neocortex.cognition.prompt.CognitionPromptRenderer;
+import io.casehub.neocortex.cognition.prompt.CognitionRenderContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -13,19 +13,19 @@ class DirectivePromptSectionTest {
 
     @Test
     void wrappedSectionsHaveDistinctNames() {
-        PromptSection mood = ctx -> "mood content";
-        PromptSection drives = ctx -> "drive content";
-        PromptSection narrative = ctx -> "narrative content";
+        CognitionPromptRenderer mood = ctx -> "mood content";
+        CognitionPromptRenderer drives = ctx -> "drive content";
+        CognitionPromptRenderer narrative = ctx -> "narrative content";
 
         var wrapped = List.of(
                 DirectivePromptSection.wrap(mood, "MoodPromptSection"),
                 DirectivePromptSection.wrap(drives, "DrivePromptSection"),
                 DirectivePromptSection.wrap(narrative, "NarrativePromptSection"));
 
-        var ctx = new PromptContext("agent", "tenant", "subject");
+        var ctx = new CognitionRenderContext("agent", "tenant", "subject");
         var map = new LinkedHashMap<String, String>();
         for (var section : wrapped) {
-            var text = section.contribute(ctx);
+            var text = section.render(ctx);
             if (text != null && !text.isBlank()) {
                 var dps = (DirectivePromptSection) section;
                 map.put(dps.delegateName(), text);
@@ -39,17 +39,17 @@ class DirectivePromptSectionTest {
 
     @Test
     void mapKeyCollisionWithGetClassSimpleName() {
-        PromptSection mood = ctx -> "mood content";
-        PromptSection drives = ctx -> "drive content";
+        CognitionPromptRenderer mood = ctx -> "mood content";
+        CognitionPromptRenderer drives = ctx -> "drive content";
 
         var wrapped = List.of(
                 DirectivePromptSection.wrap(mood, "MoodPromptSection"),
                 DirectivePromptSection.wrap(drives, "DrivePromptSection"));
 
-        var ctx = new PromptContext("agent", "tenant", "subject");
+        var ctx = new CognitionRenderContext("agent", "tenant", "subject");
         var collisionMap = new LinkedHashMap<String, String>();
         for (var section : wrapped) {
-            var text = section.contribute(ctx);
+            var text = section.render(ctx);
             if (text != null && !text.isBlank()) {
                 collisionMap.put(section.getClass().getSimpleName(), text);
             }
@@ -63,20 +63,20 @@ class DirectivePromptSectionTest {
 
     @Test
     void nullDelegateContentReturnsNull() {
-        PromptSection empty = ctx -> null;
+        CognitionPromptRenderer empty = ctx -> null;
         var wrapped = DirectivePromptSection.wrap(empty, "EmptySection");
 
-        var ctx = new PromptContext("agent", "tenant", "subject");
-        assertThat(wrapped.contribute(ctx)).isNull();
+        var ctx = new CognitionRenderContext("agent", "tenant", "subject");
+        assertThat(wrapped.render(ctx)).isNull();
     }
 
     @Test
     void blankDelegateContentReturnsNull() {
-        PromptSection blank = ctx -> "   ";
+        CognitionPromptRenderer blank = ctx -> "   ";
         var wrapped = DirectivePromptSection.wrap(blank, "BlankSection");
 
-        var ctx = new PromptContext("agent", "tenant", "subject");
-        assertThat(wrapped.contribute(ctx)).isNull();
+        var ctx = new CognitionRenderContext("agent", "tenant", "subject");
+        assertThat(wrapped.render(ctx)).isNull();
     }
 
     @Test
@@ -87,9 +87,9 @@ class DirectivePromptSectionTest {
         assertThat(wrapped.delegateName()).isEqualTo("NamedTestSection");
     }
 
-    private static class NamedTestSection implements PromptSection {
+    private static class NamedTestSection implements CognitionPromptRenderer {
         @Override
-        public String contribute(PromptContext context) {
+        public String render(CognitionRenderContext context) {
             return "test";
         }
     }

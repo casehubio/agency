@@ -1,16 +1,15 @@
 package io.casehub.agency.social.cognition;
 
 import io.casehub.agency.social.cognition.evolution.CognitiveEvolutionAdapter;
-import io.casehub.agency.speech.AssembledPrompt;
 import io.casehub.agency.speech.AvatarCognition;
-import io.casehub.agency.speech.ConversationTurn;
-import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.eidos.api.AgentRegistry;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.eidos.api.GoalLifecycleState;
 import io.casehub.neocortex.cognition.core.CognitionCore;
 import io.casehub.neocortex.cognition.goal.CognitiveGoalOrchestrator;
+import io.casehub.neocortex.cognition.prompt.CognitionPromptRenderer;
 import io.casehub.neocortex.cognition.prompt.CognitionRenderContext;
 import io.casehub.neocortex.cognition.prompt.ProactiveSpeechSupport;
 import org.jspecify.annotations.Nullable;
@@ -49,28 +48,24 @@ public class CognitionAvatarAdapter implements AvatarCognition {
 
     @Override
     public SpeechPromptAssembler wrapAssembler(SpeechPromptAssembler base, String agentId,
-                                                String tenantId, Supplier<String> subjectIdSupplier) {
+                                               String tenantId, Supplier<String> subjectIdSupplier) {
         var renderers = core.promptSections();
-        return new SpeechPromptAssembler() {
-            @Override
-            public AssembledPrompt assemble(String userMessage, List<ConversationTurn> history) {
-                var assembled = base.assemble(userMessage, history);
-                var enriched = new StringBuilder(assembled.systemPrompt());
-                var ctx = new PromptContext(agentId, tenantId, subjectIdSupplier.get());
-                var renderCtx = new CognitionRenderContext(ctx.agentId(), ctx.tenantId(), ctx.subjectId());
-                for (var renderer : renderers) {
-                    try {
-                        var contribution = renderer.render(renderCtx);
-                        if (contribution != null) {
-                            enriched.append("\n\n").append(contribution);
-                        }
-                    } catch (Exception e) {
-                        LOG.log(System.Logger.Level.WARNING,
-                                "Prompt renderer failed: " + renderer.getClass().getSimpleName(), e);
+        return (userMessage, history) -> {
+            var assembled = base.assemble(userMessage, history);
+            var enriched  = new StringBuilder(assembled.systemPrompt());
+            var renderCtx = new CognitionRenderContext(agentId, tenantId, subjectIdSupplier.get());
+            for (var renderer : renderers) {
+                try {
+                    var contribution = renderer.render(renderCtx);
+                    if (contribution != null) {
+                        enriched.append("\n\n").append(contribution);
                     }
+                } catch (Exception e) {
+                    LOG.log(System.Logger.Level.WARNING,
+                            "Prompt renderer failed: " + renderer.getClass().getSimpleName(), e);
                 }
-                return new AssembledPrompt(enriched.toString(), assembled.userPrompt(), assembled.model());
             }
+            return new AssembledPrompt(enriched.toString(), assembled.userMessage(), assembled.model());
         };
     }
 
@@ -112,6 +107,12 @@ public class CognitionAvatarAdapter implements AvatarCognition {
                     .ifPresent(desc -> safeRun(() -> core.innerLife().observeResponse(desc)));
         }
     }
+
+    @Override
+    public List<CognitionPromptRenderer> promptSections() {
+        return core.promptSections();
+    }
+
 
     private void consumeGoalRevisions(String agentId, String tenantId) {
         if (cognitiveGoals == null || agentRegistry == null) return;

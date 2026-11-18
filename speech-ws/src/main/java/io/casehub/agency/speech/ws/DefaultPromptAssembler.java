@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import org.jspecify.annotations.Nullable;

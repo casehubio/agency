@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextToSpeech;
@@ -64,9 +64,9 @@ public class SpeechWebSocket {
             generator = prompt -> {
                 var config = prompt.model() != null
                              ? io.casehub.platform.agent.AgentSessionConfig.of(
-                        prompt.systemPrompt(), prompt.userPrompt(), prompt.model())
+                        prompt.systemPrompt(), prompt.userMessage(), prompt.model())
                              : io.casehub.platform.agent.AgentSessionConfig.of(
-                        prompt.systemPrompt(), prompt.userPrompt());
+                        prompt.systemPrompt(), prompt.userMessage());
                 return agent.invoke(config)
                             .filter(e -> e instanceof io.casehub.platform.agent.AgentEvent.TextDelta)
                             .map(e -> ((io.casehub.platform.agent.AgentEvent.TextDelta) e).text())
@@ -78,9 +78,9 @@ public class SpeechWebSocket {
             streamingGen = (prompt, onSentence) -> {
                 var config = prompt.model() != null
                              ? io.casehub.platform.agent.AgentSessionConfig.of(
-                        prompt.systemPrompt(), prompt.userPrompt(), prompt.model())
+                        prompt.systemPrompt(), prompt.userMessage(), prompt.model())
                              : io.casehub.platform.agent.AgentSessionConfig.of(
-                        prompt.systemPrompt(), prompt.userPrompt());
+                        prompt.systemPrompt(), prompt.userMessage());
                 var buffer   = new StringBuilder();
                 var fullText = new StringBuilder();
 

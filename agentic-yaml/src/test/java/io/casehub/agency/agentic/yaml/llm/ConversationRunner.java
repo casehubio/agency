@@ -5,8 +5,7 @@ import io.casehub.neocortex.cognition.core.CognitionMetrics;
 import io.casehub.neocortex.cognition.core.CognitionSnapshot;
 import io.casehub.neocortex.cognition.core.EngagementSignal;
 import io.casehub.agency.core.yaml.compiler.CompiledWorld;
-import io.casehub.agency.speech.PromptContext;
-import io.casehub.agency.speech.PromptSection;
+import io.casehub.neocortex.cognition.prompt.CognitionRenderContext;
 import io.casehub.agency.perception.observation.affordance.AffordanceRenderer;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.platform.agent.AgentEvent;
@@ -105,9 +104,9 @@ public class ConversationRunner {
 
             var sectionContent = new LinkedHashMap<String, String>();
             if (includeCognition) {
-                var ctx = new PromptContext(agentId, tenantId, subjectId);
+                var ctx = new CognitionRenderContext(agentId, tenantId, subjectId);
                 for (var section : cognition.promptSections()) {
-                    var text = section.contribute(ctx);
+                    var text = section.render(ctx);
                     if (text != null && !text.isBlank()) {
                         var sectionName = section instanceof DirectivePromptSection dps
                                 ? dps.delegateName() : section.getClass().getSimpleName();
@@ -156,9 +155,9 @@ public class ConversationRunner {
         sb.append(speaker.briefing()).append("\n\n");
 
         if (includeCognition) {
-            var context = new PromptContext(speaker.name(), tenantId, subjectId);
-            for (PromptSection section : cognition.promptSections()) {
-                var contribution = section.contribute(context);
+            var context = new CognitionRenderContext(speaker.name(), tenantId, subjectId);
+            for (var section : cognition.promptSections()) {
+                var contribution = section.render(context);
                 if (contribution != null && !contribution.isBlank()) {
                     sb.append(contribution).append("\n\n");
                 }

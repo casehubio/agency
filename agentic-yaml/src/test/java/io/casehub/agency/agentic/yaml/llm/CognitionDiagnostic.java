@@ -8,7 +8,7 @@ import io.casehub.agency.core.yaml.compiler.ObservationFilterRegistry;
 import io.casehub.agency.core.yaml.compiler.WorldCompiler;
 import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.agency.core.yaml.spec.world.WorldDefinition;
-import io.casehub.agency.speech.PromptContext;
+import io.casehub.neocortex.cognition.prompt.CognitionRenderContext;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -57,9 +57,9 @@ class CognitionDiagnostic {
 
         System.out.println("=== BEFORE any interaction ===");
         System.out.println("(This is what gets injected into the system prompt on Turn 1)\n");
-        var ctx = new PromptContext("leonardo", "showcase", "nikola");
+        var ctx = new CognitionRenderContext("leonardo", "showcase", "nikola");
         for (var section : stack.promptSections()) {
-            var text = section.contribute(ctx);
+            var text = section.render(ctx);
             var sectionName = section instanceof DirectivePromptSection dps
                     ? dps.delegateName() : section.getClass().getSimpleName();
             if (text != null && !text.isBlank()) {
@@ -85,7 +85,7 @@ class CognitionDiagnostic {
         System.out.println("\n=== AFTER one interaction ===");
         System.out.println("(This is what gets injected into the system prompt on Turn 2)\n");
         for (var section : stack.promptSections()) {
-            var text = section.contribute(ctx);
+            var text = section.render(ctx);
             var sectionName = section instanceof DirectivePromptSection dps
                     ? dps.delegateName() : section.getClass().getSimpleName();
             if (text != null && !text.isBlank()) {

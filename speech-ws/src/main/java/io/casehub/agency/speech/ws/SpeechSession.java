@@ -12,7 +12,7 @@ import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
 import io.casehub.connectors.voice.spi.SpeakerRegistry;
 import io.casehub.connectors.voice.model.TranscriptionResult;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
@@ -234,7 +234,7 @@ public class SpeechSession {
             if (streamingGenerator != null) {
                 AssembledPrompt prompt = promptAssembler.assemble(cleanText, List.copyOf(history));
                 if (activeLlmModel != null) {
-                    prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userPrompt(), activeLlmModel);
+                    prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userMessage(), activeLlmModel);
                 }
                 String responseText = streamingGenerator.generate(prompt, sentence -> {
                     sentenceCount[0]++;
@@ -354,7 +354,7 @@ public class SpeechSession {
             if (streamingGenerator != null) {
                 AssembledPrompt prompt = promptAssembler.assemble(cleanText, List.copyOf(history));
                 if (llmModel != null) {
-                    prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userPrompt(), llmModel);
+                    prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userMessage(), llmModel);
                 }
                 long[] llmDoneRef = {0};
                 String responseText = streamingGenerator.generate(prompt, sentence -> {
@@ -515,7 +515,7 @@ public class SpeechSession {
         }
         AssembledPrompt prompt = promptAssembler.assemble(userMessage, List.copyOf(history));
         if (llmModel != null) {
-            prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userPrompt(), llmModel);
+            prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userMessage(), llmModel);
         }
         return responseGenerator.apply(prompt);
     }
