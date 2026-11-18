@@ -124,11 +124,17 @@ export class BodyAnimationSystem {
       if (morphTracks.length > 0) {
         const clipExprs = new Map();
         for (const track of morphTracks) {
-          const match = track.name.match(/^(.+)\.morphTargetInfluences\[(\d+)]$/);
+          const match = track.name.match(/^(.+)\.morphTargetInfluences\[(\d+|[a-zA-Z_]\w*)]$/);
           if (!match) continue;
-          const reverse = morphNameMap.get(match[1]);
-          if (!reverse) continue;
-          const targetName = reverse.get(parseInt(match[2]));
+          const key = match[2];
+          let targetName;
+          if (/^\d+$/.test(key)) {
+            const reverse = morphNameMap.get(match[1]);
+            if (!reverse) continue;
+            targetName = reverse.get(parseInt(key));
+          } else {
+            targetName = key;
+          }
           if (!targetName || !EXPRESSION_ALLOW.test(targetName)) continue;
           clipExprs.set(targetName, { times: track.times, values: track.values });
         }
