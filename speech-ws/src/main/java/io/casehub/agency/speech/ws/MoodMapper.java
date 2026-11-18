@@ -11,13 +11,19 @@ public class MoodMapper {
 
     private @Nullable String adopted;
     private long adoptedAt;
+    private long deadZoneEnteredAt = -1;
 
     public @Nullable String map(Affect affect, long now) {
         String candidate = classify(affect);
         if (candidate == null) {
+            if (adopted == null) return null;
+            if (deadZoneEnteredAt < 0) deadZoneEnteredAt = now;
+            if ((now - deadZoneEnteredAt) < DWELL_MS) return adopted;
             adopted = null;
+            deadZoneEnteredAt = -1;
             return null;
         }
+        deadZoneEnteredAt = -1;
         if (candidate.equals(adopted)) {
             return adopted;
         }
