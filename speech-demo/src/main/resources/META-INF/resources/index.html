@@ -652,6 +652,18 @@ toggleAvatar.addEventListener('click', async function() {
             ],
           });
 
+          head.registerMorphLayer('gestureExpressions', {
+            order: 10,
+            blend: 'additive',
+            update: (dt, get, set) => {
+              const exprs = bodyAnim.sampleExpressions();
+              if (!exprs) return;
+              for (const [name, value] of Object.entries(exprs)) {
+                set(name, value);
+              }
+            }
+          });
+
           addMessage('Body animations loaded (floor state: ' + bodyAnim.floorState + ').', 'system');
         }
       } catch (e) {

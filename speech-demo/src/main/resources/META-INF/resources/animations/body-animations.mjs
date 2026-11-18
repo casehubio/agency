@@ -24,6 +24,21 @@ const HEAD_BONES = new Set([
   "HeadTop_End", "Neck1",
 ]);
 
+const EXPRESSION_ALLOW = /^(brow|mouthFrown|mouthSmile|jawOpen|jawForward|noseSneer|cheekPuff|cheekSquint)/;
+
+function sampleCurve(times, values, t) {
+  if (times.length === 0) return 0;
+  if (t <= times[0]) return values[0];
+  if (t >= times[times.length - 1]) return values[values.length - 1];
+  for (let i = 1; i < times.length; i++) {
+    if (t <= times[i]) {
+      const f = (t - times[i - 1]) / (times[i] - times[i - 1]);
+      return values[i - 1] + f * (values[i] - values[i - 1]);
+    }
+  }
+  return values[values.length - 1];
+}
+
 function resolveSubcategory(taxonomy, path) {
   const [cat, sub] = path.split(".");
   const category = taxonomy[cat];
@@ -73,21 +88,56 @@ export class BodyAnimationSystem {
 
     this._cycleTimer = null;
     this._onGestureFinished = null;
+    this._expressionCurves = new Map();
+    this._activeExpressions = null;
   }
 
   static async create(avatarRoot, config) {
     const gltf = await new GLTFLoader().loadAsync(ANIMATION_GLB);
+
+    const morphNameMap = new Map();
+    gltf.scene.traverse(obj => {
+      if (obj.morphTargetDictionary) {
+        const reverse = new Map();
+        for (const [name, idx] of Object.entries(obj.morphTargetDictionary)) {
+          reverse.set(idx, name);
+        }
+        morphNameMap.set(obj.name, reverse);
+      }
+    });
+
     const clips = new Map();
+    const expressionCurves = new Map();
     for (const clip of gltf.animations) {
+      const morphTracks = [];
       clip.tracks = clip.tracks.filter(track => {
+        if (track.name.includes('morphTargetInfluences')) {
+          morphTracks.push(track);
+          return false;
+        }
         const dot = track.name.indexOf(".");
         if (dot === -1) return true;
         return !HEAD_BONES.has(track.name.slice(0, dot));
       });
       clips.set(clip.name, clip);
+
+      if (morphTracks.length > 0) {
+        const clipExprs = new Map();
+        for (const track of morphTracks) {
+          const match = track.name.match(/^(.+)\.morphTargetInfluences\[(\d+)]$/);
+          if (!match) continue;
+          const reverse = morphNameMap.get(match[1]);
+          if (!reverse) continue;
+          const targetName = reverse.get(parseInt(match[2]));
+          if (!targetName || !EXPRESSION_ALLOW.test(targetName)) continue;
+          clipExprs.set(targetName, { times: track.times, values: track.values });
+        }
+        if (clipExprs.size > 0) expressionCurves.set(clip.name, clipExprs);
+      }
     }
-    console.log(`[BodyAnim] Loaded ${clips.size} clips`);
+    console.log(`[BodyAnim] Loaded ${clips.size} clips, ${expressionCurves.size} with expressions`);
     const system = new BodyAnimationSystem(avatarRoot, config, clips);
+    system._expressionCurves = expressionCurves;
     system._playFromPool();
     system._startCycle();
     return system;
@@ -145,6 +195,17 @@ export class BodyAnimationSystem {
     }
 
     return this._playGesture(clipName);
+  }
+
+  sampleExpressions() {
+    if (!this._activeExpressions || !this._gestureAction || this._gestureWeight <= 0) return null;
+    const time = this._gestureAction.time;
+    const weight = this._gestureWeight;
+    const result = {};
+    for (const [name, curve] of this._activeExpressions) {
+      result[name] = sampleCurve(curve.times, curve.values, time) * weight;
+    }
+    return result;
   }
 
   dispose() {
@@ -210,6 +271,7 @@ export class BodyAnimationSystem {
     this._gestureAction = action;
     this._gestureDucking = true;
     this._duckProgress = 0;
+    this._activeExpressions = this._expressionCurves.get(name) || null;
 
     this._onGestureFinished = (e) => {
       if (e.action === action) {
