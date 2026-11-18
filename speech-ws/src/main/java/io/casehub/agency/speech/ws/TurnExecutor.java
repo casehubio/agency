@@ -183,16 +183,25 @@ public class TurnExecutor implements AutoCloseable {
                 var  visemes     = VisemeMapping.estimateFromText(seg.cleanText(), estimatedMs);
                 send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
                                                true, visemes, seg.cues()));
+                byte[][] lastChunk = {null};
                 streamingTts.synthesiseStreaming(seg.cleanText(),
                                                  new SynthesisOptions(null, null, "wav", false),
-                                                 chunk -> sendAudioFrame(chunk, currentTurnSeq, index));
+                                                 chunk -> {
+                                                     if (lastChunk[0] != null) {
+                                                         sendAudioFrame(lastChunk[0], currentTurnSeq, index, false);
+                                                     }
+                                                     lastChunk[0] = chunk;
+                                                 });
+                if (lastChunk[0] != null) {
+                    sendAudioFrame(lastChunk[0], currentTurnSeq, index, true);
+                }
             } else {
                 var synthesis = tts.synthesise(seg.cleanText(),
                                                new SynthesisOptions(null, null, "wav", true));
                 var visemes = VisemeMapping.convert(synthesis.phonemes());
                 send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
                                                true, visemes, seg.cues()));
-                sendAudioFrame(synthesis.audioData(), currentTurnSeq, index);
+                sendAudioFrame(synthesis.audioData(), currentTurnSeq, index, true);
             }
         } catch (Exception e) {
             send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
@@ -202,11 +211,11 @@ public class TurnExecutor implements AutoCloseable {
         }
     }
 
-    private void sendAudioFrame(byte[] audioData, int turnSeq, int segmentIndex) {
+    private void sendAudioFrame(byte[] audioData, int turnSeq, int segmentIndex, boolean isFinal) {
         var buf = java.nio.ByteBuffer.allocate(8 + audioData.length)
                                      .order(java.nio.ByteOrder.LITTLE_ENDIAN);
-        buf.put((byte) 1);              // version
-        buf.put((byte) 0);              // reserved
+        buf.put((byte) 1);
+        buf.put((byte) (isFinal ? 1 : 0));
         buf.putShort((short) segmentIndex);
         buf.putInt(turnSeq);
         buf.put(audioData);

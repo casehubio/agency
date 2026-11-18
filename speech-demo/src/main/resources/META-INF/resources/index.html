@@ -207,6 +207,7 @@ function parseBinaryHeader(buffer) {
   const view = new DataView(buffer);
   return {
     version: view.getUint8(0),
+    isFinal: view.getUint8(1) !== 0,
     segmentIndex: view.getUint16(2, true),
     turnSeq: view.getUint32(4, true),
   };
@@ -393,18 +394,19 @@ async function handleAudioFrame(blob) {
         }
       }
 
-      const segIdx = header.segmentIndex;
-      markers.push(() => { turnAudioPlayed.add(segIdx); checkTurnFinished(); });
-      mtimes.push(audioBuf.duration * 1000);
+      if (header.isFinal) {
+        const segIdx = header.segmentIndex;
+        markers.push(() => { turnAudioPlayed.add(segIdx); checkTurnFinished(); });
+        mtimes.push(audioBuf.duration * 1000);
+      }
 
-      r.markers = markers;
-      r.mtimes = mtimes;
+      if (markers.length > 0) { r.markers = markers; r.mtimes = mtimes; }
       head.speakAudio(r, { isRaw: true });
     } else {
       if (header.turnSeq === activeTurnSeq && !isPlaying && playQueue.length === 0) {
         enterFloorState(FloorState.SPEAKING);
       }
-      playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex });
+      playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex, isFinal: header.isFinal });
       if (!isPlaying) playNextQueued();
     }
   } catch (e) {
@@ -427,8 +429,10 @@ function playNextQueued() {
   status.textContent = 'Speaking... (' + playQueue.length + ' queued)';
 
   source.onended = function() {
-    turnAudioPlayed.add(item.segmentIndex);
-    checkTurnFinished();
+    if (item.isFinal) {
+      turnAudioPlayed.add(item.segmentIndex);
+      checkTurnFinished();
+    }
     playNextQueued();
   };
 }

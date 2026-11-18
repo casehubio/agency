@@ -73,6 +73,7 @@ class TurnExecutorTest {
         assertThat(sentText).anySatisfy(json ->
                 assertThat(json).contains("\"type\":\"turnComplete\""));
         assertThat(sentBinary).isNotEmpty();
+        assertThat(sentBinary.get(0)[1]).as("non-streaming isFinal").isEqualTo((byte) 1);
     }
 
     @Test
@@ -169,10 +170,13 @@ class TurnExecutorTest {
         assertThat(segments).hasSize(1);
         assertThat(segments.get(0)).contains("\"hasAudio\":true");
 
-        // Streaming TTS sends 2 audio chunks, each with 8-byte header
+        // Streaming TTS sends 2 audio chunks, each with 8-byte header;
+        // only the last chunk has isFinal=1
         assertThat(sentBinary).hasSize(2);
         assertThat(sentBinary.get(0).length).isEqualTo(8 + 2);
+        assertThat(sentBinary.get(0)[1]).as("first chunk isFinal").isEqualTo((byte) 0);
         assertThat(sentBinary.get(1).length).isEqualTo(8 + 2);
+        assertThat(sentBinary.get(1)[1]).as("last chunk isFinal").isEqualTo((byte) 1);
     }
 
 
