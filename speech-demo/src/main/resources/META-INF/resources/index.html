@@ -188,6 +188,7 @@ let recording = false;
 let activeTurnSeq = -1;
 let pendingSegments = new Map();
 let turnAudioPlayed = new Set();
+let turnCuesAttached = new Set();
 let turnComplete = false;
 let turnSafetyTimer = null;
 const TURN_SAFETY_TIMEOUT = 10000;
@@ -233,6 +234,7 @@ function parseBinaryHeader(buffer) {
 function resetTurnState() {
   pendingSegments.clear();
   turnAudioPlayed.clear();
+  turnCuesAttached.clear();
   turnComplete = false;
   clearTimeout(turnSafetyTimer);
   turnSafetyTimer = null;
@@ -387,8 +389,10 @@ async function handleAudioFrame(blob) {
       const key = `${header.turnSeq}:${header.segmentIndex}`;
       const seg = pendingSegments.get(key);
       const r = { audio: audioBuf };
+      const firstChunk = !turnCuesAttached.has(key);
+      if (firstChunk) turnCuesAttached.add(key);
 
-      if (seg && seg.visemes && seg.visemes.length > 0) {
+      if (firstChunk && seg && seg.visemes && seg.visemes.length > 0) {
         r.visemes = []; r.vtimes = []; r.vdurations = [];
         for (const v of seg.visemes) {
           r.visemes.push(v.viseme);
@@ -399,7 +403,7 @@ async function handleAudioFrame(blob) {
 
       const markers = [];
       const mtimes = [];
-      for (const cue of (seg?.cues || [])) {
+      for (const cue of (firstChunk ? (seg?.cues || []) : [])) {
         if (cue.type === 'gesture' && bodyAnim) {
           const tag = cue.tag;
           const stroke = bodyAnim.strokeMs(tag);
@@ -644,7 +648,10 @@ toggleAvatar.addEventListener('click', async function() {
       head.setMood('neutral');
 
       try {
-        if (bodyAnim) { bodyAnim.dispose(); bodyAnim = null; }
+        if (bodyAnim) {
+          if (head) head.unregisterMorphLayer('gestureExpressions');
+          bodyAnim.dispose(); bodyAnim = null;
+        }
 
         var avatarModel = head.armature;
         if (avatarModel) {
