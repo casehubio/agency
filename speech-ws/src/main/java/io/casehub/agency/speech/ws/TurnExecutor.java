@@ -68,8 +68,11 @@ public class TurnExecutor implements AutoCloseable {
     public void executeUserTurn(UserTurn turn) {
         try {
             executor.submit(() -> processUserTurn(turn)).get();
-        } catch (Exception e) {
-            LOG.log(System.Logger.Level.WARNING, "Turn execution failed", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.log(System.Logger.Level.WARNING, "Turn execution interrupted", e);
+        } catch (java.util.concurrent.ExecutionException e) {
+            LOG.log(System.Logger.Level.WARNING, "Turn execution failed", e.getCause());
         }
     }
 
