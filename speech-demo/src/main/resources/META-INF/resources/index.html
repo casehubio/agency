@@ -173,7 +173,7 @@
 <script type="module">
 import * as THREE from "three";
 import { TalkingHead } from "talkinghead";
-import { BodyAnimationSystem, parseGestureTags, classifyResponse } from "./animations/body-animations.mjs";
+import { BodyAnimationSystem, FloorState } from "./animations/body-animations.mjs";
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
@@ -186,41 +186,55 @@ let ws;
 let audioCtx;
 let head = null;
 let bodyAnim = null;
-let bodyAnimFrameId = null;
-let pendingVisemes = null;
 let micStream = null;
 let micProcessor = null;
 let micSource = null;
 let recording = false;
-let visemeMeshes = null;
 
-var serverAnimationReceived = false;
+// Turn tracking (D3, D5, D10)
+let activeTurnSeq = -1;
+let pendingSegments = new Map();
+let turnAudioPlayed = new Set();
+let turnComplete = false;
+let turnSafetyTimer = null;
+const TURN_SAFETY_TIMEOUT = 10000;
 
-// TalkingHead mood names: neutral, happy, angry, sad, fear, disgust, love, sleep
-var MOOD_TAG_RE = /\[mood:([a-z]+)\]/i;
-var KEYWORD_MOODS = [
-  { keywords: ["great", "wonderful", "fantastic", "excellent", "haha", "funny", "awesome"], mood: "happy" },
-  { keywords: ["sorry", "unfortunately", "sadly", "too bad", "regret"], mood: "sad" },
-  { keywords: ["frustrat", "annoying", "unacceptable"], mood: "angry" },
-  { keywords: ["love", "adore", "wonderful", "beautiful"], mood: "love" },
-  { keywords: ["scary", "worried", "afraid", "danger"], mood: "fear" },
-];
-
-function detectMood(text) {
-  var m = MOOD_TAG_RE.exec(text);
-  if (m) return m[1];
-  var lower = text.toLowerCase();
-  for (var entry of KEYWORD_MOODS) {
-    for (var kw of entry.keywords) {
-      if (lower.includes(kw)) return entry.mood;
-    }
+function sendWsJson(obj) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(obj));
   }
-  return null;
 }
 
-function playBodyGesture(gestureName) {
+function enterFloorState(state) {
   if (!bodyAnim) return;
-  bodyAnim.playGesture(gestureName);
+  bodyAnim.setFloorState(state);
+}
+
+function parseBinaryHeader(buffer) {
+  const view = new DataView(buffer);
+  return {
+    version: view.getUint8(0),
+    segmentIndex: view.getUint16(2, true),
+    turnSeq: view.getUint32(4, true),
+  };
+}
+
+function resetTurnState() {
+  pendingSegments.clear();
+  turnAudioPlayed.clear();
+  turnComplete = false;
+  clearTimeout(turnSafetyTimer);
+  turnSafetyTimer = null;
+}
+
+function checkTurnFinished() {
+  if (!turnComplete) return;
+  for (const [key, seg] of pendingSegments) {
+    if (seg.hasAudio && !turnAudioPlayed.has(seg.index)) return;
+  }
+  enterFloorState(FloorState.IDLE);
+  sendWsJson({ type: 'playbackComplete', turnSeq: activeTurnSeq });
+  resetTurnState();
 }
 
 function addMessage(text, cls) {
@@ -251,55 +265,76 @@ function connect() {
         case 'transcript':
           addMessage(msg.text, 'user');
           break;
-        case 'response': {
-          var parsed = parseGestureTags(msg.text);
-          var cleanText = parsed.cleaned.replace(MOOD_TAG_RE, "").trim();
-          addMessage(cleanText, 'avatar');
-          if (bodyAnim && !serverAnimationReceived) {
-            if (parsed.tags.length > 0) {
-              playBodyGesture(parsed.tags[0]);
-            } else {
-              var fallback = classifyResponse(cleanText);
-              if (fallback) playBodyGesture(fallback);
-            }
+
+        case 'segment': {
+          const key = `${msg.turnSeq}:${msg.index}`;
+          pendingSegments.set(key, {
+            index: msg.index,
+            text: msg.text,
+            hasAudio: msg.hasAudio,
+            visemes: msg.visemes || [],
+            cues: msg.cues || [],
+          });
+          if (msg.text) addMessage(msg.text, 'avatar');
+          if (msg.turnSeq !== activeTurnSeq) {
+            resetTurnState();
+            activeTurnSeq = msg.turnSeq;
           }
-          // Set TalkingHead mood from [mood:X] tag or keyword detection
-          var mood = detectMood(msg.text);
-          if (mood && head) head.setMood(mood);
-          serverAnimationReceived = false;
-          if (bodyAnim) bodyAnim.startIdleCycle();
+          for (const cue of (msg.cues || [])) {
+            if (cue.tag && bodyAnim) bodyAnim.triggerGesture(cue.tag);
+          }
+          if (!msg.hasAudio) {
+            turnAudioPlayed.add(msg.index);
+            checkTurnFinished();
+          }
           break;
         }
-        case 'phonemes':
-          var count = msg.data ? msg.data.length : 0;
-          var totalMs = count > 0 ? msg.data[msg.data.length - 1].endMs : 0;
-          addMessage('Visemes: ' + count + ' frames, ' + totalMs + 'ms', 'system');
-          if (msg.data && msg.data.length > 0) {
-            pendingVisemes = msg.data;
+
+        case 'turnComplete':
+          turnComplete = true;
+          if (msg.segmentCount === 0) {
+            sendWsJson({ type: 'playbackComplete', turnSeq: msg.turnSeq });
+            enterFloorState(FloorState.IDLE);
+            resetTurnState();
+          } else {
+            checkTurnFinished();
+            clearTimeout(turnSafetyTimer);
+            turnSafetyTimer = setTimeout(() => {
+              console.warn('[Turn] Safety timeout — forcing idle');
+              enterFloorState(FloorState.IDLE);
+              sendWsJson({ type: 'playbackComplete', turnSeq: activeTurnSeq });
+              resetTurnState();
+            }, TURN_SAFETY_TIMEOUT);
           }
           break;
+
+        case 'gesture':
+          if (bodyAnim) bodyAnim.triggerGesture(msg.tag);
+          break;
+
+        case 'mood':
+          if (head) head.setMood(msg.state);
+          break;
+
         case 'timing':
           showTiming(msg);
           break;
-        case 'animation':
-          serverAnimationReceived = true;
-          if (msg.gesture && bodyAnim) {
-            playBodyGesture(msg.gesture);
-          } else if (msg.url && head) {
-            head.playAnimation(msg.url, null, msg.durationSec || 5).catch(function(e) {
-              console.warn('Server animation failed:', e);
-            });
-          }
-          break;
+
         case 'error':
           addMessage('Error: ' + msg.message, 'system');
           break;
+
         case 'partial':
           status.textContent = 'Hearing: ' + msg.text;
           break;
+
+        case 'response':
+        case 'phonemes':
+        case 'animation':
+          break;
       }
     } else {
-      playAudio(evt.data);
+      handleAudioFrame(evt.data);
     }
   };
 
@@ -325,53 +360,29 @@ function sendText() {
   ws.send(JSON.stringify({ type: 'text', text: text, llmModel: llmModel, ttsModel: ttsModel }));
   msgInput.value = '';
   status.textContent = 'Processing...';
-  if (bodyAnim) playBodyGesture('thinking');
-}
-
-function discoverVisemeMeshes() {
-  if (visemeMeshes) return visemeMeshes;
-  var scene = head.scene || head._scene || head.model || head._model;
-  if (!scene && head.getObjectByName) scene = head;
-  if (!scene || !scene.traverse) return null;
-  var meshes = [];
-  scene.traverse(function(o) {
-    if (o.morphTargetDictionary) {
-      var dict = {};
-      for (var k in o.morphTargetDictionary) {
-        if (k.startsWith('viseme_')) dict[k] = o.morphTargetDictionary[k];
-      }
-      if (Object.keys(dict).length > 0) meshes.push({ mesh: o, dict: dict });
-    }
-  });
-  if (meshes.length > 0) visemeMeshes = meshes;
-  return visemeMeshes;
+  enterFloorState(FloorState.THINKING);
 }
 
 var playQueue = [];
 var isPlaying = false;
-var ATTACK = 0.35;
-var DECAY = 0.12;
 
-async function playAudio(blob) {
-  // Capture visemes SYNCHRONOUSLY — before any yield point.
-  // This prevents interleaving from overwriting pendingVisemes
-  // while we're decoding the audio blob.
-  var myVisemes = null;
-  if (head && pendingVisemes && pendingVisemes.length > 0) {
-    myVisemes = pendingVisemes;
-    pendingVisemes = null;
-  }
-
+async function handleAudioFrame(blob) {
   try {
-    if (!audioCtx) audioCtx = new AudioContext();
     const arrayBuf = await blob.arrayBuffer();
-    const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+    const header = parseBinaryHeader(arrayBuf);
+    const audioBytes = arrayBuf.slice(8);
 
-    playQueue.push({ audio: audioBuf, visemes: myVisemes });
+    if (!audioCtx) audioCtx = new AudioContext();
+    const audioBuf = await audioCtx.decodeAudioData(audioBytes);
+
+    if (header.turnSeq === activeTurnSeq && !isPlaying && playQueue.length === 0) {
+      enterFloorState(FloorState.SPEAKING);
+    }
+
+    playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex });
     if (!isPlaying) playNextQueued();
   } catch (e) {
-    addMessage('Audio playback error: ' + e.message, 'system');
-    status.textContent = 'Ready';
+    console.error('[Audio] Frame error:', e);
   }
 }
 
@@ -379,7 +390,6 @@ function playNextQueued() {
   if (playQueue.length === 0) { isPlaying = false; status.textContent = 'Ready'; return; }
   isPlaying = true;
   var item = playQueue.shift();
-  var meshes = (item.visemes && item.visemes.length > 0) ? discoverVisemeMeshes() : null;
 
   if (!audioCtx) audioCtx = new AudioContext();
   var source = audioCtx.createBufferSource();
@@ -390,52 +400,11 @@ function playNextQueued() {
   source.start();
   status.textContent = 'Speaking... (' + playQueue.length + ' queued)';
 
-  if (!meshes) {
-    source.onended = playNextQueued;
-    return;
-  }
-
-  var timeline = item.visemes;
-  var startTime = audioCtx.currentTime;
-  var animating = true;
-
-  function animate() {
-    if (!animating) return;
-    var elapsed = (audioCtx.currentTime - startTime) * 1000 * rate;
-
-    var activeViseme = 'sil';
-    var activeWeight = 0;
-    for (var i = timeline.length - 1; i >= 0; i--) {
-      if (elapsed >= timeline[i].startMs && elapsed < timeline[i].endMs) {
-        activeViseme = timeline[i].viseme;
-        activeWeight = timeline[i].weight != null ? timeline[i].weight : 1.0;
-        break;
-      }
-    }
-
-    meshes.forEach(function(m) {
-      for (var k in m.dict) {
-        var idx = m.dict[k];
-        var target = (k === 'viseme_' + activeViseme) ? activeWeight : 0;
-        var current = m.mesh.morphTargetInfluences[idx] || 0;
-        var lerp = target > current ? ATTACK : DECAY;
-        m.mesh.morphTargetInfluences[idx] = current + (target - current) * lerp;
-      }
-    });
-
-    requestAnimationFrame(animate);
-  }
-
   source.onended = function() {
-    setTimeout(function() {
-      animating = false;
-      meshes.forEach(function(m) {
-        for (var k in m.dict) m.mesh.morphTargetInfluences[m.dict[k]] = 0;
-      });
-      playNextQueued();
-    }, 300);
+    turnAudioPlayed.add(item.segmentIndex);
+    checkTurnFinished();
+    playNextQueued();
   };
-  requestAnimationFrame(animate);
 }
 
 function showTiming(t) {
@@ -485,6 +454,7 @@ async function startRecording() {
     micBtn.classList.add('recording');
     micBtn.textContent = 'Recording...';
     status.textContent = 'Listening...';
+    enterFloorState(FloorState.LISTENING);
   } catch (e) {
     console.error('[MIC] error:', e);
     addMessage('Microphone error: ' + e.message, 'system');
@@ -505,7 +475,7 @@ function stopRecording() {
       ws.send(JSON.stringify({ type: 'stop' }));
     }
     status.textContent = 'Processing speech...';
-    if (bodyAnim) playBodyGesture('thinking');
+    enterFloorState(FloorState.THINKING);
     micBtn.textContent = 'Mic';
     if (micProcessor) { micProcessor.disconnect(); micProcessor = null; }
     if (micSource) { micSource.disconnect(); micSource = null; }
@@ -532,6 +502,19 @@ micBtn.addEventListener('click', function() {
 sendBtn.addEventListener('click', sendText);
 msgInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendText();
+});
+
+let lastTypingActivity = 0;
+msgInput.addEventListener('input', function() {
+  const now = Date.now();
+  if (now - lastTypingActivity > 2000) {
+    sendWsJson({ type: 'userActivity', kind: 'TYPING' });
+    lastTypingActivity = now;
+  }
+});
+
+document.addEventListener('visibilitychange', function() {
+  sendWsJson({ type: 'userActivity', kind: 'VISIBILITY_CHANGE' });
 });
 
 connect();
@@ -583,7 +566,6 @@ document.getElementById('avatarModel').addEventListener('change', async function
   if (!head || !avatarContainer.classList.contains('active')) return;
   try {
     addMessage('Loading avatar...', 'system');
-    visemeMeshes = null;
     await head.showAvatar({ url: './' + this.value, body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
     addMessage('Avatar loaded.', 'system');
   } catch (e) { addMessage('Avatar load error: ' + e.message, 'system'); }
@@ -620,37 +602,39 @@ toggleAvatar.addEventListener('click', async function() {
         lipsyncLang: 'en'
       });
       window._head = head;
-      var scene = head.scene || head._scene;
-      var visemeTargets = [];
-      if (scene) {
-        scene.traverse(function(o) {
-          if (o.morphTargetDictionary) {
-            var keys = Object.keys(o.morphTargetDictionary);
-            var vis = keys.filter(function(k) { return k.startsWith('viseme'); });
-            visemeTargets.push(o.name + ': ' + (vis.length ? vis.join(',') : 'NO visemes (' + keys.length + ' targets: ' + keys.slice(0,5).join(',') + '...)'));
-          }
-        });
-      }
       addMessage('3D avatar ready.', 'system');
       head.setMood('neutral');
 
-      // Load body animations onto the avatar's armature (separate mixer from TalkingHead)
       try {
-        // Cancel any prior body animation loop before creating a new one
-        if (bodyAnimFrameId) { cancelAnimationFrame(bodyAnimFrameId); bodyAnimFrameId = null; }
         if (bodyAnim) { bodyAnim.dispose(); bodyAnim = null; }
 
         var avatarModel = head.armature;
         if (avatarModel) {
-          bodyAnim = new BodyAnimationSystem();
-          await bodyAnim.load(avatarModel);
-          bodyAnim.startIdleCycle();
-          var _bodyClock = new THREE.Clock();
-          (function tickBody() {
-            bodyAnimFrameId = requestAnimationFrame(tickBody);
-            bodyAnim.update(_bodyClock.getDelta());
-          })();
-          addMessage('Body animations loaded (' + bodyAnim.clipNames.length + ' clips).', 'system');
+          const configResp = await fetch('animations/avatar-performance.json');
+          const config = await configResp.json();
+          bodyAnim = await BodyAnimationSystem.create(avatarModel, config);
+
+          head.registerMixer(bodyAnim.mixer, {
+            boneClaim: [
+              'Spine', 'Spine1', 'Spine2', 'Hips',
+              'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand',
+              'LeftHandThumb1', 'LeftHandThumb2', 'LeftHandThumb3',
+              'LeftHandIndex1', 'LeftHandIndex2', 'LeftHandIndex3',
+              'LeftHandMiddle1', 'LeftHandMiddle2', 'LeftHandMiddle3',
+              'LeftHandRing1', 'LeftHandRing2', 'LeftHandRing3',
+              'LeftHandPinky1', 'LeftHandPinky2', 'LeftHandPinky3',
+              'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
+              'RightHandThumb1', 'RightHandThumb2', 'RightHandThumb3',
+              'RightHandIndex1', 'RightHandIndex2', 'RightHandIndex3',
+              'RightHandMiddle1', 'RightHandMiddle2', 'RightHandMiddle3',
+              'RightHandRing1', 'RightHandRing2', 'RightHandRing3',
+              'RightHandPinky1', 'RightHandPinky2', 'RightHandPinky3',
+              'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase',
+              'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
+            ],
+          });
+
+          addMessage('Body animations loaded (floor state: ' + bodyAnim.floorState + ').', 'system');
         }
       } catch (e) {
         console.warn('Body animation load failed:', e);
@@ -666,7 +650,7 @@ toggleAvatar.addEventListener('click', async function() {
 document.getElementById('playAnim').addEventListener('click', function() {
   var clipName = document.getElementById('animPicker').value;
   if (clipName && bodyAnim) {
-    bodyAnim.playGesture(clipName);
+    bodyAnim.triggerGesture(clipName);
     addMessage('Playing: ' + clipName, 'system');
   }
 });
