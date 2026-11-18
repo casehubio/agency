@@ -88,13 +88,16 @@ public class UtteranceSegmenter {
     private record TagInfo(String type, String value, int originalPosition, int cleanPosition, boolean valid) {
         Cue toCue() {
             if (!valid) return null;
-            if ("gesture".equals(type)) return new Cue.GestureCue(value, 0L);
-            if ("mood".equals(type)) return new Cue.MoodCue(value, 0L);
+            if ("gesture".equals(type)) return new Cue.GestureCue(value, 0L, cleanPosition);
+            if ("mood".equals(type)) return new Cue.MoodCue(value, 0L, cleanPosition);
             return null;
         }
 
         Cue toCueAtWord(int wordIndex) {
-            return toCue();
+            if (!valid) return null;
+            if ("gesture".equals(type)) return new Cue.GestureCue(value, 0L, 0);
+            if ("mood".equals(type)) return new Cue.MoodCue(value, 0L, 0);
+            return null;
         }
     }
 

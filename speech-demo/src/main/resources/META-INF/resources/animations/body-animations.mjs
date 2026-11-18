@@ -197,6 +197,13 @@ export class BodyAnimationSystem {
     return this._playGesture(clipName);
   }
 
+  strokeMs(tag) {
+    const target = this._gestureMap.get(tag);
+    if (!target || !target.clip) return 0;
+    const clipCfg = this._config.clips[target.clip];
+    return clipCfg ? clipCfg.strokeMs || 0 : 0;
+  }
+
   sampleExpressions() {
     if (!this._activeExpressions || !this._gestureAction || this._gestureWeight <= 0) return null;
     const time = this._gestureAction.time;

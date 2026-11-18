@@ -402,8 +402,10 @@ async function handleAudioFrame(blob) {
       for (const cue of (seg?.cues || [])) {
         if (cue.type === 'gesture' && bodyAnim) {
           const tag = cue.tag;
+          const stroke = bodyAnim.strokeMs(tag);
+          const triggerMs = Math.max(0, (cue.offsetMs || 0) - stroke - 150);
           markers.push(() => bodyAnim.triggerGesture(tag));
-          mtimes.push(cue.offsetMs || 0);
+          mtimes.push(triggerMs);
         }
         if (cue.type === 'mood') {
           const mood = cue.mood;

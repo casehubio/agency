@@ -5,9 +5,11 @@ import io.casehub.agency.speech.ConversationTurn;
 
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
+import io.casehub.agency.speech.ws.protocol.Cue;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
 import io.casehub.agency.speech.ws.protocol.TurnOrigin;
 import io.casehub.connectors.voice.model.SynthesisOptions;
+import io.casehub.connectors.voice.model.TextMark;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.jspecify.annotations.Nullable;
 
@@ -206,11 +208,13 @@ public class TurnExecutor implements AutoCloseable {
                     sendAudioFrame(lastChunk[0], currentTurnSeq, index, true);
                 }
             } else {
+                var marks = buildTextMarks(seg.cues(), seg.cleanText().length());
                 var synthesis = tts.synthesise(seg.cleanText(),
-                                               new SynthesisOptions(null, null, "wav", true));
+                                               new SynthesisOptions(null, null, "wav", true, marks));
                 var visemes = VisemeMapping.convert(synthesis.phonemes());
+                var timedCues = applyMarkTiming(seg.cues(), synthesis.marks());
                 send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
-                                               true, visemes, seg.cues()));
+                                               true, visemes, timedCues));
                 sendAudioFrame(synthesis.audioData(), currentTurnSeq, index, true);
             }
         } catch (Exception e) {
@@ -251,5 +255,47 @@ public class TurnExecutor implements AutoCloseable {
 
     private void send(AvatarMessage msg) {
         textSink.accept(MessageCodec.encode(msg));
+    }
+
+    private static List<TextMark> buildTextMarks(List<Cue> cues, int textLength) {
+        var marks = new ArrayList<TextMark>();
+        for (int i = 0; i < cues.size(); i++) {
+            int offset = cueCharOffset(cues.get(i));
+            if (offset >= 0) {
+                marks.add(new TextMark("cue-" + i, Math.min(offset, textLength)));
+            }
+        }
+        return marks;
+    }
+
+    private static List<Cue> applyMarkTiming(List<Cue> cues,
+                                              List<io.casehub.connectors.voice.model.MarkTiming> marks) {
+        if (marks.isEmpty()) return cues;
+        var timingMap = new java.util.HashMap<String, Long>();
+        for (var mt : marks) timingMap.put(mt.id(), mt.offsetMs());
+        var result = new ArrayList<Cue>(cues.size());
+        for (int i = 0; i < cues.size(); i++) {
+            Long timing = timingMap.get("cue-" + i);
+            if (timing != null) {
+                result.add(withOffsetMs(cues.get(i), timing));
+            } else {
+                result.add(cues.get(i));
+            }
+        }
+        return result;
+    }
+
+    private static Cue withOffsetMs(Cue cue, long offsetMs) {
+        return switch (cue) {
+            case Cue.GestureCue g -> new Cue.GestureCue(g.tag(), offsetMs, g.charOffset());
+            case Cue.MoodCue m -> new Cue.MoodCue(m.mood(), offsetMs, m.charOffset());
+        };
+    }
+
+    private static int cueCharOffset(Cue cue) {
+        return switch (cue) {
+            case Cue.GestureCue g -> g.charOffset();
+            case Cue.MoodCue m -> m.charOffset();
+        };
     }
 }
