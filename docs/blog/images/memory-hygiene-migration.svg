@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" style="max-width:680px;width:100%">
+  <style>
+    text { font-family: -apple-system, system-ui, sans-serif; font-size: 13px; fill: #333; }
+    .title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; fill: #666; }
+    .label { font-size: 12px; fill: #444; }
+    .small { font-size: 11px; fill: #888; }
+    .deleted { fill: #fee; stroke: #e88; }
+    .stays { fill: #eef6ee; stroke: #6a6; }
+    .neocortex { fill: #eef; stroke: #88c; }
+    .arrow { stroke: #999; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .dead { stroke: #c66; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#999"/>
+    </marker>
+  </defs>
+  <!-- neocortex -->
+  <rect x="20" y="20" width="300" height="130" rx="8" class="neocortex"/>
+  <text x="35" y="42" class="title">neocortex cognition</text>
+  <text x="35" y="64" class="label">MemoryHygieneOrchestratorImpl</text>
+  <text x="35" y="82" class="label">Scorers, IntegrityCheckers</text>
+  <text x="35" y="100" class="label">RetentionConfig, HygieneEvents</text>
+  <text x="35" y="118" class="small">CognitionCoreFactory discovers via CDI</text>
+  <text x="35" y="136" class="small">cognition-api: SPI interfaces</text>
+  <!-- deleted -->
+  <rect x="360" y="20" width="300" height="130" rx="8" class="deleted"/>
+  <text x="375" y="42" class="title">agency social/memory (deleted)</text>
+  <text x="375" y="64" class="label" style="text-decoration:line-through">MemoryHygieneOrchestrator</text>
+  <text x="375" y="82" class="label" style="text-decoration:line-through">MemoryHygieneSpiAdapter</text>
+  <text x="375" y="100" class="label" style="text-decoration:line-through">ReflectionStore, NoOps</text>
+  <text x="375" y="118" class="small">28 files — duplicates of neocortex types</text>
+  <text x="375" y="136" class="small">bridge adapter no longer needed</text>
+  <!-- stays -->
+  <rect x="360" y="180" width="300" height="120" rx="8" class="stays"/>
+  <text x="375" y="202" class="title">agency social/memory/evolution (stays)</text>
+  <text x="375" y="224" class="label">MemoryHygieneProposalSource</text>
+  <text x="375" y="242" class="label">MemoryHygieneRegressionEvaluator</text>
+  <text x="375" y="260" class="label">CapabilityArea, ConflictStrategy</text>
+  <text x="375" y="278" class="small">engine-api SPIs — zero neocortex imports</text>
+  <text x="375" y="294" class="small">tunes parameters from outside</text>
+  <!-- arrows -->
+  <path d="M 510 180 L 510 155" class="arrow"/>
+  <path d="M 360 240 L 320 100" class="arrow"/>
+  <text x="290" y="176" class="small">reads</text>
+  <!-- dead arrow -->
+  <path d="M 360 80 L 320 80" class="dead"/>
+  <text x="322" y="74" class="small" style="fill:#c66">was</text>
+</svg>

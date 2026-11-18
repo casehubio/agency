@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" style="max-width:720px;width:100%">
+  <style>
+    text { font-family: -apple-system, system-ui, sans-serif; font-size: 12px; fill: #333; }
+    .title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; fill: #666; }
+    .label { font-size: 12px; fill: #444; }
+    .small { font-size: 11px; fill: #888; }
+    .deleted { fill: #fee; stroke: #e88; stroke-width: 1.5; }
+    .canonical { fill: #eef6ee; stroke: #6a6; stroke-width: 1.5; }
+    .consumer { fill: #f8f8ff; stroke: #aab; stroke-width: 1; }
+    .arrow { stroke: #999; stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+    .dead { stroke: #c66; stroke-width: 1.5; stroke-dasharray: 5,4; fill: none; }
+    .phase { font-size: 14px; font-weight: 600; fill: #555; }
+  </style>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#999"/>
+    </marker>
+  </defs>
+
+  <!-- BEFORE -->
+  <text x="170" y="18" class="phase" text-anchor="middle">Before</text>
+  <line x1="0" y1="24" x2="340" y2="24" stroke="#ddd" stroke-width="1"/>
+
+  <!-- speech-api box -->
+  <rect x="20" y="40" width="300" height="100" rx="6" class="deleted"/>
+  <text x="35" y="58" class="title">speech-api (duplicates)</text>
+  <text x="35" y="78" class="label" style="text-decoration:line-through">AssembledPrompt</text>
+  <text x="35" y="94" class="label" style="text-decoration:line-through">PromptSection</text>
+  <text x="35" y="110" class="label" style="text-decoration:line-through">PromptContext</text>
+  <text x="35" y="128" class="small">userPrompt(), contribute(ctx)</text>
+
+  <!-- eidos-api box -->
+  <rect x="20" y="155" width="300" height="70" rx="6" class="canonical"/>
+  <text x="35" y="173" class="title">eidos-api</text>
+  <text x="35" y="193" class="label">AssembledPrompt</text>
+  <text x="35" y="211" class="small">userMessage(), withModel()</text>
+
+  <!-- cognition-api box -->
+  <rect x="20" y="240" width="300" height="90" rx="6" class="canonical"/>
+  <text x="35" y="258" class="title">cognition-api</text>
+  <text x="35" y="278" class="label">CognitionPromptRenderer</text>
+  <text x="35" y="294" class="label">CognitionRenderContext</text>
+  <text x="35" y="310" class="label">CognitiveLifecycle</text>
+  <text x="35" y="320" class="small">render(ctx), promptSections()</text>
+
+  <!-- dead arrows from speech-api to canonical -->
+  <path d="M 170 140 L 170 155" class="dead"/>
+  <text x="178" y="150" class="small" style="fill:#c66">same shape</text>
+  <path d="M 170 140 L 170 240" class="dead" style="display:none"/>
+
+  <!-- AFTER -->
+  <text x="545" y="18" class="phase" text-anchor="middle">After</text>
+  <line x1="380" y1="24" x2="720" y2="24" stroke="#ddd" stroke-width="1"/>
+
+  <!-- speech-api thin -->
+  <rect x="400" y="40" width="300" height="70" rx="6" class="consumer"/>
+  <text x="415" y="58" class="title">speech-api (thinned)</text>
+  <text x="415" y="78" class="label">SpeechPromptAssembler → eidos AssembledPrompt</text>
+  <text x="415" y="94" class="label">AvatarCognition extends CognitiveLifecycle</text>
+
+  <!-- eidos-api canonical -->
+  <rect x="400" y="130" width="300" height="60" rx="6" class="canonical"/>
+  <text x="415" y="148" class="title">eidos-api (canonical)</text>
+  <text x="415" y="168" class="label">AssembledPrompt — single prompt record</text>
+
+  <!-- cognition-api canonical -->
+  <rect x="400" y="210" width="300" height="80" rx="6" class="canonical"/>
+  <text x="415" y="228" class="title">cognition-api (canonical)</text>
+  <text x="415" y="248" class="label">CognitionPromptRenderer — section SPI</text>
+  <text x="415" y="264" class="label">CognitionRenderContext — per-turn context</text>
+  <text x="415" y="280" class="label">CognitiveLifecycle — lifecycle root</text>
+
+  <!-- consumers -->
+  <rect x="400" y="310" width="300" height="70" rx="6" class="consumer"/>
+  <text x="415" y="328" class="title">consumers (speech-ws, agency-core, tests)</text>
+  <text x="415" y="348" class="label">Import canonical types directly</text>
+  <text x="415" y="364" class="small">No adapters, no bridges, no indirection</text>
+
+  <!-- arrows: speech-api → eidos and cognition -->
+  <path d="M 550 110 L 550 130" class="arrow"/>
+  <path d="M 550 110 L 550 210" class="arrow" style="display:none"/>
+  <path d="M 550 190 L 550 210" class="arrow"/>
+  <path d="M 550 290 L 550 310" class="arrow"/>
+</svg>
