@@ -12,7 +12,7 @@ mood:
     arousal: 0.6
     dominance: 0.7
 personality:
-  decayFactor: 0.01
+  retentionPerReflection: 0.5
 strategyLearning:
   maxGuidelines: 15
   minCasesForReflection: 5

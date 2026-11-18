@@ -2,7 +2,7 @@ package io.casehub.agency.core.yaml.compiler;
 
 import io.casehub.neocortex.cognition.mentalmodel.MentalModelConfig;
 import io.casehub.neocortex.cognition.mood.MoodConfig;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
+import io.casehub.neocortex.cognition.personality.DispositionEvolutionConfig;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
 import io.casehub.neocortex.cognition.usermodel.UserModelConfig;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
@@ -17,7 +17,7 @@ import io.casehub.neocortex.cognition.memory.RetentionConfig;
 public record CompiledCognition(
         DriveConfig drive,
         MoodConfig mood,
-        PersonalityEvolutionConfig personality,
+        DispositionEvolutionConfig personality,
         UserModelConfig userModel,
         StrategyLearningConfig strategyLearning,
         MentalModelConfig mentalModel,

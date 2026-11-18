@@ -12,7 +12,7 @@ mood:
     arousal: 0.5
     dominance: 0.6
 personality:
-  decayFactor: 0.02
+  retentionPerReflection: 0.5
 narrative:
   maxEpisodes: 75
   synthesisGate:

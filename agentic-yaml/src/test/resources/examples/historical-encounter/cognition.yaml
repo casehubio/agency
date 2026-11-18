@@ -14,9 +14,7 @@ mood:
     dominance: 0.5
   moodInfluence: 0.4
 personality:
-  decayFactor: 0.01
-  l2Ceiling: 0.3
-  dampeningFactor: 0.15
+  retentionPerReflection: 0.5
 userModel:
   minSignalsForSynthesis: 1
   synthesisCooldown: PT0S

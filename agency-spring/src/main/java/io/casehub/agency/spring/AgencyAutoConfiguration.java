@@ -27,10 +27,6 @@ import io.casehub.api.spi.routing.RoutingSignalAssembler;
 import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.eidos.api.AgentGraphQuery;
 import io.casehub.eidos.api.AgentRegistry;
-import io.casehub.eidos.api.DispositionEvolution;
-import io.casehub.eidos.api.DispositionHealth;
-import io.casehub.eidos.api.DispositionProfileStore;
-import io.casehub.eidos.api.DispositionSignalStore;
 import io.casehub.eidos.api.GoalSignalStore;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
@@ -60,9 +56,6 @@ import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeContentSummariser;
 import io.casehub.neocortex.cognition.narrative.NarrativeOrchestrator;
 import io.casehub.neocortex.cognition.narrative.NarrativePipeline;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionOrchestrator;
-import io.casehub.neocortex.cognition.personality.TraitPressureSource;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningOrchestrator;
 import io.casehub.neocortex.cognition.temporal.ReflectionRetrievalOrchestrator;
@@ -273,18 +266,6 @@ public class AgencyAutoConfiguration {
                 curiosity, competence, affiliation, autonomy,
                 moodOrchestrator, composer, config, java.time.Clock.systemUTC(),
                 narrativeOrchestrator.orElse(null));
-    }
-
-    @Bean
-    public PersonalityEvolutionOrchestrator personalityEvolutionOrchestrator(
-            DispositionSignalStore signalStore, DispositionHealth health,
-            DispositionEvolution evolution, DispositionProfileStore profileStore,
-            CbrRecordStore cbrStore,
-            List<TraitPressureSource<?>> traitPressureSources,
-            PersonalityEvolutionConfig config) {
-        return new PersonalityEvolutionOrchestrator(
-                signalStore, health, evolution, profileStore, cbrStore,
-                traitPressureSources, config);
     }
 
     @Bean

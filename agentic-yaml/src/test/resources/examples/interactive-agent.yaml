@@ -11,8 +11,7 @@ cognition:
       arousal: 0.4
       dominance: 0.3
   personality:
-    decayFactor: 0.03
-    l2Ceiling: 0.4
+    retentionPerReflection: 0.5
   narrative:
     maxEpisodes: 50
     synthesisGate:

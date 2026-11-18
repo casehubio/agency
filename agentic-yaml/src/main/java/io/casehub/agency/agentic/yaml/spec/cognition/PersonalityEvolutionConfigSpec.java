@@ -3,6 +3,7 @@ package io.casehub.agency.core.yaml.spec.cognition;
 import org.jspecify.annotations.Nullable;
 
 public record PersonalityEvolutionConfigSpec(
-        @Nullable Double decayFactor,
-        @Nullable Double l2Ceiling,
-        @Nullable Double dampeningFactor) {}
+        @Nullable String reflectionPeriod,
+        @Nullable Double retentionPerReflection,
+        @Nullable String minTransitionInterval,
+        @Nullable Integer maxAuditAttempts) {}

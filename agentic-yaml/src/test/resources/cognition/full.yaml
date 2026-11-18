@@ -3,7 +3,7 @@ drive:
 mood:
   maxDisplacement: 0.8
 personality:
-  decayFactor: 0.05
+  retentionPerReflection: 0.5
 userModel:
   minSignalsForSynthesis: 10
 strategyLearning:

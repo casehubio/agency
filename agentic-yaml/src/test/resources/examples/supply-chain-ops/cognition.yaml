@@ -12,7 +12,7 @@ mood:
     arousal: 0.6
     dominance: 0.8
 personality:
-  decayFactor: 0.02
+  retentionPerReflection: 0.5
 userModel:
   minSignalsForSynthesis: 5
   decayRate: 0.03

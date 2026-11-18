@@ -1,15 +1,15 @@
 package io.casehub.agency.core.yaml.compiler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.casehub.neocortex.cognition.mood.MoodConfig;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
+import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
-import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
-import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.neocortex.cognition.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.mood.MoodConfig;
+import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
+import io.casehub.neocortex.cognition.personality.DispositionEvolutionConfig;
+import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -77,13 +77,13 @@ class CognitionCompilerTest {
     void personalitySimplestConfig() throws IOException {
         var yaml = """
                    personality:
-                     decayFactor: 0.05
+                     retentionPerReflection: 0.5
                    """;
         var definition = mapper.readValue(yaml, CognitionDefinition.class);
         var compiled   = compiler.compile(definition);
 
-        assertThat(compiled.personality().decayFactor()).isEqualTo(0.05);
-        assertThat(compiled.personality().l2Ceiling()).isEqualTo(PersonalityEvolutionConfig.defaults().l2Ceiling());
+        assertThat(compiled.personality().retentionPerReflection()).isEqualTo(0.5);
+        assertThat(compiled.personality().reflectionPeriod()).isEqualTo(DispositionEvolutionConfig.defaults().reflectionPeriod());
     }
 
     @Test

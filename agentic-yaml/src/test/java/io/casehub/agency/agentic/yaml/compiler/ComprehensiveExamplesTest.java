@@ -125,7 +125,7 @@ class ComprehensiveExamplesTest {
             assertThat(cognition.drive().changeThreshold()).isEqualTo(0.15);
             assertThat(cognition.mood().maxDisplacement()).isEqualTo(0.6);
             assertThat(cognition.mood().baseline().pleasure()).isEqualTo(0.5);
-            assertThat(cognition.personality().decayFactor()).isEqualTo(0.03);
+            assertThat(cognition.personality().retentionPerReflection()).isEqualTo(0.5);
             assertThat(cognition.narrative().maxEpisodes()).isEqualTo(50);
             assertThat(cognition.goalProposal().proposalThreshold()).isEqualTo(0.6);
             assertThat(cognition.retention().recencyWeight()).isEqualTo(0.6);

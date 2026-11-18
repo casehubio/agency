@@ -28,10 +28,6 @@ import io.casehub.api.spi.routing.RoutingSignalAssembler;
 import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.eidos.api.AgentGraphQuery;
 import io.casehub.eidos.api.AgentRegistry;
-import io.casehub.eidos.api.DispositionEvolution;
-import io.casehub.eidos.api.DispositionHealth;
-import io.casehub.eidos.api.DispositionProfileStore;
-import io.casehub.eidos.api.DispositionSignalStore;
 import io.casehub.eidos.api.GoalSignalStore;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
@@ -63,9 +59,6 @@ import io.casehub.neocortex.cognition.narrative.NarrativeContentSummariser;
 import io.casehub.neocortex.cognition.narrative.NarrativeMemory;
 import io.casehub.neocortex.cognition.narrative.NarrativeOrchestrator;
 import io.casehub.neocortex.cognition.narrative.NarrativePipeline;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionOrchestrator;
-import io.casehub.neocortex.cognition.personality.TraitPressureSource;
 import io.casehub.neocortex.cognition.prompt.EmergentGoalPromptSection;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
 import io.casehub.neocortex.cognition.strategy.StrategyLearningOrchestrator;
@@ -106,7 +99,6 @@ public class AgencyBeans {
     @Inject Instance<NarrativeOrchestrator> narrativeOrchestratorInstance;
     @Inject Instance<AgentRegistry> agentRegistryInstance;
     @Inject Instance<CivilityConstraint> civilityConstraintInstance;
-    @Inject Instance<TraitPressureSource<?>> traitPressureSourceInstance;
     @Inject Instance<DriveGoalMapper> driveGoalMapperInstance;
     @Inject Instance<DriveGoalFormationStrategy> driveGoalFormationStrategyInstance;
     @Inject Instance<GoalEscalationPolicy> goalEscalationPolicyInstance;
@@ -296,16 +288,6 @@ public class AgencyBeans {
                 curiosity, competence, affiliation, autonomy,
                 moodOrchestrator, composer, config, java.time.Clock.systemUTC(),
                 nullableFrom(narrativeOrchestratorInstance));
-    }
-
-    @Produces @ApplicationScoped
-    public PersonalityEvolutionOrchestrator personalityEvolutionOrchestrator(
-            DispositionSignalStore signalStore, DispositionHealth health,
-            DispositionEvolution evolution, DispositionProfileStore profileStore,
-            CbrRecordStore cbrStore, PersonalityEvolutionConfig config) {
-        return new PersonalityEvolutionOrchestrator(
-                signalStore, health, evolution, profileStore, cbrStore,
-                listFrom(traitPressureSourceInstance), config);
     }
 
     @Produces @ApplicationScoped

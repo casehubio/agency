@@ -4,6 +4,7 @@ import io.casehub.agency.deliberation.judgment.JudgmentPolicy;
 import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.orchestration.routing.RoundRobinRouting;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
+import io.casehub.neocortex.cognition.personality.DispositionEvolutionConfig;
 import io.casehub.agency.core.yaml.compiler.CompiledWorld;
 import io.casehub.agency.core.yaml.spec.JointIntentionSpec;
 import io.casehub.agency.deliberation.conversation.orchestration.RoundRobinTurnPolicy;
@@ -53,8 +54,8 @@ class HistoricalEncounterExampleTest extends ExampleTestBase {
         assertThat(compiled.mood().maxDisplacement()).isEqualTo(0.7);
         assertThat(compiled.mood().moodInfluence()).isEqualTo(0.4);
 
-        assertThat(compiled.personality().l2Ceiling()).isEqualTo(0.3);
-        assertThat(compiled.personality().dampeningFactor()).isEqualTo(0.15);
+        assertThat(compiled.personality().retentionPerReflection()).isEqualTo(0.5);
+        assertThat(compiled.personality().reflectionPeriod()).isEqualTo(DispositionEvolutionConfig.defaults().reflectionPeriod());
 
         assertThat(compiled.userModel().synthesisCooldown()).isNotNull();
         assertThat(compiled.userModel().positiveWeight()).isEqualTo(1.5);

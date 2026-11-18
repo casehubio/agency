@@ -1,19 +1,5 @@
 package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.neocortex.cognition.mentalmodel.MentalModelConfig;
-import io.casehub.neocortex.cognition.mood.MoodConfig;
-import io.casehub.neocortex.cognition.personality.PersonalityEvolutionConfig;
-import io.casehub.neocortex.cognition.relationship.RelationshipStageConfig;
-import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
-import io.casehub.neocortex.cognition.usermodel.UserModelConfig;
-import io.casehub.neocortex.cognition.drive.DriveConfig;
-import io.casehub.neocortex.cognition.emergence.CollectiveGoalConfig;
-import io.casehub.neocortex.cognition.emergence.NormDetectionConfig;
-import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
-import io.casehub.neocortex.cognition.goal.GoalEscalationConfig;
-import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
-import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
-import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
 import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
 import io.casehub.agency.core.yaml.spec.cognition.CognitiveGoalConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.CollectiveGoalConfigSpec;
@@ -30,7 +16,21 @@ import io.casehub.agency.core.yaml.spec.cognition.RelationshipStageConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.RetentionConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.StrategyLearningConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.UserModelConfigSpec;
+import io.casehub.neocortex.cognition.drive.DriveConfig;
+import io.casehub.neocortex.cognition.emergence.CollectiveGoalConfig;
+import io.casehub.neocortex.cognition.emergence.NormDetectionConfig;
+import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
+import io.casehub.neocortex.cognition.goal.GoalEscalationConfig;
+import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
 import io.casehub.neocortex.cognition.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.mentalmodel.MentalModelConfig;
+import io.casehub.neocortex.cognition.mood.MoodConfig;
+import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
+import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
+import io.casehub.neocortex.cognition.personality.DispositionEvolutionConfig;
+import io.casehub.neocortex.cognition.relationship.RelationshipStageConfig;
+import io.casehub.neocortex.cognition.strategy.StrategyLearningConfig;
+import io.casehub.neocortex.cognition.usermodel.UserModelConfig;
 import org.jspecify.annotations.Nullable;
 
 public class CognitionCompiler {
@@ -83,13 +83,14 @@ public class CognitionCompiler {
                 spec.staleStateTimeout() != null ? spec.staleStateTimeout() : d.staleStateTimeout());
     }
 
-    private PersonalityEvolutionConfig compilePersonality(@Nullable PersonalityEvolutionConfigSpec spec) {
-        if (spec == null) return PersonalityEvolutionConfig.defaults();
-        var d = PersonalityEvolutionConfig.defaults();
-        return new PersonalityEvolutionConfig(
-                spec.decayFactor() != null ? spec.decayFactor() : d.decayFactor(),
-                spec.l2Ceiling() != null ? spec.l2Ceiling() : d.l2Ceiling(),
-                spec.dampeningFactor() != null ? spec.dampeningFactor() : d.dampeningFactor());
+    private DispositionEvolutionConfig compilePersonality(@Nullable PersonalityEvolutionConfigSpec spec) {
+        if (spec == null) {return DispositionEvolutionConfig.defaults();}
+        var d = DispositionEvolutionConfig.defaults();
+        return new DispositionEvolutionConfig(
+                spec.reflectionPeriod() != null ? java.time.Duration.parse(spec.reflectionPeriod()) : d.reflectionPeriod(),
+                spec.retentionPerReflection() != null ? spec.retentionPerReflection() : d.retentionPerReflection(),
+                spec.minTransitionInterval() != null ? java.time.Duration.parse(spec.minTransitionInterval()) : d.minTransitionInterval(),
+                spec.maxAuditAttempts() != null ? spec.maxAuditAttempts() : d.maxAuditAttempts());
     }
 
     private UserModelConfig compileUserModel(@Nullable UserModelConfigSpec spec) {
