@@ -41,12 +41,7 @@
   #model-status .downloading { color: #d9a547; }
   #model-status .ready { color: #4a9; }
   #model-status .error { color: #d64; }
-  #timing { display: none; margin: 0.5rem 1rem; padding: 0.5rem 0.75rem; background: #1e1e32; border-radius: 8px; font-size: 0.8rem; font-family: monospace; }
-  #timing .bar { display: flex; gap: 2px; height: 20px; border-radius: 4px; overflow: hidden; margin-top: 0.25rem; }
-  #timing .bar div { display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; }
-  #timing .cleanup { background: #4a9; }
-  #timing .llm { background: #d64; }
-  #timing .tts { background: #58c; }
+
 </style>
 </head>
 <body>
@@ -162,7 +157,6 @@
 <div id="avatar-container"></div>
 <div id="model-status"></div>
 <div id="status">Connecting...</div>
-<div id="timing"><span id="timing-text"></span><div class="bar" id="timing-bar"></div></div>
 <div id="chat"></div>
 <div id="input-bar">
   <button id="mic" disabled title="Hold to talk">Mic</button>
@@ -279,8 +273,11 @@ function connect() {
             resetTurnState();
             activeTurnSeq = msg.turnSeq;
           }
-          for (const cue of (msg.cues || [])) {
-            if (cue.tag && bodyAnim) bodyAnim.triggerGesture(cue.tag);
+          if (!head || !msg.hasAudio) {
+            for (const cue of (msg.cues || [])) {
+              if (cue.tag && bodyAnim) bodyAnim.triggerGesture(cue.tag);
+              if (cue.mood && head) head.setMood(cue.mood);
+            }
           }
           if (!msg.hasAudio) {
             turnAudioPlayed.add(msg.index);
@@ -315,21 +312,12 @@ function connect() {
           if (head) head.setMood(msg.state);
           break;
 
-        case 'timing':
-          showTiming(msg);
-          break;
-
         case 'error':
           addMessage('Error: ' + msg.message, 'system');
           break;
 
         case 'partial':
           status.textContent = 'Hearing: ' + msg.text;
-          break;
-
-        case 'response':
-        case 'phonemes':
-        case 'animation':
           break;
       }
     } else {
@@ -374,12 +362,51 @@ async function handleAudioFrame(blob) {
     if (!audioCtx) audioCtx = new AudioContext();
     const audioBuf = await audioCtx.decodeAudioData(audioBytes);
 
-    if (header.turnSeq === activeTurnSeq && !isPlaying && playQueue.length === 0) {
-      enterFloorState(FloorState.SPEAKING);
-    }
+    if (head) {
+      if (header.turnSeq === activeTurnSeq) enterFloorState(FloorState.SPEAKING);
 
-    playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex });
-    if (!isPlaying) playNextQueued();
+      const key = `${header.turnSeq}:${header.segmentIndex}`;
+      const seg = pendingSegments.get(key);
+      const r = { audio: audioBuf };
+
+      if (seg && seg.visemes && seg.visemes.length > 0) {
+        r.visemes = []; r.vtimes = []; r.vdurations = [];
+        for (const v of seg.visemes) {
+          r.visemes.push(v.viseme);
+          r.vtimes.push(v.startMs);
+          r.vdurations.push(v.endMs - v.startMs);
+        }
+      }
+
+      const markers = [];
+      const mtimes = [];
+      for (const cue of (seg?.cues || [])) {
+        if (cue.tag && bodyAnim) {
+          const tag = cue.tag;
+          markers.push(() => bodyAnim.triggerGesture(tag));
+          mtimes.push(cue.offsetMs || 0);
+        }
+        if (cue.mood) {
+          const mood = cue.mood;
+          markers.push(() => head.setMood(mood));
+          mtimes.push(cue.offsetMs || 0);
+        }
+      }
+
+      const segIdx = header.segmentIndex;
+      markers.push(() => { turnAudioPlayed.add(segIdx); checkTurnFinished(); });
+      mtimes.push(audioBuf.duration * 1000);
+
+      r.markers = markers;
+      r.mtimes = mtimes;
+      head.speakAudio(r, { isRaw: true });
+    } else {
+      if (header.turnSeq === activeTurnSeq && !isPlaying && playQueue.length === 0) {
+        enterFloorState(FloorState.SPEAKING);
+      }
+      playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex });
+      if (!isPlaying) playNextQueued();
+    }
   } catch (e) {
     console.error('[Audio] Frame error:', e);
   }
@@ -404,18 +431,6 @@ function playNextQueued() {
     checkTurnFinished();
     playNextQueued();
   };
-}
-
-function showTiming(t) {
-  const el = document.getElementById('timing');
-  const txt = document.getElementById('timing-text');
-  const bar = document.getElementById('timing-bar');
-  el.style.display = 'block';
-  txt.textContent = 'Cleanup: ' + t.cleanupMs + 'ms | LLM: ' + t.llmMs + 'ms | TTS: ' + t.ttsMs + 'ms | Total: ' + t.totalMs + 'ms';
-  const total = t.totalMs || 1;
-  bar.innerHTML = '<div class="cleanup" style="flex:' + t.cleanupMs + '">' + (t.cleanupMs > 50 ? t.cleanupMs + 'ms' : '') + '</div>'
-    + '<div class="llm" style="flex:' + t.llmMs + '">' + t.llmMs + 'ms</div>'
-    + '<div class="tts" style="flex:' + t.ttsMs + '">' + t.ttsMs + 'ms</div>';
 }
 
 document.getElementById('speed').addEventListener('input', function() {
