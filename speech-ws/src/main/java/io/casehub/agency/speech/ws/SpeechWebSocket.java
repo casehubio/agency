@@ -154,7 +154,8 @@ public class SpeechWebSocket {
             }
             session.withAvatarCognition(cog, agentId, tenantId);
             cog.initialize(agentId, tenantId);
-            startProactiveTick(cog, agentId, tenantId, avatarConfig.proactiveTickIntervalSeconds());
+            startProactiveTick(cog, agentId, tenantId, avatarConfig.proactiveTickIntervalSeconds(),
+                               text -> connection.sendTextAndAwait(text));
         } else if (avatarConfig.attentionEnabled()) {
             attentionPolicy = new SilenceAttentionPolicy(
                     session.floorState(),
@@ -167,7 +168,9 @@ public class SpeechWebSocket {
     }
 
     private void startProactiveTick(io.casehub.agency.speech.AvatarCognition cog,
-                                     String agentId, String tenantId, int intervalSeconds) {
+                                     String agentId, String tenantId, int intervalSeconds,
+                                     java.util.function.Consumer<String> textSink) {
+        var moodMapper = cog.providesAffect() ? new MoodMapper() : null;
         proactiveThread = Thread.ofVirtual().name("avatar-proactive").start(() -> {
             while (!session.isClosed()) {
                 try {
@@ -177,14 +180,26 @@ public class SpeechWebSocket {
                     return;
                 }
                 if (session.isClosed()) return;
-                if (session.shouldSuppressProactive()) continue;
                 try {
                     cog.tick(agentId, tenantId, java.util.Set.of(session.currentSubjectId()));
-                    String channelContext = "Channel: WebSocket speech session\nTurn count: "
-                            + session.historySize() + "\nSpeaker: " + session.currentSubjectId();
-                    String content = cog.evaluateProactive(agentId, tenantId, channelContext);
-                    if (content != null) {
-                        session.handleProactiveSpeech(content);
+                    if (moodMapper != null) {
+                        var affect = cog.currentAffect(agentId, tenantId);
+                        if (affect != null) {
+                            String prev = moodMapper.current();
+                            String mapped = moodMapper.map(affect, System.currentTimeMillis());
+                            if (mapped != null && !mapped.equals(prev)) {
+                                textSink.accept(
+                                        MessageCodec.encode(new AvatarMessage.Mood(mapped)));
+                            }
+                        }
+                    }
+                    if (!session.shouldSuppressProactive()) {
+                        String channelContext = "Channel: WebSocket speech session\nTurn count: "
+                                + session.historySize() + "\nSpeaker: " + session.currentSubjectId();
+                        String content = cog.evaluateProactive(agentId, tenantId, channelContext);
+                        if (content != null) {
+                            session.handleProactiveSpeech(content);
+                        }
                     }
                 } catch (Exception e) {
                     if (e instanceof InterruptedException) {

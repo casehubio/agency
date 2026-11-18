@@ -1,6 +1,7 @@
 package io.casehub.agency.social.cognition;
 
 import io.casehub.agency.social.cognition.evolution.CognitiveEvolutionAdapter;
+import io.casehub.agency.speech.Affect;
 import io.casehub.agency.speech.AvatarCognition;
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.eidos.api.AgentDescriptor;
@@ -107,6 +108,17 @@ public class CognitionAvatarAdapter implements AvatarCognition {
             agentRegistry.findById(agentId, tenantId)
                     .ifPresent(desc -> safeRun(() -> core.innerLife().observeResponse(desc)));
         }
+    }
+
+    @Override
+    public boolean providesAffect() { return core.mood() != null; }
+
+    @Override
+    public @Nullable Affect currentAffect(String agentId, String tenantId) {
+        if (core.mood() == null) return null;
+        return core.mood().currentMood(agentId, tenantId)
+                .map(s -> new Affect(s.pleasure(), s.arousal(), s.dominance()))
+                .orElse(null);
     }
 
     @Override

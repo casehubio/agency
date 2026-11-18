@@ -192,6 +192,23 @@ let turnComplete = false;
 let turnSafetyTimer = null;
 const TURN_SAFETY_TIMEOUT = 10000;
 
+let baselineMood = 'neutral';
+let turnMood = null;
+let turnMoodTimer = null;
+const TURN_MOOD_DECAY_MS = 3000;
+
+function applyMood() {
+  const effective = turnMood || baselineMood;
+  if (head) head.setMood(effective);
+}
+
+function setTurnMood(mood) {
+  clearTimeout(turnMoodTimer);
+  turnMood = mood;
+  applyMood();
+  turnMoodTimer = setTimeout(() => { turnMood = null; applyMood(); }, TURN_MOOD_DECAY_MS);
+}
+
 function sendWsJson(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(obj));
@@ -277,7 +294,7 @@ function connect() {
           if (!head || !msg.hasAudio) {
             for (const cue of (msg.cues || [])) {
               if (cue.type === 'gesture' && bodyAnim) bodyAnim.triggerGesture(cue.tag);
-              if (cue.type === 'mood' && head) head.setMood(cue.mood);
+              if (cue.type === 'mood') setTurnMood(cue.mood);
             }
           }
           if (!msg.hasAudio) {
@@ -310,7 +327,8 @@ function connect() {
           break;
 
         case 'mood':
-          if (head) head.setMood(msg.state);
+          baselineMood = msg.state;
+          applyMood();
           break;
 
         case 'error':
@@ -389,7 +407,7 @@ async function handleAudioFrame(blob) {
         }
         if (cue.type === 'mood') {
           const mood = cue.mood;
-          markers.push(() => head.setMood(mood));
+          markers.push(() => setTurnMood(mood));
           mtimes.push(cue.offsetMs || 0);
         }
       }
