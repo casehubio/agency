@@ -122,4 +122,15 @@ class FloorStateTest {
         state.onPlaybackComplete(1);
         assertThat(state.shouldSuppressProactive()).isFalse();
     }
+
+    @Test
+    void expireUnacknowledgedResetsLastActivity() {
+        var state = new FloorState();
+        state.onTurnComplete(1, System.currentTimeMillis() - 1000);
+        long beforeExpiry = state.lastUserActivity();
+        state.expireUnacknowledged();
+        assertThat(state.lastUserActivity()).isGreaterThanOrEqualTo(beforeExpiry);
+        assertThat(state.hasUnacknowledgedTurn()).isFalse();
+    }
+
 }
