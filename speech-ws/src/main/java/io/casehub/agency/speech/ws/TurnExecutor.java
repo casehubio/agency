@@ -193,8 +193,9 @@ public class TurnExecutor implements AutoCloseable {
             if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streamingTts) {
                 long estimatedMs = seg.cleanText().length() * 80L;
                 var  visemes     = VisemeMapping.estimateFromText(seg.cleanText(), estimatedMs);
+                var  timedCues  = estimateMarkTiming(seg.cues(), seg.cleanText().length(), estimatedMs);
                 send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
-                                               true, visemes, seg.cues()));
+                                               true, visemes, timedCues));
                 byte[][] lastChunk = {null};
                 streamingTts.synthesiseStreaming(seg.cleanText(),
                                                  new SynthesisOptions(null, null, "wav", false),
@@ -266,6 +267,21 @@ public class TurnExecutor implements AutoCloseable {
             }
         }
         return marks;
+    }
+
+    static List<Cue> estimateMarkTiming(List<Cue> cues, int textLength, long estimatedDurationMs) {
+        if (cues.isEmpty() || textLength == 0) return cues;
+        var result = new ArrayList<Cue>(cues.size());
+        for (var cue : cues) {
+            int charOffset = cueCharOffset(cue);
+            if (charOffset >= 0) {
+                long offsetMs = (long) charOffset * estimatedDurationMs / textLength;
+                result.add(withOffsetMs(cue, offsetMs));
+            } else {
+                result.add(cue);
+            }
+        }
+        return result;
     }
 
     private static List<Cue> applyMarkTiming(List<Cue> cues,

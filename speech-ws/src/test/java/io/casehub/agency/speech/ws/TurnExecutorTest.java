@@ -3,6 +3,7 @@ package io.casehub.agency.speech.ws;
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;
 import io.casehub.agency.speech.PerformanceVocabulary;
+import io.casehub.agency.speech.ws.protocol.Cue;
 import io.casehub.connectors.voice.model.SynthesisResult;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.junit.jupiter.api.AfterEach;
@@ -364,5 +365,36 @@ class TurnExecutorTest {
         // Must be significantly more than the old fixed 5000ms
         assertThat(elapsed).as("expiry includes estimated audio duration")
                            .isGreaterThan(10_000);
+    }
+
+    @Test
+    void estimateMarkTimingAppliesCharProportionalOffset() {
+        List<Cue> cues = List.of(
+                new Cue.GestureCue("nod", 0L, 10),
+                new Cue.GestureCue("wave", 0L, 30));
+        var estimated = TurnExecutor.estimateMarkTiming(cues, 40, 4000L);
+        assertThat(estimated).hasSize(2);
+        assertThat(((Cue.GestureCue) estimated.get(0)).offsetMs()).isEqualTo(1000L);
+        assertThat(((Cue.GestureCue) estimated.get(1)).offsetMs()).isEqualTo(3000L);
+    }
+
+    @Test
+    void estimateMarkTimingPreservesNegativeCharOffset() {
+        List<Cue> cues = List.of(new Cue.GestureCue("nod", 0L, -1));
+        var estimated = TurnExecutor.estimateMarkTiming(cues, 40, 4000L);
+        assertThat(estimated).hasSize(1);
+        assertThat(((Cue.GestureCue) estimated.get(0)).offsetMs()).isEqualTo(0L);
+    }
+
+    @Test
+    void estimateMarkTimingEmptyCuesPassThrough() {
+        assertThat(TurnExecutor.estimateMarkTiming(List.of(), 40, 4000L)).isEmpty();
+    }
+
+    @Test
+    void estimateMarkTimingHandlesMoodCues() {
+        List<Cue> cues = List.of(new Cue.MoodCue("happy", 0L, 20));
+        var estimated = TurnExecutor.estimateMarkTiming(cues, 40, 4000L);
+        assertThat(((Cue.MoodCue) estimated.get(0)).offsetMs()).isEqualTo(2000L);
     }
 }
