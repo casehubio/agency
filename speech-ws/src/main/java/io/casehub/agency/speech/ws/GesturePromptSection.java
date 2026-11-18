@@ -3,11 +3,9 @@ package io.casehub.agency.speech.ws;
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;
 import io.casehub.agency.speech.PerformanceVocabulary;
-import io.casehub.agency.speech.PromptContext;
-import io.casehub.agency.speech.PromptSection;
 import org.jspecify.annotations.Nullable;
 
-public class GesturePromptSection implements PromptSection {
+public class GesturePromptSection {
 
     private final PerformanceVocabulary vocabulary;
 
@@ -15,8 +13,7 @@ public class GesturePromptSection implements PromptSection {
         this.vocabulary = vocabulary;
     }
 
-    @Override
-    public @Nullable String contribute(PromptContext context) {
+    public @Nullable String render() {
         var gestures = vocabulary.gesturePromptEntries().stream()
                 .filter(GestureEntry::promptable).toList();
         var moods = vocabulary.moods().stream()

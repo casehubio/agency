@@ -3,7 +3,7 @@ package io.casehub.agency.speech.ws;
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;
 import io.casehub.agency.speech.PerformanceVocabulary;
-import io.casehub.agency.speech.PromptContext;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,7 +26,7 @@ class GesturePromptSectionTest {
                         new MoodEntry("sleep", "drowsy", false)));
 
         var section = new GesturePromptSection(vocab);
-        var text = section.contribute(new PromptContext("a", "t", null));
+        var text = section.render();
 
         assertThat(text).contains("[gesture:nod]").contains("agreement");
         assertThat(text).contains("[gesture:shrug]").contains("uncertainty");
@@ -44,7 +44,7 @@ class GesturePromptSectionTest {
 
         var section = new GesturePromptSection(vocab);
 
-        assertThat(section.contribute(new PromptContext("a", "t", null))).isNull();
+        assertThat(section.render()).isNull();
     }
 
     @Test
@@ -54,7 +54,7 @@ class GesturePromptSectionTest {
                 List.of());
 
         var section = new GesturePromptSection(vocab);
-        var text = section.contribute(new PromptContext("a", "t", null));
+        var text = section.render();
 
         assertThat(text).contains("[gesture:wave]");
         assertThat(text).doesNotContain("[mood:");
@@ -67,7 +67,7 @@ class GesturePromptSectionTest {
                 List.of(new MoodEntry("angry", "frustrated tone", true)));
 
         var section = new GesturePromptSection(vocab);
-        var text = section.contribute(new PromptContext("a", "t", null));
+        var text = section.render();
 
         assertThat(text).doesNotContain("[gesture:");
         assertThat(text).contains("[mood:angry]").contains("frustrated tone");

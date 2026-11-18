@@ -56,7 +56,6 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null,
                 null);
     }
 
@@ -127,7 +126,6 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null,
                 null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
@@ -161,7 +159,6 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null,
                 null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
@@ -191,7 +188,6 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null,
                 null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
@@ -221,7 +217,7 @@ class TurnExecutorTest {
                 new DefaultPromptAssembler(null),
                 null, streamGen, failTts, Map.of(),
                 sentText::add, sentBinary::add,
-                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, null);
+                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -244,7 +240,7 @@ class TurnExecutorTest {
                 null, null,
                 ttsService, Map.of(),
                 sentText::add, sentBinary::add,
-                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, null);
+                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -305,7 +301,6 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null,
                 null);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, "kokoro:af_heart"));
@@ -327,8 +322,7 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                responses::add,
-                null);
+                responses::add);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 

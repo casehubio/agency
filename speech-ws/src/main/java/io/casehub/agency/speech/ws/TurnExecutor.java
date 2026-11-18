@@ -2,7 +2,7 @@ package io.casehub.agency.speech.ws;
 
 import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
-import io.casehub.agency.speech.PromptContext;
+
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
@@ -34,7 +34,7 @@ public class TurnExecutor implements AutoCloseable {
     private final UtteranceSegmenter segmenter;
     private final FloorState floorState;
     private final @Nullable Consumer<String> onResponse;
-    private final @Nullable PromptContext promptContext;
+
     private final List<ConversationTurn> history = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(
             Thread.ofVirtual().name("turn-executor").factory());
@@ -50,8 +50,7 @@ public class TurnExecutor implements AutoCloseable {
                         Consumer<byte[]> binarySink,
                         UtteranceSegmenter segmenter,
                         FloorState floorState,
-                        @Nullable Consumer<String> onResponse,
-                        @Nullable PromptContext promptContext) {
+                        @Nullable Consumer<String> onResponse) {
         this.assembler = assembler;
         this.responseGenerator = responseGenerator;
         this.streamingGenerator = streamingGenerator;
@@ -62,7 +61,7 @@ public class TurnExecutor implements AutoCloseable {
         this.segmenter = segmenter;
         this.floorState = floorState;
         this.onResponse = onResponse;
-        this.promptContext = promptContext;
+
     }
 
     public void executeUserTurn(UserTurn turn) {
@@ -216,9 +215,7 @@ public class TurnExecutor implements AutoCloseable {
 
 
     private AssembledPrompt assemblePrompt(UserTurn turn) {
-        AssembledPrompt prompt = promptContext != null
-                ? assembler.assemble(turn.cleanText(), List.copyOf(history), promptContext)
-                : assembler.assemble(turn.cleanText(), List.copyOf(history));
+        AssembledPrompt prompt = assembler.assemble(turn.cleanText(), List.copyOf(history));
         if (turn.llmModel() != null) {
             prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userMessage(),
                     turn.llmModel());

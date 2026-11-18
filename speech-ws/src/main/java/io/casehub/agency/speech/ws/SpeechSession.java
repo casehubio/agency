@@ -139,7 +139,7 @@ public class SpeechSession {
                 promptAssembler, responseGenerator, streamingGenerator,
                 ttsService, ttsModels, textSink, binarySink,
                 new UtteranceSegmenter(EMPTY_VOCAB), floorState,
-                onResponse, null);
+                onResponse);
     }
 
 

@@ -2,8 +2,10 @@ package io.casehub.agency.speech.ws;
 
 import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
-import io.casehub.agency.speech.PromptContext;
-import io.casehub.agency.speech.PromptSection;
+import io.casehub.agency.speech.GestureEntry;
+import io.casehub.agency.speech.MoodEntry;
+import io.casehub.agency.speech.PerformanceVocabulary;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -107,50 +109,34 @@ class DefaultPromptAssemblerTest {
         assertThat(turn.speaker()).isNull();
     }
 
-    // --- PromptSection composition tests ---
+    // --- GesturePromptSection composition tests ---
 
     @Test
-    void assembleWithSectionsAppendsToSystemPrompt() {
-        PromptSection section = ctx -> "## Gestures\n[gesture:nod] — agreement";
-        var assembler = new DefaultPromptAssembler("You are helpful.", List.of(section));
-        var context = new PromptContext("agent-1", "tenant-1", "user-1");
-
-        var result = assembler.assemble("hello", List.of(), context);
-
-        assertThat(result.systemPrompt()).contains("You are helpful.");
-        assertThat(result.systemPrompt()).contains("## Gestures");
-        assertThat(result.systemPrompt()).contains("[gesture:nod]");
-    }
-
-    @Test
-    void assembleWithoutContextSkipsSections() {
-        PromptSection section = ctx -> "should not appear";
-        var assembler = new DefaultPromptAssembler("Base.", List.of(section));
+    void assembleWithGestureSectionAppendsToSystemPrompt() {
+        var vocab = new PerformanceVocabulary() {
+            public java.util.Set<String> gestureTags() { return java.util.Set.of("nod"); }
+            public boolean isValidGesture(String tag) { return "nod".equals(tag); }
+            public List<GestureEntry> gesturePromptEntries() {
+                return List.of(new GestureEntry("nod", "head nod — agreement", true));
+            }
+            public java.util.Set<String> allClipNames() { return java.util.Set.of(); }
+            public List<MoodEntry> moods() { return List.of(); }
+            public boolean isValidMood(String mood) { return false; }
+        };
+        var gestureSection = new GesturePromptSection(vocab);
+        var assembler = new DefaultPromptAssembler("You are helpful.", gestureSection);
 
         var result = assembler.assemble("hello", List.of());
 
-        assertThat(result.systemPrompt()).isEqualTo("Base.");
+        assertThat(result.systemPrompt()).contains("You are helpful.");
+        assertThat(result.systemPrompt()).contains("[gesture:");
     }
 
     @Test
-    void assembleSkipsNullSectionContributions() {
-        PromptSection returnsNull = ctx -> null;
-        PromptSection returnsText = ctx -> "visible section";
-        var assembler = new DefaultPromptAssembler("Base.", List.of(returnsNull, returnsText));
-        var context = new PromptContext("a", "t", null);
+    void assembleWithoutGestureSectionUnchanged() {
+        var assembler = new DefaultPromptAssembler("Base.");
 
-        var result = assembler.assemble("hello", List.of(), context);
-
-        assertThat(result.systemPrompt()).contains("visible section");
-        assertThat(result.systemPrompt()).doesNotContain("null");
-    }
-
-    @Test
-    void assembleWithEmptySectionsListUnchanged() {
-        var assembler = new DefaultPromptAssembler("Base.", List.of());
-        var context = new PromptContext("a", "t", null);
-
-        var result = assembler.assemble("hello", List.of(), context);
+        var result = assembler.assemble("hello", List.of());
 
         assertThat(result.systemPrompt()).isEqualTo("Base.");
     }

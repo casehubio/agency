@@ -336,7 +336,7 @@ class SpeechSessionTest {
 
         assertThat(capturedPrompt[0]).isNotNull();
         assertThat(capturedPrompt[0].systemPrompt()).isEqualTo("Custom system prompt");
-        assertThat(capturedPrompt[0].userPrompt()).contains("test input");
+        assertThat(capturedPrompt[0].userMessage()).contains("test input");
     }
 
     @Test
