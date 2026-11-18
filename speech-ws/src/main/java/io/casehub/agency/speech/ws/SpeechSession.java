@@ -235,6 +235,8 @@ public class SpeechSession {
 
             turnExecutor.executeUserTurn(
                     new UserTurn(cleanText, speakerLabel, activeLlmModel, activeTtsModel));
+
+            recordCognitionInteraction(cleanText);
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         }

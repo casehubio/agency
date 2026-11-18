@@ -62,6 +62,11 @@ public class SilenceAttentionPolicy {
 
         long silenceMs = System.currentTimeMillis() - floorState.lastUserActivity();
 
+        if (silenceMs < subtleThresholdMs) {
+            resetBids();
+            return;
+        }
+
         if (!strongSent && silenceMs >= strongThresholdMs) {
             String gesture = pick(STRONG_GESTURES);
             LOG.log(System.Logger.Level.DEBUG, "Strong attention bid: {0} after {1}s silence",
