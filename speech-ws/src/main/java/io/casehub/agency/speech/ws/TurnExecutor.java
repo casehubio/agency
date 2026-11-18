@@ -22,7 +22,8 @@ import java.util.function.Function;
 public class TurnExecutor implements AutoCloseable {
 
     private static final System.Logger LOG = System.getLogger("turn-executor");
-    private static final long DEFAULT_EXPIRY_MS = 5000;
+    private static final long EXPIRY_BUFFER_MS = 5000;
+    private static final long MS_PER_CHAR = 80;
 
     private final SpeechPromptAssembler assembler;
     private final @Nullable Function<AssembledPrompt, String> responseGenerator;
@@ -40,6 +41,8 @@ public class TurnExecutor implements AutoCloseable {
             Thread.ofVirtual().name("turn-executor").factory());
 
     private int turnSeq;
+    private double minPlaybackRate = 0.6;
+    private long turnEstimatedAudioMs;
 
     public TurnExecutor(SpeechPromptAssembler assembler,
                         @Nullable Function<AssembledPrompt, String> responseGenerator,
@@ -63,6 +66,8 @@ public class TurnExecutor implements AutoCloseable {
         this.onResponse = onResponse;
 
     }
+
+    void setMinPlaybackRate(double rate) { this.minPlaybackRate = rate; }
 
     public void executeUserTurn(UserTurn turn) {
         try {
@@ -100,6 +105,7 @@ public class TurnExecutor implements AutoCloseable {
         floorState.onTurnStart();
         int currentTurnSeq = ++turnSeq;
         int[] segmentIndex = {0};
+        turnEstimatedAudioMs = 0;
 
         try {
             history.add(new ConversationTurn("user", turn.cleanText(), turn.speakerLabel()));
@@ -134,7 +140,8 @@ public class TurnExecutor implements AutoCloseable {
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         } finally {
-            long expiresAt = System.currentTimeMillis() + DEFAULT_EXPIRY_MS;
+            long expiresAt = System.currentTimeMillis()
+                    + (long) (turnEstimatedAudioMs / minPlaybackRate) + EXPIRY_BUFFER_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
             floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
@@ -156,6 +163,7 @@ public class TurnExecutor implements AutoCloseable {
         floorState.onTurnStart();
         int currentTurnSeq = ++turnSeq;
         int[] segmentIndex = {0};
+        turnEstimatedAudioMs = 0;
 
         try {
             TextToSpeech tts = resolveTts(null);
@@ -167,7 +175,8 @@ public class TurnExecutor implements AutoCloseable {
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         } finally {
-            long expiresAt = System.currentTimeMillis() + DEFAULT_EXPIRY_MS;
+            long expiresAt = System.currentTimeMillis()
+                    + (long) (turnEstimatedAudioMs / minPlaybackRate) + EXPIRY_BUFFER_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
             floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
@@ -177,6 +186,7 @@ public class TurnExecutor implements AutoCloseable {
 
     private void synthesiseAndSendSegment(TextToSpeech tts, ParsedSegment seg,
                                           int currentTurnSeq, int index) {
+        turnEstimatedAudioMs += seg.cleanText().length() * MS_PER_CHAR;
         try {
             if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streamingTts) {
                 long estimatedMs = seg.cleanText().length() * 80L;

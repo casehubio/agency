@@ -340,4 +340,29 @@ class TurnExecutorTest {
         assertThat(floorState.hasUnacknowledgedTurn()).isTrue();
         assertThat(floorState.shouldSuppressProactive()).isTrue();
     }
+
+    @Test
+    void expiryScalesWithResponseLength() {
+        executor = new TurnExecutor(
+                new DefaultPromptAssembler(null),
+                prompt -> "This is a longer response that takes more audio time to play back for the user.",
+                null,
+                ttsService,
+                Map.of(),
+                sentText::add,
+                sentBinary::add,
+                new UtteranceSegmenter(EMPTY_VOCAB),
+                floorState,
+                null);
+
+        long before = System.currentTimeMillis();
+        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+
+        long expiresAt = floorState.expiresAt();
+        long elapsed = expiresAt - before;
+        // 80 chars × 80ms/char = 6400ms audio + 6400/0.6 ≈ 10667ms + 5000ms buffer ≈ 15667ms
+        // Must be significantly more than the old fixed 5000ms
+        assertThat(elapsed).as("expiry includes estimated audio duration")
+                           .isGreaterThan(10_000);
+    }
 }

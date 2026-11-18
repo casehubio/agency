@@ -31,4 +31,7 @@ public interface AvatarConfig {
 
     @WithDefault("75")
     int attentionStrongSeconds();
+
+    @WithDefault("0.6")
+    double minPlaybackRate();
 }

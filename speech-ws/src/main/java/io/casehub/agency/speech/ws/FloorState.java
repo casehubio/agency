@@ -49,6 +49,8 @@ public class FloorState {
         return unacknowledgedTurnSeq >= 0;
     }
 
+    long expiresAt() { return unacknowledgedExpiresAt; }
+
     public boolean isUnacknowledgedExpired(long now) {
         return hasUnacknowledgedTurn() && now >= unacknowledgedExpiresAt;
     }

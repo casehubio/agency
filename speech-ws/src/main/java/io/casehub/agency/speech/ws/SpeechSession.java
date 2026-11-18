@@ -143,6 +143,8 @@ public class SpeechSession {
     }
 
 
+    public void setMinPlaybackRate(double rate) { turnExecutor.setMinPlaybackRate(rate); }
+
     public void handleStart(AvatarMessage.Start msg) {
         stopPolling();
         if (stream != null) {

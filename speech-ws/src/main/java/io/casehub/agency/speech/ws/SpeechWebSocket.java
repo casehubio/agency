@@ -163,6 +163,7 @@ public class SpeechWebSocket {
                     avatarConfig.attentionStrongSeconds());
             attentionPolicy.start();
         }
+        session.setMinPlaybackRate(avatarConfig.minPlaybackRate());
     }
 
     private void startProactiveTick(io.casehub.agency.speech.AvatarCognition cog,
