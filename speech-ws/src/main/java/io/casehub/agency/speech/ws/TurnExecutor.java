@@ -179,13 +179,22 @@ public class TurnExecutor implements AutoCloseable {
     private void synthesiseAndSendSegment(TextToSpeech tts, ParsedSegment seg,
                                           int currentTurnSeq, int index) {
         try {
-            var synthesis = tts.synthesise(seg.cleanText(),
-                                           new SynthesisOptions(null, null, "wav", true));
-            var visemes = VisemeMapping.convert(synthesis.phonemes());
-
-            send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
-                                           true, visemes, seg.cues()));
-            sendAudioFrame(synthesis.audioData(), currentTurnSeq, index);
+            if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streamingTts) {
+                long estimatedMs = seg.cleanText().length() * 80L;
+                var  visemes     = VisemeMapping.estimateFromText(seg.cleanText(), estimatedMs);
+                send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
+                                               true, visemes, seg.cues()));
+                streamingTts.synthesiseStreaming(seg.cleanText(),
+                                                 new SynthesisOptions(null, null, "wav", false),
+                                                 chunk -> sendAudioFrame(chunk, currentTurnSeq, index));
+            } else {
+                var synthesis = tts.synthesise(seg.cleanText(),
+                                               new SynthesisOptions(null, null, "wav", true));
+                var visemes = VisemeMapping.convert(synthesis.phonemes());
+                send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
+                                               true, visemes, seg.cues()));
+                sendAudioFrame(synthesis.audioData(), currentTurnSeq, index);
+            }
         } catch (Exception e) {
             send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
                                            false, List.of(), List.of()));

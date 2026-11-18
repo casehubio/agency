@@ -140,6 +140,46 @@ class TurnExecutorTest {
     }
 
     @Test
+    void streamingTtsUsesEstimatedVisemesAndStreamsChunks() {
+        var streamingTts = mock(io.casehub.connectors.voice.spi.StreamingTextToSpeech.class);
+        when(streamingTts.synthesise(any(), any())).thenReturn(
+                new SynthesisResult(new byte[]{1, 2, 3}, "wav", List.of()));
+        org.mockito.Mockito.doAnswer(invocation -> {
+            java.util.function.Consumer<byte[]> onChunk = invocation.getArgument(2);
+            onChunk.accept(new byte[]{10, 20});
+            onChunk.accept(new byte[]{30, 40});
+            return null;
+        }).when(streamingTts).synthesiseStreaming(any(), any(), any());
+
+        executor = new TurnExecutor(
+                new DefaultPromptAssembler(null),
+                prompt -> "Streaming test.",
+                null,
+                streamingTts,
+                Map.of(),
+                sentText::add,
+                sentBinary::add,
+                new UtteranceSegmenter(EMPTY_VOCAB),
+                floorState,
+                null,
+                null);
+
+        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+
+        var segments = sentText.stream()
+                               .filter(json -> json.contains("\"type\":\"segment\""))
+                               .toList();
+        assertThat(segments).hasSize(1);
+        assertThat(segments.get(0)).contains("\"hasAudio\":true");
+
+        // Streaming TTS sends 2 audio chunks, each with 8-byte header
+        assertThat(sentBinary).hasSize(2);
+        assertThat(sentBinary.get(0).length).isEqualTo(8 + 2);
+        assertThat(sentBinary.get(1).length).isEqualTo(8 + 2);
+    }
+
+
+    @Test
     void turnCompleteAlwaysSentEvenOnLlmError() {
         executor = new TurnExecutor(
                 new DefaultPromptAssembler(null),
