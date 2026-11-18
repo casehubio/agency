@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.connectors.voice.model.SynthesisOptions;

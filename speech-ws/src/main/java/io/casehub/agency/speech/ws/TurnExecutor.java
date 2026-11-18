@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.PromptContext;
 import io.casehub.agency.speech.SpeechPromptAssembler;
@@ -220,7 +220,7 @@ public class TurnExecutor implements AutoCloseable {
                 ? assembler.assemble(turn.cleanText(), List.copyOf(history), promptContext)
                 : assembler.assemble(turn.cleanText(), List.copyOf(history));
         if (turn.llmModel() != null) {
-            prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userPrompt(),
+            prompt = new AssembledPrompt(prompt.systemPrompt(), prompt.userMessage(),
                     turn.llmModel());
         }
         return prompt;
