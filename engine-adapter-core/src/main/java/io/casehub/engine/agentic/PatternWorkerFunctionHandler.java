@@ -32,6 +32,8 @@ import io.casehub.engine.common.internal.executor.HandlerResult;
 import io.casehub.engine.common.internal.executor.WorkerFunctionHandler;
 import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
 import io.casehub.engine.plan.PlanningConstraints;
+import io.casehub.worker.api.Capability;
+import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
 import java.util.List;
@@ -66,12 +68,14 @@ public class PatternWorkerFunctionHandler implements WorkerFunctionHandler {
   @Override
   @SuppressWarnings("unchecked")
   public HandlerResult execute(
-      WorkerFunction<?, ?> function,
+      Worker worker,
+      Capability capability,
       Object inputData,
       WorkerContext context,
-      int timeoutMs,
       ExecutionMetadata metadata) {
-    var patternFn = (PatternWorkerFunction) function;
+    var patternFn = (PatternWorkerFunction) worker.function();
+    int timeoutMs = worker.executionPolicy().timeoutMs() != null
+        ? worker.executionPolicy().timeoutMs() : 30_000;
     WorkerRuntime runtime =
         workerRuntimeFactory.create(context.caseId(), metadata.workerName(), context);
 

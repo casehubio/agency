@@ -15,30 +15,35 @@
  */
 package io.casehub.engine.agentic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import io.casehub.api.engine.WorkerRuntime;
-import io.casehub.api.model.WorkerContext;
 import io.casehub.agency.core.AgentRef;
 import io.casehub.agency.core.AgentResult;
 import io.casehub.agency.orchestration.execution.ExecutionModel;
 import io.casehub.agency.orchestration.execution.PatternType;
 import io.casehub.agency.orchestration.pattern.Patterns;
+import io.casehub.api.engine.WorkerRuntime;
+import io.casehub.api.model.WorkerContext;
 import io.casehub.engine.common.internal.executor.ExecutionMetadata;
 import io.casehub.engine.common.internal.executor.HandlerResult;
 import io.casehub.engine.runtime.executor.WorkerRuntimeFactory;
+import io.casehub.platform.api.governance.ExecutionPolicy;
+import io.casehub.worker.api.Capability;
+import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerOutcome;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PatternWorkerFunctionHandlerTest {
 
@@ -89,7 +94,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result).isNotNull();
     assertThat(result.result().outcome()).isInstanceOf(WorkerOutcome.Success.class);
   }
@@ -101,7 +106,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result.result().outcome()).isNotInstanceOf(WorkerOutcome.Success.class);
     assertThat(result.protocolMetadata()).containsEntry("patternType", "SEQUENCE");
   }
@@ -120,7 +125,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result.protocolMetadata()).containsEntry("patternType", "SEQUENCE");
   }
 
@@ -149,7 +154,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result.result().outcome()).isNotInstanceOf(WorkerOutcome.Success.class);
   }
 
@@ -178,7 +183,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    handler.execute(fn, Map.of(), context, 60000, metadata);
+    handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(counter.get()).isLessThanOrEqualTo(2);
   }
 
@@ -213,7 +218,7 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result.result().outcome()).isInstanceOf(WorkerOutcome.Success.class);
   }
 
@@ -298,7 +303,14 @@ class PatternWorkerFunctionHandlerTest {
     when(context.caseId()).thenReturn(UUID.randomUUID());
     var metadata = new ExecutionMetadata("test-worker", null);
 
-    HandlerResult result = handler.execute(fn, Map.of(), context, 60000, metadata);
+    HandlerResult result = handler.execute(workerOf(fn, 60000), CAP, Map.of(), context, metadata);
     assertThat(result.result().outcome()).isInstanceOf(WorkerOutcome.Success.class);
   }
+
+    private static final Capability CAP = Capability.of("cap", "{}", "{}");
+
+    private static Worker workerOf(PatternWorkerFunction fn, int timeoutMs) {
+        return new Worker("test-worker", Set.of("cap"), fn,
+                          new ExecutionPolicy(timeoutMs, null, null), null, null);
+    }
 }

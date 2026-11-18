@@ -94,6 +94,7 @@ public class CognitionAvatarAdapter implements AvatarCognition {
         return agentRegistry.findById(agentId, tenantId)
                 .map(desc -> new ProactiveSpeechSupport(core.innerLife(), desc)
                         .evaluateProactive(channelContext))
+                .map(Object::toString)
                 .orElse(null);
     }
 
