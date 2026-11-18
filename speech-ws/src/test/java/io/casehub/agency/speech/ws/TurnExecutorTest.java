@@ -96,13 +96,17 @@ class TurnExecutorTest {
     }
 
     @Test
-    void executeUserTurnSendsLegacyResponseAndPhonemes() {
+    void executeUserTurnSendsSegmentAndTurnCompleteNotLegacy() {
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
+        assertThat(sentText).noneSatisfy(json ->
+                                                 assertThat(json).contains("\"type\":\"response\""));
+        assertThat(sentText).noneSatisfy(json ->
+                                                 assertThat(json).contains("\"type\":\"phonemes\""));
         assertThat(sentText).anySatisfy(json ->
-                assertThat(json).contains("\"type\":\"response\""));
+                                                assertThat(json).contains("\"type\":\"segment\""));
         assertThat(sentText).anySatisfy(json ->
-                assertThat(json).contains("\"type\":\"phonemes\""));
+                                                assertThat(json).contains("\"type\":\"turnComplete\""));
     }
 
     @Test

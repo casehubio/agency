@@ -1,16 +1,16 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.eidos.api.AssembledPrompt;
-import io.casehub.connectors.voice.spi.CleanupConfig;
+import io.casehub.agency.speech.AssembledPrompt;
+import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.connectors.voice.model.PhonemeTiming;
-import io.casehub.connectors.voice.spi.RecognitionStream;
-import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.model.SynthesisOptions;
 import io.casehub.connectors.voice.model.SynthesisResult;
+import io.casehub.connectors.voice.model.TranscriptionResult;
+import io.casehub.connectors.voice.spi.CleanupConfig;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextFilter;
 import io.casehub.connectors.voice.spi.TextToSpeech;
-import io.casehub.connectors.voice.model.TranscriptionResult;
-import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -173,11 +173,17 @@ class SpeechSessionTest {
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"transcript\""));
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"response\""));
+                                                        assertThat(json).contains("\"type\":\"segment\""));
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"phonemes\""));
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"response\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"phonemes\""));
         assertThat(sentBinaryMessages).hasSize(1);
-        assertThat(sentBinaryMessages.get(0)).containsExactly(1, 2, 3);
+        // Binary frame now has 8-byte header prefix
+        assertThat(sentBinaryMessages.get(0)).hasSize(8 + 3);
+        assertThat(sentBinaryMessages.get(0)[0]).isEqualTo((byte) 1); // version
     }
 
     @Test
@@ -330,7 +336,7 @@ class SpeechSessionTest {
 
         assertThat(capturedPrompt[0]).isNotNull();
         assertThat(capturedPrompt[0].systemPrompt()).isEqualTo("Custom system prompt");
-        assertThat(capturedPrompt[0].userMessage()).contains("test input");
+        assertThat(capturedPrompt[0].userPrompt()).contains("test input");
     }
 
     @Test
@@ -351,12 +357,14 @@ class SpeechSessionTest {
         verify(sttService, never()).startStream(any());
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"transcript\""));
-        assertThat(sentTextMessages).anySatisfy(json -> {
-            assertThat(json).contains("\"type\":\"response\"");
-            assertThat(json).contains("LLM says hello.");
-        });
         assertThat(sentTextMessages).anySatisfy(json ->
-                                                        assertThat(json).contains("\"type\":\"phonemes\""));
+                                                        assertThat(json).contains("\"type\":\"segment\""));
+        assertThat(sentTextMessages).anySatisfy(json ->
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"response\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"phonemes\""));
         assertThat(sentBinaryMessages).hasSize(1);
     }
 
@@ -556,10 +564,12 @@ class SpeechSessionTest {
 
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"transcript\""));
-        assertThat(sentTextMessages).anySatisfy(json -> {
-            assertThat(json).contains("\"type\":\"response\"");
-            assertThat(json).contains("Streamed reply.");
-        });
+        assertThat(sentTextMessages).anySatisfy(json ->
+                                                        assertThat(json).contains("\"type\":\"segment\""));
+        assertThat(sentTextMessages).anySatisfy(json ->
+                                                        assertThat(json).contains("\"type\":\"turnComplete\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"response\""));
         assertThat(sentBinaryMessages).isNotEmpty();
     }
 
@@ -717,12 +727,12 @@ class SpeechSessionTest {
         verify(sttService, never()).startStream(any());
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"transcript\""));
-        assertThat(sentTextMessages).anySatisfy(json -> {
-            assertThat(json).contains("\"type\":\"response\"");
-            assertThat(json).contains("Streamed text reply.");
-        });
+        assertThat(sentTextMessages).anySatisfy(json ->
+                                                        assertThat(json).contains("\"type\":\"segment\""));
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"turnComplete\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"response\""));
         assertThat(sentBinaryMessages).isNotEmpty();
     }
 
@@ -786,23 +796,21 @@ class SpeechSessionTest {
         session.withSpeakerServices(extractor, registry);
 
         session.handleStart(new AvatarMessage.Start(16000));
-        // Feed enough audio for speaker identification (>= MIN_SAMPLES_FOR_EMBEDDING)
-        float[] audio = new float[24000]; // 1.5s at 16kHz
+        float[] audio = new float[24000];
         java.util.Arrays.fill(audio, 0.1f);
         session.handleAudio(audio);
         session.handleStop();
 
-        // Should have transcript, speaker identified, response, and timing
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"transcript\""));
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"speakerIdentified\""));
-        assertThat(sentTextMessages).anySatisfy(json -> {
-            assertThat(json).contains("\"type\":\"response\"");
-            assertThat(json).contains("Response with speaker.");
-        });
+        assertThat(sentTextMessages).anySatisfy(json ->
+                                                        assertThat(json).contains("\"type\":\"segment\""));
         assertThat(sentTextMessages).anySatisfy(json ->
                                                         assertThat(json).contains("\"type\":\"turnComplete\""));
+        assertThat(sentTextMessages).noneSatisfy(json ->
+                                                         assertThat(json).contains("\"type\":\"response\""));
     }
 
 

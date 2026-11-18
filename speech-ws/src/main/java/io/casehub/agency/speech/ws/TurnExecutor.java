@@ -129,7 +129,6 @@ public class TurnExecutor implements AutoCloseable {
             }
 
             if (responseText != null) {
-                send(new AvatarMessage.Response(responseText));
                 history.add(new ConversationTurn("assistant", responseText));
                 if (onResponse != null) onResponse.accept(responseText);
             }
@@ -165,7 +164,6 @@ public class TurnExecutor implements AutoCloseable {
             for (var seg : segments) {
                 synthesiseAndSendSegment(tts, seg, currentTurnSeq, segmentIndex[0]++);
             }
-            send(new AvatarMessage.Response(content));
             history.add(new ConversationTurn("assistant", content));
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
@@ -179,23 +177,34 @@ public class TurnExecutor implements AutoCloseable {
     }
 
     private void synthesiseAndSendSegment(TextToSpeech tts, ParsedSegment seg,
-                                           int currentTurnSeq, int index) {
+                                          int currentTurnSeq, int index) {
         try {
             var synthesis = tts.synthesise(seg.cleanText(),
-                    new SynthesisOptions(null, null, "wav", true));
+                                           new SynthesisOptions(null, null, "wav", true));
             var visemes = VisemeMapping.convert(synthesis.phonemes());
 
             send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
-                    true, visemes, seg.cues()));
-            send(new AvatarMessage.Phonemes(visemes));
-            binarySink.accept(synthesis.audioData());
+                                           true, visemes, seg.cues()));
+            sendAudioFrame(synthesis.audioData(), currentTurnSeq, index);
         } catch (Exception e) {
             send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
-                    false, List.of(), List.of()));
+                                           false, List.of(), List.of()));
             send(new AvatarMessage.Error("TTS failed for segment " + index
-                    + ": " + e.getMessage()));
+                                         + ": " + e.getMessage()));
         }
     }
+
+    private void sendAudioFrame(byte[] audioData, int turnSeq, int segmentIndex) {
+        var buf = java.nio.ByteBuffer.allocate(8 + audioData.length)
+                                     .order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        buf.put((byte) 1);              // version
+        buf.put((byte) 0);              // reserved
+        buf.putShort((short) segmentIndex);
+        buf.putInt(turnSeq);
+        buf.put(audioData);
+        binarySink.accept(buf.array());
+    }
+
 
     private AssembledPrompt assemblePrompt(UserTurn turn) {
         AssembledPrompt prompt = promptContext != null
