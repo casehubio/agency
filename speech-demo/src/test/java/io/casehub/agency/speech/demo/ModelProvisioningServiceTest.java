@@ -20,7 +20,7 @@ class ModelProvisioningServiceTest {
 
         int expectedSize = ModelProvisioningService.MODELS.size()
                            + ModelProvisioningService.KOKORO_MODELS.size()
-                           + 1; // streaming-stt
+                           + 3; // streaming-stt, qwen3-lib, qwen3-model
         assertThat(service.status()).hasSize(expectedSize);
         assertThat(service.status().values()).allMatch(s -> s == ModelStatus.PENDING);
         assertThat(service.allReady()).isFalse();}
@@ -37,6 +37,12 @@ class ModelProvisioningServiceTest {
 
             @Override
             void provisionStreamingStt()           {}
+
+            @Override
+            void provisionQwen3Binary()            {}
+
+            @Override
+            void provisionQwen3Model()             {}
         };
 
         service.init();
@@ -61,6 +67,12 @@ class ModelProvisioningServiceTest {
 
             @Override
             void provisionStreamingStt()           {}
+
+            @Override
+            void provisionQwen3Binary()            {}
+
+            @Override
+            void provisionQwen3Model()             {}
         };
 
         service.init();
@@ -71,7 +83,7 @@ class ModelProvisioningServiceTest {
 
         int expectedReady = ModelProvisioningService.MODELS.size()
                             + ModelProvisioningService.KOKORO_MODELS.size()
-                            + 1  // streaming-stt
+                            + 3  // streaming-stt, qwen3-lib, qwen3-model
                             - 1; // amy failed
         var readyCount = service.status().values().stream()
                                 .filter(s -> s == ModelStatus.READY).count();
@@ -89,6 +101,12 @@ class ModelProvisioningServiceTest {
 
             @Override
             void provisionStreamingStt()           {}
+
+            @Override
+            void provisionQwen3Binary()            {}
+
+            @Override
+            void provisionQwen3Model()             {}
         };
 
         service.init();
