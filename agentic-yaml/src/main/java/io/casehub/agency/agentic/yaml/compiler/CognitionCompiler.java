@@ -30,7 +30,7 @@ import io.casehub.agency.core.yaml.spec.cognition.RelationshipStageConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.RetentionConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.StrategyLearningConfigSpec;
 import io.casehub.agency.core.yaml.spec.cognition.UserModelConfigSpec;
-import io.casehub.agency.social.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.memory.RetentionConfig;
 import org.jspecify.annotations.Nullable;
 
 public class CognitionCompiler {

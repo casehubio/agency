@@ -1,26 +1,10 @@
 package io.casehub.agency.spring;
 
-import io.casehub.api.spi.routing.RoutingPromptAssembler;
-import io.casehub.api.spi.routing.RoutingSignalAssembler;
-import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
-import io.casehub.agency.governance.attestation.NoOpAttestationIntentWriter;
 import io.casehub.agency.communication.channel.summary.ChannelSummariser;
 import io.casehub.agency.communication.channel.summary.HeuristicMessageSummariser;
 import io.casehub.agency.communication.channel.summary.NoOpThreadSummaryStore;
 import io.casehub.agency.communication.channel.summary.ThreadSummaryObserver;
-import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
-import io.casehub.neocortex.cognition.drive.CuriosityDrive;
-import io.casehub.neocortex.cognition.drive.DriveAxis;
-import io.casehub.neocortex.cognition.drive.DriveIntensity;
-import io.casehub.neocortex.cognition.drive.DriveSource;
-import io.casehub.neocortex.mindmap.MindMapStore;
-import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
-import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
-import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
-import io.casehub.agency.social.memory.NoOpReflectionStore;
-import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
-import io.casehub.agency.social.memory.ReflectionQueryStore;
-import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
+import io.casehub.agency.governance.attestation.NoOpAttestationIntentWriter;
 import io.casehub.agency.governance.routing.agent.CbrAgentRoutingStrategy;
 import io.casehub.agency.governance.routing.agent.CbrCaseOutcomeWeights;
 import io.casehub.agency.governance.routing.agent.CbrOutcomeWeights;
@@ -34,9 +18,13 @@ import io.casehub.agency.governance.routing.agent.DispositionAwareRouting;
 import io.casehub.agency.governance.routing.agent.LlmAgentRoutingStrategy;
 import io.casehub.agency.governance.routing.agent.PlanCompositionAnalyser;
 import io.casehub.agency.governance.routing.agent.PredecessorAnalyser;
-import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.perception.narrative.DecisionNarrativePipeline;
 import io.casehub.agency.perception.narrative.DecisionNarrativeSummariser;
+import io.casehub.agency.summarisation.ContentSummariser;
+import io.casehub.api.spi.routing.RoutingPromptAssembler;
+import io.casehub.api.spi.routing.RoutingSignalAssembler;
+import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.eidos.api.AgentGraphQuery;
 import io.casehub.eidos.api.AgentRegistry;
 import io.casehub.eidos.api.DispositionEvolution;
@@ -47,9 +35,13 @@ import io.casehub.eidos.api.GoalSignalStore;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
 import io.casehub.neocortex.cognition.core.CognitiveAttentionMediator;
+import io.casehub.neocortex.cognition.drive.CuriosityDrive;
+import io.casehub.neocortex.cognition.drive.DriveAxis;
 import io.casehub.neocortex.cognition.drive.DriveComposer;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
+import io.casehub.neocortex.cognition.drive.DriveIntensity;
 import io.casehub.neocortex.cognition.drive.DriveOrchestrator;
+import io.casehub.neocortex.cognition.drive.DriveSource;
 import io.casehub.neocortex.cognition.goal.CrossAxisGoalEnricher;
 import io.casehub.neocortex.cognition.goal.DriveGoalFormationStrategy;
 import io.casehub.neocortex.cognition.goal.DriveGoalMapper;
@@ -79,19 +71,21 @@ import io.casehub.neocortex.cognition.usermodel.UserModelConfig;
 import io.casehub.neocortex.cognition.usermodel.UserModelOrchestrator;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
+import io.casehub.neocortex.mindmap.MindMapStore;
+import io.casehub.neocortex.mindmap.intelligence.CuriosityChannelComputer;
+import io.casehub.neocortex.mindmap.intelligence.InformationGapDetector;
 import io.casehub.platform.agent.AgentProvider;
 import io.casehub.platform.agent.session.SessionPipeline;
 import io.casehub.qhorus.api.message.Message;
 import io.casehub.qhorus.api.spi.SummaryResult;
 import io.casehub.qhorus.api.store.CrossTenantMessageStore;
 import io.casehub.qhorus.api.store.ThreadSummaryStore;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-
-import org.jspecify.annotations.Nullable;
 
 import java.time.Clock;
 import java.util.List;
@@ -105,20 +99,18 @@ public class AgencyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public NoOpReflectionStore noOpReflectionStore() {
-        return new NoOpReflectionStore();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public NoOpSemanticIntegrityChecker noOpSemanticIntegrityChecker() {
-        return new NoOpSemanticIntegrityChecker();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public NoOpReflectionQueryStore noOpReflectionQueryStore() {
-        return new NoOpReflectionQueryStore();
+    public io.casehub.neocortex.memory.ReflectionQueryStore noOpReflectionQueryStore() {
+        return new io.casehub.neocortex.memory.ReflectionQueryStore() {
+            @Override
+            public java.util.List<io.casehub.neocortex.memory.ReflectionEntry> findSince(
+                    String agentId, String tenantId, java.time.Instant since) {
+                return java.util.List.of();
+            }
+            @Override
+            public int countSince(String agentId, String tenantId, java.time.Instant since) {
+                return 0;
+            }
+        };
     }
 
     @Bean
@@ -319,7 +311,7 @@ public class AgencyAutoConfiguration {
             StrategyLearningOrchestrator strategy,
             Optional<NarrativeOrchestrator> narrativeOrchestrator,
             Optional<GoalProposalOrchestrator> goalProposalOrchestrator,
-            Optional<MemoryHygieneOrchestrator> hygieneOrchestrator,
+            Optional<io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator> hygieneOrchestrator,
             Optional<InnerLifeOrchestrator> innerLifeOrchestrator,
             Optional<AgentRegistry> agentRegistry,
             Optional<CognitiveAttentionMediator> attentionMediator,
@@ -348,7 +340,7 @@ public class AgencyAutoConfiguration {
                 .userModel(userModel).mentalModel(mentalModel).strategy(strategy)
                 .narrative(narrativeOrchestrator.orElse(null))
                 .goals(goalProposalOrchestrator.orElse(null))
-                .memoryHygiene(hygieneOrchestrator.map(io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter::new).orElse(null))
+                .memoryHygiene(hygieneOrchestrator.orElse(null))
                 .innerLife(innerLifeOrchestrator.orElse(null))
                 .config(io.casehub.neocortex.cognition.core.CognitionConfig.all())
                 .mindMapStore(mindMapStore.orElse(null))
@@ -453,7 +445,7 @@ public class AgencyAutoConfiguration {
     @Bean
     public NarrativePipeline narrativePipeline(
             NarrativeContentSummariser summariser, NarrativeConfig config,
-            ReflectionQueryStore reflectionQueryStore,
+            io.casehub.neocortex.memory.ReflectionQueryStore reflectionQueryStore,
             io.casehub.neocortex.cognition.narrative.NarrativeMemory narrativeMemory) {
         return new NarrativePipeline(summariser, config, reflectionQueryStore, narrativeMemory, null);
     }

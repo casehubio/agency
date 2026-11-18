@@ -1,6 +1,6 @@
 package io.casehub.agency.core.yaml.compiler;
 
-import io.casehub.agency.social.memory.ConfidenceScorer;
+import io.casehub.neocortex.cognition.memory.ConfidenceScorer;
 import io.casehub.agency.optimisation.prompt.FewShotExample;
 import io.casehub.agency.optimisation.prompt.OptimiserConfig;
 import io.casehub.agency.optimisation.prompt.PromptOptimiser;

@@ -9,7 +9,7 @@ import io.casehub.neocortex.cognition.drive.DriveAxis;
 import io.casehub.neocortex.cognition.drive.DriveConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeSynthesisGate;
 import io.casehub.agency.core.yaml.spec.cognition.CognitionDefinition;
-import io.casehub.agency.social.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.memory.RetentionConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

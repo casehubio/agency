@@ -22,11 +22,6 @@ import io.casehub.agency.optimisation.prompt.SystemPromptCustomiser;
 import io.casehub.agency.perception.narrative.DecisionNarrativePipeline;
 import io.casehub.agency.perception.narrative.DecisionNarrativeSummariser;
 import io.casehub.agency.social.cognition.CognitionAvatarAdapter;
-import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
-import io.casehub.agency.social.memory.NoOpReflectionQueryStore;
-import io.casehub.agency.social.memory.NoOpReflectionStore;
-import io.casehub.agency.social.memory.NoOpSemanticIntegrityChecker;
-import io.casehub.agency.social.memory.ReflectionQueryStore;
 import io.casehub.agency.summarisation.ContentSummariser;
 import io.casehub.api.spi.routing.RoutingPromptAssembler;
 import io.casehub.api.spi.routing.RoutingSignalAssembler;
@@ -108,7 +103,6 @@ import java.util.stream.StreamSupport;
 @ApplicationScoped
 public class AgencyBeans {
 
-    @Inject Instance<MemoryHygieneOrchestrator> hygieneOrchestratorInstance;
     @Inject Instance<NarrativeOrchestrator> narrativeOrchestratorInstance;
     @Inject Instance<AgentRegistry> agentRegistryInstance;
     @Inject Instance<CivilityConstraint> civilityConstraintInstance;
@@ -136,18 +130,18 @@ public class AgencyBeans {
     // ── NoOps ──
 
     @Produces @DefaultBean
-    public NoOpReflectionStore noOpReflectionStore() {
-        return new NoOpReflectionStore();
-    }
-
-    @Produces @DefaultBean
-    public NoOpSemanticIntegrityChecker noOpSemanticIntegrityChecker() {
-        return new NoOpSemanticIntegrityChecker();
-    }
-
-    @Produces @DefaultBean
-    public NoOpReflectionQueryStore noOpReflectionQueryStore() {
-        return new NoOpReflectionQueryStore();
+    public io.casehub.neocortex.memory.ReflectionQueryStore noOpReflectionQueryStore() {
+        return new io.casehub.neocortex.memory.ReflectionQueryStore() {
+            @Override
+            public java.util.List<io.casehub.neocortex.memory.ReflectionEntry> findSince(
+                    String agentId, String tenantId, java.time.Instant since) {
+                return java.util.List.of();
+            }
+            @Override
+            public int countSince(String agentId, String tenantId, java.time.Instant since) {
+                return 0;
+            }
+        };
     }
 
     @Produces @DefaultBean
@@ -331,14 +325,7 @@ public class AgencyBeans {
     private void socialNormDetectorPlaceholder() {}
 
 
-// ── Cognition SPI bridges — make agency's adapters visible to CognitionCoreFactory ──
-
-    @Produces
-    public io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestrator neocortexMemoryHygieneSpi() {
-        return hygieneOrchestratorInstance.isResolvable()
-               ? new io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter(hygieneOrchestratorInstance.get())
-               : null;
-    }
+// ── Cognition SPI bridges ──
 
     @Produces
     public java.util.function.Consumer<io.casehub.neocortex.memory.engagement.EngagementEvent> engagementEventConsumer() {
@@ -429,7 +416,7 @@ public class AgencyBeans {
     @ApplicationScoped
     public NarrativePipeline narrativePipeline(
             NarrativeContentSummariser summariser, NarrativeConfig config,
-            ReflectionQueryStore reflectionQueryStore, NarrativeMemory narrativeMemory) {
+            io.casehub.neocortex.memory.ReflectionQueryStore reflectionQueryStore, NarrativeMemory narrativeMemory) {
         return new NarrativePipeline(summariser, config, reflectionQueryStore, narrativeMemory, null);
     }
 

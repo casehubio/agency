@@ -7,7 +7,7 @@ import io.casehub.agency.core.yaml.registry.ConfidenceScorerRegistry;
 import io.casehub.agency.core.yaml.registry.DiversityStrategyRegistry;
 import io.casehub.agency.core.yaml.registry.PromptOptimiserRegistry;
 import io.casehub.agency.core.yaml.spec.PromptOptimisationDefinition;
-import io.casehub.agency.social.memory.CompositeConfidenceScorer;
+import io.casehub.neocortex.cognition.memory.CompositeConfidenceScorer;
 import io.casehub.agency.optimisation.prompt.OptimiserConfig;
 import io.casehub.agency.optimisation.prompt.SafetyConfig;
 import io.casehub.agency.optimisation.prompt.optimiser.FewShotOptimiser;

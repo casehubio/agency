@@ -1,11 +1,11 @@
 package io.casehub.agency.core.yaml.registry;
 
 import io.casehub.agency.core.yaml.spec.ConfidenceScorerSpec;
-import io.casehub.agency.social.memory.ArousalScorer;
-import io.casehub.agency.social.memory.CompositeConfidenceScorer;
-import io.casehub.agency.social.memory.ConfidenceScorer;
-import io.casehub.agency.social.memory.SurpriseScorer;
-import io.casehub.agency.social.memory.WeightedScorer;
+import io.casehub.neocortex.cognition.memory.ArousalScorer;
+import io.casehub.neocortex.cognition.memory.CompositeConfidenceScorer;
+import io.casehub.neocortex.cognition.memory.ConfidenceScorer;
+import io.casehub.neocortex.cognition.memory.SurpriseScorer;
+import io.casehub.neocortex.cognition.memory.WeightedScorer;
 
 public class ConfidenceScorerRegistry {
 

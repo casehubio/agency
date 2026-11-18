@@ -31,13 +31,12 @@ import io.casehub.neocortex.cognition.narrative.NarrativeScope;
 import io.casehub.neocortex.cognition.narrative.NarrativeState;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.agency.core.yaml.compiler.CompiledCognition;
-import io.casehub.agency.social.cognition.MemoryHygieneSpiAdapter;
-import io.casehub.agency.social.memory.ArousalScorer;
-import io.casehub.agency.social.memory.CompositeConfidenceScorer;
-import io.casehub.agency.social.memory.MemoryHygieneOrchestrator;
-import io.casehub.agency.social.memory.RetentionConfig;
-import io.casehub.agency.social.memory.SurpriseScorer;
-import io.casehub.agency.social.memory.WeightedScorer;
+import io.casehub.neocortex.cognition.memory.ArousalScorer;
+import io.casehub.neocortex.cognition.memory.CompositeConfidenceScorer;
+import io.casehub.neocortex.cognition.memory.MemoryHygieneOrchestratorImpl;
+import io.casehub.neocortex.cognition.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.memory.SurpriseScorer;
+import io.casehub.neocortex.cognition.memory.WeightedScorer;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.neocortex.memory.cbr.ScopeDecay;
 import io.casehub.neocortex.memory.cbr.TemporalDecay;
@@ -118,7 +117,7 @@ public class CognitionStack {
                     new StrategyMemory(cbrStore, config.strategyLearning()),
                     (agentId, tenantId, since, maxEntries) -> List.of(),
                     config.strategyLearning(), Clock.systemUTC(), null);
-            var memoryHygiene = new MemoryHygieneOrchestrator(
+            var memoryHygiene = new MemoryHygieneOrchestratorImpl(
                     cbrStore,
                     new CompositeConfidenceScorer(List.of(
                             new WeightedScorer(new ArousalScorer(), 0.5),
@@ -132,7 +131,7 @@ public class CognitionStack {
                     10,
                     0.7,
                     event -> {});
-            hygieneAdapter = new MemoryHygieneSpiAdapter(memoryHygiene);
+            hygieneAdapter = memoryHygiene;
             var curiosityDrive = new CuriosityDrive(hygieneAdapter);
             var competence = new CompetenceDrive(strategy);
             var affiliation = new AffiliationDrive(userModel, 0.3,

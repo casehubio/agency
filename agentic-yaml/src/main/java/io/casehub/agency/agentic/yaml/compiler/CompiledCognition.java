@@ -12,7 +12,7 @@ import io.casehub.neocortex.cognition.goal.CognitiveGoalConfig;
 import io.casehub.neocortex.cognition.goal.GoalEscalationConfig;
 import io.casehub.neocortex.cognition.goal.GoalProposalConfig;
 import io.casehub.neocortex.cognition.narrative.NarrativeConfig;
-import io.casehub.agency.social.memory.RetentionConfig;
+import io.casehub.neocortex.cognition.memory.RetentionConfig;
 
 public record CompiledCognition(
         DriveConfig drive,
