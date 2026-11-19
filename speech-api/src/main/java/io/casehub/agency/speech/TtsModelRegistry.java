@@ -1,4 +1,4 @@
-package io.casehub.agency.speech.ws;
+package io.casehub.agency.speech;
 
 import io.casehub.connectors.voice.spi.TextToSpeech;
 

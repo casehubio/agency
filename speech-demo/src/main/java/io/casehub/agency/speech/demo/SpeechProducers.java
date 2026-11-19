@@ -1,5 +1,7 @@
 package io.casehub.agency.speech.demo;
 
+import io.casehub.agency.speech.CorrectionHooks;
+import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.SpeakerDiarizationService;
 import io.casehub.connectors.voice.spi.TextFilter;
@@ -22,7 +24,7 @@ public class SpeechProducers {
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.ws.TtsModelRegistry ttsRegistry() {
+    TtsModelRegistry ttsRegistry() {
         var models = new java.util.LinkedHashMap<String, io.casehub.connectors.voice.spi.TextToSpeech>();
 
         // Shared lip-sync aligner — enriches any TTS engine that returns empty phonemes
@@ -109,7 +111,7 @@ public class SpeechProducers {
                     "Qwen3-TTS voice pool unavailable: " + e.getMessage());
         }
 
-        return new io.casehub.agency.speech.ws.TtsModelRegistry(java.util.Collections.unmodifiableMap(models));}
+        return new TtsModelRegistry(java.util.Collections.unmodifiableMap(models));}
 
     private static io.casehub.connectors.voice.spi.TextToSpeech wrapIfAvailable(
             io.casehub.connectors.voice.spi.TextToSpeech delegate,
@@ -306,10 +308,10 @@ public class SpeechProducers {
 
     @Produces
     @jakarta.inject.Singleton
-    io.casehub.agency.speech.ws.CorrectionHooks correctionHooks(
+    CorrectionHooks correctionHooks(
             io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector corrector,
             io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary vocabulary) {
-        return new io.casehub.agency.speech.ws.CorrectionHooks(
+        return new CorrectionHooks(
                 corrector::correct,
                 response -> {
                     vocabulary.addFromText(response);

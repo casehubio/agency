@@ -1,5 +1,7 @@
 package io.casehub.agency.speech.ws;
 
+import io.casehub.agency.speech.CorrectionHooks;
+import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
