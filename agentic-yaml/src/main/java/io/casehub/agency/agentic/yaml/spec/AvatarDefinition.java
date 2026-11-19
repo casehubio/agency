@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.Nullable;
@@ -27,11 +28,11 @@ public record AvatarDefinition(
     static AvatarDefinition fromJson(
             @JsonProperty("agent") String agent,
             @JsonProperty("model") String model,
-            @JsonProperty("ttsVoice") @Nullable String ttsVoice,
-            @JsonProperty("cameraView") @Nullable String cameraView,
-            @JsonProperty("sampleRate") @Nullable Integer sampleRate,
+            @JsonProperty("ttsVoice") @JsonAlias("tts-voice") @Nullable String ttsVoice,
+            @JsonProperty("cameraView") @JsonAlias("camera-view") @Nullable String cameraView,
+            @JsonProperty("sampleRate") @JsonAlias("sample-rate") @Nullable Integer sampleRate,
             @JsonProperty("speed") @Nullable Double speed,
-            @JsonProperty("minPlaybackRate") @Nullable Double minPlaybackRate,
+            @JsonProperty("minPlaybackRate") @JsonAlias("min-playback-rate") @Nullable Double minPlaybackRate,
             @JsonProperty("tts") @Nullable TtsSpec tts,
             @JsonProperty("stt") @Nullable SttSpec stt,
             @JsonProperty("cleanup") @Nullable CleanupConfigSpec cleanup) {

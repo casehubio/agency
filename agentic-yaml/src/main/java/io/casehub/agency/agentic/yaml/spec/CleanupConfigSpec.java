@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +13,7 @@ public record CleanupConfigSpec(int maxDestructiveness) {
 
     @JsonCreator
     static CleanupConfigSpec fromJson(
-            @JsonProperty("maxDestructiveness") Integer maxDestructiveness) {
+            @JsonProperty("maxDestructiveness") @JsonAlias("max-destructiveness") Integer maxDestructiveness) {
         return new CleanupConfigSpec(
                 maxDestructiveness != null ? maxDestructiveness : Integer.MAX_VALUE);
     }

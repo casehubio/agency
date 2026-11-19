@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
+    </marker>
+    <linearGradient id="javaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0f4ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="yamlGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#f3e8ff"/>
+    </linearGradient>
+    <linearGradient id="bridgeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#dcfce7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Java world -->
+  <rect x="20" y="20" width="200" height="280" rx="12" fill="url(#javaGrad)" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="120" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Java Records</text>
+
+  <text x="40" y="82" font-size="11" fill="#475569" font-family="monospace">ttsVoice</text>
+  <text x="40" y="108" font-size="11" fill="#475569" font-family="monospace">cameraView</text>
+  <text x="40" y="134" font-size="11" fill="#475569" font-family="monospace">sampleRate</text>
+  <text x="40" y="160" font-size="11" fill="#475569" font-family="monospace">minPlaybackRate</text>
+  <text x="40" y="186" font-size="11" fill="#475569" font-family="monospace">clonedVoices</text>
+  <text x="40" y="212" font-size="11" fill="#475569" font-family="monospace">maxDestructiveness</text>
+
+  <text x="120" y="260" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">camelCase</text>
+  <text x="120" y="278" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">Java convention</text>
+
+  <!-- YAML world -->
+  <rect x="460" y="20" width="200" height="280" rx="12" fill="url(#yamlGrad)" stroke="#c084fc" stroke-width="1.5"/>
+  <text x="560" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#7c3aed">YAML Config</text>
+
+  <text x="480" y="82" font-size="11" fill="#475569" font-family="monospace">tts-voice</text>
+  <text x="480" y="108" font-size="11" fill="#475569" font-family="monospace">camera-view</text>
+  <text x="480" y="134" font-size="11" fill="#475569" font-family="monospace">sample-rate</text>
+  <text x="480" y="160" font-size="11" fill="#475569" font-family="monospace">min-playback-rate</text>
+  <text x="480" y="186" font-size="11" fill="#475569" font-family="monospace">cloned-voices</text>
+  <text x="480" y="212" font-size="11" fill="#475569" font-family="monospace">max-destructiveness</text>
+
+  <text x="560" y="260" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">kebab-case</text>
+  <text x="560" y="278" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">YAML convention</text>
+
+  <!-- Bridge -->
+  <rect x="260" y="60" width="160" height="200" rx="10" fill="url(#bridgeGrad)" stroke="#86efac" stroke-width="1.5"/>
+  <text x="340" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">@JsonAlias</text>
+  <text x="340" y="108" text-anchor="middle" font-size="10" fill="#6b7280">accepts both</text>
+
+  <!-- Arrows from Java to bridge -->
+  <line x1="220" y1="82" x2="260" y2="120" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="220" y1="134" x2="260" y2="150" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="220" y1="186" x2="260" y2="180" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- Arrows from YAML to bridge -->
+  <line x1="460" y1="82" x2="420" y2="120" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="460" y1="134" x2="420" y2="150" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="460" y1="186" x2="420" y2="180" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- Bridge labels -->
+  <text x="340" y="140" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">ttsVoice ✓</text>
+  <text x="340" y="160" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">tts-voice ✓</text>
+
+  <text x="340" y="190" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">sampleRate ✓</text>
+  <text x="340" y="210" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">sample-rate ✓</text>
+
+  <text x="340" y="240" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">clonedVoices ✓</text>
+</svg>

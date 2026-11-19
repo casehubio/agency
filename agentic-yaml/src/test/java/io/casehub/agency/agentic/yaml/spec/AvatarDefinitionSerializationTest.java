@@ -85,6 +85,38 @@ class AvatarDefinitionSerializationTest {
     }
 
     @Test
+    void deserialises_kebab_case_avatar_definition() throws Exception {
+        var yaml = """
+                agent: mentor-coach
+                model: avatar-brunette.glb
+                tts-voice: qwen3:jodi_krangle
+                camera-view: head
+                sample-rate: 24000
+                min-playback-rate: 0.5
+                tts:
+                  engines:
+                    - type: kokoro
+                      voices:
+                        - af_heart
+                      cloned-voices:
+                        - jodi_krangle
+                stt:
+                  type: whisper
+                cleanup:
+                  max-destructiveness: 3
+                """;
+        var def = mapper.readValue(yaml, AvatarDefinition.class);
+        assertThat(def.agent()).isEqualTo("mentor-coach");
+        assertThat(def.model()).isEqualTo("avatar-brunette.glb");
+        assertThat(def.ttsVoice()).isEqualTo("qwen3:jodi_krangle");
+        assertThat(def.cameraView()).isEqualTo("head");
+        assertThat(def.sampleRate()).isEqualTo(24000);
+        assertThat(def.minPlaybackRate()).isEqualTo(0.5);
+        assertThat(def.tts().engines().get(0).clonedVoices()).containsExactly("jodi_krangle");
+        assertThat(def.cleanup().maxDestructiveness()).isEqualTo(3);
+    }
+
+    @Test
     void rejects_null_agent() {
         assertThatThrownBy(() -> new AvatarDefinition(
                 null, "avatar.glb", null, null, 16000, 0.9, 0.6, null, null, null))
