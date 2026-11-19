@@ -22,6 +22,17 @@
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
+      <artifactId>casehub-agency-agentic-yaml</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.casehub</groupId>
+          <artifactId>casehub-agency-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.casehub</groupId>
       <artifactId>casehub-connectors-voice-sherpa</artifactId>
       <version>${project.version}</version>
     </dependency>
