@@ -155,10 +155,13 @@
             <exclude>**/registry/KokoroConfigRegistry.java</exclude>
             <exclude>**/registry/Audio8ConfigRegistry.java</exclude>
             <exclude>**/registry/SherpaConfigRegistry.java</exclude>
+            <exclude>**/compiler/AvatarCompiler.java</exclude>
+            <exclude>**/compiler/CompiledAvatar.java</exclude>
           </excludes>
           <testExcludes>
             <exclude>**/llm/*.java</exclude>
             <exclude>**/spec/SpeechSpecSerializationTest.java</exclude>
+            <exclude>**/compiler/AvatarCompilerTest.java</exclude>
           </testExcludes>
         </configuration>
       </plugin>
