@@ -157,6 +157,7 @@
             <exclude>**/registry/SherpaConfigRegistry.java</exclude>
             <exclude>**/compiler/AvatarCompiler.java</exclude>
             <exclude>**/compiler/CompiledAvatar.java</exclude>
+            <exclude>**/runtime/AvatarRecorder.java</exclude>
           </excludes>
           <testExcludes>
             <exclude>**/llm/*.java</exclude>
