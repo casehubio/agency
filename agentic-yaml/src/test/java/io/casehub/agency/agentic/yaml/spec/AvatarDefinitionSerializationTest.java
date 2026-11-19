@@ -38,8 +38,7 @@ class AvatarDefinitionSerializationTest {
                     - type: qwen3
                       voices:
                         - name: ryan
-                      clonedVoices:
-                        - jodi_krangle
+                      cloneDiscovery: true
                 stt:
                   type: whisper
                 cleanup:
@@ -58,7 +57,7 @@ class AvatarDefinitionSerializationTest {
         assertThat(def.tts().engines().get(0).type()).isEqualTo("kokoro");
         assertThat(def.tts().engines().get(0).voices()).hasSize(2);
         assertThat(def.tts().engines().get(0).voices().get(0).name()).isEqualTo("af_heart");
-        assertThat(def.tts().engines().get(1).clonedVoices()).containsExactly("jodi_krangle");
+        assertThat(def.tts().engines().get(1).cloneDiscovery()).isTrue();
         assertThat(def.stt()).isNotNull();
         assertThat(def.stt().type()).isEqualTo("whisper");
         assertThat(def.cleanup()).isNotNull();
@@ -98,8 +97,7 @@ class AvatarDefinitionSerializationTest {
                     - type: kokoro
                       voices:
                         - af_heart
-                      cloned-voices:
-                        - jodi_krangle
+                      cloned-voices: true
                 stt:
                   type: whisper
                 cleanup:
@@ -112,7 +110,7 @@ class AvatarDefinitionSerializationTest {
         assertThat(def.cameraView()).isEqualTo("head");
         assertThat(def.sampleRate()).isEqualTo(24000);
         assertThat(def.minPlaybackRate()).isEqualTo(0.5);
-        assertThat(def.tts().engines().get(0).clonedVoices()).containsExactly("jodi_krangle");
+        assertThat(def.tts().engines().get(0).cloneDiscovery()).isTrue();
         assertThat(def.cleanup().maxDestructiveness()).isEqualTo(3);
     }
 
@@ -155,7 +153,7 @@ class AvatarDefinitionSerializationTest {
         var spec = mapper.readValue(yaml, TtsEngineSpec.class);
         assertThat(spec.type()).isEqualTo("kokoro");
         assertThat(spec.voices()).isEmpty();
-        assertThat(spec.clonedVoices()).isNull();
+        assertThat(spec.cloneDiscovery()).isFalse();
     }
 
     @Test
