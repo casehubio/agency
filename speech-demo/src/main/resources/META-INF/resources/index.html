@@ -53,53 +53,7 @@
     <option value="claude-opus-4@20250514">Opus 4</option>
   </select></label>
   <label>Voice: <select id="ttsModel">
-    <optgroup label="Piper VITS — MOS ~3.7">
-      <option value="lessac-medium">Lessac medium · 3.6</option>
-      <option value="lessac-high">Lessac high · 3.9</option>
-      <option value="amy">Amy (US) · 3.7</option>
-      <option value="ryan">Ryan (US) · 3.8</option>
-      <option value="jenny">Jenny (UK) · 3.7</option>
-    </optgroup>
-    <optgroup label="Sherpa VITS — MOS ~3.7">
-      <option value="sherpa:lessac-medium">Lessac · 3.6</option>
-      <option value="sherpa:amy">Amy · 3.7</option>
-      <option value="sherpa:ryan">Ryan · 3.8</option>
-      <option value="sherpa:jenny">Jenny · 3.7</option>
-    </optgroup>
-    <optgroup label="Kokoro — MOS ~4.3">
-      <option value="kokoro:af_heart">Heart (US) · 4.5</option>
-      <option value="kokoro:af_bella">Bella (US) · 4.2</option>
-      <option value="kokoro:af_sarah">Sarah (US) · 4.3</option>
-      <option value="kokoro:am_adam">Adam (US) · 4.2</option>
-      <option value="kokoro:am_michael">Michael (US) · 4.1</option>
-      <option value="kokoro:bf_emma">Emma (UK) · 4.3</option>
-      <option value="kokoro:bm_george">George (UK) · 4.2</option>
-    </optgroup>
-    <optgroup label="Qwen3-TTS 0.6B — MOS ~4.5">
-      <option value="qwen3:ryan">Ryan (EN) · 4.5</option>
-      <option value="qwen3:aiden">Aiden (EN) · 4.5</option>
-      <option value="qwen3:eric">Eric · 4.3</option>
-      <option value="qwen3:dylan">Dylan · 4.3</option>
-      <option value="qwen3:serena">Serena · 4.5</option>
-      <option value="qwen3:vivian">Vivian · 4.5</option>
-    </optgroup>
-    <optgroup label="Qwen3-TTS Cloned Voices">
-      <option value="qwen3:clone:young_girl">Young Girl</option>
-      <option value="qwen3:clone:jodi_krangle">Jodi Krangle</option>
-      <option value="qwen3:clone:cori_samuel">Cori Samuel</option>
-      <option value="qwen3:clone:emily_cripps">Emily Cripps</option>
-      <option value="qwen3:clone:jared_hess">Jared Hess</option>
-      <option value="qwen3:clone:mark_f_smith">Mark F Smith</option>
-      <option value="qwen3:clone:karen_savage">Karen Savage</option>
-      <option value="qwen3:clone:peter_yearsley">Peter Yearsley</option>
-      <option value="qwen3:clone:david_clark">David Clark</option>
-      <option value="qwen3:clone:alan_davis_drake">Alan Davis Drake</option>
-    </optgroup>
-    <optgroup label="Experimental (slow)">
-      <option value="audio8">Audio8 0.1B · ~2.8</option>
-      <option value="audio8:0.6b">Audio8 0.6B · ~3.2</option>
-      <option value="cosyvoice3">CosyVoice3 · cloning</option>
-    </optgroup>
+    <option value="">Loading voices...</option>
   </select></label>
   <label>Speed: <input id="speed" type="range" min="0.6" max="1.4" step="0.05" value="0.9" style="width:80px;vertical-align:middle"> <span id="speedVal">0.9x</span></label>
   <label>Avatar: <select id="avatarModel">
@@ -490,7 +444,7 @@ async function startRecording() {
     micProcessor.connect(audioCtx.destination);
     var llm = document.getElementById('llmModel').value;
     var tts = document.getElementById('ttsModel').value;
-    ws.send(JSON.stringify({ type: 'start', sampleRate: 16000, llmModel: llm, ttsModel: tts }));
+    ws.send(JSON.stringify({ type: 'start', sampleRate: configSampleRate, llmModel: llm, ttsModel: tts }));
     console.log('[MIC] sent START, mic active');
     recording = true;
     micBtn.classList.add('recording');
@@ -558,6 +512,56 @@ msgInput.addEventListener('input', function() {
 document.addEventListener('visibilitychange', function() {
   sendWsJson({ type: 'userActivity', kind: 'VISIBILITY_CHANGE' });
 });
+
+var avatarConfig = null;
+var configSampleRate = 16000;
+
+const ENGINE_LABELS = {
+  vits: 'Piper VITS',
+  sherpa: 'Sherpa VITS',
+  kokoro: 'Kokoro',
+  qwen3: 'Qwen3-TTS',
+};
+
+function populateVoiceDropdown(config) {
+  var ttsSelect = document.getElementById('ttsModel');
+  ttsSelect.innerHTML = '';
+  if (!config.tts || !config.tts.engines) {
+    ttsSelect.innerHTML = '<option value="">No voices configured</option>';
+    return;
+  }
+  config.tts.engines.forEach(function(engine) {
+    var label = ENGINE_LABELS[engine.type] || engine.type;
+    var group = document.createElement('optgroup');
+    group.label = label;
+    (engine.voices || []).forEach(function(voice) {
+      var name = typeof voice === 'string' ? voice : voice.name;
+      var key = engine.type === 'vits' ? name : engine.type + ':' + name;
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = name;
+      group.appendChild(opt);
+    });
+    if (group.children.length > 0) ttsSelect.appendChild(group);
+  });
+  if (config.ttsVoice) ttsSelect.value = config.ttsVoice;
+}
+
+fetch('/api/avatar/config')
+  .then(function(r) { return r.json(); })
+  .then(function(config) {
+    avatarConfig = config;
+    configSampleRate = config.sampleRate || 16000;
+    if (config.speed) {
+      document.getElementById('speed').value = config.speed;
+      document.getElementById('speedVal').textContent = config.speed + 'x';
+    }
+    populateVoiceDropdown(config);
+  })
+  .catch(function(err) {
+    console.warn('Failed to load avatar config:', err);
+    document.getElementById('ttsModel').innerHTML = '<option value="">Config unavailable</option>';
+  });
 
 connect();
 
