@@ -122,6 +122,22 @@ public class AgenticYamlProcessor {
         }
     }
 
+    @BuildStep
+    AvatarConfigBuildItem discoverAvatarConfig() throws IOException {
+        ClassLoader cl       = Thread.currentThread().getContextClassLoader();
+        URL         resource = cl.getResource("META-INF/avatar.yaml");
+        if (resource == null) {
+            resource = cl.getResource("META-INF/avatar.yml");
+        }
+        if (resource == null) {
+            return new AvatarConfigBuildItem(null);
+        }
+        try (InputStream in = resource.openStream()) {
+            var definition = YAML.readValue(in, io.casehub.agency.core.yaml.spec.AvatarDefinition.class);
+            return new AvatarConfigBuildItem(definition);
+        }
+    }
+
 
     @BuildStep
     TopologyBuildItem extractTopologies(AgenticPatternsBuildItem patterns) {
@@ -217,4 +233,30 @@ public class AgenticYamlProcessor {
     AdditionalBeanBuildItem registerSpecsResource() {
         return AdditionalBeanBuildItem.unremovableOf(AgencySpecsResource.class);
     }
+
+    @BuildStep
+    @Record(STATIC_INIT)
+    SyntheticBeanBuildItem registerAvatarConfig(
+            AgenticRecorder recorder,
+            AvatarConfigBuildItem avatarConfig) throws com.fasterxml.jackson.core.JsonProcessingException {
+        if (avatarConfig.definition() == null) {
+            return null;
+        }
+        String json = JSON.writeValueAsString(avatarConfig.definition());
+        RuntimeValue<io.casehub.agency.core.yaml.runtime.AvatarConfigBean> rv =
+                recorder.createAvatarConfigBean(avatarConfig.definition(), json);
+        return SyntheticBeanBuildItem.configure(io.casehub.agency.core.yaml.runtime.AvatarConfigBean.class)
+                                     .scope(Singleton.class)
+                                     .runtimeValue(rv)
+                                     .done();
+    }
+
+    @BuildStep
+    AdditionalBeanBuildItem registerAvatarResource(AvatarConfigBuildItem avatarConfig) {
+        if (avatarConfig.definition() == null) {
+            return null;
+        }
+        return AdditionalBeanBuildItem.unremovableOf(io.casehub.agency.core.yaml.runtime.AvatarConfigResource.class);
+    }
+
 }
