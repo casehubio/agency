@@ -1,132 +1,39 @@
 package io.casehub.agency.speech.ws.protocol;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.UncheckedIOException;
 
 public final class MessageCodec {
 
-    private static final Gson GSON = new Gson();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private MessageCodec() {}
 
     public static String encode(AvatarMessage msg) {
-        var obj = new JsonObject();
-        switch (msg) {
-            case AvatarMessage.Partial p -> {
-                obj.addProperty("type", "partial");
-                obj.addProperty("text", p.text());
-            }
-            case AvatarMessage.Transcript t -> {
-                obj.addProperty("type", "transcript");
-                obj.addProperty("text", t.text());
-            }
-            case AvatarMessage.Error e -> {
-                obj.addProperty("type", "error");
-                obj.addProperty("message", e.message());
-            }
-            case AvatarMessage.Start s -> {
-                obj.addProperty("type", "start");
-                obj.addProperty("sampleRate", s.sampleRate());
-            }
-            case AvatarMessage.Stop s -> obj.addProperty("type", "stop");
-            case AvatarMessage.Text t -> {
-                obj.addProperty("type", "text");
-                obj.addProperty("text", t.text());
-                if (t.llmModel() != null) {obj.addProperty("llmModel", t.llmModel());}
-                if (t.ttsModel() != null) {obj.addProperty("ttsModel", t.ttsModel());}
-            }
-            case AvatarMessage.SpeakerPrompt sp -> {
-                obj.addProperty("type", "speakerPrompt");
-                obj.addProperty("message", sp.message());
-            }
-            case AvatarMessage.SpeakerIdentify si -> {
-                obj.addProperty("type", "speakerIdentify");
-                obj.addProperty("name", si.name());
-            }
-            case AvatarMessage.SpeakerIdentified si -> {
-                obj.addProperty("type", "speakerIdentified");
-                obj.addProperty("name", si.name());
-                obj.addProperty("confidence", si.confidence());
-            }
-            case AvatarMessage.Segment seg -> {
-                obj.addProperty("type", "segment");
-                obj.addProperty("turnSeq", seg.turnSeq());
-                obj.addProperty("index", seg.index());
-                obj.addProperty("text", seg.text());
-                obj.addProperty("hasAudio", seg.hasAudio());
-                obj.add("visemes", GSON.toJsonTree(seg.visemes()));
-                obj.add("cues", encodeCues(seg.cues()));
-            }
-            case AvatarMessage.TurnComplete tc -> {
-                obj.addProperty("type", "turnComplete");
-                obj.addProperty("turnSeq", tc.turnSeq());
-                obj.addProperty("segmentCount", tc.segmentCount());
-                obj.addProperty("origin", tc.origin().name());
-            }
-            case AvatarMessage.Gesture g -> {
-                obj.addProperty("type", "gesture");
-                obj.addProperty("tag", g.tag());
-                obj.addProperty("origin", g.origin().name());
-            }
-            case AvatarMessage.Mood m -> {
-                obj.addProperty("type", "mood");
-                obj.addProperty("state", m.state());
-            }
-            case AvatarMessage.PlaybackComplete pc -> {
-                obj.addProperty("type", "playbackComplete");
-                obj.addProperty("turnSeq", pc.turnSeq());
-            }
-            case AvatarMessage.UserActivity ua -> {
-                obj.addProperty("type", "userActivity");
-                obj.addProperty("kind", ua.kind().name());
-            }
+        try {
+            return MAPPER.writeValueAsString(msg);
+        } catch (JsonProcessingException e) {
+            throw new UncheckedIOException(e);
         }
-        return GSON.toJson(obj);
     }
 
     public static AvatarMessage decodeClient(String json) {
-        var    obj  = JsonParser.parseString(json).getAsJsonObject();
-        String type = obj.get("type").getAsString();
-        return switch (type) {
-            case "start" -> new AvatarMessage.Start(
-                    obj.has("sampleRate") ? obj.get("sampleRate").getAsInt() : 16000,
-                    obj.has("llmModel") ? obj.get("llmModel").getAsString() : null,
-                    obj.has("ttsModel") ? obj.get("ttsModel").getAsString() : null);
-            case "stop" -> new AvatarMessage.Stop();
-            case "text" -> new AvatarMessage.Text(
-                    obj.get("text").getAsString(),
-                    obj.has("llmModel") ? obj.get("llmModel").getAsString() : null,
-                    obj.has("ttsModel") ? obj.get("ttsModel").getAsString() : null);
-            case "speakerIdentify" -> new AvatarMessage.SpeakerIdentify(
-                    obj.get("name").getAsString());
-            case "playbackComplete" -> new AvatarMessage.PlaybackComplete(
-                    obj.get("turnSeq").getAsInt());
-            case "userActivity" -> new AvatarMessage.UserActivity(
-                    UserActivityKind.valueOf(obj.get("kind").getAsString()));
-            default -> throw new IllegalArgumentException("Unknown client message type: " + type);
-        };
-    }
-
-    private static JsonArray encodeCues(java.util.List<Cue> cues) {
-        var arr = new JsonArray();
-        for (var cue : cues) {
-            var o = new JsonObject();
-            switch (cue) {
-                case Cue.GestureCue g -> {
-                    o.addProperty("type", "gesture");
-                    o.addProperty("tag", g.tag());
-                    o.addProperty("offsetMs", g.offsetMs());
-                }
-                case Cue.MoodCue m -> {
-                    o.addProperty("type", "mood");
-                    o.addProperty("mood", m.mood());
-                    o.addProperty("offsetMs", m.offsetMs());
-                }
-            }
-            arr.add(o);
+        try {
+            AvatarMessage msg = MAPPER.readValue(json, AvatarMessage.class);
+            return switch (msg) {
+                case AvatarMessage.Start s -> s;
+                case AvatarMessage.Stop s -> s;
+                case AvatarMessage.Text t -> t;
+                case AvatarMessage.SpeakerIdentify si -> si;
+                case AvatarMessage.PlaybackComplete pc -> pc;
+                case AvatarMessage.UserActivity ua -> ua;
+                default -> throw new IllegalArgumentException(
+                        "Unknown client message type: " + msg.getClass().getSimpleName());
+            };
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid message JSON", e);
         }
-        return arr;
     }
 }

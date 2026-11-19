@@ -1,6 +1,9 @@
 package io.casehub.agency.speech.ws.protocol;
 
-public record VisemeFrame(String viseme, long startMs, long endMs, double weight) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record VisemeFrame(String viseme, @JsonAlias("start-ms") long startMs,
+                          @JsonAlias("end-ms") long endMs, double weight) {
     public VisemeFrame {
         if (viseme == null || viseme.isBlank()) {throw new IllegalArgumentException("viseme required");}
         if (endMs < startMs) {throw new IllegalArgumentException("endMs < startMs");}
