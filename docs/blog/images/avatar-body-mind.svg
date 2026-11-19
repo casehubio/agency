@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2d5aa0" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#2d5aa0" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="mindGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Body column -->
+  <rect x="20" y="50" width="300" height="270" rx="12" fill="url(#bodyGrad)" stroke="#2d5aa0" stroke-width="1.5"/>
+  <text x="170" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#2d5aa0">Avatar YAML — Body</text>
+
+  <text x="40" y="85" font-size="12" fill="#444">3D Model</text>
+  <text x="210" y="85" font-size="11" fill="#888" font-family="monospace">avatar-brunette.glb</text>
+
+  <text x="40" y="115" font-size="12" fill="#444">TTS Voice</text>
+  <text x="210" y="115" font-size="11" fill="#888" font-family="monospace">qwen3:jodi_krangle</text>
+
+  <text x="40" y="145" font-size="12" fill="#444">STT Engine</text>
+  <text x="210" y="145" font-size="11" fill="#888" font-family="monospace">whisper</text>
+
+  <text x="40" y="175" font-size="12" fill="#444">Camera View</text>
+  <text x="210" y="175" font-size="11" fill="#888" font-family="monospace">head</text>
+
+  <text x="40" y="205" font-size="12" fill="#444">Cleanup Pipeline</text>
+  <text x="210" y="205" font-size="11" fill="#888" font-family="monospace">filler, casing, punct</text>
+
+  <text x="40" y="235" font-size="12" fill="#444">Playback Speed</text>
+  <text x="210" y="235" font-size="11" fill="#888" font-family="monospace">0.9x</text>
+
+  <line x1="40" y1="260" x2="300" y2="260" stroke="#2d5aa0" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="40" y="285" font-size="11" fill="#2d5aa0" font-style="italic">How it looks, sounds, processes</text>
+  <text x="40" y="305" font-size="11" fill="#2d5aa0" font-style="italic">speech. No LLM, no personality.</text>
+
+  <!-- Mind column -->
+  <rect x="360" y="50" width="300" height="270" rx="12" fill="url(#mindGrad)" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="510" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#8b5cf6">Eidos Agent — Mind</text>
+
+  <text x="380" y="85" font-size="12" fill="#444">LLM Routing</text>
+  <text x="540" y="85" font-size="11" fill="#888" font-family="monospace">ModelQuery / chain</text>
+
+  <text x="380" y="115" font-size="12" fill="#444">Personality</text>
+  <text x="540" y="115" font-size="11" fill="#888" font-family="monospace">AgentVoiceProfile</text>
+
+  <text x="380" y="145" font-size="12" fill="#444">System Prompt</text>
+  <text x="540" y="145" font-size="11" fill="#888" font-family="monospace">briefing</text>
+
+  <text x="380" y="175" font-size="12" fill="#444">Cognition</text>
+  <text x="540" y="175" font-size="11" fill="#888" font-family="monospace">drives, mood, goals</text>
+
+  <text x="380" y="205" font-size="12" fill="#444">Capabilities</text>
+  <text x="540" y="205" font-size="11" fill="#888" font-family="monospace">AgentCapability[]</text>
+
+  <text x="380" y="235" font-size="12" fill="#444">Disposition</text>
+  <text x="540" y="235" font-size="11" fill="#888" font-family="monospace">axis vocabularies</text>
+
+  <line x1="380" y1="260" x2="640" y2="260" stroke="#8b5cf6" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="380" y="285" font-size="11" fill="#8b5cf6" font-style="italic">What it says, how it thinks,</text>
+  <text x="380" y="305" font-size="11" fill="#8b5cf6" font-style="italic">what it knows. No rendering.</text>
+
+  <!-- Binding arrow -->
+  <path d="M320 170 L360 170" stroke="#444" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="340" y="160" text-anchor="middle" font-size="10" fill="#666">agent:</text>
+  <text x="340" y="190" text-anchor="middle" font-size="10" fill="#666" font-family="monospace">mentor</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#444"/>
+    </marker>
+  </defs>
+</svg>
