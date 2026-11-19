@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" font-family="system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" font-family="system-ui, -apple-system, sans-serif">
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
@@ -18,54 +18,63 @@
   </defs>
 
   <!-- Java world -->
-  <rect x="20" y="20" width="200" height="280" rx="12" fill="url(#javaGrad)" stroke="#93c5fd" stroke-width="1.5"/>
-  <text x="120" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Java Records</text>
+  <rect x="20" y="20" width="220" height="340" rx="12" fill="url(#javaGrad)" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="130" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Java Records</text>
+  <text x="130" y="68" text-anchor="middle" font-size="10" fill="#6b7280">57 spec files</text>
 
-  <text x="40" y="82" font-size="11" fill="#475569" font-family="monospace">ttsVoice</text>
-  <text x="40" y="108" font-size="11" fill="#475569" font-family="monospace">cameraView</text>
-  <text x="40" y="134" font-size="11" fill="#475569" font-family="monospace">sampleRate</text>
-  <text x="40" y="160" font-size="11" fill="#475569" font-family="monospace">minPlaybackRate</text>
-  <text x="40" y="186" font-size="11" fill="#475569" font-family="monospace">clonedVoices</text>
-  <text x="40" y="212" font-size="11" fill="#475569" font-family="monospace">maxDestructiveness</text>
+  <text x="40" y="100" font-size="11" fill="#475569" font-family="monospace">failurePolicy</text>
+  <text x="40" y="126" font-size="11" fill="#475569" font-family="monospace">convergenceThreshold</text>
+  <text x="40" y="152" font-size="11" fill="#475569" font-family="monospace">maxIterations</text>
+  <text x="40" y="178" font-size="11" fill="#475569" font-family="monospace">candidateGroups</text>
+  <text x="40" y="204" font-size="11" fill="#475569" font-family="monospace">personalityEvolution</text>
+  <text x="40" y="230" font-size="11" fill="#6b7280" font-family="monospace" font-style="italic">... 237 more</text>
 
-  <text x="120" y="260" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">camelCase</text>
-  <text x="120" y="278" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">Java convention</text>
+  <text x="130" y="300" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">camelCase</text>
+  <text x="130" y="318" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">Java convention</text>
+  <text x="130" y="340" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">242 fields</text>
 
   <!-- YAML world -->
-  <rect x="460" y="20" width="200" height="280" rx="12" fill="url(#yamlGrad)" stroke="#c084fc" stroke-width="1.5"/>
-  <text x="560" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#7c3aed">YAML Config</text>
+  <rect x="480" y="20" width="220" height="340" rx="12" fill="url(#yamlGrad)" stroke="#c084fc" stroke-width="1.5"/>
+  <text x="590" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#7c3aed">YAML Config</text>
+  <text x="590" y="68" text-anchor="middle" font-size="10" fill="#6b7280">what authors write</text>
 
-  <text x="480" y="82" font-size="11" fill="#475569" font-family="monospace">tts-voice</text>
-  <text x="480" y="108" font-size="11" fill="#475569" font-family="monospace">camera-view</text>
-  <text x="480" y="134" font-size="11" fill="#475569" font-family="monospace">sample-rate</text>
-  <text x="480" y="160" font-size="11" fill="#475569" font-family="monospace">min-playback-rate</text>
-  <text x="480" y="186" font-size="11" fill="#475569" font-family="monospace">cloned-voices</text>
-  <text x="480" y="212" font-size="11" fill="#475569" font-family="monospace">max-destructiveness</text>
+  <text x="500" y="100" font-size="11" fill="#475569" font-family="monospace">failure-policy</text>
+  <text x="500" y="126" font-size="11" fill="#475569" font-family="monospace">convergence-threshold</text>
+  <text x="500" y="152" font-size="11" fill="#475569" font-family="monospace">max-iterations</text>
+  <text x="500" y="178" font-size="11" fill="#475569" font-family="monospace">candidate-groups</text>
+  <text x="500" y="204" font-size="11" fill="#475569" font-family="monospace">personality-evolution</text>
+  <text x="500" y="230" font-size="11" fill="#6b7280" font-family="monospace" font-style="italic">... 237 more</text>
 
-  <text x="560" y="260" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">kebab-case</text>
-  <text x="560" y="278" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">YAML convention</text>
+  <text x="590" y="300" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">kebab-case</text>
+  <text x="590" y="318" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">YAML convention</text>
+  <text x="590" y="340" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">both accepted</text>
 
   <!-- Bridge -->
-  <rect x="260" y="60" width="160" height="200" rx="10" fill="url(#bridgeGrad)" stroke="#86efac" stroke-width="1.5"/>
-  <text x="340" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">@JsonAlias</text>
-  <text x="340" y="108" text-anchor="middle" font-size="10" fill="#6b7280">accepts both</text>
+  <rect x="280" y="60" width="160" height="260" rx="10" fill="url(#bridgeGrad)" stroke="#86efac" stroke-width="1.5"/>
+  <text x="360" y="88" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">@JsonAlias</text>
+  <text x="360" y="108" text-anchor="middle" font-size="10" fill="#6b7280">additive, not renaming</text>
 
   <!-- Arrows from Java to bridge -->
-  <line x1="220" y1="82" x2="260" y2="120" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
-  <line x1="220" y1="134" x2="260" y2="150" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
-  <line x1="220" y1="186" x2="260" y2="180" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="240" y1="100" x2="280" y2="140" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="240" y1="152" x2="280" y2="175" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="240" y1="204" x2="280" y2="210" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
 
   <!-- Arrows from YAML to bridge -->
-  <line x1="460" y1="82" x2="420" y2="120" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
-  <line x1="460" y1="134" x2="420" y2="150" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
-  <line x1="460" y1="186" x2="420" y2="180" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="480" y1="100" x2="440" y2="140" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="480" y1="152" x2="440" y2="175" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="480" y1="204" x2="440" y2="210" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)" opacity="0.5"/>
 
   <!-- Bridge labels -->
-  <text x="340" y="140" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">ttsVoice ✓</text>
-  <text x="340" y="160" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">tts-voice ✓</text>
+  <text x="360" y="148" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">failurePolicy ✓</text>
+  <text x="360" y="166" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">failure-policy ✓</text>
 
-  <text x="340" y="190" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">sampleRate ✓</text>
-  <text x="340" y="210" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">sample-rate ✓</text>
+  <text x="360" y="196" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">maxIterations ✓</text>
+  <text x="360" y="214" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">max-iterations ✓</text>
 
-  <text x="340" y="240" text-anchor="middle" font-size="10" fill="#166534" font-family="monospace">clonedVoices ✓</text>
+  <!-- Special case highlight -->
+  <rect x="296" y="234" width="128" height="70" rx="6" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4"/>
+  <text x="360" y="252" text-anchor="middle" font-size="9" font-weight="600" fill="#b45309">merge case</text>
+  <text x="360" y="268" text-anchor="middle" font-size="9" fill="#166534" font-family="monospace">personality ✓</text>
+  <text x="360" y="282" text-anchor="middle" font-size="9" fill="#166534" font-family="monospace">personality-evolution ✓</text>
+  <text x="360" y="296" text-anchor="middle" font-size="9" fill="#166534" font-family="monospace">personalityEvolution ✓</text>
 </svg>

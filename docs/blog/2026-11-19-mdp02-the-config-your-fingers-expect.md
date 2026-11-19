@@ -45,12 +45,35 @@ public record TtsEngineSpec(
         @JsonAlias("cloned-voices") @Nullable List<String> clonedVoices) {
 ```
 
-Six properties across three records — `AvatarDefinition`, `TtsEngineSpec`, `CleanupConfigSpec`. Every multi-word camelCase property now accepts its kebab-case equivalent.
+## Scaling from three records to fifty-seven
+
+The first pass touched three records — `AvatarDefinition`, `TtsEngineSpec`, `CleanupConfigSpec` — six properties in total. That was enough to validate the pattern. But the same gap existed across every spec record in the agentic-yaml module. `failurePolicy` on every `PatternDefinition` variant. `convergenceThreshold` on `TopologySpec.Distributed`. `minSignalsForInference` on `MentalModelConfigSpec`. Two hundred and forty-two multi-word camelCase fields across fifty-seven files, each one a potential `UnrecognizedPropertyException` waiting for someone writing kebab-case YAML.
+
+Doing this by hand would be tedious and error-prone. The conversion itself is mechanical — `camelCase` to `kebab-case` follows a deterministic rule — so I wrote a Python script to scan every record in the spec directory, identify multi-word camelCase components, and insert the annotation. The script handles three cases: bare record components (`@JsonAlias("kebab") Type field`), components with `@Nullable` (annotation goes before `@Nullable`), and components with `@JsonProperty` (annotation goes after it).
+
+## When aliases collide
+
+One record threw a curveball. `CognitionDefinition` already had a `@JsonAlias` on the personality field — not for kebab-case, but as a semantic shorthand:
+
+```java
+@JsonProperty("personalityEvolution") @JsonAlias("personality")
+@Nullable PersonalityEvolutionConfigSpec personality,
+```
+
+The YAML key is `personalityEvolution`. The existing alias `personality` lets authors skip the `Evolution` suffix. The kebab form `personality-evolution` needs to be a *second* alias, not a replacement. Jackson supports this with the array form:
+
+```java
+@JsonProperty("personalityEvolution")
+@JsonAlias({"personality", "personality-evolution"})
+@Nullable PersonalityEvolutionConfigSpec personality,
+```
+
+Now all three names resolve to the same field — the canonical `personalityEvolution`, the semantic shorthand `personality`, and the kebab-case `personality-evolution`. Each serves a different audience: serialization, brevity, convention.
+
+This is the general principle at work. `@JsonAlias` is additive. It doesn't rename or replace — it widens the set of names that resolve to a field. When a third convention arrives, another alias costs one annotation.
 
 ## The broader principle
 
 Config surfaces have two audiences with different conventions. The Java code that declares the shape of the config uses camelCase because that's what Java identifiers do. The YAML author who writes the config file expects kebab-case because that's what YAML conventions do. Neither audience is wrong. The serialization layer's job is to bridge the gap without forcing either side to adopt the other's convention.
-
-`@JsonAlias` is the right primitive for this because it's additive. It doesn't rename anything — it just widens the set of names that resolve to the same field. The canonical name stays in the language of the code. The alias speaks the language of the config file. When a third convention shows up (and it will — snake_case from a Python consumer, perhaps), another alias costs one annotation.
 
 The alternative — picking one convention and forcing everyone to use it — always trades one audience's comfort for another's confusion. Aliases avoid the trade entirely.
