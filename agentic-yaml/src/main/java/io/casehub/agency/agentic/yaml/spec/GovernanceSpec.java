@@ -16,7 +16,7 @@ public record GovernanceSpec(
     public record OversightSpec(
             String classifier,
             boolean reversible,
-            @Nullable @JsonProperty("candidateGroups") @JsonAlias("candidate-groups") List<String> candidateGroups) {
+            @JsonProperty("candidateGroups") @JsonAlias("candidate-groups") @Nullable List<String> candidateGroups) {
 
         public OversightSpec {
             Objects.requireNonNull(classifier, "classifier");
