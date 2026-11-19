@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,5 +19,5 @@ public sealed interface ConflictResolutionSpec {
     record Specificity() implements ConflictResolutionSpec {}
     record Recency() implements ConflictResolutionSpec {}
     record MostRestrictive() implements ConflictResolutionSpec {}
-    record Escalation(String escalationDecision) implements ConflictResolutionSpec {}
+    record Escalation(@JsonAlias("escalation-decision") String escalationDecision) implements ConflictResolutionSpec {}
 }

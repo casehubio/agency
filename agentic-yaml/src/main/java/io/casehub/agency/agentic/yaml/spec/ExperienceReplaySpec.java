@@ -1,6 +1,7 @@
 package io.casehub.agency.core.yaml.spec;
 
-public record ExperienceReplaySpec(int maxTraces, double minSimilarity) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+public record ExperienceReplaySpec(@JsonAlias("max-traces") int maxTraces, @JsonAlias("min-similarity") double minSimilarity) {
 
     public ExperienceReplaySpec {
         if (maxTraces < 0) throw new IllegalArgumentException("maxTraces must be >= 0");

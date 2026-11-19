@@ -1,11 +1,12 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 public record SwarmInvocationPolicySpec(
-        int maxCalls,
-        long maxTokens,
-        double reserveFraction,
-        int maxCallsPerAgent,
-        long maxTokensPerAgent) {
+        @JsonAlias("max-calls") int maxCalls,
+        @JsonAlias("max-tokens") long maxTokens,
+        @JsonAlias("reserve-fraction") double reserveFraction,
+        @JsonAlias("max-calls-per-agent") int maxCallsPerAgent,
+        @JsonAlias("max-tokens-per-agent") long maxTokensPerAgent) {
 
     public SwarmInvocationPolicySpec {
         if (maxCalls < 1) {throw new IllegalArgumentException("maxCalls must be >= 1");}

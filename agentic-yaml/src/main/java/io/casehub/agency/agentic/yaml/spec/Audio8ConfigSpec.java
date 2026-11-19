@@ -1,16 +1,17 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.Objects;
 
 public record Audio8ConfigSpec(
-        String modelDir,
+        @JsonAlias("model-dir") String modelDir,
         String variant,
-        int numThreads,
+        @JsonAlias("num-threads") int numThreads,
         String provider,
-        int maxTokens,
+        @JsonAlias("max-tokens") int maxTokens,
         float temperature,
-        float topP,
-        int topK) {
+        @JsonAlias("top-p") float topP,
+        @JsonAlias("top-k") int topK) {
 
     public Audio8ConfigSpec {
         Objects.requireNonNull(modelDir, "modelDir");

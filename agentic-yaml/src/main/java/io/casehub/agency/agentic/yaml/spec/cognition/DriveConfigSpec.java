@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec.cognition;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.casehub.neocortex.cognition.drive.DriveAxis;
 import org.jspecify.annotations.Nullable;
 
@@ -7,14 +8,14 @@ import java.time.Duration;
 import java.util.Map;
 
 public record DriveConfigSpec(
-        @Nullable Map<DriveAxis, Double> axisWeights,
-        @Nullable Double changeThreshold,
-        @Nullable Double moodPleasureModulation,
-        @Nullable Double moodArousalModulation,
-        @Nullable Double personalityModulationStrength,
-        @Nullable Double maxIntensity,
-        @Nullable Double minIntensity,
-        @Nullable Double affiliationDecayThreshold,
-        @Nullable Duration affiliationStaleDuration,
-        @Nullable Double autonomyConfidenceFloor,
-        @Nullable Double narrativeModulationStrength) {}
+        @JsonAlias("axis-weights") @Nullable Map<DriveAxis, Double> axisWeights,
+        @JsonAlias("change-threshold") @Nullable Double changeThreshold,
+        @JsonAlias("mood-pleasure-modulation") @Nullable Double moodPleasureModulation,
+        @JsonAlias("mood-arousal-modulation") @Nullable Double moodArousalModulation,
+        @JsonAlias("personality-modulation-strength") @Nullable Double personalityModulationStrength,
+        @JsonAlias("max-intensity") @Nullable Double maxIntensity,
+        @JsonAlias("min-intensity") @Nullable Double minIntensity,
+        @JsonAlias("affiliation-decay-threshold") @Nullable Double affiliationDecayThreshold,
+        @JsonAlias("affiliation-stale-duration") @Nullable Duration affiliationStaleDuration,
+        @JsonAlias("autonomy-confidence-floor") @Nullable Double autonomyConfidenceFloor,
+        @JsonAlias("narrative-modulation-strength") @Nullable Double narrativeModulationStrength) {}

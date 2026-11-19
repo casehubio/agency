@@ -1,11 +1,12 @@
 package io.casehub.agency.core.yaml.spec.world;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public record AffordanceSpec(
-        String actionType,
+        @JsonAlias("action-type") String actionType,
         @Nullable String label,
-        @Nullable String requiredItem,
-        @Nullable List<String> acceptsItems) {}
+        @JsonAlias("required-item") @Nullable String requiredItem,
+        @JsonAlias("accepts-items") @Nullable List<String> acceptsItems) {}

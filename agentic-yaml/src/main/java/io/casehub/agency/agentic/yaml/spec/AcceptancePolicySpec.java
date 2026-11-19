@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -14,5 +15,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 public sealed interface AcceptancePolicySpec {
     record Unanimous() implements AcceptancePolicySpec {}
     record Majority() implements AcceptancePolicySpec {}
-    record Threshold(int minAcceptances) implements AcceptancePolicySpec {}
+    record Threshold(@JsonAlias("min-acceptances") int minAcceptances) implements AcceptancePolicySpec {}
 }

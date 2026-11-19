@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -22,10 +23,10 @@ public sealed interface RiskDecisionSpec {
     record GateRequired(
             String reason,
             boolean reversible,
-            CandidateSetStrategySpec candidateGroups,
-            Duration expiresIn,
+            @JsonAlias("candidate-groups") CandidateSetStrategySpec candidateGroups,
+            @JsonAlias("expires-in") Duration expiresIn,
             @Nullable String scope,
-            @Nullable String resolutionType,
+            @JsonAlias("resolution-type") @Nullable String resolutionType,
             @Nullable QuorumConfig quorum) implements RiskDecisionSpec {
 
         public GateRequired {

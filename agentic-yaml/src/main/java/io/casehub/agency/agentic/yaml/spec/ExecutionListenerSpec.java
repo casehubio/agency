@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -17,7 +18,7 @@ public sealed interface ExecutionListenerSpec {
 
     record EventLog() implements ExecutionListenerSpec {}
 
-    record Ledger(@Nullable String supervisorActorId) implements ExecutionListenerSpec {}
+    record Ledger(@JsonAlias("supervisor-actor-id") @Nullable String supervisorActorId) implements ExecutionListenerSpec {}
 
     record Metrics() implements ExecutionListenerSpec {}
 

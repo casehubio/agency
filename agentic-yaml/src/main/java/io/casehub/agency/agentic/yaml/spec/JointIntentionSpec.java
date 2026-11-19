@@ -1,11 +1,12 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.Objects;
 import java.util.Set;
 
 public record JointIntentionSpec(
-        String intentionId,
-        String planDescription,
+        @JsonAlias("intention-id") String intentionId,
+        @JsonAlias("plan-description") String planDescription,
         Set<String> parties) {
 
     public JointIntentionSpec {

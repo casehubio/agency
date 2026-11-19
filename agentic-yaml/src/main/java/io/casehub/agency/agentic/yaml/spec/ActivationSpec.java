@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -14,5 +15,5 @@ public sealed interface ActivationSpec {
 
     record OnDispatch() implements ActivationSpec {}
 
-    record MaxIterationsGuard(int maxIterations) implements ActivationSpec {}
+    record MaxIterationsGuard(@JsonAlias("max-iterations") int maxIterations) implements ActivationSpec {}
 }

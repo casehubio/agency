@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -30,13 +31,13 @@ public sealed interface TerminationSpec {
 
     record GoalReached(String when) implements TerminationSpec {}
 
-    record JudgeConvergence(AgentRefSpec judge, int maxIterations) implements TerminationSpec {}
+    record JudgeConvergence(AgentRefSpec judge, @JsonAlias("max-iterations") int maxIterations) implements TerminationSpec {}
 
-    record AllAgreed(@Nullable Set<String> resolvedStatuses) implements TerminationSpec {}
+    record AllAgreed(@JsonAlias("resolved-statuses") @Nullable Set<String> resolvedStatuses) implements TerminationSpec {}
 
-    record Supervisor(String role, @Nullable String signalType) implements TerminationSpec {}
+    record Supervisor(String role, @JsonAlias("signal-type") @Nullable String signalType) implements TerminationSpec {}
 
-    record Contested(int maxDisputeRounds) implements TerminationSpec {}
+    record Contested(@JsonAlias("max-dispute-rounds") int maxDisputeRounds) implements TerminationSpec {}
 
     record Convergence(double threshold) implements TerminationSpec {}
 

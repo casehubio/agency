@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -44,7 +45,7 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
@@ -59,13 +60,13 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
             @Nullable AgentRefSpec judge,
-            int maxRounds
+            @JsonAlias("max-rounds") int maxRounds
     ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Loop(
@@ -76,13 +77,13 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
-            int maxIterations,
-            @Nullable String exitCondition
+            @JsonAlias("max-iterations") int maxIterations,
+            @JsonAlias("exit-condition") @Nullable String exitCondition
     ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Parallel(
@@ -93,7 +94,7 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
@@ -108,7 +109,7 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
@@ -123,7 +124,7 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
@@ -139,7 +140,7 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
@@ -154,12 +155,12 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
-            TaskNodeSpec rootTask
+            @JsonAlias("root-task") TaskNodeSpec rootTask
     ) implements io.casehub.agency.core.yaml.spec.PatternDefinition {}
 
     record Swarm(
@@ -170,15 +171,15 @@ public sealed interface PatternDefinition {
             @Nullable AggregationSpec aggregation,
             @Nullable ActivationSpec activation,
             @Nullable DecompositionSpec decomposition,
-            @Nullable FailurePolicy failurePolicy,
+            @JsonAlias("failure-policy") @Nullable FailurePolicy failurePolicy,
             @Nullable String task,
             List<AgentRefSpec> agents,
             @Nullable JudgmentSpec judgment,
             @Nullable GovernanceSpec governance,
             @Nullable ExperienceReplaySpec experience,
-            @Nullable String coordinationModel,
-            @Nullable SwarmInvocationPolicySpec invocationPolicy,
-            int preFilterThreshold,
+            @JsonAlias("coordination-model") @Nullable String coordinationModel,
+            @JsonAlias("invocation-policy") @Nullable SwarmInvocationPolicySpec invocationPolicy,
+            @JsonAlias("pre-filter-threshold") int preFilterThreshold,
             @Nullable TopologySpec topology,
             @Nullable DecisionScopeSpec scope,
             @Nullable CommunicationModeSpec communication

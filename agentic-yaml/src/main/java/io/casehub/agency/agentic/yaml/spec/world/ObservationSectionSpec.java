@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec.world;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -29,28 +30,28 @@ public sealed interface ObservationSectionSpec {
 
     record EntityGroupSpec(
             String header,
-            @Nullable String emptyMessage,
-            @Nullable List<String> entityRefs,
+            @JsonAlias("empty-message") @Nullable String emptyMessage,
+            @JsonAlias("entity-refs") @Nullable List<String> entityRefs,
             @Nullable List<InlineEntitySpec> entities,
-            @Nullable Set<String> requiredTags,
+            @JsonAlias("required-tags") @Nullable Set<String> requiredTags,
             @Nullable Map<ResolutionTier, ObservationSectionSpec> resolutions,
-            @Nullable String interpretiveFrame
+            @JsonAlias("interpretive-frame") @Nullable String interpretiveFrame
     ) implements ObservationSectionSpec {}
 
     record TextBlockSpec(
             String header,
             String content,
-            @Nullable Set<String> requiredTags,
+            @JsonAlias("required-tags") @Nullable Set<String> requiredTags,
             @Nullable Map<ResolutionTier, ObservationSectionSpec> resolutions,
-            @Nullable String interpretiveFrame
+            @JsonAlias("interpretive-frame") @Nullable String interpretiveFrame
     ) implements ObservationSectionSpec {}
 
     record ItemListSpec(
             String header,
-            @Nullable String emptyMessage,
+            @JsonAlias("empty-message") @Nullable String emptyMessage,
             @Nullable List<String> items,
-            @Nullable Set<String> requiredTags,
+            @JsonAlias("required-tags") @Nullable Set<String> requiredTags,
             @Nullable Map<ResolutionTier, ObservationSectionSpec> resolutions,
-            @Nullable String interpretiveFrame
+            @JsonAlias("interpretive-frame") @Nullable String interpretiveFrame
     ) implements ObservationSectionSpec {}
 }

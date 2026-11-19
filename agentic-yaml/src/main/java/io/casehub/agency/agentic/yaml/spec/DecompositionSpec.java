@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -25,9 +26,9 @@ public sealed interface DecompositionSpec {
 
     record Static(List<MethodSpec> methods) implements DecompositionSpec {}
 
-    record Llm(@Nullable Integer maxDepth) implements DecompositionSpec {}
+    record Llm(@JsonAlias("max-depth") @Nullable Integer maxDepth) implements DecompositionSpec {}
 
-    record Hybrid(@Nullable Integer maxDepth) implements DecompositionSpec {}
+    record Hybrid(@JsonAlias("max-depth") @Nullable Integer maxDepth) implements DecompositionSpec {}
 
     record Heuristic(@Nullable String name) implements DecompositionSpec {}
 

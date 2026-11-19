@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -21,18 +22,18 @@ import java.util.List;
 public sealed interface ChannelExecutionStrategySpec {
 
     record ConversationStrategySpec(
-            @Nullable TurnPolicySpec turnPolicy,
+            @JsonAlias("turn-policy") @Nullable TurnPolicySpec turnPolicy,
             @Nullable List<TerminationSpec> termination,
-            @Nullable EpistemicRuleSpec epistemicRule,
-            @Nullable ConvergencePolicySpec convergencePolicy,
+            @JsonAlias("epistemic-rule") @Nullable EpistemicRuleSpec epistemicRule,
+            @JsonAlias("convergence-policy") @Nullable ConvergencePolicySpec convergencePolicy,
             List<AgentParticipantSpec> participants
     ) implements ChannelExecutionStrategySpec {}
 
     record FanInStrategySpec(
-            @Nullable Duration executionTimeout
+            @JsonAlias("execution-timeout") @Nullable Duration executionTimeout
     ) implements ChannelExecutionStrategySpec {}
 
     record BarrierStrategySpec(
-            @Nullable Duration executionTimeout
+            @JsonAlias("execution-timeout") @Nullable Duration executionTimeout
     ) implements ChannelExecutionStrategySpec {}
 }

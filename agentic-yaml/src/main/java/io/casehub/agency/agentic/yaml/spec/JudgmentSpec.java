@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -34,9 +35,9 @@ public record JudgmentSpec(
             @Type(value = CallerSpec.EscalationChain.class, name = "escalation-chain")
     })
     public sealed interface CallerSpec {
-        record Single(String callerName) implements CallerSpec {}
-        record FanOut(List<String> callerNames, AgreementSpec agreement) implements CallerSpec {}
-        record EscalationChain(List<String> callerNames) implements CallerSpec {}
+        record Single(@JsonAlias("caller-name") String callerName) implements CallerSpec {}
+        record FanOut(@JsonAlias("caller-names") List<String> callerNames, AgreementSpec agreement) implements CallerSpec {}
+        record EscalationChain(@JsonAlias("caller-names") List<String> callerNames) implements CallerSpec {}
     }
 
     @JsonTypeInfo(use = Id.NAME, property = "type")
@@ -48,6 +49,6 @@ public record JudgmentSpec(
     public sealed interface AgreementSpec {
         record Unanimous() implements AgreementSpec {}
         record Majority() implements AgreementSpec {}
-        record Threshold(int minAgreements) implements AgreementSpec {}
+        record Threshold(@JsonAlias("min-agreements") int minAgreements) implements AgreementSpec {}
     }
 }

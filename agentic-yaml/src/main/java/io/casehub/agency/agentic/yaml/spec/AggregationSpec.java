@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -21,5 +22,5 @@ public sealed interface AggregationSpec {
 
     record MajorityVote() implements AggregationSpec {}
 
-    record Auction(@Nullable String auctionType) implements AggregationSpec {}
+    record Auction(@JsonAlias("auction-type") @Nullable String auctionType) implements AggregationSpec {}
 }

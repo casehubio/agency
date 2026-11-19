@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -59,7 +60,7 @@ public sealed interface TopologySpec {
     record Distributed(
             @Nullable String authority,
             @Nullable Map<String, AgentSpec> agents,
-            @Nullable Double convergenceThreshold,
+            @JsonAlias("convergence-threshold") @Nullable Double convergenceThreshold,
             @Nullable BudgetSpec budget
     ) implements TopologySpec {
         public Distributed {
@@ -77,8 +78,8 @@ public sealed interface TopologySpec {
         }
 
         public record BudgetSpec(
-                @Nullable Integer maxTokensPerTick,
-                @Nullable Integer maxConcurrentCalls
+                @JsonAlias("max-tokens-per-tick") @Nullable Integer maxTokensPerTick,
+                @JsonAlias("max-concurrent-calls") @Nullable Integer maxConcurrentCalls
         ) {}
     }
 
@@ -86,10 +87,10 @@ public sealed interface TopologySpec {
     record RolePolicySpec(
             @Nullable List<String> obligations,
             @Nullable List<String> permissions,
-            @Nullable Integer minAgents,
-            @Nullable Integer maxAgents,
+            @JsonAlias("min-agents") @Nullable Integer minAgents,
+            @JsonAlias("max-agents") @Nullable Integer maxAgents,
             @Nullable String vocabulary,
-            @Nullable List<String> incompatibleWith
+            @JsonAlias("incompatible-with") @Nullable List<String> incompatibleWith
     ) {
         public RolePolicySpec {
             if (obligations != null) obligations = List.copyOf(obligations);

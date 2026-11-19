@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,7 +28,7 @@ public sealed interface AgentRefSpec {
                   @Nullable List<String> capabilities,
                   @Nullable String model) implements AgentRefSpec {}
 
-    record Channel(String name, String channelId, @Nullable String description,
+    record Channel(String name, @JsonAlias("channel-id") String channelId, @Nullable String description,
                    @Nullable List<String> capabilities,
                    @Nullable String model) implements AgentRefSpec {}
 

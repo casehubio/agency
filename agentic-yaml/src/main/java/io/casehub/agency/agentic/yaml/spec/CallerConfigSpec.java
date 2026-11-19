@@ -1,5 +1,6 @@
 package io.casehub.agency.core.yaml.spec;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,24 +19,24 @@ import java.util.Set;
 public sealed interface CallerConfigSpec {
 
     record Human(
-            @Nullable CandidateSetStrategySpec candidateGroups,
-            @Nullable CandidateSetStrategySpec candidateUsers,
+            @JsonAlias("candidate-groups") @Nullable CandidateSetStrategySpec candidateGroups,
+            @JsonAlias("candidate-users") @Nullable CandidateSetStrategySpec candidateUsers,
             @Nullable String title,
-            @Nullable String titleExpression,
+            @JsonAlias("title-expression") @Nullable String titleExpression,
             @Nullable Set<String> outcomes,
-            @Nullable Integer claimDeadlineHours,
+            @JsonAlias("claim-deadline-hours") @Nullable Integer claimDeadlineHours,
             @Nullable String scope,
-            @Nullable String scopeExpression,
+            @JsonAlias("scope-expression") @Nullable String scopeExpression,
             @Nullable String priority,
-            @Nullable String templateRef,
-            @Nullable String payloadType,
+            @JsonAlias("template-ref") @Nullable String templateRef,
+            @JsonAlias("payload-type") @Nullable String payloadType,
             @Nullable QuorumConfigSpec quorum
     ) implements CallerConfigSpec {}
 
     record Llm(
-            @Nullable String modelId,
-            @Nullable String modelName,
-            @Nullable String systemPrompt
+            @JsonAlias("model-id") @Nullable String modelId,
+            @JsonAlias("model-name") @Nullable String modelName,
+            @JsonAlias("system-prompt") @Nullable String systemPrompt
     ) implements CallerConfigSpec {}
 
     record A2A(
