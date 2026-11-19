@@ -2,6 +2,7 @@ package io.casehub.agency.speech.ws.protocol;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,6 +28,7 @@ import java.util.List;
     @JsonSubTypes.Type(value = AvatarMessage.UserActivity.class, names = {"userActivity", "user-activity"})
 })
 public sealed interface AvatarMessage {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     record Start(@JsonAlias("sample-rate") int sampleRate,
                  @org.jspecify.annotations.Nullable @JsonAlias("llm-model") String llmModel,
                  @org.jspecify.annotations.Nullable @JsonAlias("tts-model") String ttsModel) implements AvatarMessage {
@@ -43,6 +45,7 @@ public sealed interface AvatarMessage {
 
     record Stop() implements AvatarMessage {}
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     record Text(String text,
                 @org.jspecify.annotations.Nullable @JsonAlias("llm-model") String llmModel,
                 @org.jspecify.annotations.Nullable @JsonAlias("tts-model") String ttsModel) implements AvatarMessage {

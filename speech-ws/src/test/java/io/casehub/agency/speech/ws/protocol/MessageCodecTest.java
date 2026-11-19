@@ -164,6 +164,30 @@ class MessageCodecTest {
         assertThat(((AvatarMessage.UserActivity) msg).kind()).isEqualTo(UserActivityKind.TYPING);
     }
 
+    @Test
+    void encodesStartMessageOmitsNullFields() throws Exception {
+        String json = MessageCodec.encode(new AvatarMessage.Start(16000));
+        var node = parse(json);
+        assertThat(node.has("llmModel")).isFalse();
+        assertThat(node.has("ttsModel")).isFalse();
+    }
+
+    @Test
+    void encodesTextMessageOmitsNullFields() throws Exception {
+        String json = MessageCodec.encode(new AvatarMessage.Text("hello"));
+        var node = parse(json);
+        assertThat(node.has("llmModel")).isFalse();
+        assertThat(node.has("ttsModel")).isFalse();
+    }
+
+    @Test
+    void encodesTextMessageIncludesNonNullFields() throws Exception {
+        String json = MessageCodec.encode(new AvatarMessage.Text("hello", "gpt-4", null));
+        var node = parse(json);
+        assertThat(node.get("llmModel").asText()).isEqualTo("gpt-4");
+        assertThat(node.has("ttsModel")).isFalse();
+    }
+
     // --- kebab-case type discriminator tests ---
 
     @Test
