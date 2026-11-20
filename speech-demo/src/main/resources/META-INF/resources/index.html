@@ -37,172 +37,31 @@
   #mic.recording { background: #d64; border-color: #d64; color: white; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
   #status { padding: 0.25rem 1rem; font-size: 0.75rem; color: #666; text-align: center; }
-  #model-status { padding: 0.25rem 1rem; font-size: 0.75rem; color: #999; text-align: center; }
-  #model-status .downloading { color: #d9a547; }
-  #model-status .ready { color: #4a9; }
-  #model-status .error { color: #d64; }
-
 </style>
 </head>
 <body>
 <header><h1>Avatar Speech Pipeline Demo</h1></header>
-<div id="controls">
-  <label>LLM: <select id="llmModel">
-    <option value="claude-haiku-4-5@20251001">Haiku 4.5 (fast)</option>
-    <option value="claude-sonnet-4@20250514">Sonnet 4</option>
-    <option value="claude-opus-4@20250514">Opus 4</option>
-  </select></label>
-  <label>Voice: <select id="ttsModel">
-    <option value="">Loading voices...</option>
-  </select></label>
-  <label>Speed: <input id="speed" type="range" min="0.6" max="1.4" step="0.05" value="0.9" style="width:80px;vertical-align:middle"> <span id="speedVal">0.9x</span></label>
-  <label>Avatar: <select id="avatarModel">
-    <option value="avatar.glb">Current</option>
-    <option value="avatar-brunette.glb">Brunette</option>
-    <option value="avatar-brunette-t.glb">Brunette (light)</option>
-    <option value="avatar-avatarsdk.glb">Avatar SDK</option>
-    <option value="avatar-avaturn.glb">Avaturn</option>
-    <option value="avatar-vroid.glb">VRoid (anime)</option>
-    <option value="avatar-mpfb.glb">MakeHuman</option>
-  </select></label>
-  <label>Animation: <select id="animPicker">
-    <option value="">Auto (idle cycle)</option>
-    <optgroup label="Conversational">
-      <option value="greeting">Greeting</option>
-      <option value="head-nod">Head Nod</option>
-      <option value="yes">Yes</option>
-      <option value="reject">Reject</option>
-      <option value="confused">Confused</option>
-      <option value="angry">Angry</option>
-      <option value="clapping">Clapping</option>
-    </optgroup>
-    <optgroup label="Expressive">
-      <option value="dab">Dab</option>
-      <option value="victory">Victory</option>
-      <option value="victory-fist-pump">Fist Pump</option>
-      <option value="dizzy">Dizzy</option>
-      <option value="power-up">Power Up</option>
-      <option value="shiver">Shiver</option>
-      <option value="chest-open">Chest Open</option>
-    </optgroup>
-    <optgroup label="Idle">
-      <option value="idle-a">Idle A</option>
-      <option value="idle-subtle">Idle Subtle</option>
-      <option value="idle-foldarms">Fold Arms</option>
-      <option value="idle-talking">Talking</option>
-      <option value="guitar-playing">Guitar</option>
-      <option value="meditate">Meditate</option>
-    </optgroup>
-    <optgroup label="Dance">
-      <option value="dance-charleston">Charleston</option>
-      <option value="dance-simple">Dance</option>
-      <option value="moonwalk">Moonwalk</option>
-    </optgroup>
-    <optgroup label="Dramatic">
-      <option value="backflip">Backflip</option>
-      <option value="death-a">Death</option>
-      <option value="zombie-idle">Zombie</option>
-      <option value="drunk-walk">Drunk Walk</option>
-    </optgroup>
-  </select></label>
-  <button id="playAnim" style="padding:0.3rem 0.6rem;border-radius:6px;border:1px solid #555;background:#2a2a3e;color:#e0e0e0;cursor:pointer;font-size:0.85rem" title="Play selected animation">&#9654;</button>
-</div>
+<div id="controls"></div>
 <div style="text-align:center;padding:0.25rem"><span id="toggle-avatar">Show 3D Avatar</span></div>
 <div id="avatar-container"></div>
-<div id="model-status"></div>
 <div id="status">Connecting...</div>
 <div id="chat"></div>
 <div id="input-bar">
-  <button id="mic" disabled title="Hold to talk">Mic</button>
+  <button id="mic" disabled title="Click to talk">Mic</button>
   <input id="msg" type="text" placeholder="Type a message..." autocomplete="off" disabled>
   <button id="send" disabled>Send</button>
 </div>
 
 <script type="module">
-import { TalkingHead } from "talkinghead";
-import { BodyAnimationSystem, FloorState } from "./animations/body-animations.mjs";
+import { AvatarEngine, AvatarControls } from './avatar-component.mjs';
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
 const sendBtn = document.getElementById('send');
-const status = document.getElementById('status');
+const statusEl = document.getElementById('status');
 const micBtn = document.getElementById('mic');
 const avatarContainer = document.getElementById('avatar-container');
 const toggleAvatar = document.getElementById('toggle-avatar');
-let ws;
-let audioCtx;
-let head = null;
-let bodyAnim = null;
-let micStream = null;
-let micProcessor = null;
-let micSource = null;
-let recording = false;
-
-// Turn tracking (D3, D5, D10)
-let activeTurnSeq = -1;
-let pendingSegments = new Map();
-let turnAudioPlayed = new Set();
-let turnCuesAttached = new Set();
-let turnComplete = false;
-let turnSafetyTimer = null;
-const TURN_SAFETY_TIMEOUT = 10000;
-
-let baselineMood = 'neutral';
-let turnMood = null;
-let turnMoodTimer = null;
-const TURN_MOOD_DECAY_MS = 3000;
-
-function applyMood() {
-  const effective = turnMood || baselineMood;
-  if (head) head.setMood(effective);
-}
-
-function setTurnMood(mood) {
-  clearTimeout(turnMoodTimer);
-  turnMood = mood;
-  applyMood();
-  turnMoodTimer = setTimeout(() => { turnMood = null; applyMood(); }, TURN_MOOD_DECAY_MS);
-}
-
-function sendWsJson(obj) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(obj));
-  }
-}
-
-function enterFloorState(state) {
-  if (!bodyAnim) return;
-  bodyAnim.setFloorState(state);
-}
-
-function parseBinaryHeader(buffer) {
-  const view = new DataView(buffer);
-  return {
-    version: view.getUint8(0),
-    isFinal: view.getUint8(1) !== 0,
-    segmentIndex: view.getUint16(2, true),
-    turnSeq: view.getUint32(4, true),
-  };
-}
-
-function resetTurnState() {
-  pendingSegments.clear();
-  turnAudioPlayed.clear();
-  turnCuesAttached.clear();
-  turnComplete = false;
-  clearTimeout(turnSafetyTimer);
-  turnSafetyTimer = null;
-}
-
-function checkTurnFinished() {
-  if (!turnComplete) return;
-  for (const [key, seg] of pendingSegments) {
-    if (seg.hasAudio && !turnAudioPlayed.has(seg.index)) return;
-  }
-  enterFloorState(FloorState.IDLE);
-  sendWsJson({ type: 'playbackComplete', turnSeq: activeTurnSeq });
-  resetTurnState();
-}
 
 function addMessage(text, cls) {
   const div = document.createElement('div');
@@ -210,429 +69,102 @@ function addMessage(text, cls) {
   div.textContent = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
-  return div;
 }
 
-function connect() {
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  ws = new WebSocket(proto + '//' + location.host + '/ws/avatar');
-
-  ws.onopen = () => {
-    status.textContent = 'Connected';
+const engine = new AvatarEngine(avatarContainer, {
+  onMessage: ({ text, role }) => addMessage(text, role),
+  onStatus: (msg) => { statusEl.textContent = msg; },
+  onConnected: () => {
+    statusEl.textContent = 'Connected';
     msgInput.disabled = false;
     sendBtn.disabled = false;
     micBtn.disabled = false;
-    addMessage('Connected — type a message or hold Mic to talk.', 'system');
-  };
-
-  ws.onmessage = (evt) => {
-    if (typeof evt.data === 'string') {
-      const msg = JSON.parse(evt.data);
-      switch (msg.type) {
-        case 'transcript':
-          addMessage(msg.text, 'user');
-          break;
-
-        case 'segment': {
-          const key = `${msg.turnSeq}:${msg.index}`;
-          pendingSegments.set(key, {
-            index: msg.index,
-            text: msg.text,
-            hasAudio: msg.hasAudio,
-            visemes: msg.visemes || [],
-            cues: msg.cues || [],
-          });
-          if (msg.text) addMessage(msg.text, 'avatar');
-          if (msg.turnSeq !== activeTurnSeq) {
-            resetTurnState();
-            activeTurnSeq = msg.turnSeq;
-          }
-          if (!head || !msg.hasAudio) {
-            for (const cue of (msg.cues || [])) {
-              if (cue.type === 'gesture' && bodyAnim) bodyAnim.triggerGesture(cue.tag);
-              if (cue.type === 'mood') setTurnMood(cue.mood);
-            }
-          }
-          if (!msg.hasAudio) {
-            turnAudioPlayed.add(msg.index);
-            checkTurnFinished();
-          }
-          break;
-        }
-
-        case 'turnComplete':
-          turnComplete = true;
-          if (msg.segmentCount === 0) {
-            sendWsJson({ type: 'playbackComplete', turnSeq: msg.turnSeq });
-            enterFloorState(FloorState.IDLE);
-            resetTurnState();
-          } else {
-            checkTurnFinished();
-            clearTimeout(turnSafetyTimer);
-            turnSafetyTimer = setTimeout(() => {
-              console.warn('[Turn] Safety timeout — forcing idle');
-              enterFloorState(FloorState.IDLE);
-              sendWsJson({ type: 'playbackComplete', turnSeq: activeTurnSeq });
-              resetTurnState();
-            }, TURN_SAFETY_TIMEOUT);
-          }
-          break;
-
-        case 'gesture':
-          if (bodyAnim) bodyAnim.triggerGesture(msg.tag);
-          break;
-
-        case 'mood':
-          baselineMood = msg.state;
-          applyMood();
-          break;
-
-        case 'error':
-          addMessage('Error: ' + msg.message, 'system');
-          break;
-
-        case 'partial':
-          status.textContent = 'Hearing: ' + msg.text;
-          break;
-      }
-    } else {
-      handleAudioFrame(evt.data);
-    }
-  };
-
-  ws.onclose = () => {
-    status.textContent = 'Disconnected — reconnecting...';
+    addMessage('Connected — type a message or click Mic to talk.', 'system');
+  },
+  onDisconnected: () => {
     msgInput.disabled = true;
     sendBtn.disabled = true;
     micBtn.disabled = true;
-    stopRecording();
-    setTimeout(connect, 2000);
-  };
+  }
+});
 
-  ws.onerror = () => {
-    status.textContent = 'Connection error';
-  };
-}
+const controls = new AvatarControls(document.getElementById('controls'), engine);
 
 function sendText() {
   const text = msgInput.value.trim();
-  if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
-  const llmModel = document.getElementById('llmModel').value;
-  const ttsModel = document.getElementById('ttsModel').value;
-  ws.send(JSON.stringify({ type: 'text', text: text, llmModel: llmModel, ttsModel: ttsModel }));
+  if (!text) return;
+  engine.sendText(text, { llmModel: controls.llmModel, ttsModel: controls.ttsModel });
   msgInput.value = '';
-  status.textContent = 'Processing...';
-  enterFloorState(FloorState.THINKING);
+  statusEl.textContent = 'Processing...';
 }
 
-var playQueue = [];
-var isPlaying = false;
+sendBtn.addEventListener('click', sendText);
+msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendText(); });
 
-async function handleAudioFrame(blob) {
-  try {
-    const arrayBuf = await blob.arrayBuffer();
-    const header = parseBinaryHeader(arrayBuf);
-    const audioBytes = arrayBuf.slice(8);
-
-    if (!audioCtx) audioCtx = new AudioContext();
-    const audioBuf = await audioCtx.decodeAudioData(audioBytes);
-
-    if (head) {
-      if (header.turnSeq === activeTurnSeq) enterFloorState(FloorState.SPEAKING);
-
-      const key = `${header.turnSeq}:${header.segmentIndex}`;
-      const seg = pendingSegments.get(key);
-      const r = { audio: audioBuf };
-      const firstChunk = !turnCuesAttached.has(key);
-      if (firstChunk) turnCuesAttached.add(key);
-
-      if (firstChunk && seg && seg.visemes && seg.visemes.length > 0) {
-        r.visemes = []; r.vtimes = []; r.vdurations = [];
-        for (const v of seg.visemes) {
-          r.visemes.push(v.viseme);
-          r.vtimes.push(v.startMs);
-          r.vdurations.push(v.endMs - v.startMs);
-        }
-      }
-
-      const markers = [];
-      const mtimes = [];
-      for (const cue of (firstChunk ? (seg?.cues || []) : [])) {
-        if (cue.type === 'gesture' && bodyAnim) {
-          const tag = cue.tag;
-          const stroke = bodyAnim.strokeMs(tag);
-          const triggerMs = Math.max(0, (cue.offsetMs || 0) - stroke - 150);
-          markers.push(() => bodyAnim.triggerGesture(tag));
-          mtimes.push(triggerMs);
-        }
-        if (cue.type === 'mood') {
-          const mood = cue.mood;
-          markers.push(() => setTurnMood(mood));
-          mtimes.push(cue.offsetMs || 0);
-        }
-      }
-
-      if (header.isFinal) {
-        const segIdx = header.segmentIndex;
-        markers.push(() => { turnAudioPlayed.add(segIdx); checkTurnFinished(); });
-        mtimes.push(audioBuf.duration * 1000);
-      }
-
-      if (markers.length > 0) { r.markers = markers; r.mtimes = mtimes; }
-      head.speakAudio(r, { isRaw: true });
-    } else {
-      if (header.turnSeq === activeTurnSeq && !isPlaying && playQueue.length === 0) {
-        enterFloorState(FloorState.SPEAKING);
-      }
-      playQueue.push({ audio: audioBuf, turnSeq: header.turnSeq, segmentIndex: header.segmentIndex, isFinal: header.isFinal });
-      if (!isPlaying) playNextQueued();
-    }
-  } catch (e) {
-    console.error('[Audio] Frame error:', e);
-  }
-}
-
-function playNextQueued() {
-  if (playQueue.length === 0) { isPlaying = false; status.textContent = 'Ready'; return; }
-  isPlaying = true;
-  var item = playQueue.shift();
-
-  if (!audioCtx) audioCtx = new AudioContext();
-  var source = audioCtx.createBufferSource();
-  source.buffer = item.audio;
-  var rate = parseFloat(document.getElementById('speed').value);
-  source.playbackRate.value = rate;
-  source.connect(audioCtx.destination);
-  source.start();
-  status.textContent = 'Speaking... (' + playQueue.length + ' queued)';
-
-  source.onended = function() {
-    if (item.isFinal) {
-      turnAudioPlayed.add(item.segmentIndex);
-      checkTurnFinished();
-    }
-    playNextQueued();
-  };
-}
-
-document.getElementById('speed').addEventListener('input', function() {
-  document.getElementById('speedVal').textContent = this.value + 'x';
-});
-
-var audioFrameCount = 0;
+let recording = false;
+let audioCtx = null;
+let micStream = null;
+let micProcessor = null;
+let micSource = null;
 
 async function startRecording() {
   if (recording) return;
-  console.log('[MIC] startRecording called');
   try {
     if (!audioCtx) audioCtx = new AudioContext();
-    console.log('[MIC] AudioContext sampleRate:', audioCtx.sampleRate);
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+    });
     micSource = audioCtx.createMediaStreamSource(micStream);
     micProcessor = audioCtx.createScriptProcessor(4096, 1, 1);
-    audioFrameCount = 0;
     micProcessor.onaudioprocess = function(e) {
-      if (!recording || !ws || ws.readyState !== WebSocket.OPEN) return;
-      var input = e.inputBuffer.getChannelData(0);
-      var resampled = resampleTo16k(input, audioCtx.sampleRate);
-      var buf = new ArrayBuffer(resampled.length * 4);
+      if (!recording) return;
+      const input = e.inputBuffer.getChannelData(0);
+      const resampled = resampleTo16k(input, audioCtx.sampleRate);
+      const buf = new ArrayBuffer(resampled.length * 4);
       new Float32Array(buf).set(resampled);
-      ws.send(buf);
-      audioFrameCount++;
+      engine.sendBinary(buf);
     };
     micSource.connect(micProcessor);
     micProcessor.connect(audioCtx.destination);
-    var llm = document.getElementById('llmModel').value;
-    var tts = document.getElementById('ttsModel').value;
-    ws.send(JSON.stringify({ type: 'start', sampleRate: configSampleRate, llmModel: llm, ttsModel: tts }));
-    console.log('[MIC] sent START, mic active');
+    engine.startRecording(16000, { llmModel: controls.llmModel, ttsModel: controls.ttsModel });
     recording = true;
     micBtn.classList.add('recording');
     micBtn.textContent = 'Recording...';
-    status.textContent = 'Listening...';
-    enterFloorState(FloorState.LISTENING);
+    statusEl.textContent = 'Listening...';
   } catch (e) {
-    console.error('[MIC] error:', e);
     addMessage('Microphone error: ' + e.message, 'system');
   }
 }
 
 function stopRecording() {
   if (!recording) return;
-  console.log('[MIC] stopRecording called, frames sent:', audioFrameCount);
   micBtn.classList.remove('recording');
   micBtn.textContent = 'Finishing...';
   micBtn.disabled = true;
-  status.textContent = 'Capturing final audio...';
   setTimeout(function() {
     recording = false;
-    console.log('[MIC] sending STOP, total frames:', audioFrameCount);
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'stop' }));
-    }
-    status.textContent = 'Processing speech...';
-    enterFloorState(FloorState.THINKING);
+    engine.stopRecording();
+    statusEl.textContent = 'Processing speech...';
     micBtn.textContent = 'Mic';
     if (micProcessor) { micProcessor.disconnect(); micProcessor = null; }
     if (micSource) { micSource.disconnect(); micSource = null; }
-    if (micStream) { micStream.getTracks().forEach(function(t) { t.stop(); }); micStream = null; }
+    if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
     micBtn.disabled = false;
   }, 500);
 }
 
 function resampleTo16k(input, fromRate) {
   if (fromRate === 16000) return input;
-  var ratio = fromRate / 16000;
-  var len = Math.round(input.length / ratio);
-  var out = new Float32Array(len);
-  for (var i = 0; i < len; i++) {
-    out[i] = input[Math.round(i * ratio)];
-  }
+  const ratio = fromRate / 16000;
+  const len = Math.round(input.length / ratio);
+  const out = new Float32Array(len);
+  for (let i = 0; i < len; i++) out[i] = input[Math.round(i * ratio)];
   return out;
 }
 
-micBtn.addEventListener('click', function() {
-  if (recording) { stopRecording(); } else { startRecording(); }
-});
+micBtn.addEventListener('click', () => { if (recording) stopRecording(); else startRecording(); });
 
-sendBtn.addEventListener('click', sendText);
-msgInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') sendText();
-});
-
-let lastTypingActivity = 0;
-msgInput.addEventListener('input', function() {
-  const now = Date.now();
-  if (now - lastTypingActivity > 2000) {
-    sendWsJson({ type: 'userActivity', kind: 'TYPING' });
-    lastTypingActivity = now;
-  }
-});
-
-document.addEventListener('visibilitychange', function() {
-  sendWsJson({ type: 'userActivity', kind: 'VISIBILITY_CHANGE' });
-});
-
-var avatarConfig = null;
-var configSampleRate = 16000;
-
-fetch('/api/avatar/config')
-  .then(function(r) { return r.json(); })
-  .then(function(config) {
-    avatarConfig = config;
-    configSampleRate = config.sampleRate || 16000;
-    if (config.speed) {
-      document.getElementById('speed').value = config.speed;
-      document.getElementById('speedVal').textContent = config.speed + 'x';
-    }
-    if (config.minPlaybackRate) {
-      document.getElementById('speed').min = config.minPlaybackRate;
-    }
-    if (config.model) {
-      var llmSelect = document.getElementById('llmModel');
-      for (var i = 0; i < llmSelect.options.length; i++) {
-        if (llmSelect.options[i].value === config.model) {
-          llmSelect.value = config.model;
-          break;
-        }
-      }
-    }
-  })
-  .catch(function(err) {
-    console.warn('Failed to load avatar config:', err);
-  });
-
-connect();
-
-var modelStatusEl = document.getElementById('model-status');
-var ttsSelect = document.getElementById('ttsModel');
-var modelPollTimer = null;
-
-function loadVoices() {
-  fetch('/api/avatar/voices')
-    .then(r => r.json())
-    .then(voices => {
-      ttsSelect.innerHTML = '';
-      var groups = {};
-      for (var v of voices) {
-        var group, label;
-        if (v.startsWith('qwen3:clone:')) { group = 'Qwen3 Cloned'; label = v.substring(12).replace(/_/g, ' '); }
-        else if (v.startsWith('qwen3:')) { group = 'Qwen3-TTS'; label = v.substring(6); }
-        else if (v.startsWith('kokoro:')) { group = 'Kokoro'; label = v.substring(7).replace(/_/g, ' '); }
-        else if (v.startsWith('sherpa:')) { group = 'Sherpa VITS'; label = v.substring(7); }
-        else if (v.startsWith('audio8') || v === 'cosyvoice3') { group = 'Experimental'; label = v; }
-        else { group = 'VITS'; label = v; }
-        if (!groups[group]) groups[group] = [];
-        groups[group].push({ value: v, label: label });
-      }
-      for (var gname of Object.keys(groups)) {
-        var optgroup = document.createElement('optgroup');
-        optgroup.label = gname;
-        for (var item of groups[gname]) {
-          var opt = document.createElement('option');
-          opt.value = item.value;
-          opt.textContent = item.label;
-          optgroup.appendChild(opt);
-        }
-        ttsSelect.appendChild(optgroup);
-      }
-    })
-    .then(function() {
-      if (avatarConfig && avatarConfig.ttsVoice) ttsSelect.value = avatarConfig.ttsVoice;
-    })
-    .catch(function() { ttsSelect.innerHTML = '<option value="lessac-medium">lessac-medium</option>'; });
-}
-loadVoices();
-
-function pollModelStatus() {
-  fetch('/api/models/status')
-    .then(r => r.json())
-    .then(data => {
-      var total = Object.keys(data).length;
-      var ready = 0;
-      var downloading = 0;
-      var errors = 0;
-      for (var key in data) {
-        if (data[key] === 'READY') ready++;
-        else if (data[key] === 'DOWNLOADING') downloading++;
-        else if (data[key] === 'ERROR') errors++;
-      }
-
-      for (var i = 0; i < ttsSelect.options.length; i++) {
-        var opt = ttsSelect.options[i];
-        var st = data[opt.value];
-        opt.disabled = st !== 'READY';
-        if (st === 'DOWNLOADING') opt.text = opt.text.replace(/ \(downloading\.\.\.\)$/, '') + ' (downloading...)';
-        else opt.text = opt.text.replace(/ \(downloading\.\.\.\)$/, '');
-      }
-
-      if (ready === total) {
-        modelStatusEl.innerHTML = '<span class="ready">All voice models ready</span>';
-        clearInterval(modelPollTimer);
-        setTimeout(function() { modelStatusEl.style.display = 'none'; }, 3000);
-      } else if (downloading > 0) {
-        modelStatusEl.innerHTML = '<span class="downloading">Downloading voice models: ' + ready + '/' + total + ' ready</span>';
-      } else if (errors > 0) {
-        modelStatusEl.innerHTML = '<span class="error">Model errors: ' + errors + '/' + total + '</span>';
-        if (ready + errors === total) clearInterval(modelPollTimer);
-      }
-    })
-    .catch(function() {});
-}
-
-modelPollTimer = setInterval(pollModelStatus, 2000);
-pollModelStatus();
-
-document.getElementById('avatarModel').addEventListener('change', async function() {
-  if (!head || !avatarContainer.classList.contains('active')) return;
-  try {
-    addMessage('Loading avatar...', 'system');
-    await head.showAvatar({ url: './' + this.value, body: 'F', avatarMood: 'neutral', lipsyncLang: 'en' });
-    addMessage('Avatar loaded.', 'system');
-  } catch (e) { addMessage('Avatar load error: ' + e.message, 'system'); }
-});
-
-toggleAvatar.addEventListener('click', async function() {
+toggleAvatar.addEventListener('click', async () => {
   if (avatarContainer.classList.contains('active')) {
     avatarContainer.classList.remove('active');
     toggleAvatar.textContent = 'Show 3D Avatar';
@@ -640,96 +172,29 @@ toggleAvatar.addEventListener('click', async function() {
   }
   avatarContainer.classList.add('active');
   toggleAvatar.textContent = 'Hide 3D Avatar';
-  if (!head) {
-    try {
-      addMessage('Loading 3D avatar...', 'system');
-      head = new TalkingHead(avatarContainer, {
-        ttsEndpoint: null,
-        lipsyncModules: ['en'],
-        cameraView: 'upper',
-        cameraRotateEnable: true,
-        cameraZoomEnable: true,
-        cameraPanEnable: true,
-        avatarIdleEyeContact: 0.4,
-        avatarIdleHeadMove: 0.6,
-        avatarSpeakingEyeContact: 0.7,
-        avatarSpeakingHeadMove: 0.7,
-        modelMovementFactor: 0.8
-      });
-      await head.showAvatar({
-        url: './avatar.glb',
-        body: 'F',
-        avatarMood: 'neutral',
-        lipsyncLang: 'en'
-      });
-      window._head = head;
-      addMessage('3D avatar ready.', 'system');
-      head.setMood('neutral');
-
-      try {
-        if (bodyAnim) {
-          if (head) head.unregisterMorphLayer('gestureExpressions');
-          bodyAnim.dispose(); bodyAnim = null;
-        }
-
-        var avatarModel = head.armature;
-        if (avatarModel) {
-          const configResp = await fetch('animations/avatar-performance.json');
-          const config = await configResp.json();
-          bodyAnim = await BodyAnimationSystem.create(avatarModel, config);
-
-          head.registerMixer(bodyAnim.mixer, {
-            boneClaim: [
-              'Spine', 'Spine1', 'Spine2', 'Hips',
-              'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand',
-              'LeftHandThumb1', 'LeftHandThumb2', 'LeftHandThumb3',
-              'LeftHandIndex1', 'LeftHandIndex2', 'LeftHandIndex3',
-              'LeftHandMiddle1', 'LeftHandMiddle2', 'LeftHandMiddle3',
-              'LeftHandRing1', 'LeftHandRing2', 'LeftHandRing3',
-              'LeftHandPinky1', 'LeftHandPinky2', 'LeftHandPinky3',
-              'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
-              'RightHandThumb1', 'RightHandThumb2', 'RightHandThumb3',
-              'RightHandIndex1', 'RightHandIndex2', 'RightHandIndex3',
-              'RightHandMiddle1', 'RightHandMiddle2', 'RightHandMiddle3',
-              'RightHandRing1', 'RightHandRing2', 'RightHandRing3',
-              'RightHandPinky1', 'RightHandPinky2', 'RightHandPinky3',
-              'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase',
-              'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
-            ],
-          });
-
-          head.registerMorphLayer('gestureExpressions', {
-            order: 10,
-            blend: 'additive',
-            update: (dt, get, set) => {
-              const exprs = bodyAnim.sampleExpressions();
-              if (!exprs) return;
-              for (const [name, value] of Object.entries(exprs)) {
-                set(name, value);
-              }
-            }
-          });
-
-          addMessage('Body animations loaded (floor state: ' + bodyAnim.floorState + ').', 'system');
-        }
-      } catch (e) {
-        console.warn('Body animation load failed:', e);
-        addMessage('Body animations unavailable: ' + e.message, 'system');
-      }
-    } catch (e) {
-      addMessage('Avatar load error: ' + e.message, 'system');
-      head = null;
-    }
+  try {
+    addMessage('Loading 3D avatar...', 'system');
+    await engine.initAvatar();
+    addMessage('3D avatar ready.', 'system');
+  } catch (e) {
+    addMessage('Avatar load error: ' + e.message, 'system');
   }
 });
 
-document.getElementById('playAnim').addEventListener('click', function() {
-  var clipName = document.getElementById('animPicker').value;
-  if (clipName && bodyAnim) {
-    bodyAnim.triggerGesture(clipName);
-    addMessage('Playing: ' + clipName, 'system');
+let lastTypingActivity = 0;
+msgInput.addEventListener('input', function() {
+  const now = Date.now();
+  if (now - lastTypingActivity > 2000) {
+    engine.sendJson({ type: 'userActivity', kind: 'TYPING' });
+    lastTypingActivity = now;
   }
 });
+
+document.addEventListener('visibilitychange', function() {
+  engine.sendJson({ type: 'userActivity', kind: 'VISIBILITY_CHANGE' });
+});
+
+engine.connect();
 </script>
 </body>
 </html>

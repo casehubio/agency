@@ -414,7 +414,7 @@ Arbitration rules:
 ## D12: Performance vocabulary — the whole taxonomy in one resource behind an SPI
 
 **Choice:**
-- **One file:** `speech-demo/src/main/resources/META-INF/resources/animations/avatar-performance.json`. It is both web-served (the client `fetch`es it) and on the classpath (Java loads it). It holds **all** performance data, now:
+- **One file:** `../../../speech-demo/src/main/resources/META-INF/resources/animations/avatar-performance.json`. It is both web-served (the client `fetch`es it) and on the classpath (Java loads it). It holds **all** performance data, now:
 
   | Section | Contents |
   |---|---|
