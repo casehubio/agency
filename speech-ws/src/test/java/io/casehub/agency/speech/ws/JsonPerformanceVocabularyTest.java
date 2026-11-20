@@ -1,4 +1,4 @@
-package io.casehub.agency.speech.demo;
+package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;

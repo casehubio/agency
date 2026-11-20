@@ -1,6 +1,7 @@
-package io.casehub.agency.speech.demo;
+package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.TtsModelRegistry;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -15,12 +16,15 @@ import java.util.List;
 public class VoicesEndpoint {
 
     @Inject
-    TtsModelRegistry ttsRegistry;
+    Instance<TtsModelRegistry> ttsRegistry;
 
     @GET
     @Path("/voices")
     public Response voices() {
-        List<String> keys = ttsRegistry.models().keySet().stream().sorted().toList();
+        if (!ttsRegistry.isResolvable()) {
+            return Response.ok(List.of()).build();
+        }
+        List<String> keys = ttsRegistry.get().models().keySet().stream().sorted().toList();
         return Response.ok(keys).build();
     }
 }

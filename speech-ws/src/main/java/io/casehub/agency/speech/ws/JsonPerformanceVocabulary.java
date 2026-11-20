@@ -1,6 +1,5 @@
-package io.casehub.agency.speech.demo;
+package io.casehub.agency.speech.ws;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;

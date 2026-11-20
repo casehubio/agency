@@ -1,8 +1,8 @@
-package io.casehub.agency.speech.demo;
+package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.connectors.voice.spi.TextToSpeech;
-import jakarta.ws.rs.core.Response;
+import jakarta.enterprise.inject.Instance;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -10,10 +10,26 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class VoicesEndpointTest {
 
     private static final TextToSpeech STUB = mock(TextToSpeech.class);
+
+    @SuppressWarnings("unchecked")
+    private static Instance<TtsModelRegistry> instanceOf(TtsModelRegistry registry) {
+        Instance<TtsModelRegistry> instance = mock(Instance.class);
+        when(instance.isResolvable()).thenReturn(true);
+        when(instance.get()).thenReturn(registry);
+        return instance;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Instance<TtsModelRegistry> emptyInstance() {
+        Instance<TtsModelRegistry> instance = mock(Instance.class);
+        when(instance.isResolvable()).thenReturn(false);
+        return instance;
+    }
 
     @Test
     void returnsVoiceKeysSorted() {
@@ -25,7 +41,7 @@ class VoicesEndpointTest {
 
         var registry = new TtsModelRegistry(models);
         var endpoint = new VoicesEndpoint();
-        endpoint.ttsRegistry = registry;
+        endpoint.ttsRegistry = instanceOf(registry);
 
         var response = endpoint.voices();
         assertThat(response.getStatus()).isEqualTo(200);
@@ -39,7 +55,20 @@ class VoicesEndpointTest {
     void returnsEmptyListWhenNoModels() {
         var registry = new TtsModelRegistry();
         var endpoint = new VoicesEndpoint();
-        endpoint.ttsRegistry = registry;
+        endpoint.ttsRegistry = instanceOf(registry);
+
+        var response = endpoint.voices();
+        assertThat(response.getStatus()).isEqualTo(200);
+
+        @SuppressWarnings("unchecked")
+        var body = (List<String>) response.getEntity();
+        assertThat(body).isEmpty();
+    }
+
+    @Test
+    void returnsEmptyListWhenRegistryUnresolvable() {
+        var endpoint = new VoicesEndpoint();
+        endpoint.ttsRegistry = emptyInstance();
 
         var response = endpoint.voices();
         assertThat(response.getStatus()).isEqualTo(200);
