@@ -516,37 +516,6 @@ document.addEventListener('visibilitychange', function() {
 var avatarConfig = null;
 var configSampleRate = 16000;
 
-const ENGINE_LABELS = {
-  vits: 'Piper VITS',
-  sherpa: 'Sherpa VITS',
-  kokoro: 'Kokoro',
-  qwen3: 'Qwen3-TTS',
-};
-
-function populateVoiceDropdown(config) {
-  var ttsSelect = document.getElementById('ttsModel');
-  ttsSelect.innerHTML = '';
-  if (!config.tts || !config.tts.engines) {
-    ttsSelect.innerHTML = '<option value="">No voices configured</option>';
-    return;
-  }
-  config.tts.engines.forEach(function(engine) {
-    var label = ENGINE_LABELS[engine.type] || engine.type;
-    var group = document.createElement('optgroup');
-    group.label = label;
-    (engine.voices || []).forEach(function(voice) {
-      var name = typeof voice === 'string' ? voice : voice.name;
-      var key = engine.type === 'vits' ? name : engine.type + ':' + name;
-      var opt = document.createElement('option');
-      opt.value = key;
-      opt.textContent = name;
-      group.appendChild(opt);
-    });
-    if (group.children.length > 0) ttsSelect.appendChild(group);
-  });
-  if (config.ttsVoice) ttsSelect.value = config.ttsVoice;
-}
-
 fetch('/api/avatar/config')
   .then(function(r) { return r.json(); })
   .then(function(config) {
@@ -556,11 +525,21 @@ fetch('/api/avatar/config')
       document.getElementById('speed').value = config.speed;
       document.getElementById('speedVal').textContent = config.speed + 'x';
     }
-    populateVoiceDropdown(config);
+    if (config.minPlaybackRate) {
+      document.getElementById('speed').min = config.minPlaybackRate;
+    }
+    if (config.model) {
+      var llmSelect = document.getElementById('llmModel');
+      for (var i = 0; i < llmSelect.options.length; i++) {
+        if (llmSelect.options[i].value === config.model) {
+          llmSelect.value = config.model;
+          break;
+        }
+      }
+    }
   })
   .catch(function(err) {
     console.warn('Failed to load avatar config:', err);
-    document.getElementById('ttsModel').innerHTML = '<option value="">Config unavailable</option>';
   });
 
 connect();
@@ -597,6 +576,9 @@ function loadVoices() {
         }
         ttsSelect.appendChild(optgroup);
       }
+    })
+    .then(function() {
+      if (avatarConfig && avatarConfig.ttsVoice) ttsSelect.value = avatarConfig.ttsVoice;
     })
     .catch(function() { ttsSelect.innerHTML = '<option value="lessac-medium">lessac-medium</option>'; });
 }

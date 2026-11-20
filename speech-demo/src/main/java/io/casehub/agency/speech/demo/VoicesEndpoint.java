@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.demo;
 
-import io.casehub.agency.speech.ws.TtsModelRegistry;
+import io.casehub.agency.speech.TtsModelRegistry;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

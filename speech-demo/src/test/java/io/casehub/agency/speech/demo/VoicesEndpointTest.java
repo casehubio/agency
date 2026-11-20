@@ -1,6 +1,6 @@
 package io.casehub.agency.speech.demo;
 
-import io.casehub.agency.speech.ws.TtsModelRegistry;
+import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
