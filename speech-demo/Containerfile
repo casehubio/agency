@@ -1,0 +1,23 @@
+FROM amazoncorretto:22
+
+RUN yum install -y tar bzip2 && yum clean all
+RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && yum install -y nodejs && yum clean all
+RUN npm install -g @anthropic-ai/claude-code
+
+COPY target/casehub-agency-speech-demo-0.4-SNAPSHOT-runner.jar /app/app.jar
+RUN yum install -y shadow-utils && yum clean all && useradd -m -s /bin/bash avatar
+COPY src/main/resources/META-INF/eidos/agent-config.yaml /home/avatar/.casehub/agent-config.yaml
+RUN chown -R avatar:avatar /home/avatar/.casehub
+
+WORKDIR /app
+USER avatar
+EXPOSE 8080
+
+CMD ["java", "-Xmx2g", \
+     "--enable-native-access=ALL-UNNAMED", \
+     "--add-opens", "java.base/java.nio=ALL-UNNAMED", \
+     "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", \
+     "--add-opens", "java.base/java.lang=ALL-UNNAMED", \
+     "-Dio.netty.tryReflectionSetAccessible=true", \
+     "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
+     "-jar", "app.jar"]

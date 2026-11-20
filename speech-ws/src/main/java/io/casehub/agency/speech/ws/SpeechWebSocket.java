@@ -51,18 +51,23 @@ public class SpeechWebSocket {
     @Inject
     jakarta.enterprise.inject.Instance<io.casehub.agency.speech.AvatarCognition> avatarCognition;
 
-    private SpeechSession session;
-    private @org.jspecify.annotations.Nullable Thread proactiveThread;
-    private @org.jspecify.annotations.Nullable SilenceAttentionPolicy attentionPolicy;
+    private final java.util.concurrent.ConcurrentHashMap<String, SpeechSession> sessions = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.ConcurrentHashMap<String, Thread> proactiveThreads = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.ConcurrentHashMap<String, SilenceAttentionPolicy> attentionPolicies = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static final System.Logger LOG = System.getLogger("speech-ws");
 
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
+      try {
+        String connId = connection.id();
+        LOG.log(System.Logger.Level.INFO, "WebSocket onOpen connId={0}", connId);
         var assembler = new DefaultPromptAssembler(
                 avatarConfig.systemPrompt().orElse(null));
 
         java.util.function.Function<AssembledPrompt, String> generator    = null;
         SpeechSession.StreamingResponseGenerator             streamingGen = null;
-        if (agentProvider.isResolvable()) {
+        try { if (agentProvider.isResolvable()) {
             var agent = agentProvider.get();
             generator = prompt -> {
                 var config = prompt.model() != null
@@ -114,11 +119,14 @@ public class SpeechWebSocket {
                 }
                 return fullText.toString();
             };
+        } } catch (Exception e) {
+            System.getLogger("speech-ws").log(System.Logger.Level.WARNING,
+                    "LLM provider unavailable — text responses disabled: " + e.getMessage());
         }
 
         CorrectionHooks hooks = correctionHooks.isResolvable() ? correctionHooks.get() : null;
 
-        session = new SpeechSession(
+        var session = new SpeechSession(
                 sttService, ttsService, cleanupConfig,
                 generator,
                 streamingGen,
@@ -156,24 +164,32 @@ public class SpeechWebSocket {
             }
             session.withAvatarCognition(cog, agentId, tenantId);
             cog.initialize(agentId, tenantId);
-            startProactiveTick(cog, agentId, tenantId, avatarConfig.proactiveTickIntervalSeconds(),
+            startProactiveTick(connId, session, cog, agentId, tenantId,
+                               avatarConfig.proactiveTickIntervalSeconds(),
                                text -> connection.sendTextAndAwait(text));
         } else if (avatarConfig.attentionEnabled()) {
-            attentionPolicy = new SilenceAttentionPolicy(
+            var policy = new SilenceAttentionPolicy(
                     session.floorState(),
                     text -> connection.sendTextAndAwait(text),
                     avatarConfig.attentionSubtleSeconds(),
                     avatarConfig.attentionStrongSeconds());
-            attentionPolicy.start();
+            attentionPolicies.put(connId, policy);
+            policy.start();
         }
         session.setMinPlaybackRate(avatarConfig.minPlaybackRate());
+        sessions.put(connId, session);
+        LOG.log(System.Logger.Level.INFO, "WebSocket session initialized connId={0}", connId);
+      } catch (Exception e) {
+        LOG.log(System.Logger.Level.ERROR, "WebSocket onOpen failed: " + e.getMessage(), e);
+      }
     }
 
-    private void startProactiveTick(io.casehub.agency.speech.AvatarCognition cog,
+    private void startProactiveTick(String connId, SpeechSession session,
+                                     io.casehub.agency.speech.AvatarCognition cog,
                                      String agentId, String tenantId, int intervalSeconds,
                                      java.util.function.Consumer<String> textSink) {
         var moodMapper = cog.providesAffect() ? new MoodMapper() : null;
-        proactiveThread = Thread.ofVirtual().name("avatar-proactive").start(() -> {
+        var thread = Thread.ofVirtual().name("avatar-proactive").start(() -> {
             while (!session.isClosed()) {
                 try {
                     Thread.sleep(java.time.Duration.ofSeconds(intervalSeconds));
@@ -211,10 +227,16 @@ public class SpeechWebSocket {
                 }
             }
         });
+        proactiveThreads.put(connId, thread);
     }
 
     @OnTextMessage
-    public void onText(String message) {
+    public void onText(WebSocketConnection connection, String message) {
+        var session = sessions.get(connection.id());
+        if (session == null || session.isClosed()) {
+            LOG.log(System.Logger.Level.WARNING, "onText with no active session connId={0}", connection.id());
+            return;
+        }
         AvatarMessage msg = MessageCodec.decodeClient(message);
         switch (msg) {
             case AvatarMessage.Start s -> session.handleStart(s);
@@ -228,7 +250,9 @@ public class SpeechWebSocket {
     }
 
     @OnBinaryMessage
-    public void onBinary(byte[] data) {
+    public void onBinary(WebSocketConnection connection, byte[] data) {
+        var session = sessions.get(connection.id());
+        if (session == null) return;
         var     floatBuf = java.nio.ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
         float[] samples  = new float[floatBuf.remaining()];
         floatBuf.get(samples);
@@ -236,15 +260,20 @@ public class SpeechWebSocket {
     }
 
     @OnClose
-    public void onClose() {
+    public void onClose(WebSocketConnection connection) {
+        String connId = connection.id();
+        LOG.log(System.Logger.Level.INFO, "WebSocket onClose connId={0}", connId);
+        var session = sessions.remove(connId);
         if (session != null) {
             session.close();
         }
-        if (proactiveThread != null) {
-            proactiveThread.interrupt();
+        var thread = proactiveThreads.remove(connId);
+        if (thread != null) {
+            thread.interrupt();
         }
-        if (attentionPolicy != null) {
-            attentionPolicy.stop();
+        var policy = attentionPolicies.remove(connId);
+        if (policy != null) {
+            policy.stop();
         }
     }
 
