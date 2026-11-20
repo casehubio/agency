@@ -475,7 +475,15 @@ export class AvatarControls {
           }
           sel.appendChild(optgroup);
         }
-        if (this._config && this._config.ttsVoice) sel.value = this._config.ttsVoice;
+        const saved = localStorage.getItem('avatar-ttsModel');
+        if (saved && sel.querySelector('option[value="' + CSS.escape(saved) + '"]')) {
+          sel.value = saved;
+        } else if (this._config && this._config.ttsVoice) {
+          sel.value = this._config.ttsVoice;
+        }
+        sel.addEventListener('change', () => {
+          localStorage.setItem('avatar-ttsModel', sel.value);
+        });
       })
       .catch(() => { sel.innerHTML = '<option value="lessac-medium">lessac-medium</option>'; });
   }

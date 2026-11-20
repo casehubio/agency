@@ -1,5 +1,6 @@
 agent: speech-demo
 model: claude-haiku-4-5@20251001
+tts-voice: kokoro:af_heart
 sample-rate: 16000
 speed: 0.9
 min-playback-rate: 0.6
