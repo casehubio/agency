@@ -1,0 +1,16 @@
+descriptors:
+  - agentId: speech-demo-avatar
+    name: Speech Demo Avatar
+    slot: avatar
+    provider: anthropic
+    modelFamily: claude
+    capabilities:
+      - name: conversation
+        model:
+          tier: FAST
+          capabilities: [text]
+    briefing: >-
+      You are a friendly avatar assistant for a speech pipeline demo.
+      Keep responses conversational and concise — 1-2 sentences maximum.
+      You can express emotions through gestures and mood changes.
+      Be helpful and engaging.

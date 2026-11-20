@@ -1,0 +1,5 @@
+providers:
+  - vendor: anthropic
+    credential: ${ANTHROPIC_API_KEY}
+defaults:
+  backend: claude

@@ -22,18 +22,27 @@
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-agency-agentic-yaml</artifactId>
+      <artifactId>casehub-agency-speech-deployment</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.casehub</groupId>
-          <artifactId>casehub-agency-core</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
       <artifactId>casehub-connectors-voice-sherpa</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.casehub</groupId>
+      <artifactId>casehub-eidos</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.casehub</groupId>
+      <artifactId>casehub-platform-agent-claude</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.casehub</groupId>
+      <artifactId>casehub-platform-agent-config</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -70,11 +79,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.auth</groupId>
-      <artifactId>google-auth-library-oauth2-http</artifactId>
-      <version>1.34.0</version>
     </dependency>
   </dependencies>
 
