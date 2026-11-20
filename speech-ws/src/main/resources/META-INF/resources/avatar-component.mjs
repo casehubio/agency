@@ -26,6 +26,7 @@ export class AvatarEngine {
     this._turnMoodDecayMs = opts.turnMoodDecayMs || 3000;
     this._playQueue = [];
     this._isPlaying = false;
+    this._playbackRate = opts.playbackRate || 1.0;
     this._onMessage = opts.onMessage || null;
     this._onStatus = opts.onStatus || null;
     this._onConnected = opts.onConnected || null;
@@ -126,6 +127,9 @@ export class AvatarEngine {
   get isConnected() {
     return this._ws && this._ws.readyState === WebSocket.OPEN;
   }
+
+  set playbackRate(rate) { this._playbackRate = rate; }
+  get playbackRate() { return this._playbackRate; }
 
   _emit(event, data) {
     const handler = this['_on' + event.charAt(0).toUpperCase() + event.slice(1)];
@@ -315,6 +319,7 @@ export class AvatarEngine {
     if (!this._audioCtx) this._audioCtx = new AudioContext();
     const source = this._audioCtx.createBufferSource();
     source.buffer = item.audio;
+    source.playbackRate.value = this._playbackRate;
     source.connect(this._audioCtx.destination);
     source.start();
     this._emit('status', 'Speaking... (' + this._playQueue.length + ' queued)');
@@ -409,8 +414,10 @@ export class AvatarControls {
       <button id="ac-playAnim" style="padding:0.3rem 0.6rem;border-radius:6px;border:1px solid #555;background:#2a2a3e;color:#e0e0e0;cursor:pointer;font-size:0.85rem" title="Play selected animation">&#9654;</button>
       <div id="ac-modelStatus" style="font-size:0.75rem;color:#999"></div>
     `;
-    this._el('ac-speed').addEventListener('input', function() {
-      document.getElementById('ac-speedVal').textContent = this.value + 'x';
+    this._el('ac-speed').addEventListener('input', () => {
+      const val = this._el('ac-speed').value;
+      this._el('ac-speedVal').textContent = val + 'x';
+      this._engine.playbackRate = parseFloat(val);
     });
     this._el('ac-avatarModel').addEventListener('change', () => {
       this._engine.switchAvatar(this._el('ac-avatarModel').value);
@@ -432,6 +439,7 @@ export class AvatarControls {
       if (this._config.speed) {
         this._el('ac-speed').value = this._config.speed;
         this._el('ac-speedVal').textContent = this._config.speed + 'x';
+        this._engine.playbackRate = this._config.speed;
       }
       if (this._config.minPlaybackRate) {
         this._el('ac-speed').min = this._config.minPlaybackRate;
