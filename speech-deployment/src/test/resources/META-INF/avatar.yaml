@@ -1,0 +1,5 @@
+agent: test-avatar
+model: claude-haiku-4-5@20251001
+sample-rate: 16000
+speed: 0.9
+min-playback-rate: 0.6
