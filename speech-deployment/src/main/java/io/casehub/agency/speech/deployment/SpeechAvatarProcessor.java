@@ -2,7 +2,6 @@ package io.casehub.agency.speech.deployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.agency.core.yaml.compiler.CompiledAvatar;
-import io.casehub.agency.core.yaml.runtime.AgenticRecorder;
 import io.casehub.agency.core.yaml.runtime.AvatarConfigBean;
 import io.casehub.agency.core.yaml.runtime.AvatarConfigResource;
 import io.casehub.agency.core.yaml.runtime.AvatarRecorder;
@@ -78,30 +77,35 @@ public class SpeechAvatarProcessor {
         if (needsTts) {
             beans.add(SyntheticBeanBuildItem.configure(TtsModelRegistry.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractTtsModelRegistry(compiled))
                     .done());
         }
         if (needsDefaultTts) {
             beans.add(SyntheticBeanBuildItem.configure(TextToSpeech.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractDefaultTts(compiled))
                     .done());
         }
         if (needsStt) {
             beans.add(SyntheticBeanBuildItem.configure(StreamingSpeechToText.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractStt(compiled))
                     .done());
         }
         if (needsCleanup) {
             beans.add(SyntheticBeanBuildItem.configure(CleanupConfig.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractCleanup(compiled))
                     .done());
         }
         if (needsHooks) {
             beans.add(SyntheticBeanBuildItem.configure(CorrectionHooks.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .createWith(recorder.correctionHooksCreator())
                     .done());
         }
@@ -112,7 +116,7 @@ public class SpeechAvatarProcessor {
     @BuildStep
     @Record(STATIC_INIT)
     SyntheticBeanBuildItem registerAvatarConfig(
-            AgenticRecorder recorder,
+            AvatarRecorder recorder,
             SpeechAvatarConfigBuildItem avatarConfig) throws com.fasterxml.jackson.core.JsonProcessingException {
         if (avatarConfig.definition() == null) {
             return null;

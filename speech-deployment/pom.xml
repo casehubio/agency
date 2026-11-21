@@ -17,18 +17,8 @@
   <dependencies>
     <dependency>
       <groupId>io.casehub</groupId>
-      <artifactId>casehub-agency-agentic-yaml</artifactId>
+      <artifactId>casehub-agency-avatar-yaml</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.casehub</groupId>
-          <artifactId>casehub-agency-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.casehub</groupId>
-          <artifactId>casehub-platform-schema-generator</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>

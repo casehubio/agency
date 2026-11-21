@@ -560,6 +560,8 @@ Affordance grounding -- per-entity observation rendering for LLM agents.
 
 YAML surface for agentic orchestration patterns — makes all 8 pattern topologies YAML-expressible via typed spec records, strategy registries, and a pattern compiler.
 
+The avatar speech types in the same package (`AvatarDefinition`, `TtsSpec`, `SttSpec`, `AvatarCompiler`, `CompiledAvatar`, `AvatarRecorder`, `AvatarConfigBean`, `AvatarConfigResource`, …) live in the separate module `casehub-agency-avatar-yaml`, which has no dependency on `casehub-agency` / `agency-core`. `casehub-agency-agentic-yaml` depends on it, so existing consumers are unaffected; speech-only apps (e.g. via `speech-deployment`) can depend on `casehub-agency-avatar-yaml` alone.
+
 | Class | Type | What it does |
 |-------|------|-------------|
 | `PatternDefinition` | sealed interface | 9 topology subtypes (Supervisor, Debate, Loop, Parallel, Voting, Conditional, Sequence, Htn, Swarm) with shared concern fields (routing, termination, aggregation, activation, decomposition, failurePolicy, agents, judgment). Jackson `@JsonTypeInfo` discriminated. Swarm adds: `experience` (replay config), `coordinationModel`, `invocationPolicy`, `preFilterThreshold`. |

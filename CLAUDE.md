@@ -53,6 +53,7 @@ No Quarkus runtime — plain JUnit 5 tests with Mockito. No CDI container in tes
 | `summarisation-yaml/src/main/java/io/casehub/agency/summarisation/yaml/builtin/` | Built-in summariser types — `ThresholdClassifySummariser` (per-event MVEL3 predicates), `PhaseDetectSummariser` (stateful state machine with structured predicates), `CountSummariser`, `FieldExtractSummariser`, `BatchContext`/`BatchContextView` |
 | `summarisation-yaml/src/test/java/io/casehub/agency/summarisation/yaml/` | Tests for YAML surface |
 | `summarisation-yaml-deployment/src/main/java/io/casehub/agency/summarisation/yaml/deployment/` | Quarkus deployment module — `SummarisationYamlProcessor` (YAML discovery, validation), `SummarisationRecorder` (runtime bean registration) |
+| `avatar-yaml/src/main/java/io/casehub/agency/agentic/yaml/` | YAML surface for avatar speech wiring (package `io.casehub.agency.core.yaml.*`) — `AvatarDefinition` + speech specs (`TtsSpec`, `TtsEngineSpec`, `TtsVoiceSpec`, `SttSpec`, `CleanupConfigSpec`, `LipSyncMode`), `AvatarCompiler` → `CompiledAvatar`, `AvatarRecorder` (incl. `createAvatarConfigBean`), `AvatarConfigBean`, `AvatarConfigResource`. No dependency on `casehub-agency` / `agency-core`, so `speech-deployment` uses it without pulling the agency core (agency#538). `agentic-yaml` depends on it, so its consumers still see these types |
 | `agentic-yaml/src/main/java/io/casehub/agency/agentic/yaml/` | YAML surface for agentic orchestration — `PatternDefinition` (8 topologies, each with optional `name`, `description`, `task`), `RoutingSpec`, `TerminationSpec`, `AggregationSpec`, `ActivationSpec`, `DecompositionSpec`, `AgentRefSpec` sealed record hierarchies, `BranchSpec` (condition + agent + optional `description`), `AgentRefSpec` variants now include optional `model` (LLM model identifier), `TaskNodeSpec` (Primitive with optional `description`, Compound with subtasks), `PatternCompiler` (spec → `ExecutionModel`), strategy registries, `AgencySchemaGenerator` (victools schema from spec records), `CapabilityCatalogGenerator` (JSON taxonomy catalog — all CapabilityType entries with category and hasYamlRoot flag), `JudgmentSpec`, `NegotiationDefinition`, `ConversationDefinition`, `ConflictResolutionSpec` |
 | `agentic-yaml/src/test/java/io/casehub/agency/agentic/yaml/` | Tests for YAML agentic surface |
 | `agentic-yaml-deployment/src/main/java/io/casehub/agency/agentic/yaml/deployment/` | Quarkus deployment module — `AgenticYamlProcessor` (YAML discovery, validation), `AgenticRecorder` (runtime compiler registration) |
@@ -619,8 +620,14 @@ Consumers that only use agency's pure types (records, sealed interfaces, plain c
 **Provided:** `casehub-platform-api` (ExpressionEngine SPI), `io.quarkus:quarkus-core` (recorder annotation)
 **Test:** JUnit 5, AssertJ, `casehub-platform-expression` (MvelExpressionEngine)
 
+**avatar-yaml module:**
+**Compile:** `jackson-annotations`, `org.jspecify:jspecify`
+**Provided:** `casehub-agency-speech-api`, `casehub-connectors-voice-sherpa`, `io.quarkus:quarkus-core`, `jakarta.ws.rs-api`, `jakarta.enterprise.cdi-api`
+**Compiler:** `AvatarCompiler`, `CompiledAvatar`, `AvatarRecorder` (and `AvatarCompilerTest`) compile only under the `jdk22+` profile (FFM-based sherpa voice classes)
+**Test:** JUnit 5, AssertJ, `casehub-platform-yaml-jackson`
+
 **agentic-yaml module:**
-**Compile:** `casehub-agency`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`, `casehub-platform-schema-generator`
+**Compile:** `casehub-agency-avatar-yaml`, `casehub-agency`, `jackson-dataformat-yaml`, `jackson-datatype-jsr310`, `casehub-platform-schema-generator`
 **Provided:** `casehub-platform-api` (ExpressionEngine SPI), `io.quarkus:quarkus-core`
 **Test:** JUnit 5, AssertJ, `casehub-platform-expression` (MvelExpressionEngine)
 

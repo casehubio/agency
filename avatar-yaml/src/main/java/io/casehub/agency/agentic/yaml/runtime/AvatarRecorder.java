@@ -61,4 +61,8 @@ public class AvatarRecorder {
                     vocabulary::asPromptHint);
         };
     }
+
+    public RuntimeValue<AvatarConfigBean> createAvatarConfigBean(AvatarDefinition definition, String json) {
+        return new RuntimeValue<>(new AvatarConfigBean(definition, json));
+    }
 }
