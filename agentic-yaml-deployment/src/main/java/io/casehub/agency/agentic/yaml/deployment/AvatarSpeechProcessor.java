@@ -48,6 +48,7 @@ public class AvatarSpeechProcessor {
         if (needsTts) {
             beans.add(SyntheticBeanBuildItem.configure(TtsModelRegistry.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractTtsModelRegistry(compiled))
                     .done());
         }
@@ -55,6 +56,7 @@ public class AvatarSpeechProcessor {
         if (needsDefaultTts) {
             beans.add(SyntheticBeanBuildItem.configure(TextToSpeech.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractDefaultTts(compiled))
                     .done());
         }
@@ -62,6 +64,7 @@ public class AvatarSpeechProcessor {
         if (needsStt) {
             beans.add(SyntheticBeanBuildItem.configure(StreamingSpeechToText.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractStt(compiled))
                     .done());
         }
@@ -69,6 +72,7 @@ public class AvatarSpeechProcessor {
         if (needsCleanup) {
             beans.add(SyntheticBeanBuildItem.configure(CleanupConfig.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .runtimeValue(recorder.extractCleanup(compiled))
                     .done());
         }
@@ -76,6 +80,7 @@ public class AvatarSpeechProcessor {
         if (needsHooks) {
             beans.add(SyntheticBeanBuildItem.configure(CorrectionHooks.class)
                     .scope(Singleton.class)
+                    .setRuntimeInit()
                     .createWith(recorder.correctionHooksCreator())
                     .done());
         }

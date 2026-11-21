@@ -237,7 +237,7 @@ public class AgenticYamlProcessor {
     @BuildStep
     @Record(STATIC_INIT)
     SyntheticBeanBuildItem registerAvatarConfig(
-            AgenticRecorder recorder,
+            io.casehub.agency.core.yaml.runtime.AvatarRecorder recorder,
             AvatarConfigBuildItem avatarConfig) throws com.fasterxml.jackson.core.JsonProcessingException {
         if (avatarConfig.definition() == null) {
             return null;

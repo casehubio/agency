@@ -47,9 +47,4 @@ public class AgenticRecorder {
         return new RuntimeValue<>(new AgencySpecsBean(preSerializedJson));
     }
 
-    public RuntimeValue<AvatarConfigBean> createAvatarConfigBean(
-            io.casehub.agency.core.yaml.spec.AvatarDefinition definition, String json) {
-        return new RuntimeValue<>(new AvatarConfigBean(definition, json));
-    }
-
 }

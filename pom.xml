@@ -25,6 +25,7 @@
     <module>summarisation-yaml-deployment</module>
     <module>agency-core</module>
     <module>agency</module>
+    <module>avatar-yaml</module>
     <module>agentic-yaml</module>
     <module>agentic-yaml-deployment</module>
     <module>engine-adapter-core</module>
