@@ -49,6 +49,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # AvatarCompilerTest compiles a "vits" TTS engine, which needs the native espeak-ng library.
+      # Provisioner looks in ~/.casehub/native/espeak-ng/<version>/<platform>/ (or /usr/lib,
+      # /usr/local/lib), not in Ubuntu's multiarch dir, so link the packaged library there.
+      - name: Install espeak-ng (PR tests)
+        if: github.event_name == 'pull_request'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libespeak-ng1 espeak-ng-data
+          dir="$HOME/.casehub/native/espeak-ng/1.52.0/linux-x64"
+          mkdir -p "$dir"
+          lib=$(ls /usr/lib/x86_64-linux-gnu/libespeak-ng.so.* | head -1)
+          ln -sf "$lib" "$dir/libespeak-ng.so"
+          ln -sfn /usr/lib/x86_64-linux-gnu/espeak-ng-data "$dir/espeak-ng-data"
+          ls -l "$dir"
+
       - name: Build (PR)
         if: github.event_name == 'pull_request'
         run: mvn --batch-mode install -U
