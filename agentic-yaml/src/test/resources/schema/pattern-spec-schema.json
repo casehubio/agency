@@ -5,32 +5,24 @@
       "oneOf" : [ {
         "properties" : {
           "type" : {
-            "const" : "on-dispatch"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
             "const" : "max-iterations"
           }
         },
         "required" : [ "type" ],
         "type" : "object",
         "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "on-dispatch"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
       } ]
     },
     "AgentRefSpec" : {
       "oneOf" : [ {
-        "properties" : {
-          "type" : {
-            "const" : "worker"
-          }
-        },
-        "required" : [ "type" ],
-        "$ref" : "#/$defs/Worker"
-      }, {
         "properties" : {
           "type" : {
             "const" : "channel"
@@ -41,11 +33,11 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "human"
+            "const" : "composed"
           }
         },
         "required" : [ "type" ],
-        "$ref" : "#/$defs/Human"
+        "$ref" : "#/$defs/Composed"
       }, {
         "properties" : {
           "type" : {
@@ -57,22 +49,31 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "composed"
+            "const" : "human"
           }
         },
         "required" : [ "type" ],
-        "$ref" : "#/$defs/Composed"
+        "$ref" : "#/$defs/Human"
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "worker"
+          }
+        },
+        "required" : [ "type" ],
+        "$ref" : "#/$defs/Worker"
       } ]
     },
     "AggregationSpec" : {
       "oneOf" : [ {
         "properties" : {
           "type" : {
-            "const" : "pass-through"
+            "const" : "auction"
           }
         },
         "required" : [ "type" ],
-        "type" : "object"
+        "type" : "object",
+        "unevaluatedProperties" : false
       }, {
         "properties" : {
           "type" : {
@@ -92,24 +93,15 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "auction"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
-      } ]
-    },
-    "AgreementSpec" : {
-      "oneOf" : [ {
-        "properties" : {
-          "type" : {
-            "const" : "unanimous"
+            "const" : "pass-through"
           }
         },
         "required" : [ "type" ],
         "type" : "object"
-      }, {
+      } ]
+    },
+    "AgreementSpec" : {
+      "oneOf" : [ {
         "properties" : {
           "type" : {
             "const" : "majority"
@@ -126,6 +118,14 @@
         "required" : [ "type" ],
         "type" : "object",
         "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "unanimous"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
       } ]
     },
     "Channel" : {
@@ -315,7 +315,7 @@
       "oneOf" : [ {
         "properties" : {
           "type" : {
-            "const" : "identity"
+            "const" : "capability-dependency"
           }
         },
         "required" : [ "type" ],
@@ -323,16 +323,23 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "static"
+            "const" : "forward-reasoning"
           }
         },
         "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
+        "type" : "object"
       }, {
         "properties" : {
           "type" : {
-            "const" : "llm"
+            "const" : "goap"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "heuristic"
           }
         },
         "required" : [ "type" ],
@@ -350,7 +357,15 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "heuristic"
+            "const" : "identity"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "llm"
           }
         },
         "required" : [ "type" ],
@@ -359,27 +374,12 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "goap"
+            "const" : "static"
           }
         },
         "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "capability-dependency"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "forward-reasoning"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
+        "type" : "object",
+        "unevaluatedProperties" : false
       } ]
     },
     "External" : {
@@ -605,7 +605,7 @@
           "oneOf" : [ {
             "properties" : {
               "type" : {
-                "const" : "single"
+                "const" : "escalationChain"
               }
             },
             "required" : [ "type" ],
@@ -623,7 +623,7 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "escalationChain"
+                "const" : "single"
               }
             },
             "required" : [ "type" ],
@@ -643,11 +643,12 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "neverYield"
+                "const" : "confidenceThreshold"
               }
             },
             "required" : [ "type" ],
-            "type" : "object"
+            "type" : "object",
+            "unevaluatedProperties" : false
           }, {
             "properties" : {
               "type" : {
@@ -660,12 +661,11 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "confidenceThreshold"
+                "const" : "neverYield"
               }
             },
             "required" : [ "type" ],
-            "type" : "object",
-            "unevaluatedProperties" : false
+            "type" : "object"
           } ]
         }
       },
@@ -801,22 +801,6 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "round-robin"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "sequential"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
             "const" : "llm-selected"
           }
         },
@@ -825,7 +809,23 @@
       }, {
         "properties" : {
           "type" : {
+            "const" : "round-robin"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
+      }, {
+        "properties" : {
+          "type" : {
             "const" : "select-all"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object"
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "sequential"
           }
         },
         "required" : [ "type" ],
@@ -947,7 +947,7 @@
           "oneOf" : [ {
             "properties" : {
               "type" : {
-                "const" : "stigmergy"
+                "const" : "broadcast"
               }
             },
             "required" : [ "type" ],
@@ -963,7 +963,7 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "broadcast"
+                "const" : "groupChannel"
               }
             },
             "required" : [ "type" ],
@@ -971,7 +971,7 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "groupChannel"
+                "const" : "stigmergy"
               }
             },
             "required" : [ "type" ],
@@ -1042,6 +1042,14 @@
           "oneOf" : [ {
             "properties" : {
               "type" : {
+                "const" : "fullAutonomy"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
                 "const" : "reactive"
               }
             },
@@ -1051,14 +1059,6 @@
             "properties" : {
               "type" : {
                 "const" : "taskAdaptation"
-              }
-            },
-            "required" : [ "type" ],
-            "type" : "object"
-          }, {
-            "properties" : {
-              "type" : {
-                "const" : "fullAutonomy"
               }
             },
             "required" : [ "type" ],
@@ -1078,7 +1078,7 @@
           "oneOf" : [ {
             "properties" : {
               "type" : {
-                "const" : "swarm"
+                "const" : "distributed"
               }
             },
             "required" : [ "type" ],
@@ -1096,20 +1096,20 @@
           }, {
             "properties" : {
               "type" : {
+                "const" : "many"
+              }
+            },
+            "required" : [ "type" ],
+            "type" : "object"
+          }, {
+            "properties" : {
+              "type" : {
                 "const" : "mesh"
               }
             },
             "required" : [ "type" ],
             "type" : "object",
             "unevaluatedProperties" : false
-          }, {
-            "properties" : {
-              "type" : {
-                "const" : "many"
-              }
-            },
-            "required" : [ "type" ],
-            "type" : "object"
           }, {
             "properties" : {
               "type" : {
@@ -1122,7 +1122,7 @@
           }, {
             "properties" : {
               "type" : {
-                "const" : "distributed"
+                "const" : "swarm"
               }
             },
             "required" : [ "type" ],
@@ -1137,62 +1137,42 @@
       "oneOf" : [ {
         "properties" : {
           "type" : {
-            "const" : "primitive"
-          }
-        },
-        "required" : [ "type" ],
-        "$ref" : "#/$defs/Primitive"
-      }, {
-        "properties" : {
-          "type" : {
             "const" : "compound"
           }
         },
         "required" : [ "type" ],
         "$ref" : "#/$defs/Compound"
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "primitive"
+          }
+        },
+        "required" : [ "type" ],
+        "$ref" : "#/$defs/Primitive"
       } ]
     },
     "TerminationSpec" : {
       "oneOf" : [ {
         "properties" : {
           "type" : {
-            "const" : "max-iterations"
+            "const" : "accepted"
           }
         },
         "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
+        "type" : "object"
       }, {
         "properties" : {
           "type" : {
-            "const" : "goal-reached"
+            "const" : "agent-count"
           }
         },
         "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "judge-convergence"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
+        "type" : "object"
       }, {
         "properties" : {
           "type" : {
             "const" : "all-agreed"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "supervisor"
           }
         },
         "required" : [ "type" ],
@@ -1219,6 +1199,42 @@
       }, {
         "properties" : {
           "type" : {
+            "const" : "deadline"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object",
+        "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "goal-reached"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object",
+        "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "judge-convergence"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object",
+        "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "max-iterations"
+          }
+        },
+        "required" : [ "type" ],
+        "type" : "object",
+        "unevaluatedProperties" : false
+      }, {
+        "properties" : {
+          "type" : {
             "const" : "single-pass"
           }
         },
@@ -1227,19 +1243,12 @@
       }, {
         "properties" : {
           "type" : {
-            "const" : "agent-count"
+            "const" : "supervisor"
           }
         },
         "required" : [ "type" ],
-        "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "accepted"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object"
+        "type" : "object",
+        "unevaluatedProperties" : false
       }, {
         "properties" : {
           "type" : {
@@ -1248,15 +1257,6 @@
         },
         "required" : [ "type" ],
         "type" : "object"
-      }, {
-        "properties" : {
-          "type" : {
-            "const" : "deadline"
-          }
-        },
-        "required" : [ "type" ],
-        "type" : "object",
-        "unevaluatedProperties" : false
       } ]
     },
     "Voting" : {
@@ -1332,11 +1332,11 @@
   "oneOf" : [ {
     "properties" : {
       "type" : {
-        "const" : "supervisor"
+        "const" : "conditional"
       }
     },
     "required" : [ "type" ],
-    "$ref" : "#/$defs/Supervisor"
+    "$ref" : "#/$defs/Conditional"
   }, {
     "properties" : {
       "type" : {
@@ -1345,6 +1345,14 @@
     },
     "required" : [ "type" ],
     "$ref" : "#/$defs/Debate"
+  }, {
+    "properties" : {
+      "type" : {
+        "const" : "htn"
+      }
+    },
+    "required" : [ "type" ],
+    "$ref" : "#/$defs/Htn"
   }, {
     "properties" : {
       "type" : {
@@ -1364,22 +1372,6 @@
   }, {
     "properties" : {
       "type" : {
-        "const" : "voting"
-      }
-    },
-    "required" : [ "type" ],
-    "$ref" : "#/$defs/Voting"
-  }, {
-    "properties" : {
-      "type" : {
-        "const" : "conditional"
-      }
-    },
-    "required" : [ "type" ],
-    "$ref" : "#/$defs/Conditional"
-  }, {
-    "properties" : {
-      "type" : {
         "const" : "sequence"
       }
     },
@@ -1388,11 +1380,11 @@
   }, {
     "properties" : {
       "type" : {
-        "const" : "htn"
+        "const" : "supervisor"
       }
     },
     "required" : [ "type" ],
-    "$ref" : "#/$defs/Htn"
+    "$ref" : "#/$defs/Supervisor"
   }, {
     "properties" : {
       "type" : {
@@ -1401,5 +1393,13 @@
     },
     "required" : [ "type" ],
     "$ref" : "#/$defs/Swarm"
+  }, {
+    "properties" : {
+      "type" : {
+        "const" : "voting"
+      }
+    },
+    "required" : [ "type" ],
+    "$ref" : "#/$defs/Voting"
   } ]
 }

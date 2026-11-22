@@ -78,9 +78,50 @@ public class AgencySchemaGenerator {
     public JsonNode generate(Class<?> rootType) {
         var generated = generator.generateSchema(rootType);
         try {
-            return mapper.readTree(generated.toString());
+            var node = mapper.readTree(generated.toString());
+            sortOneOfArrays(node);
+            return node;
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to convert schema", e);
         }
     }
+
+    private static void sortOneOfArrays(JsonNode node) {
+        if (node.isObject()) {
+            var obj   = (com.fasterxml.jackson.databind.node.ObjectNode) node;
+            var oneOf = obj.get("oneOf");
+            if (oneOf != null && oneOf.isArray()) {
+                var arr    = (com.fasterxml.jackson.databind.node.ArrayNode) oneOf;
+                var sorted = new java.util.ArrayList<JsonNode>();
+                arr.forEach(sorted::add);
+                sorted.sort(java.util.Comparator.comparing(AgencySchemaGenerator::oneOfSortKey));
+                arr.removeAll();
+                sorted.forEach(arr::add);
+            }
+            var fields = obj.fields();
+            while (fields.hasNext()) {
+                sortOneOfArrays(fields.next().getValue());
+            }
+        } else if (node.isArray()) {
+            for (var element : node) {
+                sortOneOfArrays(element);
+            }
+        }
+    }
+
+    private static String oneOfSortKey(JsonNode variant) {
+        var props = variant.get("properties");
+        if (props != null) {
+            var type = props.get("type");
+            if (type != null) {
+                var constVal = type.get("const");
+                if (constVal != null) {return constVal.asText();}
+            }
+        }
+        var ref = variant.get("$ref");
+        if (ref != null) {return ref.asText();}
+        return variant.toString();
+    }
+
+
 }
