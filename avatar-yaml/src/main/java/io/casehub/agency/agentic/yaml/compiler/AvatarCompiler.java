@@ -69,11 +69,16 @@ public class AvatarCompiler {
     private Map<String, TextToSpeech> compileVits(TtsEngineSpec engine) {
         var result = new LinkedHashMap<String, TextToSpeech>();
         for (var voice : engine.voices()) {
-            var model = voice.model();
-            var tts = model != null
-                    ? io.casehub.connectors.voice.sherpa.VitsTextToSpeech.withDefaults(model)
-                    : io.casehub.connectors.voice.sherpa.VitsTextToSpeech.withDefaults();
-            result.put(voice.name(), tts);
+            try {
+                var model = voice.model();
+                var tts = model != null
+                        ? io.casehub.connectors.voice.sherpa.VitsTextToSpeech.withDefaults(model)
+                        : io.casehub.connectors.voice.sherpa.VitsTextToSpeech.withDefaults();
+                result.put(voice.name(), tts);
+            } catch (Exception e) {
+                LOG.log(System.Logger.Level.WARNING,
+                        "VITS voice ''{0}'' unavailable: {1}", voice.name(), e.getMessage());
+            }
         }
         return result;
     }

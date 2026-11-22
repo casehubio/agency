@@ -7,13 +7,27 @@ import io.casehub.agency.core.yaml.spec.SttSpec;
 import io.casehub.agency.core.yaml.spec.TtsEngineSpec;
 import io.casehub.agency.core.yaml.spec.TtsSpec;
 import io.casehub.agency.core.yaml.spec.TtsVoiceSpec;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class AvatarCompilerTest {
+
+    private static boolean vitsAvailable;
+
+    @BeforeAll
+    static void checkVitsNativeLibs() {
+        try {
+            io.casehub.connectors.voice.sherpa.VitsTextToSpeech.withDefaults().close();
+            vitsAvailable = true;
+        } catch (Exception e) {
+            vitsAvailable = false;
+        }
+    }
 
     private final AvatarCompiler compiler = new AvatarCompiler();
 
@@ -43,6 +57,7 @@ class AvatarCompilerTest {
 
     @Test
     void compiles_vits_engines_to_tts_registry() {
+        assumeTrue(vitsAvailable, "VITS native libs (espeak-ng) not available");
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("vits", List.of(new TtsVoiceSpec("lessac-medium", null)), false, null)));
         var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
@@ -103,6 +118,7 @@ class AvatarCompilerTest {
 
     @Test
     void compiles_multiple_engine_types() {
+        assumeTrue(vitsAvailable, "VITS native libs (espeak-ng) not available");
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("vits", List.of(new TtsVoiceSpec("lessac-medium", null)), false, null),
                 new TtsEngineSpec("sherpa", List.of(new TtsVoiceSpec("lessac-medium", null)), false, LipSyncMode.DISABLED)));
@@ -118,6 +134,7 @@ class AvatarCompilerTest {
 
     @Test
     void default_tts_is_first_voice_of_first_engine() {
+        assumeTrue(vitsAvailable, "VITS native libs (espeak-ng) not available");
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("vits", List.of(
                         new TtsVoiceSpec("first-voice", null),
