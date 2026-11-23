@@ -97,7 +97,7 @@ export class AvatarEngine {
     if (this._head) return;
     this._head = new TalkingHead(this._container, {
       ttsEndpoint: null,
-      lipsyncModules: ['en'],
+      lipsyncModules: ['en'], lipsyncLang: 'en',
       cameraView: this._cameraView,
       cameraRotateEnable: true, cameraZoomEnable: true, cameraPanEnable: true,
       avatarIdleEyeContact: 0.4, avatarIdleHeadMove: 0.6,
@@ -108,6 +108,7 @@ export class AvatarEngine {
       url: './' + this._avatarModel, body: 'F',
       avatarMood: 'neutral', lipsyncLang: 'en'
     });
+    this._head.lipsyncLang = 'en';
     this._head.setMood('neutral');
     await this._initBodyAnimations();
   }
@@ -228,6 +229,10 @@ export class AvatarEngine {
   }
 
   _handleSegment(msg) {
+    if (msg.turnSeq !== this._activeTurnSeq) {
+      this._resetTurnState();
+      this._activeTurnSeq = msg.turnSeq;
+    }
     const key = `${msg.turnSeq}:${msg.index}`;
     this._pendingSegments.set(key, {
       index: msg.index, text: msg.text,
@@ -235,10 +240,6 @@ export class AvatarEngine {
       visemes: msg.visemes || [], cues: msg.cues || []
     });
     if (msg.text) this._emit('message', { text: msg.text, role: 'avatar' });
-    if (msg.turnSeq !== this._activeTurnSeq) {
-      this._resetTurnState();
-      this._activeTurnSeq = msg.turnSeq;
-    }
     if (!this._head || !msg.hasAudio) {
       for (const cue of (msg.cues || [])) {
         if (cue.type === 'gesture' && this._bodyAnim) this._bodyAnim.triggerGesture(cue.tag);
@@ -298,8 +299,9 @@ export class AvatarEngine {
     const seg = this._pendingSegments.get(key);
     const r = { audio: audioBuf };
     const firstChunk = !this._turnCuesAttached.has(key);
-    if (firstChunk) this._turnCuesAttached.add(key);
     if (firstChunk && seg && seg.visemes && seg.visemes.length > 0) {
+      this._turnCuesAttached.add(key);
+      r.words = [seg.text || '']; r.wtimes = [0]; r.wdurations = [audioBuf.duration * 1000];
       r.visemes = []; r.vtimes = []; r.vdurations = [];
       for (const v of seg.visemes) {
         r.visemes.push(v.viseme); r.vtimes.push(v.startMs);

@@ -6,7 +6,8 @@ RUN git clone --depth 1 --branch 1.52.0 https://github.com/espeak-ng/espeak-ng /
 
 FROM amazoncorretto:22
 RUN yum install -y tar bzip2 gzip && yum clean all
-COPY --from=builder /usr/local/lib/libespeak-ng.so* /usr/local/lib/
+COPY --from=builder /usr/local/lib/libespeak-ng.so.1.1.51 /usr/local/lib/libespeak-ng.so.1.1.51
+RUN ln -s libespeak-ng.so.1.1.51 /usr/local/lib/libespeak-ng.so.1 && ln -s libespeak-ng.so.1.1.51 /usr/local/lib/libespeak-ng.so
 COPY --from=builder /usr/local/share/espeak-ng-data /usr/local/share/espeak-ng-data
 ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && yum install -y nodejs && yum clean all
