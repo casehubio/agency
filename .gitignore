@@ -16,3 +16,6 @@ tmp/
 casehub-agency-parent.iml
 
 casehub-blocks-parent.iml
+
+# IntelliJ IDE
+*.iml
