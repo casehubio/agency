@@ -120,6 +120,33 @@ export class AvatarEngine {
     });
   }
 
+  setView(view) {
+    this._cameraView = view;
+    if (!this._head) return;
+    this._head.setView(view);
+    const presets = {
+      upper:  { cam: { x: -0.007, y: 0.801, z: 2.179 }, tgt: { x: -0.007, y: 0.801, z: 0 } },
+      full:   { cam: { x: -0.673, y: 0.722, z: 6.542 }, tgt: { x: 0.046, y: 0.485, z: 0.013 } },
+      head:   { cam: { x: -0.216, y: 0.911, z: 1.663 }, tgt: { x: 0.011, y: 0.827, z: -0.018 } }
+    };
+    const p = presets[view];
+    if (p && this._head.cameraEnd && this._head.controlsEnd) {
+      const h = this._head.avatarHeight || 1.6;
+      let scale = 1.0;
+      if (view === 'full') {
+        const refAspect = 0.899;
+        const curAspect = this._container.clientWidth / this._container.clientHeight;
+        scale = refAspect / Math.max(curAspect, 0.5);
+      }
+      this._head.cameraEnd.set(p.cam.x * h * scale, p.cam.y * h, p.cam.z * h * scale);
+      this._head.controlsEnd.set(p.tgt.x * h, p.tgt.y * h, p.tgt.z * h);
+    }
+  }
+
+  resetCamera() {
+    this.setView(this._cameraView);
+  }
+
   triggerGesture(name) {
     if (this._bodyAnim) this._bodyAnim.triggerGesture(name);
   }

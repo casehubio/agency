@@ -20,10 +20,11 @@
   #controls label { font-size: 0.75rem; color: #999; }
   #controls select { padding: 0.25rem 0.4rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; font-size: 0.8rem; }
   #split { flex: 1; display: flex; overflow: hidden; }
-  #avatar-panel { width: 50%; min-width: 50%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #111; }
+  #avatar-panel { width: 50%; min-width: 50%; display: flex; flex-direction: column; border-right: 1px solid #333; background: #111; position: relative; }
   #avatar-container { flex: 1; position: relative; }
-  #avatar-footer { padding: 0.4rem; text-align: center; border-top: 1px solid #333; }
-  #toggle-avatar { font-size: 0.8rem; color: #999; cursor: pointer; text-decoration: underline; }
+  .cam-btns { position: absolute; bottom: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem; z-index: 10; }
+  .cam-btn { padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid #555; background: rgba(42,42,62,0.8); color: #ccc; font-size: 0.7rem; cursor: pointer; }
+  .cam-btn:hover, .cam-btn.active { background: rgba(45,90,160,0.9); color: #fff; border-color: #2d5aa0; }
   #chat-panel { width: 50%; display: flex; flex-direction: column; }
   #status { padding: 0.25rem 1rem; font-size: 0.75rem; color: #666; text-align: center; border-bottom: 1px solid #333; }
   #chat { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
@@ -48,7 +49,12 @@
 <div id="split">
   <div id="avatar-panel">
     <div id="avatar-container"></div>
-    <div id="avatar-footer"><span id="toggle-avatar">Load 3D Avatar</span></div>
+    <div class="cam-btns">
+      <button class="cam-btn" data-view="full">Full</button>
+      <button class="cam-btn active" data-view="upper">Upper</button>
+      <button class="cam-btn" data-view="head">Head</button>
+      <button class="cam-btn" id="cam-capture">Capture</button>
+    </div>
   </div>
   <div id="chat-panel">
     <div id="status">Connecting...</div>
@@ -62,7 +68,7 @@
 </div>
 
 <script type="module">
-import { AvatarEngine, AvatarControls } from './avatar-component.mjs';
+import { AvatarEngine, AvatarControls } from './avatar-component.mjs?v=11';
 
 const chat = document.getElementById('chat');
 const msgInput = document.getElementById('msg');
@@ -70,7 +76,6 @@ const sendBtn = document.getElementById('send');
 const statusEl = document.getElementById('status');
 const micBtn = document.getElementById('mic');
 const avatarContainer = document.getElementById('avatar-container');
-const toggleAvatar = document.getElementById('toggle-avatar');
 
 function addMessage(text, cls) {
   const div = document.createElement('div');
@@ -81,14 +86,15 @@ function addMessage(text, cls) {
 }
 
 const engine = new AvatarEngine(avatarContainer, {
+  cameraView: 'upper',
   onMessage: ({ text, role }) => addMessage(text, role),
   onStatus: (msg) => { statusEl.textContent = msg; },
-  onConnected: () => {
+  onConnected: async () => {
     statusEl.textContent = 'Connected';
     msgInput.disabled = false;
     sendBtn.disabled = false;
     micBtn.disabled = false;
-    addMessage('Connected — type a message or click Mic to talk.', 'system');
+    try { await engine.initAvatar(); engine.setView('upper'); } catch (e) { console.warn('Avatar load:', e); }
   },
   onDisconnected: () => {
     msgInput.disabled = true;
@@ -97,7 +103,30 @@ const engine = new AvatarEngine(avatarContainer, {
   }
 });
 
+window.__engine = engine;
 const controls = new AvatarControls(document.getElementById('controls'), engine);
+document.querySelectorAll('.cam-btn[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    engine.setView(btn.dataset.view);
+  });
+});
+document.getElementById('cam-capture').addEventListener('click', () => {
+  if (!engine._head || !engine._head.camera || !engine._head.controls) { alert('Avatar not loaded'); return; }
+  const cam = engine._head.camera.position;
+  const tgt = engine._head.controls.target;
+  const h = engine._head.avatarHeight;
+  const active = document.querySelector('.cam-btn.active[data-view]');
+  const view = active ? active.dataset.view : 'unknown';
+  const data = { view, h: +h.toFixed(3), cam: { x: +cam.x.toFixed(3), y: +cam.y.toFixed(3), z: +cam.z.toFixed(3) }, target: { x: +tgt.x.toFixed(3), y: +tgt.y.toFixed(3), z: +tgt.z.toFixed(3) }, panel: { w: document.getElementById('avatar-container').clientWidth, h: document.getElementById('avatar-container').clientHeight } };
+  const json = JSON.stringify(data);
+  console.log('CAPTURE:', json);
+  navigator.clipboard.writeText(json).then(() => {
+    document.getElementById('cam-capture').textContent = 'Copied!';
+    setTimeout(() => { document.getElementById('cam-capture').textContent = 'Capture'; }, 1500);
+  });
+});
 
 function sendText() {
   const text = msgInput.value.trim();
@@ -172,18 +201,6 @@ function resampleTo16k(input, fromRate) {
 }
 
 micBtn.addEventListener('click', () => { if (recording) stopRecording(); else startRecording(); });
-
-toggleAvatar.addEventListener('click', async () => {
-  if (engine._head) return;
-  toggleAvatar.textContent = 'Loading...';
-  try {
-    addMessage('Loading 3D avatar...', 'system');
-    await engine.initAvatar();
-    toggleAvatar.textContent = '3D Avatar loaded';
-  } catch (e) {
-    toggleAvatar.textContent = 'Avatar error: ' + e.message;
-  }
-});
 
 let lastTypingActivity = 0;
 msgInput.addEventListener('input', function() {
