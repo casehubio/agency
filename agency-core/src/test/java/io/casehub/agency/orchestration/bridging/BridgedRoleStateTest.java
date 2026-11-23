@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.casehub.api.model.coordination.AgentRole;
 import io.casehub.api.model.coordination.StructuralRole;
+import io.casehub.eidos.api.RoleChangePolicy;
 import org.junit.jupiter.api.Test;
 
 class BridgedRoleStateTest {
@@ -31,32 +32,32 @@ class BridgedRoleStateTest {
 
   @Test
   void demotionEligible_true_when_both_thresholds_met() {
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var state = new BridgedRoleState("agent-1", COORDINATOR_ROLE, 0.3, 4);
     assertThat(state.demotionEligible(policy)).isTrue();
   }
 
   @Test
   void demotionEligible_false_when_confidence_above_demotion_threshold() {
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var state = new BridgedRoleState("agent-1", COORDINATOR_ROLE, 0.6, 4);
     assertThat(state.demotionEligible(policy)).isFalse();
   }
 
   @Test
   void demotionEligible_false_when_hold_cycles_insufficient() {
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var state = new BridgedRoleState("agent-1", COORDINATOR_ROLE, 0.3, 2);
     assertThat(state.demotionEligible(policy)).isFalse();
   }
 
   @Test
   void demotionEligible_true_at_exact_hold_cycle_boundary() {
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var state = new BridgedRoleState("agent-1", COORDINATOR_ROLE, 0.3, 3);
     assertThat(state.demotionEligible(policy)).isTrue();
   }

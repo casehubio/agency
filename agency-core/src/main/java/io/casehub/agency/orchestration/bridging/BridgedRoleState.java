@@ -1,6 +1,7 @@
 package io.casehub.agency.orchestration.bridging;
 
 import io.casehub.api.model.coordination.AgentRole;
+import io.casehub.eidos.api.RoleChangePolicy;
 
 public record BridgedRoleState(
     String agentId,
@@ -12,7 +13,7 @@ public record BridgedRoleState(
     return new BridgedRoleState(agentId, bridgedRole, confidence, holdCycles + 1);
   }
 
-  public boolean demotionEligible(RoleBridgingPolicy policy) {
+  public boolean demotionEligible(RoleChangePolicy policy) {
     return holdCycles >= policy.minHoldCycles()
         && lastConfidence < policy.demotionConfidence();
   }

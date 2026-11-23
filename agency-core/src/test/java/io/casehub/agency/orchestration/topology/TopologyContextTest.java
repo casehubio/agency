@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopFactory;
@@ -59,8 +59,8 @@ class TopologyContextTest {
 
     @Test
     void creates_with_bridging_policy() {
-        var bridgingPolicy = new RoleBridgingPolicy(
-                RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+        var bridgingPolicy = new RoleChangePolicy(
+                RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
         var ctx = new TopologyContext(
                 UUID.randomUUID(), DESCRIPTOR, AGENT_PROVIDER, LOOP_FACTORY, POLICY, DEG_POLICY,
                 bridgingPolicy, "group-1", "tenant-1", null);

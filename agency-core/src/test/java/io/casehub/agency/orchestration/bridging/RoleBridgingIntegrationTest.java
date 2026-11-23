@@ -22,6 +22,7 @@ import io.casehub.api.model.stigmergy.BehavioralFingerprint;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.api.spi.coordination.RoleBridgingStrategy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +55,7 @@ class RoleBridgingIntegrationTest {
         OrchestrationPatternType.SUPERVISOR, strategy);
   }
 
-  private TopologyContext createContext(RoleBridgingPolicy policy) {
+  private TopologyContext createContext(RoleChangePolicy policy) {
     return new TopologyContext(
         UUID.randomUUID(),
         new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles),
@@ -67,7 +68,7 @@ class RoleBridgingIntegrationTest {
   @Test
   void advisory_mode_does_not_modify_roles() {
     var topology = createTopology(testStrategy);
-    topology.configure(createContext(RoleBridgingPolicy.ADVISORY));
+    topology.configure(createContext(RoleChangePolicy.ADVISORY));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),
         BehavioralFingerprint.EMPTY, List.of("coordination"), 5, 0.1));
@@ -80,8 +81,8 @@ class RoleBridgingIntegrationTest {
   @Test
   void auto_above_threshold_applies_suggestion_above_threshold() {
     var topology = createTopology(testStrategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     topology.configure(createContext(policy));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),
@@ -101,8 +102,8 @@ class RoleBridgingIntegrationTest {
         .toList();
 
     var topology = createTopology(lowConfidence);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     topology.configure(createContext(policy));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),

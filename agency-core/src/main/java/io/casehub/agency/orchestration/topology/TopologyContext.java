@@ -1,6 +1,6 @@
 package io.casehub.agency.orchestration.topology;
 
-import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import io.casehub.platform.agent.budget.AutonomyBudgetPolicy;
 import io.casehub.agency.orchestration.degradation.DegradationPolicy;
 import io.casehub.agency.orchestration.loop.DecisionLoopEvent;
@@ -20,7 +20,7 @@ public record TopologyContext(
         DecisionLoopFactory loopFactory,
         AutonomyBudgetPolicy budgetPolicy,
         DegradationPolicy degradationPolicy,
-        @Nullable RoleBridgingPolicy bridgingPolicy,
+        @Nullable RoleChangePolicy bridgingPolicy,
         @Nullable String groupId,
         @Nullable String tenancyId,
         @Nullable Consumer<DecisionLoopEvent> loopEventSink

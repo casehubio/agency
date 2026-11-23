@@ -22,6 +22,7 @@ import io.casehub.api.model.stigmergy.BehavioralFingerprint;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.api.spi.coordination.RoleBridgingStrategy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +57,8 @@ class ConflictResolutionTest {
     var topology = new HiveTopology(roles,
         new HivePatternAdapter(TestAgentProviders.noOp()),
         OrchestrationPatternType.SUPERVISOR, strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var ctx = new TopologyContext(
         UUID.randomUUID(),
         new TopologyDescriptor(TopologyType.CENTRALISED, roles),
@@ -95,8 +96,8 @@ class ConflictResolutionTest {
     var topology = new HiveTopology(roles,
         new HivePatternAdapter(TestAgentProviders.noOp()),
         OrchestrationPatternType.SUPERVISOR, strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var ctx = new TopologyContext(
         UUID.randomUUID(),
         new TopologyDescriptor(TopologyType.CENTRALISED, roles),
@@ -134,8 +135,8 @@ class ConflictResolutionTest {
     var topology = new HiveTopology(roles,
         new HivePatternAdapter(TestAgentProviders.noOp()),
         OrchestrationPatternType.SUPERVISOR, strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     var ctx = new TopologyContext(
         UUID.randomUUID(),
         new TopologyDescriptor(TopologyType.CENTRALISED, roles),

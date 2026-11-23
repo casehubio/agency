@@ -22,6 +22,7 @@ import io.casehub.api.model.stigmergy.BehavioralFingerprint;
 import io.casehub.api.model.stigmergy.DetectedRole;
 import io.casehub.api.model.stigmergy.SwarmProgress;
 import io.casehub.api.spi.coordination.RoleBridgingStrategy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ class OscillationProtectionTest {
         OrchestrationPatternType.SUPERVISOR, strategy);
   }
 
-  private TopologyContext createContext(RoleBridgingPolicy policy) {
+  private TopologyContext createContext(RoleChangePolicy policy) {
     return new TopologyContext(
         UUID.randomUUID(),
         new TopologyDescriptor(TopologyType.CENTRALISED, agentRoles),
@@ -71,8 +72,8 @@ class OscillationProtectionTest {
     };
 
     topology = createTopology(strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     topology.configure(createContext(policy));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),
@@ -107,8 +108,8 @@ class OscillationProtectionTest {
     };
 
     topology = createTopology(strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 3);
     topology.configure(createContext(policy));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),
@@ -146,8 +147,8 @@ class OscillationProtectionTest {
     };
 
     topology = createTopology(strategy);
-    var policy = new RoleBridgingPolicy(
-        RoleBridgingPolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 2);
+    var policy = new RoleChangePolicy(
+        RoleChangePolicy.Mode.AUTO_ABOVE_THRESHOLD, 0.8, 0.5, 2);
     topology.configure(createContext(policy));
 
     var detected = List.of(new DetectedRole("cluster-1", Set.of("builder"),

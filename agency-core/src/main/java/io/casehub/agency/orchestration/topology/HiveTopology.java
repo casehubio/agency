@@ -1,7 +1,7 @@
 package io.casehub.agency.orchestration.topology;
 
 import io.casehub.agency.orchestration.bridging.BridgedRoleState;
-import io.casehub.agency.orchestration.bridging.RoleBridgingPolicy;
+import io.casehub.eidos.api.RoleChangePolicy;
 import io.casehub.agency.orchestration.degradation.CascadeDegradationTrigger;
 import io.casehub.agency.orchestration.degradation.CascadeHandler;
 import io.casehub.agency.orchestration.degradation.CascadeThreshold;
@@ -48,7 +48,7 @@ public class HiveTopology implements SwarmAwareTopology {
     private volatile @org.jspecify.annotations.Nullable String groupId;
     private volatile @org.jspecify.annotations.Nullable String tenancyId;
     private final @org.jspecify.annotations.Nullable RoleBridgingStrategy bridgingStrategy;
-    private volatile @org.jspecify.annotations.Nullable RoleBridgingPolicy bridgingPolicy;
+    private volatile @org.jspecify.annotations.Nullable RoleChangePolicy bridgingPolicy;
     private final Map<String, BridgedRoleState> bridgedStates = new ConcurrentHashMap<>();
 
     public HiveTopology(Map<String, AgentRole> agentRoles,
@@ -166,7 +166,7 @@ public class HiveTopology implements SwarmAwareTopology {
     }
 
     private void applyBridging(List<RoleSuggestion> suggestions) {
-        if (bridgingPolicy.mode() == RoleBridgingPolicy.Mode.ADVISORY) {
+        if (bridgingPolicy.mode() == RoleChangePolicy.Mode.ADVISORY) {
             return;
         }
 
