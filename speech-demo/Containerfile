@@ -1,12 +1,21 @@
-FROM amazoncorretto:22
+FROM amazoncorretto:22 AS builder
+RUN yum install -y gcc gcc-c++ cmake3 make git autoconf automake libtool which && yum clean all
+COPY voice-sherpa-native/whisper_shim.c /tmp/whisper_shim.c
+RUN git clone --depth 1 --branch v1.7.3 https://github.com/ggml-org/whisper.cpp /tmp/whisper && cmake -S /tmp/whisper -B /tmp/whisper/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DWHISPER_BUILD_EXAMPLES=OFF -DWHISPER_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DGGML_OPENMP=OFF && cmake --build /tmp/whisper/build --parallel && gcc -c -fPIC -o /tmp/whisper_shim.o /tmp/whisper_shim.c -I/tmp/whisper/include -I/tmp/whisper/ggml/include && g++ -shared -o /tmp/libwhisper.so /tmp/whisper_shim.o -L/tmp/whisper/build/src -Wl,--whole-archive /tmp/whisper/build/src/libwhisper.a /tmp/whisper/build/ggml/src/libggml.a /tmp/whisper/build/ggml/src/libggml-base.a /tmp/whisper/build/ggml/src/libggml-cpu.a -Wl,--no-whole-archive -lpthread -lm -ldl
+RUN git clone --depth 1 --branch 1.52.0 https://github.com/espeak-ng/espeak-ng /tmp/espeak-ng && cd /tmp/espeak-ng && ./autogen.sh && ./configure --prefix=/usr/local && make -j$(nproc) && make install
 
-RUN yum install -y tar bzip2 && yum clean all
+FROM amazoncorretto:22
+RUN yum install -y tar bzip2 gzip && yum clean all
+COPY --from=builder /usr/local/lib/libespeak-ng.so* /usr/local/lib/
+COPY --from=builder /usr/local/share/espeak-ng-data /usr/local/share/espeak-ng-data
+ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && yum install -y nodejs && yum clean all
 RUN npm install -g @anthropic-ai/claude-code
 
 COPY target/casehub-agency-speech-demo-0.4-SNAPSHOT-runner.jar /app/app.jar
 RUN yum install -y shadow-utils && yum clean all && useradd -m -s /bin/bash avatar
 COPY src/main/resources/META-INF/eidos/agent-config.yaml /home/avatar/.casehub/agent-config.yaml
+COPY --from=builder /tmp/libwhisper.so /home/avatar/.casehub/native/whisper/1.7.3/linux-arm64/libwhisper.so
 RUN chown -R avatar:avatar /home/avatar/.casehub
 
 WORKDIR /app
@@ -19,5 +28,6 @@ CMD ["java", "-Xmx2g", \
      "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", \
      "--add-opens", "java.base/java.lang=ALL-UNNAMED", \
      "-Dio.netty.tryReflectionSetAccessible=true", \
+     "-Dcasehub.speech.auto-download=true", \
      "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
      "-jar", "app.jar"]
