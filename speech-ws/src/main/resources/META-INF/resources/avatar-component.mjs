@@ -1,5 +1,14 @@
+import * as THREE from 'three';
 import { TalkingHead } from "talkinghead";
 import { BodyAnimationSystem, FloorState } from "./animations/body-animations.mjs";
+
+const _gazeHeadQ = new THREE.Quaternion();
+const _gazeInvQ = new THREE.Quaternion();
+const _gazeDir = new THREE.Vector3();
+const _gazeEyeL = new THREE.Vector3();
+const _gazeEyeR = new THREE.Vector3();
+const GAZE_V_OFFSET = -0.06;
+const GAZE_SCALE = 1.2;
 
 export { FloorState };
 
@@ -100,9 +109,10 @@ export class AvatarEngine {
       lipsyncModules: ['en'], lipsyncLang: 'en',
       cameraView: this._cameraView,
       cameraRotateEnable: true, cameraZoomEnable: true, cameraPanEnable: true,
-      avatarIdleEyeContact: 0.4, avatarIdleHeadMove: 0.6,
-      avatarSpeakingEyeContact: 0.7, avatarSpeakingHeadMove: 0.7,
-      modelMovementFactor: 0.8
+      avatarIdleEyeContact: 0.7, avatarIdleHeadMove: 0.4,
+      avatarSpeakingEyeContact: 1.0, avatarSpeakingHeadMove: 0.3,
+      modelMovementFactor: 0.8,
+      update: (dt) => { this._onAnimFrame(dt); }
     });
     await this._head.showAvatar({
       url: './' + this._avatarModel, body: 'F',
@@ -110,6 +120,7 @@ export class AvatarEngine {
     });
     this._head.lipsyncLang = 'en';
     this._head.setMood('neutral');
+    this._registerGazeLayer();
     await this._initBodyAnimations();
   }
 
@@ -126,9 +137,9 @@ export class AvatarEngine {
     if (!this._head) return;
     this._head.setView(view);
     const presets = {
-      upper:  { cam: { x: -0.007, y: 0.801, z: 2.179 }, tgt: { x: -0.007, y: 0.801, z: 0 } },
+      upper:  { cam: { x: -0.007, y: 0.92, z: 2.179 }, tgt: { x: -0.007, y: 0.88, z: 0 } },
       full:   { cam: { x: -0.673, y: 0.722, z: 6.542 }, tgt: { x: 0.046, y: 0.485, z: 0.013 } },
-      head:   { cam: { x: -0.216, y: 0.911, z: 1.663 }, tgt: { x: 0.011, y: 0.827, z: -0.018 } }
+      head:   { cam: { x: -0.216, y: 0.95, z: 1.663 }, tgt: { x: 0.011, y: 0.90, z: -0.018 } }
     };
     const p = presets[view];
     if (p && this._head.cameraEnd && this._head.controlsEnd) {
@@ -180,6 +191,79 @@ export class AvatarEngine {
 
   _enterFloorState(state) {
     if (this._bodyAnim) this._bodyAnim.setFloorState(state);
+  }
+
+  _registerGazeLayer() {
+    const head = this._head;
+    head.registerMorphLayer('gazeOverride', {
+      order: 100, blend: 'replace',
+      update: (dt, get, set) => {
+        if (!head.isSpeaking) return;
+        if (!head.poseAvatar?.props?.['Head.quaternion']) return;
+        if (!head.objectLeftEye || !head.objectRightEye || !head.camera) return;
+
+        _gazeHeadQ.copy(head.armature.quaternion);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Hips.quaternion']);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Spine.quaternion']);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Spine1.quaternion']);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Spine2.quaternion']);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Neck.quaternion']);
+        _gazeHeadQ.multiply(head.poseAvatar.props['Head.quaternion']);
+
+        head.objectLeftEye.updateMatrixWorld(true);
+        head.objectRightEye.updateMatrixWorld(true);
+        _gazeEyeL.setFromMatrixPosition(head.objectLeftEye.matrixWorld);
+        _gazeEyeR.setFromMatrixPosition(head.objectRightEye.matrixWorld);
+        _gazeDir.set(
+          head.camera.position.x - (_gazeEyeL.x + _gazeEyeR.x) / 2,
+          head.camera.position.y - (_gazeEyeL.y + _gazeEyeR.y) / 2,
+          head.camera.position.z - (_gazeEyeL.z + _gazeEyeR.z) / 2
+        ).normalize();
+        _gazeInvQ.copy(_gazeHeadQ).invert();
+        _gazeDir.applyQuaternion(_gazeInvQ);
+
+        const hr = Math.atan2(_gazeDir.x, Math.abs(_gazeDir.z));
+        const vr = Math.atan2(_gazeDir.y, Math.abs(_gazeDir.z));
+        let ey = Math.max(-0.9, Math.min(0.9, -hr * GAZE_SCALE));
+        let ex = Math.max(-0.9, Math.min(0.9, vr * GAZE_SCALE));
+
+        set('eyesLookDown',   ex < 0 ? -ex : 0);
+        set('eyesLookUp',     ex < 0 ? 0 : ex);
+        set('eyeLookInLeft',  ey < 0 ? -ey : 0);
+        set('eyeLookOutLeft', ey < 0 ? 0 : ey);
+        set('eyeLookInRight', ey < 0 ? 0 : ey);
+        set('eyeLookOutRight',ey < 0 ? -ey : 0);
+      }
+    });
+  }
+
+  _onAnimFrame(dt) {
+    if (!this._head) return;
+    if (!this._head.isSpeaking) return;
+
+    const h = this._head;
+    if (!h.mtAvatar || !h.camera) return;
+
+    h.objectLeftEye.updateMatrixWorld(true);
+    h.objectRightEye.updateMatrixWorld(true);
+    const eyeY = (h.objectLeftEye.matrixWorld.elements[13] + h.objectRightEye.matrixWorld.elements[13]) / 2;
+
+    const dx = h.camera.position.x;
+    const dz = h.camera.position.z;
+    const dy = h.camera.position.y - eyeY;
+    const horizDist = Math.sqrt(dx * dx + dz * dz);
+    const yawToCamera = Math.atan2(dx, dz);
+    const pitchToCamera = Math.atan2(dy, horizDist);
+
+    const roty = Math.max(-0.8, Math.min(0.8, yawToCamera / (9 / 4)));
+    const rotx = Math.max(-0.3, Math.min(0.6, -pitchToCamera / (40 / 24) + GAZE_V_OFFSET));
+
+    const brx = h.mtAvatar['bodyRotateX'];
+    const bry = h.mtAvatar['bodyRotateY'];
+    brx.maxv = 0.008;
+    bry.maxv = 0.008;
+    Object.assign(brx, { system: rotx, needsUpdate: true });
+    Object.assign(bry, { system: roty, needsUpdate: true });
   }
 
   _resetTurnState() {
@@ -396,7 +480,10 @@ export class AvatarEngine {
         update: (dt, get, set) => {
           const exprs = this._bodyAnim.sampleExpressions();
           if (!exprs) return;
-          for (const [name, value] of Object.entries(exprs)) set(name, value);
+          for (const [name, value] of Object.entries(exprs)) {
+            if (name.startsWith('eye')) continue;
+            set(name, value);
+          }
         }
       });
     } catch (e) {

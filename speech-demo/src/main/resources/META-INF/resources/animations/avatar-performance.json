@@ -201,11 +201,8 @@
 
   "pools": {
     "idle": [
-      { "subcategory": "idle.relaxed", "weight": 14 },
-      { "subcategory": "idle.self-amusing", "weight": 4 },
-      { "subcategory": "idle.restless", "weight": 4 },
-      { "subcategory": "idle.dance", "weight": 2 },
-      { "subcategory": "conversational.stance", "weight": 4 }
+      { "subcategory": "idle.relaxed", "weight": 16 },
+      { "subcategory": "conversational.stance", "weight": 8 }
     ],
     "listening": [
       { "subcategory": "idle.relaxed", "weight": 14 },
@@ -219,8 +216,7 @@
       { "subcategory": "conversational.stance", "weight": 14 },
       { "subcategory": "conversational.agreement", "weight": 4 },
       { "subcategory": "conversational.uncertainty", "weight": 4 },
-      { "subcategory": "conversational.emphasis", "weight": 4 },
-      { "subcategory": "idle.dance", "weight": 1 }
+      { "subcategory": "conversational.emphasis", "weight": 4 }
     ]
   },
 

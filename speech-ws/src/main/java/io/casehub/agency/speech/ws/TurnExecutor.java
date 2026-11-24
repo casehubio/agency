@@ -1,8 +1,6 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ConversationTurn;
-
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.Cue;
@@ -11,6 +9,7 @@ import io.casehub.agency.speech.ws.protocol.TurnOrigin;
 import io.casehub.connectors.voice.model.SynthesisOptions;
 import io.casehub.connectors.voice.model.TextMark;
 import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.eidos.api.AssembledPrompt;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,6 +40,9 @@ public class TurnExecutor implements AutoCloseable {
     private final List<ConversationTurn> history = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(
             Thread.ofVirtual().name("turn-executor").factory());
+    private final ExecutorService ttsExecutor = Executors.newFixedThreadPool(2,
+                                                                             Thread.ofVirtual().name("tts-pipeline-", 0).factory());
+
 
     private int turnSeq;
     private double minPlaybackRate = 0.6;
@@ -101,27 +103,36 @@ public class TurnExecutor implements AutoCloseable {
     @Override
     public void close() {
         executor.shutdownNow();
+        ttsExecutor.shutdownNow();
     }
 
     private void processUserTurn(UserTurn turn) {
         floorState.onTurnStart();
-        int currentTurnSeq = ++turnSeq;
-        int[] segmentIndex = {0};
+        int   currentTurnSeq = ++turnSeq;
+        int[] segmentIndex   = {0};
         turnEstimatedAudioMs = 0;
 
         try {
             history.add(new ConversationTurn("user", turn.cleanText(), turn.speakerLabel()));
-            TextToSpeech tts = resolveTts(turn.ttsModel());
+            TextToSpeech    tts    = resolveTts(turn.ttsModel());
             AssembledPrompt prompt = assemblePrompt(turn);
 
             String responseText;
             if (streamingGenerator != null) {
+                var ttsFutures = new java.util.ArrayList<java.util.concurrent.Future<?>>();
                 responseText = streamingGenerator.generate(prompt, sentence -> {
                     var segments = segmenter.segment(sentence);
                     for (var seg : segments) {
-                        synthesiseAndSendSegment(tts, seg, currentTurnSeq, segmentIndex[0]++);
+                        int idx = segmentIndex[0]++;
+                        ttsFutures.add(ttsExecutor.submit(() ->
+                                                                  synthesiseAndSendSegment(tts, seg, currentTurnSeq, idx)));
                     }
                 });
+                for (var f : ttsFutures) {
+                    try {f.get();} catch (java.util.concurrent.ExecutionException e) {
+                        LOG.log(System.Logger.Level.WARNING, "TTS segment failed", e.getCause());
+                    }
+                }
             } else if (responseGenerator != null) {
                 responseText = responseGenerator.apply(prompt);
                 if (responseText != null) {
@@ -137,17 +148,17 @@ public class TurnExecutor implements AutoCloseable {
 
             if (responseText != null) {
                 history.add(new ConversationTurn("assistant", responseText));
-                if (onResponse != null) onResponse.accept(responseText);
+                if (onResponse != null) {onResponse.accept(responseText);}
             }
         } catch (Exception e) {
             send(new AvatarMessage.Error(e.getMessage()));
         } finally {
             long expiresAt = System.currentTimeMillis()
-                    + (long) (turnEstimatedAudioMs / minPlaybackRate) + EXPIRY_BUFFER_MS;
+                             + (long) (turnEstimatedAudioMs / minPlaybackRate) + EXPIRY_BUFFER_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
             floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
-                    TurnOrigin.USER));
+                                                TurnOrigin.USER));
         }
     }
 

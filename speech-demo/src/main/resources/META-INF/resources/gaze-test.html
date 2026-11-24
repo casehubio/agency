@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gaze Test</title>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+    "talkinghead": "./vendor/talkinghead.mjs"
+} }
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; display: flex; height: 100vh; }
+  #avatar-container { width: 60%; height: 100%; background: #111; }
+  #panel { width: 40%; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+  button { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #555; background: #2a2a3e; color: #e0e0e0; cursor: pointer; font-size: 0.9rem; }
+  button:hover { background: #3a3a5e; }
+  button.active { background: #2d5aa0; border-color: #2d5aa0; }
+  #debug { white-space: pre; font-size: 0.75rem; line-height: 1.4; background: #111; padding: 0.5rem; border-radius: 6px; flex: 1; overflow-y: auto; }
+  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div id="avatar-container"></div>
+<div id="panel">
+  <h3>Gaze Test — no LLM, no server</h3>
+  <div class="row">
+    <button id="btn-gaze" class="active">Gaze: ON</button>
+    <button id="btn-speak">Speak (browser TTS)</button>
+    <button id="btn-compare">Compare ON/OFF</button>
+  </div>
+  <div class="row">
+    <label>Scale: <input id="scale-slider" type="range" min="0.2" max="4.0" step="0.1" value="1.2"> <span id="scale-val">1.2</span></label>
+  </div>
+  <div class="row">
+    <label>V.offset: <input id="voffset-slider" type="range" min="-0.20" max="0.10" step="0.01" value="-0.06"> <span id="voffset-val">-0.06</span></label>
+  </div>
+  <div class="row">
+    <button data-view="full">Full</button>
+    <button data-view="upper" class="active">Upper</button>
+    <button data-view="head">Head</button>
+  </div>
+  <div id="debug">Loading avatar...</div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { TalkingHead } from "talkinghead";
+
+const container = document.getElementById('avatar-container');
+const debug = document.getElementById('debug');
+let gazeEnabled = true;
+let frameCount = 0;
+let gazeScale = 1.2;
+let gazeVOffset = -0.06;
+
+// Reusable objects (avoid GC)
+const _headQ = new THREE.Quaternion();
+const _invQ = new THREE.Quaternion();
+const _dir = new THREE.Vector3();
+const _eyeL = new THREE.Vector3();
+const _eyeR = new THREE.Vector3();
+
+const head = new TalkingHead(container, {
+  ttsEndpoint: null,
+  lipsyncModules: ['en'], lipsyncLang: 'en',
+  cameraView: 'upper',
+  cameraRotateEnable: true, cameraZoomEnable: true, cameraPanEnable: true,
+  avatarIdleEyeContact: 0.7, avatarIdleHeadMove: 0.4,
+  avatarSpeakingEyeContact: 1.0, avatarSpeakingHeadMove: 0.3,
+  update: (dt) => { onFrame(dt); }
+});
+
+await head.showAvatar({
+  url: './avatar.glb', body: 'F',
+  avatarMood: 'neutral', lipsyncLang: 'en'
+});
+debug.textContent = 'Avatar loaded. Gaze active.\nOrbit the camera to test tracking.';
+window.__head = head;
+
+// Register a morph layer that runs AFTER everything (order 100, replace blend)
+// This bypasses the mtAvatar system and smoothing entirely.
+head.registerMorphLayer('gazeOverride', {
+  order: 100, blend: 'replace',
+  update: (dt, get, set) => {
+    if (!gazeEnabled) return;
+    if (!head.poseAvatar?.props?.['Head.quaternion']) return;
+    if (!head.objectLeftEye || !head.objectRightEye || !head.camera) return;
+
+    // Compute residual direction from eyes to camera in head-local space.
+    // The head does coarse pointing; this handles the remaining small offset.
+    _headQ.copy(head.armature.quaternion);
+    _headQ.multiply(head.poseAvatar.props['Hips.quaternion']);
+    _headQ.multiply(head.poseAvatar.props['Spine.quaternion']);
+    _headQ.multiply(head.poseAvatar.props['Spine1.quaternion']);
+    _headQ.multiply(head.poseAvatar.props['Spine2.quaternion']);
+    _headQ.multiply(head.poseAvatar.props['Neck.quaternion']);
+    _headQ.multiply(head.poseAvatar.props['Head.quaternion']);
+
+    head.objectLeftEye.updateMatrixWorld(true);
+    head.objectRightEye.updateMatrixWorld(true);
+    _eyeL.setFromMatrixPosition(head.objectLeftEye.matrixWorld);
+    _eyeR.setFromMatrixPosition(head.objectRightEye.matrixWorld);
+    _dir.set(
+      head.camera.position.x - (_eyeL.x + _eyeR.x) / 2,
+      head.camera.position.y - (_eyeL.y + _eyeR.y) / 2,
+      head.camera.position.z - (_eyeL.z + _eyeR.z) / 2
+    ).normalize();
+    _invQ.copy(_headQ).invert();
+    _dir.applyQuaternion(_invQ);
+
+    const hr = Math.atan2(_dir.x, Math.abs(_dir.z));
+    const vr = Math.atan2(_dir.y, Math.abs(_dir.z));
+    let ey = Math.max(-0.9, Math.min(0.9, -hr * gazeScale));
+    let ex = Math.max(-0.9, Math.min(0.9, vr * gazeScale));
+
+    set('eyesLookDown',   ex < 0 ? -ex : 0);
+    set('eyesLookUp',     ex < 0 ? 0 : ex);
+    set('eyeLookInLeft',  ey < 0 ? -ey : 0);
+    set('eyeLookOutLeft', ey < 0 ? 0 : ey);
+    set('eyeLookInRight', ey < 0 ? 0 : ey);
+    set('eyeLookOutRight',ey < 0 ? -ey : 0);
+  }
+});
+
+function onFrame(dt) {
+  if (!gazeEnabled) return;
+  const h = head;
+  if (!h.poseAvatar?.props?.['Head.quaternion'] || !h.mtAvatar) return;
+  if (!h.objectLeftEye || !h.objectRightEye || !h.camera) return;
+
+  // 1) Build head world quaternion from bone chain
+  _headQ.copy(h.armature.quaternion);
+  _headQ.multiply(h.poseAvatar.props['Hips.quaternion']);
+  _headQ.multiply(h.poseAvatar.props['Spine.quaternion']);
+  _headQ.multiply(h.poseAvatar.props['Spine1.quaternion']);
+  _headQ.multiply(h.poseAvatar.props['Spine2.quaternion']);
+  _headQ.multiply(h.poseAvatar.props['Neck.quaternion']);
+  _headQ.multiply(h.poseAvatar.props['Head.quaternion']);
+
+  // 2) Eye center in world space
+  h.objectLeftEye.updateMatrixWorld(true);
+  h.objectRightEye.updateMatrixWorld(true);
+  _eyeL.setFromMatrixPosition(h.objectLeftEye.matrixWorld);
+  _eyeR.setFromMatrixPosition(h.objectRightEye.matrixWorld);
+  const eyeX = (_eyeL.x + _eyeR.x) / 2;
+  const eyeY = (_eyeL.y + _eyeR.y) / 2;
+  const eyeZ = (_eyeL.z + _eyeR.z) / 2;
+
+  // 3) Direction from eyes to camera in world space
+  _dir.set(
+    h.camera.position.x - eyeX,
+    h.camera.position.y - eyeY,
+    h.camera.position.z - eyeZ
+  ).normalize();
+
+  // 4) Transform to head-local space
+  _invQ.copy(_headQ).invert();
+  _dir.applyQuaternion(_invQ);
+
+  // Now _dir is in head-local space:
+  //   x > 0 = camera to the right of head facing direction
+  //   y > 0 = camera above head facing direction
+  //   z > 0 = camera in front of head (varies by model convention)
+
+  // 5) Convert to eye morph values
+  // Horizontal: atan2 gives angle from forward axis to left/right
+  const horizRad = Math.atan2(_dir.x, Math.abs(_dir.z));
+  // Vertical: atan2 gives angle from forward axis to up/down
+  const vertRad = Math.atan2(_dir.y, Math.abs(_dir.z));
+
+  // Scale radians to morph range
+  let ey = -horizRad * gazeScale;  // negative: TH convention positive=left
+  let ex = vertRad * gazeScale;    // positive = look up
+
+  ey = Math.max(-0.9, Math.min(0.9, ey));
+  ex = Math.max(-0.9, Math.min(0.9, ex));
+
+  // HEAD ROTATION: compute angle from avatar to camera directly.
+  // No bone chain, no feedback loop — just geometry.
+  const dx = h.camera.position.x;  // avatar at origin
+  const dz = h.camera.position.z;
+  const dy = h.camera.position.y - eyeY;
+  const horizDist = Math.sqrt(dx * dx + dz * dz);
+  const yawToCamera = Math.atan2(dx, dz);    // positive = camera right
+  const pitchToCamera = Math.atan2(dy, horizDist); // positive = camera above
+
+  // Convert to bodyRotateX/Y scale (see TalkingHead setValue)
+  // bodyRotateY positive = head turns RIGHT, bodyRotateX positive = head tilts DOWN
+  const roty = Math.max(-0.8, Math.min(0.8, yawToCamera / (9 / 4)));
+  const rotx = Math.max(-0.3, Math.min(0.6, -pitchToCamera / (40 / 24) + gazeVOffset));
+
+  const brx = h.mtAvatar['bodyRotateX'];
+  const bry = h.mtAvatar['bodyRotateY'];
+  brx.maxv = 0.008; // 8x default — responsive but no oscillation
+  bry.maxv = 0.008;
+  Object.assign(brx, { system: rotx, needsUpdate: true });
+  Object.assign(bry, { system: roty, needsUpdate: true });
+
+  // Debug every 30 frames
+  if (++frameCount % 30 === 0) {
+    debug.textContent =
+      `isSpeaking: ${h.isSpeaking}\n` +
+      `---\n` +
+      `eye pos:  (${eyeX.toFixed(2)}, ${eyeY.toFixed(2)}, ${eyeZ.toFixed(2)})\n` +
+      `cam pos:  (${h.camera.position.x.toFixed(2)}, ${h.camera.position.y.toFixed(2)}, ${h.camera.position.z.toFixed(2)})\n` +
+      `---\n` +
+      `dir (head-local):\n` +
+      `  x: ${_dir.x.toFixed(4)} (right+)\n` +
+      `  y: ${_dir.y.toFixed(4)} (up+)\n` +
+      `  z: ${_dir.z.toFixed(4)} (fwd)\n` +
+      `horiz: ${(horizRad*180/Math.PI).toFixed(1)}°  vert: ${(vertRad*180/Math.PI).toFixed(1)}°\n` +
+      `---\n` +
+      `final  ex: ${ex.toFixed(3)}  ey: ${ey.toFixed(3)}\n` +
+      `morphs:\n` +
+      `  eyesLookDown:   ${h.mtAvatar['eyesLookDown']?.value?.toFixed(3)}\n` +
+      `  eyesLookUp:     ${h.mtAvatar['eyesLookUp']?.value?.toFixed(3)}\n` +
+      `  eyeLookInLeft:  ${h.mtAvatar['eyeLookInLeft']?.value?.toFixed(3)}\n` +
+      `  eyeLookOutLeft: ${h.mtAvatar['eyeLookOutLeft']?.value?.toFixed(3)}\n` +
+      `  eyeLookInRight: ${h.mtAvatar['eyeLookInRight']?.value?.toFixed(3)}\n` +
+      `  eyeLookOutRight:${h.mtAvatar['eyeLookOutRight']?.value?.toFixed(3)}`;
+  }
+}
+
+// Controls
+document.getElementById('btn-gaze').addEventListener('click', (e) => {
+  gazeEnabled = !gazeEnabled;
+  e.target.textContent = gazeEnabled ? 'Gaze: ON' : 'Gaze: OFF';
+  e.target.classList.toggle('active', gazeEnabled);
+});
+
+document.getElementById('scale-slider').addEventListener('input', (e) => {
+  gazeScale = parseFloat(e.target.value);
+  document.getElementById('scale-val').textContent = gazeScale.toFixed(1);
+});
+
+document.getElementById('voffset-slider').addEventListener('input', (e) => {
+  gazeVOffset = parseFloat(e.target.value);
+  document.getElementById('voffset-val').textContent = gazeVOffset.toFixed(2);
+});
+
+document.getElementById('btn-compare').addEventListener('click', async () => {
+  // Quick ON/OFF comparison
+  gazeEnabled = false;
+  await new Promise(r => setTimeout(r, 500));
+  gazeEnabled = true;
+});
+
+document.getElementById('btn-speak').addEventListener('click', () => {
+  const u = new SpeechSynthesisUtterance('Hello, I am looking at you through the camera. Can you see my eyes following you?');
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+});
+
+document.querySelectorAll('[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    head.setView(btn.dataset.view);
+  });
+});
+</script>
+</body>
+</html>
