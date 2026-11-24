@@ -373,8 +373,8 @@ public class AgencyBeans {
     }
 
     @Produces @ApplicationScoped
-    public LlmCrossAxisGoalEnricher llmCrossAxisGoalEnricher(AgentProvider agentProvider) {
-        return new LlmCrossAxisGoalEnricher(agentProvider);
+    public LlmCrossAxisGoalEnricher llmCrossAxisGoalEnricher() {
+        return new LlmCrossAxisGoalEnricher(nullableFrom(sessionPipelineInstance));
     }
 
     @Produces @ApplicationScoped

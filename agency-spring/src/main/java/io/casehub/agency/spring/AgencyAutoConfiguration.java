@@ -398,8 +398,9 @@ public class AgencyAutoConfiguration {
     }
 
     @Bean
-    public LlmCrossAxisGoalEnricher llmCrossAxisGoalEnricher(AgentProvider agentProvider) {
-        return new LlmCrossAxisGoalEnricher(agentProvider);
+    public LlmCrossAxisGoalEnricher llmCrossAxisGoalEnricher(
+            @Nullable SessionPipeline sessionPipeline) {
+        return new LlmCrossAxisGoalEnricher(sessionPipeline);
     }
 
     @Bean
