@@ -541,7 +541,8 @@ export class AvatarControls {
           }
           for (let i = 0; i < sel.options.length; i++) {
             const opt = sel.options[i];
-            const st = data[opt.value];
+            const engineKey = opt.value.includes(':') ? opt.value.split(':')[0] : opt.value;
+            const st = data[engineKey] || data[opt.value];
             opt.disabled = st !== 'READY';
             opt.text = opt.text.replace(/ \(downloading\.\.\.\)$/, '');
             if (st === 'DOWNLOADING') opt.text += ' (downloading...)';

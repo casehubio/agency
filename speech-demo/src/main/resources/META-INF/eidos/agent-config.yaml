@@ -1,2 +1,11 @@
 defaults:
   backend: claude
+
+pools:
+  voice:
+    agent-id: speech-demo
+    backend: claude
+    max-active: 3
+    salience: 2
+    clearing:
+      policy: every-call

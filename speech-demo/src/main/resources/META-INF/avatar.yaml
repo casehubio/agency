@@ -13,6 +13,10 @@ tts:
         - af_nova
         - am_adam
         - bm_fable
+    # Qwen3 requires Python + PyTorch inference server — not available in this container
+    # - type: qwen3
+    #   voices: [ryan, aiden, eric, dylan, serena, vivian]
+    #   cloned-voices: true
 
 stt:
   type: whisper-fallback
