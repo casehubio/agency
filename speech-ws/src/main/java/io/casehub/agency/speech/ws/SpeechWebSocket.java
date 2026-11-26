@@ -1,13 +1,13 @@
 package io.casehub.agency.speech.ws;
 
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.agency.speech.CorrectionHooks;
 import io.casehub.agency.speech.TtsModelRegistry;
-import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
-import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.eidos.api.AssembledPrompt;
 import io.quarkus.websockets.next.OnBinaryMessage;
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
@@ -57,13 +57,28 @@ public class SpeechWebSocket {
 
     private static final System.Logger LOG = System.getLogger("speech-ws");
 
+
+    private volatile io.casehub.agency.speech.PerformanceVocabulary performanceVocabulary;
+
+    private io.casehub.agency.speech.PerformanceVocabulary loadVocabulary() {
+        if (performanceVocabulary != null) {return performanceVocabulary;}
+        var is = Thread.currentThread().getContextClassLoader()
+                       .getResourceAsStream("META-INF/resources/animations/avatar-performance.json");
+        if (is != null) {
+            performanceVocabulary = new JsonPerformanceVocabulary(is);
+        }
+        return performanceVocabulary;
+    }
+
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
       try {
         String connId = connection.id();
         LOG.log(System.Logger.Level.INFO, "WebSocket onOpen connId={0}", connId);
+        var vocab = loadVocabulary();
+        var gestureSection = vocab != null ? new GesturePromptSection(vocab) : null;
         var assembler = new DefaultPromptAssembler(
-                avatarConfig.systemPrompt().orElse(null));
+                avatarConfig.systemPrompt().orElse(null), gestureSection);
 
         java.util.function.Function<AssembledPrompt, String> generator    = null;
         SpeechSession.StreamingResponseGenerator             streamingGen = null;
@@ -135,7 +150,8 @@ public class SpeechWebSocket {
                 data -> connection.sendBinaryAndAwait(data),
                 ttsRegistry.isResolvable() ? ttsRegistry.get().models() : java.util.Map.of(),
                 hooks != null ? hooks.onResponse() : null,
-                hooks != null ? hooks.vocabularyHintSupplier() : null);
+                hooks != null ? hooks.vocabularyHintSupplier() : null,
+                vocab);
 
         if (embeddingExtractor.isResolvable() && speakerRegistryInstance.isResolvable()) {
             session.withSpeakerServices(embeddingExtractor.get(), speakerRegistryInstance.get());
@@ -156,7 +172,8 @@ public class SpeechWebSocket {
                     data -> connection.sendBinaryAndAwait(data),
                     ttsRegistry.isResolvable() ? ttsRegistry.get().models() : java.util.Map.of(),
                     hooks != null ? hooks.onResponse() : null,
-                    hooks != null ? hooks.vocabularyHintSupplier() : null);
+                    hooks != null ? hooks.vocabularyHintSupplier() : null,
+                    vocab);
             if (embeddingExtractor.isResolvable() && speakerRegistryInstance.isResolvable()) {
                 session.withSpeakerServices(embeddingExtractor.get(), speakerRegistryInstance.get());
             }

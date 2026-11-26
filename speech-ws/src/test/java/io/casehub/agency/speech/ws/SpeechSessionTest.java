@@ -554,7 +554,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -590,7 +590,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -627,7 +627,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -657,7 +657,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -689,7 +689,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of("kokoro:af_heart", altTts),
-                null, null);
+                null, null, null);
 
         session.handleStart(new AvatarMessage.Start(16000, null, "kokoro:af_heart"));
         session.handleStop();
@@ -717,7 +717,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleText("Hello from text");
 
@@ -751,7 +751,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
 
         session.handleText("Timing check");
 
@@ -789,7 +789,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null);
+                null, null, null);
         session.withSpeakerServices(extractor, registry);
 
         session.handleStart(new AvatarMessage.Start(16000));

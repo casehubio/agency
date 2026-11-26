@@ -33,7 +33,7 @@ class GesturePromptSectionTest {
         assertThat(text).doesNotContain("internal-only");
         assertThat(text).contains("[mood:happy]").contains("warm positive tone");
         assertThat(text).doesNotContain("sleep");
-        assertThat(text).contains("at most one gesture per sentence");
+        assertThat(text).contains("Embed gesture and mood tags naturally");
     }
 
     @Test

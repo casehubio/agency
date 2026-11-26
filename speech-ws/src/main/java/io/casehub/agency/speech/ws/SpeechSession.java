@@ -112,7 +112,7 @@ public class SpeechSession {
                          Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
         this(sttService, ttsService, pipeline, responseGenerator, null,
-             promptAssembler, textSink, binarySink, ttsModels, onResponse, vocabularyHintSupplier);
+             promptAssembler, textSink, binarySink, ttsModels, onResponse, vocabularyHintSupplier, null);
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
@@ -125,7 +125,8 @@ public class SpeechSession {
                          Consumer<byte[]> binarySink,
                          Map<String, TextToSpeech> ttsModels,
                          Consumer<String> onResponse,
-                         java.util.function.Supplier<String> vocabularyHintSupplier) {
+                         java.util.function.Supplier<String> vocabularyHintSupplier,
+                         PerformanceVocabulary vocabulary) {
         this.sttService             = sttService;
         this.pipeline               = pipeline;
         this.textSink               = textSink;
@@ -135,7 +136,7 @@ public class SpeechSession {
         this.turnExecutor = new TurnExecutor(
                 promptAssembler, responseGenerator, streamingGenerator,
                 ttsService, ttsModels, textSink, binarySink,
-                new UtteranceSegmenter(EMPTY_VOCAB), floorState,
+                new UtteranceSegmenter(vocabulary != null ? vocabulary : EMPTY_VOCAB), floorState,
                 onResponse, pipeline);
     }
 
