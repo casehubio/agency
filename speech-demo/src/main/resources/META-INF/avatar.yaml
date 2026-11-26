@@ -25,5 +25,5 @@ cleanup:
   max-destructiveness: 1
 
 pipeline:
-  post-llm:
-    - name: casing
+  post-stt:
+    - name: correction

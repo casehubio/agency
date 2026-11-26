@@ -1,22 +1,21 @@
 package io.casehub.agency.speech.ws;
 
 import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
-import io.casehub.connectors.voice.spi.RecognitionStream;
-import io.casehub.connectors.voice.spi.StreamingSpeechToText;
-import io.casehub.connectors.voice.model.TranscriptionOptions;
-import io.casehub.connectors.voice.model.TranscriptionResult;
-import io.casehub.connectors.voice.spi.TextToSpeech;
-import io.casehub.connectors.voice.model.SpeakerEmbedding;
-import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
-import io.casehub.connectors.voice.spi.SpeakerRegistry;
-import io.casehub.agency.speech.ws.protocol.AvatarMessage;
-import io.casehub.eidos.api.AssembledPrompt;
-import io.casehub.agency.speech.ConversationTurn;
-import io.casehub.agency.speech.PerformanceVocabulary;
 import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;
+import io.casehub.agency.speech.PerformanceVocabulary;
 import io.casehub.agency.speech.SpeechPromptAssembler;
+import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
+import io.casehub.connectors.voice.model.SpeakerEmbedding;
+import io.casehub.connectors.voice.model.TranscriptionOptions;
+import io.casehub.connectors.voice.model.TranscriptionResult;
+import io.casehub.connectors.voice.spi.RecognitionStream;
+import io.casehub.connectors.voice.spi.SpeakerEmbeddingExtractor;
+import io.casehub.connectors.voice.spi.SpeakerRegistry;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.eidos.api.AssembledPrompt;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -99,7 +98,7 @@ public class SpeechSession {
                          Consumer<byte[]> binarySink,
                          Map<String, TextToSpeech> ttsModels) {
         this(sttService, ttsService, pipeline, responseGenerator, promptAssembler,
-             textSink, binarySink, ttsModels, null, null, null);
+             textSink, binarySink, ttsModels, null, null);
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
@@ -110,11 +109,10 @@ public class SpeechSession {
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
                          Map<String, TextToSpeech> ttsModels,
-                         java.util.function.UnaryOperator<String> corrector,
                          Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
         this(sttService, ttsService, pipeline, responseGenerator, null,
-             promptAssembler, textSink, binarySink, ttsModels, corrector, onResponse, vocabularyHintSupplier);
+             promptAssembler, textSink, binarySink, ttsModels, onResponse, vocabularyHintSupplier);
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
@@ -126,15 +124,14 @@ public class SpeechSession {
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
                          Map<String, TextToSpeech> ttsModels,
-                         java.util.function.UnaryOperator<String> corrector,
                          Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
-        this.sttService = sttService;
-        this.pipeline = pipeline;
-        this.textSink = textSink;
+        this.sttService             = sttService;
+        this.pipeline               = pipeline;
+        this.textSink               = textSink;
         this.vocabularyHintSupplier = vocabularyHintSupplier;
 
-        this.floorState = new FloorState();
+        this.floorState   = new FloorState();
         this.turnExecutor = new TurnExecutor(
                 promptAssembler, responseGenerator, streamingGenerator,
                 ttsService, ttsModels, textSink, binarySink,

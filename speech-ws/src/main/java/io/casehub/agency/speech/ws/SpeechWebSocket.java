@@ -134,7 +134,6 @@ public class SpeechWebSocket {
                 text -> connection.sendTextAndAwait(text),
                 data -> connection.sendBinaryAndAwait(data),
                 ttsRegistry.isResolvable() ? ttsRegistry.get().models() : java.util.Map.of(),
-                hooks != null ? hooks.corrector() : null,
                 hooks != null ? hooks.onResponse() : null,
                 hooks != null ? hooks.vocabularyHintSupplier() : null);
 
@@ -156,7 +155,6 @@ public class SpeechWebSocket {
                     text -> connection.sendTextAndAwait(text),
                     data -> connection.sendBinaryAndAwait(data),
                     ttsRegistry.isResolvable() ? ttsRegistry.get().models() : java.util.Map.of(),
-                    hooks != null ? hooks.corrector() : null,
                     hooks != null ? hooks.onResponse() : null,
                     hooks != null ? hooks.vocabularyHintSupplier() : null);
             if (embeddingExtractor.isResolvable() && speakerRegistryInstance.isResolvable()) {

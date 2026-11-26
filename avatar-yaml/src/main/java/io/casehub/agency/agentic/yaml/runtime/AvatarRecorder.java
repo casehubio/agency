@@ -17,7 +17,35 @@ import java.util.function.Function;
 public class AvatarRecorder {
 
     public RuntimeValue<CompiledAvatar> compileAvatar(AvatarDefinition definition) {
-        return new RuntimeValue<>(new AvatarCompiler().compile(definition));
+        var registry = AvatarCompiler.createDefaultFilterRegistry();
+        registry.register("correction", config -> {
+            var handle = io.quarkus.arc.Arc.container()
+                                           .instance(io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector.class);
+            if (!handle.isAvailable()) {
+                return new io.casehub.connectors.voice.spi.TextFilter() {
+                    @Override
+                    public String apply(String text) {return text;}
+
+                    @Override
+                    public String name()             {return "correction";}
+
+                    @Override
+                    public int destructiveness()     {return 1;}
+                };
+            }
+            var corrector = handle.get();
+            return new io.casehub.connectors.voice.spi.TextFilter() {
+                @Override
+                public String apply(String text) {return corrector.correct(text);}
+
+                @Override
+                public String name()             {return "correction";}
+
+                @Override
+                public int destructiveness()     {return 1;}
+            };
+        });
+        return new RuntimeValue<>(new AvatarCompiler().compile(definition, registry));
     }
 
     public RuntimeValue<TtsModelRegistry> extractTtsModelRegistry(
@@ -49,19 +77,18 @@ public class AvatarRecorder {
 
 
     public Function<io.quarkus.arc.SyntheticCreationalContext<CorrectionHooks>, CorrectionHooks>
-            correctionHooksCreator() {
+    correctionHooksCreator() {
         return ctx -> {
             var correctorHandle = io.quarkus.arc.Arc.container()
-                    .instance(io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector.class);
+                                                    .instance(io.casehub.connectors.voice.sherpa.correction.TranscriptCorrector.class);
             var vocabularyHandle = io.quarkus.arc.Arc.container()
-                    .instance(io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary.class);
+                                                     .instance(io.casehub.connectors.voice.sherpa.correction.ConversationVocabulary.class);
             if (!correctorHandle.isAvailable() || !vocabularyHandle.isAvailable()) {
-                return new CorrectionHooks(s -> s, s -> {}, () -> "");
+                return new CorrectionHooks(s -> {}, () -> "");
             }
-            var corrector = correctorHandle.get();
+            var corrector  = correctorHandle.get();
             var vocabulary = vocabularyHandle.get();
             return new CorrectionHooks(
-                    corrector::correct,
                     response -> {
                         vocabulary.addFromText(response);
                         corrector.addVocabulary(vocabulary.terms().toArray(String[]::new));

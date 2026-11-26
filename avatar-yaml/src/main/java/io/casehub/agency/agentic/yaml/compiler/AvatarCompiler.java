@@ -21,7 +21,9 @@ public class AvatarCompiler {
 
     private static final System.Logger LOG = System.getLogger("avatar-compiler");
 
-    public CompiledAvatar compile(AvatarDefinition definition) {
+    public CompiledAvatar compile(AvatarDefinition definition) {return compile(definition, createDefaultFilterRegistry());}
+
+    public CompiledAvatar compile(AvatarDefinition definition, TextFilterRegistry filterRegistry) {
         TtsModelRegistry      ttsRegistry   = null;
         TextToSpeech          defaultTts    = null;
         StreamingSpeechToText stt           = null;
@@ -41,7 +43,6 @@ public class AvatarCompiler {
 
         CompiledSpeechPipeline pipeline;
         if (definition.pipeline() != null) {
-            var filterRegistry   = createDefaultFilterRegistry();
             var pipelineCompiler = new SpeechPipelineCompiler();
             FilterChain postSttFallback = cleanupConfig != null
                                           ? FilterChain.of(cleanupConfig) : FilterChain.EMPTY;
@@ -58,7 +59,7 @@ public class AvatarCompiler {
     }
 
 
-    static TextFilterRegistry createDefaultFilterRegistry() {
+    public static TextFilterRegistry createDefaultFilterRegistry() {
         var registry = new TextFilterRegistry();
         registry.register("filler-removal",
                           config -> new io.casehub.connectors.voice.sherpa.FillerRemovalFilter());

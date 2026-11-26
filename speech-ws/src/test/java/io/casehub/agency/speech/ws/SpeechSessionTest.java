@@ -1,18 +1,18 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.eidos.api.AssembledPrompt;
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
+import io.casehub.agency.core.yaml.compiler.FilterChain;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.connectors.voice.model.SynthesisOptions;
 import io.casehub.connectors.voice.model.SynthesisResult;
 import io.casehub.connectors.voice.model.TranscriptionResult;
-import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
-import io.casehub.agency.core.yaml.compiler.FilterChain;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextFilter;
 import io.casehub.connectors.voice.spi.TextToSpeech;
+import io.casehub.eidos.api.AssembledPrompt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -449,47 +449,35 @@ class SpeechSessionTest {
     }
 
 
-// --- Correction pipeline regression tests ---
+// --- Pipeline callback tests ---
 
     @Test
-    void handleTextAppliesCorrectorBeforeCleanup() {
-        var corrected = new ArrayList<String>();
+    void handleTextWithNoOnResponseCallbackStillCleans() {
         session = new SpeechSession(
                 sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                text -> {
-                    corrected.add(text);
-                    return text.replace("limaric", "limerick");
-                },
                 null, null);
 
         session.handleText("tell me a limaric");
 
-        assertThat(corrected).as("corrector should not be called for typed text").isEmpty();
         verify(cleanupConfig).apply("tell me a limaric");
     }
 
     @Test
-    void handleStopSkipsCorrectorOnSttOutput() {
+    void handleStopWithNoOnResponseCallbackStillCleans() {
         when(recognitionStream.finalResult()).thenReturn(
                 new TranscriptionResult("tell me a limaric", "en", 0.9));
 
-        var corrected = new ArrayList<String>();
         session = new SpeechSession(
                 sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                text -> {
-                    corrected.add(text);
-                    return text.replace("limaric", "limerick");
-                },
                 null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
 
-        assertThat(corrected).as("corrector should not be called on STT output").isEmpty();
         verify(cleanupConfig).apply("tell me a limaric");
     }
 
@@ -501,7 +489,6 @@ class SpeechSessionTest {
                 prompt -> "I am a helpful avatar.",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                null,
                 responses::add,
                 null);
 
@@ -519,7 +506,7 @@ class SpeechSessionTest {
                 sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                null, null,
+                null,
                 () -> "limerick poetry nantucket");
 
         session.handleStart(new AvatarMessage.Start(16000));
@@ -532,12 +519,12 @@ class SpeechSessionTest {
     }
 
     @Test
-    void nullCorrectorLeavesTextUnchanged() {
+    void noCallbacksLeavesTextUnchanged() {
         session = new SpeechSession(
                 sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleText("limaric");
 
@@ -567,7 +554,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -603,7 +590,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -640,7 +627,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -670,7 +657,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
@@ -702,7 +689,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of("kokoro:af_heart", altTts),
-                null, null, null);
+                null, null);
 
         session.handleStart(new AvatarMessage.Start(16000, null, "kokoro:af_heart"));
         session.handleStop();
@@ -730,7 +717,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleText("Hello from text");
 
@@ -764,7 +751,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
 
         session.handleText("Timing check");
 
@@ -802,7 +789,7 @@ class SpeechSessionTest {
                 sentTextMessages::add,
                 sentBinaryMessages::add,
                 java.util.Map.of(),
-                null, null, null);
+                null, null);
         session.withSpeakerServices(extractor, registry);
 
         session.handleStart(new AvatarMessage.Start(16000));
@@ -824,34 +811,36 @@ class SpeechSessionTest {
     }
 
 
-// --- Corrector interference regression guard ---
+// --- Pipeline filter integration test ---
 
     @Test
-    void handleStopDoesNotApplyCorrectorToSttOutput() {
+    void correctionIsNowAPipelineStepNotAConstructorParameter() {
         when(recognitionStream.finalResult()).thenReturn(
                 new TranscriptionResult("can you read me a limerick", "en", 0.9));
 
-        var correctorCalls = new ArrayList<String>();
+        TextFilter correctionFilter = new TextFilter() {
+            @Override
+            public String apply(String text) {return text.replace("limerick", "lemon rick");}
+
+            @Override
+            public String name()             {return "correction";}
+
+            @Override
+            public int destructiveness()     {return 1;}
+        };
+        var correctionPipeline = new CompiledSpeechPipeline(
+                FilterChain.of(correctionFilter), FilterChain.EMPTY, FilterChain.EMPTY);
         session = new SpeechSession(
-                sttService, ttsService, pipeline,
+                sttService, ttsService, correctionPipeline,
                 null, new DefaultPromptAssembler(null),
-                sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
-                text -> {
-                    correctorCalls.add(text);
-                    return text.replace("limerick", "lemon rick");
-                },
-                null, null);
+                sentTextMessages::add, sentBinaryMessages::add);
 
         session.handleStart(new AvatarMessage.Start(16000));
         session.handleStop();
 
-        assertThat(correctorCalls)
-                .as("corrector should NOT be called on STT output — it corrupts clean transcripts")
-                .isEmpty();
-
         assertThat(sentTextMessages).anySatisfy(json -> {
             assertThat(json).contains("\"type\":\"transcript\"");
-            assertThat(json).contains("can you read me a limerick");
+            assertThat(json).contains("lemon rick");
         });
     }
 
