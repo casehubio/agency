@@ -523,9 +523,52 @@ export class AvatarControls {
         style="width:80px;vertical-align:middle"> <span id="ac-speedVal">0.9x</span></label>
       <label>Avatar: <select id="ac-avatarModel">
         <option value="avatar.glb">Current</option>
+        <option value="avatar-brunette.glb">Brunette</option>
+        <option value="avatar-brunette-t.glb">Brunette (light)</option>
+        <option value="avatar-avatarsdk.glb">Avatar SDK</option>
+        <option value="avatar-avaturn.glb">Avaturn</option>
+        <option value="avatar-vroid.glb">VRoid (anime)</option>
+        <option value="avatar-mpfb.glb">MakeHuman</option>
       </select></label>
       <label>Animation: <select id="ac-animPicker">
         <option value="">Auto (idle cycle)</option>
+        <optgroup label="Conversational">
+          <option value="greeting">Greeting</option>
+          <option value="head-nod">Head Nod</option>
+          <option value="yes">Yes</option>
+          <option value="reject">Reject</option>
+          <option value="confused">Confused</option>
+          <option value="angry">Angry</option>
+          <option value="clapping">Clapping</option>
+        </optgroup>
+        <optgroup label="Expressive">
+          <option value="dab">Dab</option>
+          <option value="victory">Victory</option>
+          <option value="victory-fist-pump">Fist Pump</option>
+          <option value="dizzy">Dizzy</option>
+          <option value="power-up">Power Up</option>
+          <option value="shiver">Shiver</option>
+          <option value="chest-open">Chest Open</option>
+        </optgroup>
+        <optgroup label="Idle">
+          <option value="idle-a">Idle A</option>
+          <option value="idle-subtle">Idle Subtle</option>
+          <option value="idle-foldarms">Fold Arms</option>
+          <option value="idle-talking">Talking</option>
+          <option value="guitar-playing">Guitar</option>
+          <option value="meditate">Meditate</option>
+        </optgroup>
+        <optgroup label="Dance">
+          <option value="dance-charleston">Charleston</option>
+          <option value="dance-simple">Dance</option>
+          <option value="moonwalk">Moonwalk</option>
+        </optgroup>
+        <optgroup label="Dramatic">
+          <option value="backflip">Backflip</option>
+          <option value="death-a">Death</option>
+          <option value="zombie-idle">Zombie</option>
+          <option value="drunk-walk">Drunk Walk</option>
+        </optgroup>
       </select></label>
       <button id="ac-playAnim" style="padding:0.3rem 0.6rem;border-radius:6px;border:1px solid #555;background:#2a2a3e;color:#e0e0e0;cursor:pointer;font-size:0.85rem" title="Play selected animation">&#9654;</button>
       <div id="ac-modelStatus" style="font-size:0.75rem;color:#999"></div>
