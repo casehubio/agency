@@ -148,23 +148,24 @@ let micSource = null;
 async function startRecording() {
   if (recording) return;
   try {
+    const targetRate = controls.sampleRate;
     if (!audioCtx) audioCtx = new AudioContext();
     micStream = await navigator.mediaDevices.getUserMedia({
-      audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+      audio: { sampleRate: targetRate, channelCount: 1, echoCancellation: true, noiseSuppression: true }
     });
     micSource = audioCtx.createMediaStreamSource(micStream);
     micProcessor = audioCtx.createScriptProcessor(4096, 1, 1);
     micProcessor.onaudioprocess = function(e) {
       if (!recording) return;
       const input = e.inputBuffer.getChannelData(0);
-      const resampled = resampleTo16k(input, audioCtx.sampleRate);
+      const resampled = resample(input, audioCtx.sampleRate, targetRate);
       const buf = new ArrayBuffer(resampled.length * 4);
       new Float32Array(buf).set(resampled);
       engine.sendBinary(buf);
     };
     micSource.connect(micProcessor);
     micProcessor.connect(audioCtx.destination);
-    engine.startRecording(16000, { llmModel: controls.llmModel, ttsModel: controls.ttsModel });
+    engine.startRecording(targetRate, { llmModel: controls.llmModel, ttsModel: controls.ttsModel });
     recording = true;
     micBtn.classList.add('recording');
     micBtn.textContent = 'Recording...';
@@ -191,9 +192,9 @@ function stopRecording() {
   }, 500);
 }
 
-function resampleTo16k(input, fromRate) {
-  if (fromRate === 16000) return input;
-  const ratio = fromRate / 16000;
+function resample(input, fromRate, toRate) {
+  if (fromRate === toRate) return input;
+  const ratio = fromRate / toRate;
   const len = Math.round(input.length / ratio);
   const out = new Float32Array(len);
   for (let i = 0; i < len; i++) out[i] = input[Math.round(i * ratio)];

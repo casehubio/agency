@@ -547,6 +547,7 @@ export class AvatarControls {
   get llmModel() { return this._el('ac-llmModel').value; }
   get ttsModel() { return this._el('ac-ttsModel').value; }
   get speed() { return parseFloat(this._el('ac-speed').value); }
+  get sampleRate() { return (this._config && this._config.sampleRate) || 16000; }
 
   async _loadConfig() {
     try {
