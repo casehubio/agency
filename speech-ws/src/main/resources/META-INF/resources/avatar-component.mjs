@@ -281,6 +281,7 @@ export class AvatarEngine {
       if (seg.hasAudio && !this._turnAudioPlayed.has(seg.index)) return;
     }
     this._enterFloorState(FloorState.IDLE);
+    this._emit('status', 'Ready');
     this.sendJson({ type: 'playbackComplete', turnSeq: this._activeTurnSeq });
     this._resetTurnState();
   }
@@ -304,6 +305,7 @@ export class AvatarEngine {
         this._applyMood();
         break;
       case 'error':
+        this._emit('status', 'Error: ' + msg.message);
         this._emit('message', { text: 'Error: ' + msg.message, role: 'system' });
         break;
       case 'partial':
@@ -341,12 +343,14 @@ export class AvatarEngine {
     if (msg.segmentCount === 0) {
       this.sendJson({ type: 'playbackComplete', turnSeq: msg.turnSeq });
       this._enterFloorState(FloorState.IDLE);
+      this._emit('status', 'Ready');
       this._resetTurnState();
     } else {
       this._checkTurnFinished();
       clearTimeout(this._turnSafetyTimer);
       this._turnSafetyTimer = setTimeout(() => {
         this._enterFloorState(FloorState.IDLE);
+        this._emit('status', 'Ready');
         this.sendJson({ type: 'playbackComplete', turnSeq: this._activeTurnSeq });
         this._resetTurnState();
       }, this._safetyTimeoutMs);
@@ -378,7 +382,10 @@ export class AvatarEngine {
   }
 
   _handleAudioWithHead(header, audioBuf) {
-    if (header.turnSeq === this._activeTurnSeq) this._enterFloorState(FloorState.SPEAKING);
+    if (header.turnSeq === this._activeTurnSeq) {
+      this._enterFloorState(FloorState.SPEAKING);
+      this._emit('status', 'Speaking...');
+    }
     const key = `${header.turnSeq}:${header.segmentIndex}`;
     const seg = this._pendingSegments.get(key);
     const r = { audio: audioBuf };

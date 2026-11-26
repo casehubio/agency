@@ -26,7 +26,15 @@
   .cam-btn { padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid #555; background: rgba(42,42,62,0.8); color: #ccc; font-size: 0.7rem; cursor: pointer; }
   .cam-btn:hover, .cam-btn.active { background: rgba(45,90,160,0.9); color: #fff; border-color: #2d5aa0; }
   #chat-panel { width: 50%; display: flex; flex-direction: column; }
-  #status { padding: 0.25rem 1rem; font-size: 0.75rem; color: #666; text-align: center; border-bottom: 1px solid #333; }
+  #status { padding: 0.4rem 1rem; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #333; transition: color 0.3s, background-color 0.3s; }
+  #status.s-ready { color: #4ade80; background: rgba(74, 222, 128, 0.08); }
+  #status.s-listening { color: #60a5fa; background: rgba(96, 165, 250, 0.08); }
+  #status.s-processing { color: #fbbf24; background: rgba(251, 191, 36, 0.08); }
+  #status.s-thinking { color: #fbbf24; background: rgba(251, 191, 36, 0.08); }
+  #status.s-speaking { color: #4ade80; background: rgba(74, 222, 128, 0.08); }
+  #status.s-error { color: #f87171; background: rgba(248, 113, 113, 0.08); }
+  #status.s-disconnected { color: #9ca3af; background: rgba(156, 163, 175, 0.05); }
+  #status.s-connecting { color: #9ca3af; background: rgba(156, 163, 175, 0.05); }
   #chat { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
   .msg { max-width: 85%; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; }
   .msg.user { align-self: flex-end; background: #2d5aa0; }
@@ -57,7 +65,7 @@
     </div>
   </div>
   <div id="chat-panel">
-    <div id="status">Connecting...</div>
+    <div id="status" class="s-connecting">○ Connecting...</div>
     <div id="chat"></div>
     <div id="input-bar">
       <button id="mic" disabled title="Click to talk">Mic</button>
@@ -77,6 +85,25 @@ const statusEl = document.getElementById('status');
 const micBtn = document.getElementById('mic');
 const avatarContainer = document.getElementById('avatar-container');
 
+const STATUS_STATES = {
+  connecting:   { icon: '○',  label: 'Connecting...', cls: 's-connecting' },
+  ready:        { icon: '●',  label: 'Ready',         cls: 's-ready' },
+  listening:    { icon: '🎤', label: 'Listening...',   cls: 's-listening' },
+  hearing:      { icon: '🎤', label: 'Hearing',        cls: 's-listening' },
+  processing:   { icon: '⏳', label: 'Processing...',  cls: 's-processing' },
+  thinking:     { icon: '💭', label: 'Thinking...',    cls: 's-thinking' },
+  speaking:     { icon: '🔊', label: 'Speaking...',    cls: 's-speaking' },
+  error:        { icon: '⚠',  label: 'Error',          cls: 's-error' },
+  disconnected: { icon: '○',  label: 'Reconnecting...', cls: 's-disconnected' },
+};
+
+function setStatus(state, detail) {
+  const cfg = STATUS_STATES[state];
+  if (!cfg) { statusEl.textContent = state; return; }
+  statusEl.className = cfg.cls;
+  statusEl.textContent = cfg.icon + ' ' + cfg.label + (detail ? ': ' + detail : '');
+}
+
 function addMessage(text, cls) {
   const div = document.createElement('div');
   div.className = 'msg ' + cls;
@@ -88,9 +115,17 @@ function addMessage(text, cls) {
 const engine = new AvatarEngine(avatarContainer, {
   cameraView: 'upper',
   onMessage: ({ text, role }) => addMessage(text, role),
-  onStatus: (msg) => { statusEl.textContent = msg; },
+  onStatus: (msg) => {
+    if (msg === 'Connected' || msg === 'Ready') setStatus('ready');
+    else if (msg.startsWith('Disconnected')) setStatus('disconnected');
+    else if (msg === 'Connection error') setStatus('error', 'Connection failed');
+    else if (msg.startsWith('Hearing: ')) setStatus('hearing', msg.substring(9));
+    else if (msg.startsWith('Speaking')) setStatus('speaking');
+    else if (msg.startsWith('Error: ')) setStatus('error', msg.substring(7));
+    else setStatus('ready');
+  },
   onConnected: async () => {
-    statusEl.textContent = 'Connected';
+    setStatus('ready');
     msgInput.disabled = false;
     sendBtn.disabled = false;
     micBtn.disabled = false;
@@ -133,7 +168,7 @@ function sendText() {
   if (!text) return;
   engine.sendText(text, { llmModel: controls.llmModel, ttsModel: controls.ttsModel });
   msgInput.value = '';
-  statusEl.textContent = 'Processing...';
+  setStatus('thinking');
 }
 
 sendBtn.addEventListener('click', sendText);
@@ -169,7 +204,7 @@ async function startRecording() {
     recording = true;
     micBtn.classList.add('recording');
     micBtn.textContent = 'Recording...';
-    statusEl.textContent = 'Listening...';
+    setStatus('listening');
   } catch (e) {
     addMessage('Microphone error: ' + e.message, 'system');
   }
@@ -183,7 +218,7 @@ function stopRecording() {
   setTimeout(function() {
     recording = false;
     engine.stopRecording();
-    statusEl.textContent = 'Processing speech...';
+    setStatus('processing');
     micBtn.textContent = 'Mic';
     if (micProcessor) { micProcessor.disconnect(); micProcessor = null; }
     if (micSource) { micSource.disconnect(); micSource = null; }
