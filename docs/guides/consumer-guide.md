@@ -595,6 +595,48 @@ var compiler = new PatternCompiler(expressionEngine);
 ExecutionModel<?> model = compiler.compile(spec);
 ```
 
+### Pipeline Composition (avatar-yaml)
+
+The `pipeline:` section in `avatar.yaml` lets you compose text-processing steps at three insertion points in the speech pipeline. Steps implement `TextFilter` from `connectors-voice-spi` and are resolved by name via `TextFilterRegistry`.
+
+**Insertion points:**
+
+| Point | Granularity | What steps see |
+|-------|-------------|----------------|
+| `post-stt` | Per-turn | Full STT transcription text |
+| `post-llm` | Per-sentence | One sentence at a time (streaming) |
+| `post-segmenter` | Per-segment | Individual segment text before TTS |
+
+**YAML example — partial pipeline (coexists with `cleanup:`):**
+```yaml
+cleanup:
+  max-destructiveness: 3    # drives default post-stt chain
+
+pipeline:
+  post-llm:
+    - name: profanity-filter
+      config:
+        dictionary: custom-words
+  post-segmenter:
+    - name: emphasis-marker
+```
+
+When `pipeline:` is absent, the compiler uses `cleanup.max-destructiveness` to build the default post-STT chain (backward compatible). Each insertion point in `pipeline:` overrides only that position — undeclared positions use defaults.
+
+**Registering custom filters:**
+
+Custom steps implement `TextFilter` and are registered in a `TextFilterRegistry`:
+
+```java
+var registry = new TextFilterRegistry();
+registry.register("profanity-filter", config -> new ProfanityFilter(
+    (String) config.get("dictionary")));
+```
+
+Built-in filters (`filler-removal`, `casing`, `punctuation`, `grammar`) are pre-registered by `AvatarCompiler`.
+
+**Key types:** `SpeechPipelineSpec`, `StepSpec` (spec records), `SpeechPipelineCompiler` (compilation), `CompiledSpeechPipeline` (runtime — three `FilterChain` instances), `FilterChain` (ordered text filter composition that preserves YAML insertion order), `TextFilterRegistry`/`TextFilterFactory` (name-based discovery).
+
 ### `io.casehub.agency.perception.narrative`
 
 Decision narrative pipeline -- transforms platform decision signals into human-readable explanations of agent decisions. Two-level architecture: L1 heuristic accumulation (no LLM), L2 LLM synthesis with incremental state.
