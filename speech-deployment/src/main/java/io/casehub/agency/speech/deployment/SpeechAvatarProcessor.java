@@ -1,6 +1,7 @@
 package io.casehub.agency.speech.deployment;
 
 import io.casehub.agency.core.yaml.compiler.CompiledAvatar;
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.agency.core.yaml.deployment.AvatarConfigBuildItem;
 import io.casehub.agency.core.yaml.runtime.AvatarRecorder;
 import io.casehub.agency.speech.CorrectionHooks;
@@ -38,9 +39,10 @@ public class SpeechAvatarProcessor {
                 && !hasAppBean(beanDiscovery, TextToSpeech.class);
         boolean needsStt = def.stt() != null && !hasAppBean(beanDiscovery, StreamingSpeechToText.class);
         boolean needsCleanup = def.cleanup() != null && !hasAppBean(beanDiscovery, CleanupConfig.class);
+        boolean needsPipeline = !hasAppBean(beanDiscovery, CompiledSpeechPipeline.class);
         boolean needsHooks = !hasAppBean(beanDiscovery, CorrectionHooks.class);
 
-        if (!needsTts && !needsDefaultTts && !needsStt && !needsCleanup && !needsHooks) {
+        if (!needsTts && !needsDefaultTts && !needsStt && !needsCleanup && !needsPipeline && !needsHooks) {
             return List.of();
         }
 
@@ -72,6 +74,13 @@ public class SpeechAvatarProcessor {
                     .scope(Singleton.class)
                     .setRuntimeInit()
                     .runtimeValue(recorder.extractCleanup(compiled))
+                    .done());
+        }
+        if (needsPipeline) {
+            beans.add(SyntheticBeanBuildItem.configure(CompiledSpeechPipeline.class)
+                    .scope(Singleton.class)
+                    .setRuntimeInit()
+                    .runtimeValue(recorder.extractPipeline(compiled))
                     .done());
         }
         if (needsHooks) {

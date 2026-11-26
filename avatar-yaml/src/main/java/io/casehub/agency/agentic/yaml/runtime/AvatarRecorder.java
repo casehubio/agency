@@ -40,6 +40,14 @@ public class AvatarRecorder {
         return new RuntimeValue<>(compiled.getValue().cleanupConfig());
     }
 
+    public RuntimeValue<io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline> extractPipeline(
+            RuntimeValue<CompiledAvatar> compiled) {
+        var pipeline = compiled.getValue().pipeline();
+        return new RuntimeValue<>(pipeline != null
+                                  ? pipeline : io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline.EMPTY);
+    }
+
+
     public Function<io.quarkus.arc.SyntheticCreationalContext<CorrectionHooks>, CorrectionHooks>
             correctionHooksCreator() {
         return ctx -> {

@@ -1,0 +1,21 @@
+agent: test-avatar
+model: claude-haiku-4-5@20251001
+sample-rate: 16000
+speed: 0.9
+min-playback-rate: 0.6
+
+tts:
+  engines:
+    - type: kokoro
+      voices:
+        - af_heart
+
+stt:
+  type: whisper-fallback
+
+cleanup:
+  max-destructiveness: 2
+
+pipeline:
+  post-llm:
+    - name: test-filter

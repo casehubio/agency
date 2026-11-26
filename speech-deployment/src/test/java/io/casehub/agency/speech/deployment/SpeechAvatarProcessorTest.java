@@ -45,4 +45,19 @@ class SpeechAvatarProcessorTest {
         var buildItem = new AvatarConfigBuildItem(null);
         assertThat(buildItem.definition()).isNull();
     }
+
+    @Test
+    void discoversAvatarYamlWithPipelineSection() throws Exception {
+        try (InputStream in = getClass().getClassLoader()
+                                        .getResourceAsStream("META-INF/avatar-with-pipeline.yaml")) {
+            assertThat(in).isNotNull();
+            var def = YAML.readValue(in, AvatarDefinition.class);
+            assertThat(def.pipeline()).isNotNull();
+            assertThat(def.pipeline().postLlm()).hasSize(1);
+            assertThat(def.pipeline().postLlm().get(0).name()).isEqualTo("test-filter");
+            assertThat(def.pipeline().postStt()).isNull();
+            assertThat(def.pipeline().postSegmenter()).isNull();
+        }
+    }
+
 }
