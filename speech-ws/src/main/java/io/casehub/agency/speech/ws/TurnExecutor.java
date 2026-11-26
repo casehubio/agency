@@ -36,6 +36,7 @@ public class TurnExecutor implements AutoCloseable {
     private final UtteranceSegmenter segmenter;
     private final FloorState floorState;
     private final @Nullable Consumer<String> onResponse;
+    private final io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline;
 
     private final List<ConversationTurn> history = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(
@@ -57,7 +58,8 @@ public class TurnExecutor implements AutoCloseable {
                         Consumer<byte[]> binarySink,
                         UtteranceSegmenter segmenter,
                         FloorState floorState,
-                        @Nullable Consumer<String> onResponse) {
+                        @Nullable Consumer<String> onResponse,
+                        io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline) {
         this.assembler = assembler;
         this.responseGenerator = responseGenerator;
         this.streamingGenerator = streamingGenerator;
@@ -68,7 +70,7 @@ public class TurnExecutor implements AutoCloseable {
         this.segmenter = segmenter;
         this.floorState = floorState;
         this.onResponse = onResponse;
-
+        this.pipeline = pipeline;
     }
 
     void setMinPlaybackRate(double rate) { this.minPlaybackRate = rate; }
@@ -121,7 +123,8 @@ public class TurnExecutor implements AutoCloseable {
             if (streamingGenerator != null) {
                 var ttsFutures = new java.util.ArrayList<java.util.concurrent.Future<?>>();
                 responseText = streamingGenerator.generate(prompt, sentence -> {
-                    var segments = segmenter.segment(sentence);
+                    String filtered = pipeline.postLlmChain().apply(sentence);
+                    var segments = segmenter.segment(filtered);
                     for (var seg : segments) {
                         int idx = segmentIndex[0]++;
                         ttsFutures.add(ttsExecutor.submit(() ->
@@ -136,7 +139,8 @@ public class TurnExecutor implements AutoCloseable {
             } else if (responseGenerator != null) {
                 responseText = responseGenerator.apply(prompt);
                 if (responseText != null) {
-                    var segments = segmenter.segment(responseText);
+                    String filtered = pipeline.postLlmChain().apply(responseText);
+                    var segments = segmenter.segment(filtered);
                     for (var seg : segments) {
                         synthesiseAndSendSegment(tts, seg, currentTurnSeq, segmentIndex[0]++);
                     }
@@ -199,16 +203,17 @@ public class TurnExecutor implements AutoCloseable {
 
     private void synthesiseAndSendSegment(TextToSpeech tts, ParsedSegment seg,
                                           int currentTurnSeq, int index) {
-        turnEstimatedAudioMs += seg.cleanText().length() * MS_PER_CHAR;
+        String text = pipeline.postSegmenterChain().apply(seg.cleanText());
+        turnEstimatedAudioMs += text.length() * MS_PER_CHAR;
         try {
             if (tts instanceof io.casehub.connectors.voice.spi.StreamingTextToSpeech streamingTts) {
-                long estimatedMs = seg.cleanText().length() * MS_PER_CHAR;
-                var  visemes     = VisemeMapping.estimateFromText(seg.cleanText(), estimatedMs);
-                var  timedCues  = estimateMarkTiming(seg.cues(), seg.cleanText().length(), estimatedMs);
-                send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
+                long estimatedMs = text.length() * MS_PER_CHAR;
+                var  visemes     = VisemeMapping.estimateFromText(text, estimatedMs);
+                var  timedCues   = estimateMarkTiming(seg.cues(), text.length(), estimatedMs);
+                send(new AvatarMessage.Segment(currentTurnSeq, index, text,
                                                true, visemes, timedCues));
                 byte[][] lastChunk = {null};
-                streamingTts.synthesiseStreaming(seg.cleanText(),
+                streamingTts.synthesiseStreaming(text,
                                                  new SynthesisOptions(null, null, "wav", false),
                                                  chunk -> {
                                                      if (lastChunk[0] != null) {
@@ -220,17 +225,17 @@ public class TurnExecutor implements AutoCloseable {
                     sendAudioFrame(lastChunk[0], currentTurnSeq, index, true);
                 }
             } else {
-                var marks = buildTextMarks(seg.cues(), seg.cleanText().length());
-                var synthesis = tts.synthesise(seg.cleanText(),
+                var marks = buildTextMarks(seg.cues(), text.length());
+                var synthesis = tts.synthesise(text,
                                                new SynthesisOptions(null, null, "wav", true, marks));
-                var visemes = VisemeMapping.convert(synthesis.phonemes());
+                var visemes   = VisemeMapping.convert(synthesis.phonemes());
                 var timedCues = applyMarkTiming(seg.cues(), synthesis.marks());
-                send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
+                send(new AvatarMessage.Segment(currentTurnSeq, index, text,
                                                true, visemes, timedCues));
                 sendAudioFrame(synthesis.audioData(), currentTurnSeq, index, true);
             }
         } catch (Exception e) {
-            send(new AvatarMessage.Segment(currentTurnSeq, index, seg.cleanText(),
+            send(new AvatarMessage.Segment(currentTurnSeq, index, text,
                                            false, List.of(), List.of()));
             send(new AvatarMessage.Error("TTS failed for segment " + index
                                          + ": " + e.getMessage()));

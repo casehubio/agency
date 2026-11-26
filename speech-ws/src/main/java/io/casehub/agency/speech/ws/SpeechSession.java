@@ -1,6 +1,5 @@
 package io.casehub.agency.speech.ws;
 
-import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.model.TranscriptionOptions;
@@ -44,7 +43,7 @@ public class SpeechSession {
 
     // --- Capture-side state ---
     private final StreamingSpeechToText sttService;
-    private final CleanupConfig cleanupConfig;
+    private final io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline;
     private final Consumer<String> textSink;
     private final java.util.function.Supplier<String> vocabularyHintSupplier;
 
@@ -81,30 +80,30 @@ public class SpeechSession {
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         CleanupConfig cleanupConfig,
+                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink) {
-        this(sttService, ttsService, cleanupConfig, responseGenerator, promptAssembler,
+        this(sttService, ttsService, pipeline, responseGenerator, promptAssembler,
              textSink, binarySink, Map.of());
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         CleanupConfig cleanupConfig,
+                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
                          Consumer<byte[]> binarySink,
                          Map<String, TextToSpeech> ttsModels) {
-        this(sttService, ttsService, cleanupConfig, responseGenerator, promptAssembler,
+        this(sttService, ttsService, pipeline, responseGenerator, promptAssembler,
              textSink, binarySink, ttsModels, null, null, null);
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         CleanupConfig cleanupConfig,
+                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
@@ -113,13 +112,13 @@ public class SpeechSession {
                          java.util.function.UnaryOperator<String> corrector,
                          Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
-        this(sttService, ttsService, cleanupConfig, responseGenerator, null,
+        this(sttService, ttsService, pipeline, responseGenerator, null,
              promptAssembler, textSink, binarySink, ttsModels, corrector, onResponse, vocabularyHintSupplier);
     }
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         CleanupConfig cleanupConfig,
+                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          @Nullable StreamingResponseGenerator streamingGenerator,
                          SpeechPromptAssembler promptAssembler,
@@ -130,7 +129,7 @@ public class SpeechSession {
                          Consumer<String> onResponse,
                          java.util.function.Supplier<String> vocabularyHintSupplier) {
         this.sttService = sttService;
-        this.cleanupConfig = cleanupConfig;
+        this.pipeline = pipeline;
         this.textSink = textSink;
         this.vocabularyHintSupplier = vocabularyHintSupplier;
 
@@ -139,7 +138,7 @@ public class SpeechSession {
                 promptAssembler, responseGenerator, streamingGenerator,
                 ttsService, ttsModels, textSink, binarySink,
                 new UtteranceSegmenter(EMPTY_VOCAB), floorState,
-                onResponse);
+                onResponse, pipeline);
     }
 
 
@@ -227,9 +226,8 @@ public class SpeechSession {
             String raw = result.text();
             LOG.log(System.Logger.Level.INFO, "[STT] raw: \"{0}\"", raw);
 
-            String cleanText = ensureTrailingPunctuation(cleanupConfig.apply(raw));
-            LOG.log(System.Logger.Level.INFO, "[STT] after cleanup ({0} filters): \"{1}\"",
-                    cleanupConfig.filters().size(), cleanText);
+            String cleanText = ensureTrailingPunctuation(pipeline.postSttChain().apply(raw));
+            LOG.log(System.Logger.Level.INFO, "[STT] after cleanup: \"{0}\"", cleanText);
             send(new AvatarMessage.Transcript(cleanText));
             floorState.onStopOrText();
 
@@ -250,7 +248,7 @@ public class SpeechSession {
 
     public void handleText(String text, @Nullable String llmModel, @Nullable String ttsModel) {
         try {
-            String cleanText = cleanupConfig.apply(text);
+            String cleanText = pipeline.postSttChain().apply(text);
             send(new AvatarMessage.Transcript(cleanText));
             floorState.onStopOrText();
 

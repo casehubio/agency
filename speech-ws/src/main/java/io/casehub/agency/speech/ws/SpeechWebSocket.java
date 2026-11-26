@@ -5,7 +5,7 @@ import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.eidos.api.AssembledPrompt;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
 import io.casehub.agency.speech.ws.protocol.MessageCodec;
-import io.casehub.connectors.voice.spi.CleanupConfig;
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import io.quarkus.websockets.next.OnBinaryMessage;
@@ -28,7 +28,7 @@ public class SpeechWebSocket {
     TextToSpeech ttsService;
 
     @Inject
-    CleanupConfig cleanupConfig;
+    CompiledSpeechPipeline pipeline;
 
     @Inject
     AvatarConfig avatarConfig;
@@ -127,7 +127,7 @@ public class SpeechWebSocket {
         CorrectionHooks hooks = correctionHooks.isResolvable() ? correctionHooks.get() : null;
 
         var session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 generator,
                 streamingGen,
                 assembler,
@@ -151,7 +151,7 @@ public class SpeechWebSocket {
             var wrappedAssembler = cog.wrapAssembler(assembler, agentId, tenantId,
                     session::currentSubjectId);
             session = new SpeechSession(
-                    sttService, ttsService, cleanupConfig,
+                    sttService, ttsService, pipeline,
                     generator, streamingGen, wrappedAssembler,
                     text -> connection.sendTextAndAwait(text),
                     data -> connection.sendBinaryAndAwait(data),

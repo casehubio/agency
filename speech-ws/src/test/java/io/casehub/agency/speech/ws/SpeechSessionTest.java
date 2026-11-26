@@ -6,6 +6,8 @@ import io.casehub.connectors.voice.model.PhonemeTiming;
 import io.casehub.connectors.voice.model.SynthesisOptions;
 import io.casehub.connectors.voice.model.SynthesisResult;
 import io.casehub.connectors.voice.model.TranscriptionResult;
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
+import io.casehub.agency.core.yaml.compiler.FilterChain;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
@@ -32,6 +34,7 @@ class SpeechSessionTest {
     private StreamingSpeechToText sttService;
     private TextToSpeech          ttsService;
     private CleanupConfig                cleanupConfig;
+    private CompiledSpeechPipeline       pipeline;
     private RecognitionStream            recognitionStream;
     private List<String>                 sentTextMessages;
     private List<byte[]>                 sentBinaryMessages;
@@ -46,12 +49,18 @@ class SpeechSessionTest {
 
         when(sttService.startStream(any())).thenReturn(recognitionStream);
         when(cleanupConfig.apply(any())).thenAnswer(inv -> inv.getArgument(0));
+        TextFilter cleanupDelegate = new TextFilter() {
+            @Override public String apply(String text) { return cleanupConfig.apply(text); }
+            @Override public String name() { return "cleanup-delegate"; }
+            @Override public int destructiveness() { return 0; }
+        };
+        pipeline = new CompiledSpeechPipeline(FilterChain.of(cleanupDelegate), FilterChain.EMPTY, FilterChain.EMPTY);
         when(recognitionStream.partialResult()).thenReturn("");
 
         sentTextMessages   = new ArrayList<>();
         sentBinaryMessages = new ArrayList<>();
         session            = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -132,9 +141,10 @@ class SpeechSessionTest {
             public int destructiveness()  {return 1;}
         };
         var realCleanup = CleanupConfig.of(lowercaseFilter, fillerFilter);
+        var realPipeline = new CompiledSpeechPipeline(FilterChain.of(realCleanup), FilterChain.EMPTY, FilterChain.EMPTY);
 
         session = new SpeechSession(
-                sttService, ttsService, realCleanup,
+                sttService, ttsService, realPipeline,
                 null,
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -161,7 +171,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{1, 2, 3}, "wav", phonemes));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "I hear you.",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -214,7 +224,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{}, "wav", List.of()));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "reply",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -322,7 +332,7 @@ class SpeechSessionTest {
 
         var capturedPrompt = new AssembledPrompt[1];
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> {
                     capturedPrompt[0] = assembled;
                     return "reply";
@@ -346,7 +356,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{1, 2}, "wav", phonemes));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "LLM says hello.",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -384,7 +394,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{9, 8}, "wav", List.of()));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "response",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -405,7 +415,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{1}, "wav", List.of()));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "response",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -425,7 +435,7 @@ class SpeechSessionTest {
                 new SynthesisResult(new byte[]{1}, "wav", List.of()));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 assembled -> "response",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add,
@@ -445,7 +455,7 @@ class SpeechSessionTest {
     void handleTextAppliesCorrectorBeforeCleanup() {
         var corrected = new ArrayList<String>();
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
                 text -> {
@@ -467,7 +477,7 @@ class SpeechSessionTest {
 
         var corrected = new ArrayList<String>();
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
                 text -> {
@@ -487,7 +497,7 @@ class SpeechSessionTest {
     void onResponseCalledAfterLlmResponse() {
         var responses = new ArrayList<String>();
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 prompt -> "I am a helpful avatar.",
                 new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
@@ -506,7 +516,7 @@ class SpeechSessionTest {
     @Test
     void vocabularyHintPassedToStartStream() {
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
                 null, null,
@@ -524,7 +534,7 @@ class SpeechSessionTest {
     @Test
     void nullCorrectorLeavesTextUnchanged() {
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
                 null, null, null);
@@ -550,7 +560,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -586,7 +596,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -623,7 +633,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 nonStreamGen,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -653,7 +663,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -685,7 +695,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -713,7 +723,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -747,7 +757,7 @@ class SpeechSessionTest {
         };
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -785,7 +795,7 @@ class SpeechSessionTest {
                         new io.casehub.connectors.voice.model.SpeakerMatch("Mark", 0.85)));
 
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 streamGen,
                 new DefaultPromptAssembler(null),
@@ -823,7 +833,7 @@ class SpeechSessionTest {
 
         var correctorCalls = new ArrayList<String>();
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null, new DefaultPromptAssembler(null),
                 sentTextMessages::add, sentBinaryMessages::add, java.util.Map.of(),
                 text -> {

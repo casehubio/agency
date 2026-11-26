@@ -4,6 +4,7 @@ import io.casehub.agency.speech.GestureEntry;
 import io.casehub.agency.speech.MoodEntry;
 import io.casehub.agency.speech.PerformanceVocabulary;
 import io.casehub.agency.speech.ws.protocol.Cue;
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.connectors.voice.model.SynthesisResult;
 import io.casehub.connectors.voice.spi.TextToSpeech;
 import org.junit.jupiter.api.AfterEach;
@@ -57,7 +58,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
     }
 
     @AfterEach
@@ -128,7 +130,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -161,7 +164,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -193,7 +197,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -222,7 +227,7 @@ class TurnExecutorTest {
                 new DefaultPromptAssembler(null),
                 null, streamGen, failTts, Map.of(),
                 sentText::add, sentBinary::add,
-                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null);
+                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -245,7 +250,7 @@ class TurnExecutorTest {
                 null, null,
                 ttsService, Map.of(),
                 sentText::add, sentBinary::add,
-                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null);
+                new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -306,7 +311,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, "kokoro:af_heart"));
 
@@ -327,7 +333,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                responses::add);
+                responses::add,
+                CompiledSpeechPipeline.EMPTY);
 
         executor.executeUserTurn(new UserTurn("hello", null, null, null));
 
@@ -354,7 +361,8 @@ class TurnExecutorTest {
                 sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB),
                 floorState,
-                null);
+                null,
+                CompiledSpeechPipeline.EMPTY);
 
         long before = System.currentTimeMillis();
         executor.executeUserTurn(new UserTurn("hello", null, null, null));

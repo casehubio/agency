@@ -1,5 +1,7 @@
 package io.casehub.agency.speech.ws;
 
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
+import io.casehub.agency.core.yaml.compiler.FilterChain;
 import io.casehub.connectors.voice.spi.CleanupConfig;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.model.SpeakerEmbedding;
@@ -32,6 +34,7 @@ class SpeechSessionSpeakerTest {
     private StreamingSpeechToText sttService;
     private TextToSpeech ttsService;
     private CleanupConfig cleanupConfig;
+    private CompiledSpeechPipeline pipeline;
     private RecognitionStream recognitionStream;
     private SpeakerEmbeddingExtractor extractor;
     private SpeakerRegistry registry;
@@ -49,11 +52,17 @@ class SpeechSessionSpeakerTest {
 
         when(sttService.startStream(any())).thenReturn(recognitionStream);
         when(cleanupConfig.apply(any())).thenAnswer(inv -> inv.getArgument(0));
+        io.casehub.connectors.voice.spi.TextFilter cleanupDelegate = new io.casehub.connectors.voice.spi.TextFilter() {
+            @Override public String apply(String text) { return cleanupConfig.apply(text); }
+            @Override public String name() { return "cleanup-delegate"; }
+            @Override public int destructiveness() { return 0; }
+        };
+        pipeline = new CompiledSpeechPipeline(FilterChain.of(cleanupDelegate), FilterChain.EMPTY, FilterChain.EMPTY);
         when(recognitionStream.partialResult()).thenReturn("");
 
         sentMessages = new ArrayList<>();
         session = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 new DefaultPromptAssembler(null),
                 sentMessages::add,
@@ -176,7 +185,7 @@ class SpeechSessionSpeakerTest {
     @Test
     void worksWithoutSpeakerServices() {
         var plainSession = new SpeechSession(
-                sttService, ttsService, cleanupConfig,
+                sttService, ttsService, pipeline,
                 null,
                 new DefaultPromptAssembler(null),
                 sentMessages::add,
