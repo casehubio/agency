@@ -23,3 +23,7 @@ stt:
 
 cleanup:
   max-destructiveness: 1
+
+pipeline:
+  post-llm:
+    - name: casing
