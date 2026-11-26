@@ -17,7 +17,8 @@ public record AvatarDefinition(
         double minPlaybackRate,
         @Nullable TtsSpec tts,
         @Nullable SttSpec stt,
-        @Nullable CleanupConfigSpec cleanup) {
+        @Nullable CleanupConfigSpec cleanup,
+        @Nullable SpeechPipelineSpec pipeline) {
 
     public AvatarDefinition {
         Objects.requireNonNull(agent, "agent");
@@ -35,13 +36,14 @@ public record AvatarDefinition(
             @JsonProperty("minPlaybackRate") @JsonAlias("min-playback-rate") @Nullable Double minPlaybackRate,
             @JsonProperty("tts") @Nullable TtsSpec tts,
             @JsonProperty("stt") @Nullable SttSpec stt,
-            @JsonProperty("cleanup") @Nullable CleanupConfigSpec cleanup) {
+            @JsonProperty("cleanup") @Nullable CleanupConfigSpec cleanup,
+            @JsonProperty("pipeline") @Nullable SpeechPipelineSpec pipeline) {
         return new AvatarDefinition(
                 agent, model, ttsVoice,
                 cameraView,
                 sampleRate != null ? sampleRate : 16000,
                 speed != null ? speed : 0.9,
                 minPlaybackRate != null ? minPlaybackRate : 0.6,
-                tts, stt, cleanup);
+                tts, stt, cleanup, pipeline);
     }
 }

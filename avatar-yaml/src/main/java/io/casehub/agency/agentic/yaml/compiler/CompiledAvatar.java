@@ -10,4 +10,5 @@ public record CompiledAvatar(
         @Nullable TtsModelRegistry ttsModelRegistry,
         @Nullable TextToSpeech defaultTts,
         @Nullable StreamingSpeechToText stt,
-        @Nullable CleanupConfig cleanupConfig) {}
+        @Nullable CleanupConfig cleanupConfig,
+        @Nullable CompiledSpeechPipeline pipeline) {}

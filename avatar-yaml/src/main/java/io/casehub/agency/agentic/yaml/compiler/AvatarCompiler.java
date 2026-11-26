@@ -22,15 +22,15 @@ public class AvatarCompiler {
     private static final System.Logger LOG = System.getLogger("avatar-compiler");
 
     public CompiledAvatar compile(AvatarDefinition definition) {
-        TtsModelRegistry ttsRegistry = null;
-        TextToSpeech defaultTts = null;
-        StreamingSpeechToText stt = null;
-        CleanupConfig cleanupConfig = null;
+        TtsModelRegistry      ttsRegistry   = null;
+        TextToSpeech          defaultTts    = null;
+        StreamingSpeechToText stt           = null;
+        CleanupConfig         cleanupConfig = null;
 
         if (definition.tts() != null) {
             var models = compileTts(definition.tts());
             ttsRegistry = new TtsModelRegistry(models);
-            defaultTts = models.isEmpty() ? null : models.values().iterator().next();
+            defaultTts  = models.isEmpty() ? null : models.values().iterator().next();
         }
         if (definition.stt() != null) {
             stt = compileStt(definition.stt());
@@ -38,7 +38,47 @@ public class AvatarCompiler {
         if (definition.cleanup() != null) {
             cleanupConfig = compileCleanup(definition.cleanup());
         }
-        return new CompiledAvatar(ttsRegistry, defaultTts, stt, cleanupConfig);
+
+        CompiledSpeechPipeline pipeline;
+        if (definition.pipeline() != null) {
+            var filterRegistry   = createDefaultFilterRegistry();
+            var pipelineCompiler = new SpeechPipelineCompiler();
+            FilterChain postSttFallback = cleanupConfig != null
+                                          ? FilterChain.of(cleanupConfig) : FilterChain.EMPTY;
+            pipeline = pipelineCompiler.compileWithFallback(
+                    definition.pipeline(), filterRegistry, postSttFallback);
+        } else if (cleanupConfig != null) {
+            pipeline = new CompiledSpeechPipeline(
+                    FilterChain.of(cleanupConfig), FilterChain.EMPTY, FilterChain.EMPTY);
+        } else {
+            pipeline = CompiledSpeechPipeline.EMPTY;
+        }
+
+        return new CompiledAvatar(ttsRegistry, defaultTts, stt, cleanupConfig, pipeline);
+    }
+
+
+    static TextFilterRegistry createDefaultFilterRegistry() {
+        var registry = new TextFilterRegistry();
+        registry.register("filler-removal",
+                          config -> new io.casehub.connectors.voice.sherpa.FillerRemovalFilter());
+        registry.register("casing",
+                          config -> new io.casehub.connectors.voice.sherpa.CasingFilter());
+        registry.register("punctuation", config -> {
+            try {
+                return io.casehub.connectors.voice.sherpa.PunctuationFilter.withDefaults();
+            } catch (Exception e) {
+                throw new RuntimeException("PunctuationFilter unavailable: " + e.getMessage(), e);
+            }
+        });
+        registry.register("grammar", config -> {
+            try {
+                return io.casehub.connectors.voice.sherpa.GectorFilter.withDefaults();
+            } catch (Exception e) {
+                throw new RuntimeException("GECToR unavailable: " + e.getMessage(), e);
+            }
+        });
+        return registry;
     }
 
     private Map<String, TextToSpeech> compileTts(TtsSpec spec) {
@@ -170,7 +210,7 @@ public class AvatarCompiler {
         return io.casehub.connectors.voice.sherpa.SherpaOnnxStreamingSpeechToText.withDefaults();
     }
 
-    private CleanupConfig compileCleanup(CleanupConfigSpec spec) {
+    static CleanupConfig compileCleanup(CleanupConfigSpec spec) {
         var filters = new ArrayList<TextFilter>();
         filters.add(new io.casehub.connectors.voice.sherpa.FillerRemovalFilter());
         filters.add(new io.casehub.connectors.voice.sherpa.CasingFilter());

@@ -33,7 +33,7 @@ class AvatarCompilerTest {
 
     @Test
     void null_sections_produce_null_fields() {
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -46,7 +46,7 @@ class AvatarCompilerTest {
     @Test
     void empty_engines_produces_empty_registry_and_null_default() {
         var spec = new TtsSpec(List.of());
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -60,7 +60,7 @@ class AvatarCompilerTest {
         assumeTrue(vitsAvailable, "VITS native libs (espeak-ng) not available");
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("vits", List.of(new TtsVoiceSpec("lessac-medium", null)), false, null)));
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -74,7 +74,7 @@ class AvatarCompilerTest {
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("sherpa", List.of(
                         new TtsVoiceSpec("lessac-medium", null)), false, LipSyncMode.DISABLED)));
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -87,7 +87,7 @@ class AvatarCompilerTest {
                 new TtsEngineSpec("kokoro", List.of(
                         new TtsVoiceSpec("af_alloy", null),
                         new TtsVoiceSpec("af_bella", null)), false, null)));
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -99,7 +99,7 @@ class AvatarCompilerTest {
     @Test
     void compiles_stt_whisper_fallback() {
         var sttSpec = new SttSpec("whisper-fallback");
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, sttSpec, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, sttSpec, null, null);
 
         var result = compiler.compile(def);
 
@@ -109,7 +109,7 @@ class AvatarCompilerTest {
     @Test
     void compiles_cleanup_with_max_destructiveness() {
         var cleanupSpec = new CleanupConfigSpec(2);
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, null, cleanupSpec);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, null, null, cleanupSpec, null);
 
         var result = compiler.compile(def);
 
@@ -122,7 +122,7 @@ class AvatarCompilerTest {
         var spec = new TtsSpec(List.of(
                 new TtsEngineSpec("vits", List.of(new TtsVoiceSpec("lessac-medium", null)), false, null),
                 new TtsEngineSpec("sherpa", List.of(new TtsVoiceSpec("lessac-medium", null)), false, LipSyncMode.DISABLED)));
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 
@@ -139,7 +139,7 @@ class AvatarCompilerTest {
                 new TtsEngineSpec("vits", List.of(
                         new TtsVoiceSpec("first-voice", null),
                         new TtsVoiceSpec("second-voice", null)), false, null)));
-        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null);
+        var def = new AvatarDefinition("test", "model", null, null, 16000, 0.9, 0.6, spec, null, null, null);
 
         var result = compiler.compile(def);
 

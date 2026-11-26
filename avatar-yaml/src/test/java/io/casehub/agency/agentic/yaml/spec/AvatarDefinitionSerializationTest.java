@@ -117,14 +117,14 @@ class AvatarDefinitionSerializationTest {
     @Test
     void rejects_null_agent() {
         assertThatThrownBy(() -> new AvatarDefinition(
-                null, "avatar.glb", null, null, 16000, 0.9, 0.6, null, null, null))
+                null, "avatar.glb", null, null, 16000, 0.9, 0.6, null, null, null, null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void rejects_null_model() {
         assertThatThrownBy(() -> new AvatarDefinition(
-                "agent", null, null, null, 16000, 0.9, 0.6, null, null, null))
+                "agent", null, null, null, 16000, 0.9, 0.6, null, null, null, null))
                 .isInstanceOf(NullPointerException.class);
     }
 
