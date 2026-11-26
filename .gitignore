@@ -14,6 +14,10 @@ proj
 .playwright-mcp/
 tmp/
 casehub-agency-parent.iml
+*.png
+org/
+speech-demo/src/main/resources/META-INF/resources/avatar-component.mjs
+speech-demo/src/main/resources/META-INF/resources/vendor
 
 casehub-blocks-parent.iml
 

@@ -1,11 +1,16 @@
 package io.casehub.agency.speech.demo;
 
+import io.casehub.agency.speech.TtsModelRegistry;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
@@ -13,51 +18,39 @@ public class ModelProvisioningService {
 
     public enum ModelStatus {PENDING, DOWNLOADING, READY, ERROR}
 
-    static final Map<String, String> KOKORO_MODELS = new LinkedHashMap<>(Map.of(
-            "kokoro", "kokoro-multi-lang-v1_0"));
-
     private static final System.Logger LOG = System.getLogger("speech-demo.provisioning");
+
+    @Inject
+    Instance<TtsModelRegistry> ttsRegistry;
+
+    @Inject
+    Instance<StreamingSpeechToText> sttInstance;
 
     private final ConcurrentHashMap<String, ModelStatus> statuses = new ConcurrentHashMap<>();
 
     void onStartup(@Observes StartupEvent ev) {
         init();
-        Thread.ofVirtual().name("model-provisioner").start(this::provisionAll);
     }
 
     void init() {
-        KOKORO_MODELS.keySet().forEach(key -> statuses.put(key, ModelStatus.PENDING));
-        statuses.put("streaming-stt", ModelStatus.PENDING);
-    }
-
-    void provisionAll() {
-        for (var entry : KOKORO_MODELS.entrySet()) {
-            provisionEntry(entry.getKey(), () -> provisionKokoro(entry.getValue()));
+        if (ttsRegistry.isResolvable()) {
+            for (String engineKey : engineKeys()) {
+                statuses.put(engineKey, ModelStatus.READY);
+            }
         }
-        provisionEntry("streaming-stt", this::provisionStreamingStt);
-    }
-
-    private void provisionEntry(String key, Runnable provisioner) {
-        statuses.put(key, ModelStatus.DOWNLOADING);
-        try {
-            LOG.log(System.Logger.Level.INFO, "Provisioning model: {0}", key);
-            provisioner.run();
-            statuses.put(key, ModelStatus.READY);
-            LOG.log(System.Logger.Level.INFO, "Model ready: {0}", key);
-        } catch (Exception e) {
-            LOG.log(System.Logger.Level.WARNING, "Failed to provision " + key + ": " + e.getMessage());
-            statuses.put(key, ModelStatus.ERROR);
+        if (sttInstance.isResolvable()) {
+            statuses.put("streaming-stt", ModelStatus.READY);
         }
     }
 
-    void provisionKokoro(String modelName) {
-        io.casehub.connectors.voice.sherpa.KokoroTextToSpeech.ensureProvisioned();
+    private Set<String> engineKeys() {
+        var keys = new TreeSet<String>();
+        for (String modelKey : ttsRegistry.get().models().keySet()) {
+            int colon = modelKey.indexOf(':');
+            keys.add(colon > 0 ? modelKey.substring(0, colon) : modelKey);
+        }
+        return keys;
     }
-
-    void provisionStreamingStt() {
-        io.casehub.connectors.voice.sherpa.SherpaOnnxStreamingSpeechToText.ensureProvisioned();
-    }
-
 
     public Map<String, ModelStatus> status() {
         return Map.copyOf(statuses);

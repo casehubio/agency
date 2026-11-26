@@ -1,71 +1,88 @@
 package io.casehub.agency.speech.demo;
 
+import io.casehub.agency.speech.TtsModelRegistry;
 import io.casehub.agency.speech.demo.ModelProvisioningService.ModelStatus;
+import io.casehub.connectors.voice.spi.StreamingSpeechToText;
+import io.casehub.connectors.voice.spi.TextToSpeech;
+import jakarta.enterprise.inject.Instance;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ModelProvisioningServiceTest {
 
-    @Test
-    void init_setsAllModelsToPending() {
-        var service = new ModelProvisioningService() {
-            @Override void provisionKokoro(String modelName) {}
-            @Override void provisionStreamingStt() {}
-        };
-
-        service.init();
-
-        int expectedSize = ModelProvisioningService.KOKORO_MODELS.size() + 1;
-        assertThat(service.status()).hasSize(expectedSize);
-        assertThat(service.status().values()).allMatch(s -> s == ModelStatus.PENDING);
-        assertThat(service.allReady()).isFalse();
+    @SuppressWarnings("unchecked")
+    private ModelProvisioningService createService(TtsModelRegistry registry, boolean hasStt) {
+        var service = new ModelProvisioningService();
+        var ttsInstance = (Instance<TtsModelRegistry>) mock(Instance.class);
+        var sttInstance = (Instance<StreamingSpeechToText>) mock(Instance.class);
+        when(ttsInstance.isResolvable()).thenReturn(registry != null);
+        if (registry != null) when(ttsInstance.get()).thenReturn(registry);
+        when(sttInstance.isResolvable()).thenReturn(hasStt);
+        try {
+            var ttsField = ModelProvisioningService.class.getDeclaredField("ttsRegistry");
+            ttsField.setAccessible(true);
+            ttsField.set(service, ttsInstance);
+            var sttField = ModelProvisioningService.class.getDeclaredField("sttInstance");
+            sttField.setAccessible(true);
+            sttField.set(service, sttInstance);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        return service;
     }
 
     @Test
-    void provisionAll_setsAllModelsToReady() {
-        var service = new ModelProvisioningService() {
-            @Override void provisionKokoro(String modelName) {}
-            @Override void provisionStreamingStt() {}
-        };
+    void init_extractsEngineKeysFromRegistry() {
+        var tts = mock(TextToSpeech.class);
+        var registry = new TtsModelRegistry(Map.of(
+                "kokoro:af_heart", tts,
+                "kokoro:am_adam", tts,
+                "sherpa:default", tts));
+        var service = createService(registry, true);
 
         service.init();
-        service.provisionAll();
 
+        assertThat(service.status()).hasSize(3);
+        assertThat(service.status()).containsKeys("kokoro", "sherpa", "streaming-stt");
         assertThat(service.allReady()).isTrue();
-        assertThat(service.status().values()).allMatch(s -> s == ModelStatus.READY);
     }
 
     @Test
-    void provisionAll_setsErrorOnFailure() {
-        var service = new ModelProvisioningService() {
-            @Override void provisionKokoro(String modelName) {
-                throw new RuntimeException("download failed");
-            }
-            @Override void provisionStreamingStt() {}
-        };
+    void init_emptyWithNoRegistry() {
+        var service = createService(null, false);
 
         service.init();
-        service.provisionAll();
 
+        assertThat(service.status()).isEmpty();
         assertThat(service.allReady()).isFalse();
-        assertThat(service.status().get("kokoro")).isEqualTo(ModelStatus.ERROR);
-        assertThat(service.status().get("streaming-stt")).isEqualTo(ModelStatus.READY);
+    }
+
+    @Test
+    void init_sttOnlyWhenNoTts() {
+        var service = createService(null, true);
+
+        service.init();
+
+        assertThat(service.status()).hasSize(1);
+        assertThat(service.status()).containsKey("streaming-stt");
+        assertThat(service.allReady()).isTrue();
     }
 
     @Test
     void statusReturnsDefensiveCopy() {
-        var service = new ModelProvisioningService() {
-            @Override void provisionKokoro(String modelName) {}
-            @Override void provisionStreamingStt() {}
-        };
+        var tts = mock(TextToSpeech.class);
+        var registry = new TtsModelRegistry(Map.of("kokoro:af_heart", tts));
+        var service = createService(registry, false);
 
         service.init();
-        var status1 = service.status();
-        service.provisionAll();
-        var status2 = service.status();
+        var copy = service.status();
 
-        assertThat(status1.values()).allMatch(s -> s == ModelStatus.PENDING);
-        assertThat(status2.values()).allMatch(s -> s == ModelStatus.READY);
+        assertThat(copy).hasSize(1);
+        assertThat(copy.get("kokoro")).isEqualTo(ModelStatus.READY);
     }
 }
