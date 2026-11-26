@@ -19,6 +19,12 @@
       <groupId>io.casehub</groupId>
       <artifactId>casehub-agency-agentic-yaml-deployment</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.casehub</groupId>
+          <artifactId>casehub-agency</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.casehub</groupId>
