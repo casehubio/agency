@@ -1,23 +1,48 @@
 package io.casehub.agency.speech.deployment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.casehub.agency.core.yaml.deployment.AvatarConfigBuildItem;
+import io.casehub.agency.core.yaml.spec.AvatarDefinition;
+import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SpeechAvatarProcessorTest {
 
+    private static final ObjectMapper YAML = YamlMappers.create();
+
     @Test
-    void discoversAvatarYamlFromClasspath() throws Exception {
-        var processor = new SpeechAvatarProcessor();
-        var buildItem = processor.discoverAvatarConfig();
-        assertThat(buildItem.definition()).isNotNull();
-        assertThat(buildItem.definition().agent()).isEqualTo("test-avatar");
-        assertThat(buildItem.definition().sampleRate()).isEqualTo(16000);
+    void discoversAvatarYamlWithSpeechSpecs() throws Exception {
+        try (InputStream in = getClass().getClassLoader()
+                .getResourceAsStream("META-INF/avatar.yaml")) {
+            assertThat(in).isNotNull();
+            var def = YAML.readValue(in, AvatarDefinition.class);
+            var buildItem = new AvatarConfigBuildItem(def);
+
+            assertThat(buildItem.definition()).isNotNull();
+            assertThat(buildItem.definition().agent()).isEqualTo("test-avatar");
+            assertThat(buildItem.definition().sampleRate()).isEqualTo(16000);
+            assertThat(buildItem.definition().speed()).isEqualTo(0.9);
+
+            assertThat(buildItem.definition().tts()).isNotNull();
+            assertThat(buildItem.definition().tts().engines()).hasSize(1);
+            assertThat(buildItem.definition().tts().engines().get(0).type()).isEqualTo("kokoro");
+            assertThat(buildItem.definition().tts().engines().get(0).voices()).hasSize(2);
+
+            assertThat(buildItem.definition().stt()).isNotNull();
+            assertThat(buildItem.definition().stt().type()).isEqualTo("whisper-fallback");
+
+            assertThat(buildItem.definition().cleanup()).isNotNull();
+            assertThat(buildItem.definition().cleanup().maxDestructiveness()).isEqualTo(2);
+        }
     }
 
     @Test
-    void returnsNullDefinitionWhenNoYaml() {
-        var buildItem = new SpeechAvatarConfigBuildItem(null);
+    void nullDefinitionIndicatesNoAvatarYaml() {
+        var buildItem = new AvatarConfigBuildItem(null);
         assertThat(buildItem.definition()).isNull();
     }
 }
