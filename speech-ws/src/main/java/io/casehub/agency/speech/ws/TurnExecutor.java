@@ -1,5 +1,6 @@
 package io.casehub.agency.speech.ws;
 
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.agency.speech.ConversationTurn;
 import io.casehub.agency.speech.SpeechPromptAssembler;
 import io.casehub.agency.speech.ws.protocol.AvatarMessage;
@@ -36,7 +37,7 @@ public class TurnExecutor implements AutoCloseable {
     private final UtteranceSegmenter segmenter;
     private final FloorState floorState;
     private final @Nullable Consumer<String> onResponse;
-    private final io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline;
+    private final CompiledSpeechPipeline pipeline;
 
     private final List<ConversationTurn> history = new ArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(
@@ -59,7 +60,7 @@ public class TurnExecutor implements AutoCloseable {
                         UtteranceSegmenter segmenter,
                         FloorState floorState,
                         @Nullable Consumer<String> onResponse,
-                        io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline) {
+                        CompiledSpeechPipeline pipeline) {
         this.assembler = assembler;
         this.responseGenerator = responseGenerator;
         this.streamingGenerator = streamingGenerator;

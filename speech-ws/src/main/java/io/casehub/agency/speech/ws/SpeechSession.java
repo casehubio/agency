@@ -1,5 +1,6 @@
 package io.casehub.agency.speech.ws;
 
+import io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline;
 import io.casehub.connectors.voice.spi.RecognitionStream;
 import io.casehub.connectors.voice.spi.StreamingSpeechToText;
 import io.casehub.connectors.voice.model.TranscriptionOptions;
@@ -43,7 +44,7 @@ public class SpeechSession {
 
     // --- Capture-side state ---
     private final StreamingSpeechToText sttService;
-    private final io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline;
+    private final CompiledSpeechPipeline pipeline;
     private final Consumer<String> textSink;
     private final java.util.function.Supplier<String> vocabularyHintSupplier;
 
@@ -80,7 +81,7 @@ public class SpeechSession {
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
+                         CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
@@ -91,7 +92,7 @@ public class SpeechSession {
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
+                         CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
@@ -103,7 +104,7 @@ public class SpeechSession {
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
+                         CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          SpeechPromptAssembler promptAssembler,
                          Consumer<String> textSink,
@@ -118,7 +119,7 @@ public class SpeechSession {
 
     public SpeechSession(StreamingSpeechToText sttService,
                          TextToSpeech ttsService,
-                         io.casehub.agency.core.yaml.compiler.CompiledSpeechPipeline pipeline,
+                         CompiledSpeechPipeline pipeline,
                          @Nullable Function<AssembledPrompt, String> responseGenerator,
                          @Nullable StreamingResponseGenerator streamingGenerator,
                          SpeechPromptAssembler promptAssembler,
