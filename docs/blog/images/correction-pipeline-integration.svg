@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280" font-family="system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#888"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#4ade80"/>
+    </marker>
+  </defs>
+  <rect width="700" height="280" rx="8" fill="#1e1e2e"/>
+
+  <!-- Before header -->
+  <text x="20" y="25" fill="#f87171" font-size="14" font-weight="600">Before</text>
+  <text x="80" y="25" fill="#888" font-size="11">— corrector accepted but never called</text>
+
+  <!-- Before: SpeechWebSocket → SpeechSession constructor -->
+  <rect x="20" y="38" width="150" height="32" rx="5" fill="#2a2a3e" stroke="#555"/>
+  <text x="95" y="58" text-anchor="middle" fill="#ccc" font-size="11">SpeechWebSocket</text>
+
+  <line x1="170" y1="54" x2="210" y2="54" stroke="#888" marker-end="url(#arr)"/>
+  <text x="190" y="47" text-anchor="middle" fill="#666" font-size="9">hooks.corrector()</text>
+
+  <rect x="215" y="38" width="150" height="32" rx="5" fill="#2a2a3e" stroke="#555"/>
+  <text x="290" y="58" text-anchor="middle" fill="#ccc" font-size="11">SpeechSession</text>
+
+  <!-- Dead parameter indicator -->
+  <rect x="375" y="38" width="85" height="32" rx="5" fill="rgba(248,113,113,0.1)" stroke="#f87171" stroke-dasharray="4,3"/>
+  <text x="418" y="58" text-anchor="middle" fill="#f87171" font-size="10">dead code</text>
+
+  <!-- CleanupConfig separate path -->
+  <rect x="500" y="38" width="130" height="32" rx="5" fill="#2a2a3e" stroke="#555"/>
+  <text x="565" y="58" text-anchor="middle" fill="#ccc" font-size="11">CleanupConfig</text>
+  <text x="565" y="80" text-anchor="middle" fill="#666" font-size="9">filler → casing → ...</text>
+
+  <!-- Divider -->
+  <line x1="20" y1="100" x2="680" y2="100" stroke="#444" stroke-dasharray="6,4"/>
+
+  <!-- After header -->
+  <text x="20" y="125" fill="#4ade80" font-size="14" font-weight="600">After</text>
+  <text x="70" y="125" fill="#888" font-size="11">— correction is a named pipeline step</text>
+
+  <!-- YAML config -->
+  <rect x="20" y="140" width="140" height="55" rx="5" fill="#2a2a3e" stroke="#555"/>
+  <text x="90" y="157" text-anchor="middle" fill="#ccc" font-size="11" font-weight="500">avatar.yaml</text>
+  <text x="90" y="172" text-anchor="middle" fill="#fbbf24" font-size="10">post-stt:</text>
+  <text x="90" y="184" text-anchor="middle" fill="#fbbf24" font-size="10">  - name: correction</text>
+
+  <!-- Arrow to registry -->
+  <line x1="160" y1="167" x2="195" y2="167" stroke="#4ade80" marker-end="url(#arr-green)"/>
+
+  <!-- TextFilterRegistry -->
+  <rect x="200" y="140" width="145" height="55" rx="5" fill="rgba(74,222,128,0.08)" stroke="#4ade80"/>
+  <text x="273" y="157" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="500">TextFilterRegistry</text>
+  <text x="273" y="172" text-anchor="middle" fill="#aaa" font-size="9">"correction" → factory</text>
+  <text x="273" y="184" text-anchor="middle" fill="#aaa" font-size="9">"grammar" → factory</text>
+
+  <!-- Arrow to pipeline -->
+  <line x1="345" y1="167" x2="380" y2="167" stroke="#4ade80" marker-end="url(#arr-green)"/>
+
+  <!-- CompiledSpeechPipeline -->
+  <rect x="385" y="140" width="160" height="55" rx="5" fill="rgba(74,222,128,0.08)" stroke="#4ade80"/>
+  <text x="465" y="157" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="500">postSttChain</text>
+  <text x="465" y="172" text-anchor="middle" fill="#aaa" font-size="9">correction → filler</text>
+  <text x="465" y="184" text-anchor="middle" fill="#aaa" font-size="9">→ casing → ...</text>
+
+  <!-- CDI singleton -->
+  <rect x="200" y="215" width="345" height="45" rx="5" fill="#2a2a3e" stroke="#555"/>
+  <text x="373" y="233" text-anchor="middle" fill="#ccc" font-size="11">TranscriptCorrector (CDI @ApplicationScoped)</text>
+  <text x="373" y="248" text-anchor="middle" fill="#888" font-size="9">shared: pipeline filter reads .correct()  ·  vocabulary learning writes .addVocabulary()</text>
+
+  <!-- Arrow from registry to CDI -->
+  <line x1="273" y1="195" x2="273" y2="210" stroke="#888" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="260" y="206" text-anchor="end" fill="#666" font-size="8">Arc.container()</text>
+
+  <!-- Arrow from pipeline to CDI -->
+  <line x1="465" y1="195" x2="465" y2="210" stroke="#888" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+</svg>
