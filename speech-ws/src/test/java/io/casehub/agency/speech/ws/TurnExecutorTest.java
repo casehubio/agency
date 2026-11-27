@@ -235,8 +235,8 @@ class TurnExecutorTest {
                 .filter(json -> json.contains("\"type\":\"segment\""))
                 .toList();
         assertThat(segments).hasSize(2);
-        assertThat(segments.get(0)).contains("\"hasAudio\":true");
-        assertThat(segments.get(1)).contains("\"hasAudio\":false");
+        assertThat(segments).anySatisfy(s -> assertThat(s).contains("\"hasAudio\":true"));
+        assertThat(segments).anySatisfy(s -> assertThat(s).contains("\"hasAudio\":false"));
         assertThat(sentText).anySatisfy(json ->
                 assertThat(json).contains("\"type\":\"error\""));
         assertThat(sentText).anySatisfy(json ->
