@@ -45,6 +45,7 @@ public class SpeechSession {
     private final StreamingSpeechToText sttService;
     private final CompiledSpeechPipeline pipeline;
     private final Consumer<String> textSink;
+    private final Consumer<byte[]> binarySink;
     private final java.util.function.Supplier<String> vocabularyHintSupplier;
 
     private @Nullable RecognitionStream stream;
@@ -63,6 +64,8 @@ public class SpeechSession {
     private @Nullable String identifiedSpeaker;
     private volatile boolean isClosed;
     private io.casehub.connectors.voice.spi.@Nullable EndpointDetectionPolicy endpointPolicy;
+    private volatile VoiceState voiceState = VoiceState.LISTENING;
+    private List<byte[]> cannedResponses = List.of();
 
     private final float[] ringBuffer = new float[RING_BUFFER_SIZE];
     private int ringBufferPos = 0;
@@ -132,6 +135,7 @@ public class SpeechSession {
         this.sttService             = sttService;
         this.pipeline               = pipeline;
         this.textSink               = textSink;
+        this.binarySink             = binarySink;
         this.vocabularyHintSupplier = vocabularyHintSupplier;
 
         this.floorState   = new FloorState();
@@ -162,6 +166,8 @@ public class SpeechSession {
             }
         }
         stream = sttService.startStream(opts);
+        voiceState = VoiceState.LISTENING;
+        sendVoiceState(VoiceState.LISTENING);
         startPolling();
     }
 
@@ -188,6 +194,12 @@ public class SpeechSession {
         return this;
     }
 
+    public SpeechSession withCannedResponses(List<byte[]> preSynthesised) {
+        this.cannedResponses = List.copyOf(preSynthesised);
+        return this;
+    }
+
+    public VoiceState voiceState() { return voiceState; }
 
     public void handleProactiveSpeech(String content) {
         turnExecutor.enqueueProactiveTurn(content, System.currentTimeMillis());
@@ -272,6 +284,10 @@ public class SpeechSession {
 
     public void handlePlaybackComplete(int turnSeq) {
         floorState.onPlaybackComplete(turnSeq);
+        if (voiceState == VoiceState.PLAYBACK) {
+            voiceState = VoiceState.LISTENING;
+            sendVoiceState(VoiceState.LISTENING);
+        }
     }
 
     public void handleUserActivity() {
@@ -360,22 +376,48 @@ public class SpeechSession {
                         lastPartial = partial;
                         send(new AvatarMessage.Partial(partial));
                     }
-                    if (endpointPolicy != null && partial != null && !partial.isEmpty()) {
+                    boolean hasNewSpeech = partial != null && !partial.isEmpty();
+                    if (hasNewSpeech && (voiceState == VoiceState.PROCESSING || voiceState == VoiceState.PLAYBACK)) {
+                        turnExecutor.cancelCurrentTurn();
+                        TranscriptionResult interrupted = stream.segmentResult();
+                        lastPartial = "";
+                        String interruptedText = interrupted.text();
+                        if (interruptedText != null && !interruptedText.isBlank()) {
+                            send(new AvatarMessage.Transcript(interruptedText));
+                        }
+                        voiceState = VoiceState.LISTENING;
+                        sendVoiceState(VoiceState.LISTENING);
+                        playCannedResponse();
+                    } else if (endpointPolicy != null && hasNewSpeech && voiceState == VoiceState.LISTENING) {
                         var action = endpointPolicy.evaluate(stream, partial);
                         if (action != io.casehub.connectors.voice.spi.EndpointAction.CONTINUE) {
+                            voiceState = VoiceState.ENDPOINT_DETECTED;
+                            sendVoiceState(VoiceState.ENDPOINT_DETECTED);
                             turnExecutor.cancelCurrentTurn();
                             TranscriptionResult segment = stream.segmentResult();
                             lastPartial = "";
                             String cleanText = ensureTrailingPunctuation(
                                     pipeline.postSttChain().apply(segment.text()));
                             if (!cleanText.isBlank()) {
+                                voiceState = VoiceState.PROCESSING;
+                                sendVoiceState(VoiceState.PROCESSING);
                                 send(new AvatarMessage.Transcript(cleanText));
                                 floorState.onStopOrText();
                                 String speakerLabel = identifySpeaker();
-                                turnExecutor.executeUserTurn(
+                                var turnFuture = turnExecutor.executeUserTurn(
                                         new UserTurn(cleanText, speakerLabel,
                                                      activeLlmModel, activeTtsModel));
                                 recordCognitionInteraction(cleanText);
+                                Thread.ofVirtual().name("voice-state-playback").start(() -> {
+                                    try { turnFuture.get(); } catch (Exception ignored) {}
+                                    if (voiceState == VoiceState.PROCESSING) {
+                                        voiceState = VoiceState.PLAYBACK;
+                                        sendVoiceState(VoiceState.PLAYBACK);
+                                    }
+                                });
+                            } else {
+                                voiceState = VoiceState.LISTENING;
+                                sendVoiceState(VoiceState.LISTENING);
                             }
                         }
                     }
@@ -399,6 +441,24 @@ public class SpeechSession {
             }
             pollingThread = null;
         }
+    }
+
+    private void sendVoiceState(VoiceState state) {
+        send(new AvatarMessage.VoiceStateChange(state.name().toLowerCase(java.util.Locale.ROOT).replace('_', '-')));
+    }
+
+    private void playCannedResponse() {
+        if (cannedResponses.isEmpty()) return;
+        int idx = java.util.concurrent.ThreadLocalRandom.current().nextInt(cannedResponses.size());
+        byte[] audio = cannedResponses.get(idx);
+        var buf = java.nio.ByteBuffer.allocate(8 + audio.length)
+                                     .order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        buf.put((byte) 1);
+        buf.put((byte) 1);
+        buf.putShort((short) 0);
+        buf.putInt(-1);
+        buf.put(audio);
+        binarySink.accept(buf.array());
     }
 
     private void send(AvatarMessage msg) {

@@ -25,7 +25,8 @@ import java.util.List;
     @JsonSubTypes.Type(value = AvatarMessage.Gesture.class, name = "gesture"),
     @JsonSubTypes.Type(value = AvatarMessage.Mood.class, name = "mood"),
     @JsonSubTypes.Type(value = AvatarMessage.PlaybackComplete.class, names = {"playbackComplete", "playback-complete"}),
-    @JsonSubTypes.Type(value = AvatarMessage.UserActivity.class, names = {"userActivity", "user-activity"})
+    @JsonSubTypes.Type(value = AvatarMessage.UserActivity.class, names = {"userActivity", "user-activity"}),
+    @JsonSubTypes.Type(value = AvatarMessage.VoiceStateChange.class, names = {"voiceState", "voice-state"})
 })
 public sealed interface AvatarMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -90,4 +91,6 @@ public sealed interface AvatarMessage {
     record PlaybackComplete(@JsonAlias("turn-seq") int turnSeq) implements AvatarMessage {}
 
     record UserActivity(UserActivityKind kind) implements AvatarMessage {}
+
+    record VoiceStateChange(String state) implements AvatarMessage {}
 }
