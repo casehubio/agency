@@ -40,6 +40,7 @@ export class AvatarEngine {
     this._onStatus = opts.onStatus || null;
     this._onConnected = opts.onConnected || null;
     this._onDisconnected = opts.onDisconnected || null;
+    this._onVoiceState = opts.onVoiceState || null;
   }
 
   connect() {
@@ -310,6 +311,9 @@ export class AvatarEngine {
         break;
       case 'partial':
         this._emit('status', 'Hearing: ' + msg.text);
+        break;
+      case 'voiceState':
+        this._emit('voiceState', msg.state);
         break;
     }
   }
