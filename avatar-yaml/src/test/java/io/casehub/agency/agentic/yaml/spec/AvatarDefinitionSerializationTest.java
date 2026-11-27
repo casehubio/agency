@@ -187,11 +187,63 @@ class AvatarDefinitionSerializationTest {
 
     @Test
     void endpoint_detection_rejects_negative_threshold() {
-        org.assertj.core.api.Assertions.assertThatThrownBy(
+        assertThatThrownBy(
                    () -> new io.casehub.agency.core.yaml.spec.EndpointDetectionSpec(true, -1))
                                        .isInstanceOf(IllegalArgumentException.class)
                                        .hasMessageContaining("silenceThresholdMs");
     }
 
+    @Test
+    void stt_spec_with_interrupt_config() throws Exception {
+        var yaml = """
+                type: zipformer
+                interrupt:
+                  enabled: true
+                  canned-responses:
+                    - "Sorry, please continue."
+                    - "Go ahead."
+                  pre-synthesise: true
+                """;
+        var spec = mapper.readValue(yaml, SttSpec.class);
+        assertThat(spec.interrupt()).isNotNull();
+        assertThat(spec.interrupt().enabled()).isTrue();
+        assertThat(spec.interrupt().cannedResponses()).containsExactly("Sorry, please continue.", "Go ahead.");
+        assertThat(spec.interrupt().preSynthesise()).isTrue();
+    }
 
+    @Test
+    void stt_spec_full_config() throws Exception {
+        var yaml = """
+                type: streaming-zipformer
+                endpoint-detection:
+                  enabled: true
+                  silence-threshold-ms: 1200
+                  min-speech-ms: 500
+                interrupt:
+                  enabled: true
+                  canned-responses:
+                    - "Go ahead."
+                  pre-synthesise: true
+                """;
+        var spec = mapper.readValue(yaml, SttSpec.class);
+        assertThat(spec.type()).isEqualTo("streaming-zipformer");
+        assertThat(spec.endpointDetection()).isNotNull();
+        assertThat(spec.endpointDetection().minSpeechMs()).isEqualTo(500);
+        assertThat(spec.interrupt()).isNotNull();
+        assertThat(spec.interrupt().cannedResponses()).hasSize(1);
+    }
+
+    @Test
+    void interrupt_defaults_empty_responses() throws Exception {
+        var yaml = """
+                type: zipformer
+                interrupt:
+                  enabled: false
+                """;
+        var spec = mapper.readValue(yaml, SttSpec.class);
+        assertThat(spec.interrupt()).isNotNull();
+        assertThat(spec.interrupt().enabled()).isFalse();
+        assertThat(spec.interrupt().cannedResponses()).isEmpty();
+        assertThat(spec.interrupt().preSynthesise()).isFalse();
+    }
 }
