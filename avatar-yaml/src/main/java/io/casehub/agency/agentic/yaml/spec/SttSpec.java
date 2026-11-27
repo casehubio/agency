@@ -1,10 +1,15 @@
 package io.casehub.agency.core.yaml.spec;
 
-import java.util.Objects;
-
-public record SttSpec(String type) {
+public record SttSpec(String type,
+                      @com.fasterxml.jackson.annotation.JsonProperty("endpointDetection")
+                      @com.fasterxml.jackson.annotation.JsonAlias("endpoint-detection")
+                      @org.jspecify.annotations.Nullable EndpointDetectionSpec endpointDetection) {
 
     public SttSpec {
-        Objects.requireNonNull(type, "type");
+        java.util.Objects.requireNonNull(type, "type");
+    }
+
+    public SttSpec(String type) {
+        this(type, null);
     }
 }

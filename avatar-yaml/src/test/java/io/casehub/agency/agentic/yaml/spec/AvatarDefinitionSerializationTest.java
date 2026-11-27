@@ -1,8 +1,8 @@
 package io.casehub.agency.core.yaml.spec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.yaml.jackson.YamlMappers;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.casehub.yaml.jackson.YamlMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -162,4 +162,36 @@ class AvatarDefinitionSerializationTest {
         var spec = mapper.readValue(yaml, SttSpec.class);
         assertThat(spec.type()).isEqualTo("zipformer");
     }
+
+    @Test
+    void stt_spec_with_endpoint_detection() throws Exception {
+        var yaml = """
+                   type: zipformer
+                   endpoint-detection:
+                     enabled: true
+                     silence-threshold-ms: 1200
+                   """;
+        var spec = mapper.readValue(yaml, SttSpec.class);
+        assertThat(spec.type()).isEqualTo("zipformer");
+        assertThat(spec.endpointDetection()).isNotNull();
+        assertThat(spec.endpointDetection().enabled()).isTrue();
+        assertThat(spec.endpointDetection().silenceThresholdMs()).isEqualTo(1200);
+    }
+
+    @Test
+    void stt_spec_without_endpoint_detection() throws Exception {
+        var yaml = "type: zipformer";
+        var spec = mapper.readValue(yaml, SttSpec.class);
+        assertThat(spec.endpointDetection()).isNull();
+    }
+
+    @Test
+    void endpoint_detection_rejects_negative_threshold() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                   () -> new io.casehub.agency.core.yaml.spec.EndpointDetectionSpec(true, -1))
+                                       .isInstanceOf(IllegalArgumentException.class)
+                                       .hasMessageContaining("silenceThresholdMs");
+    }
+
+
 }

@@ -62,6 +62,8 @@ public class SpeechSession {
     private @Nullable SpeakerRegistry speakerRegistry;
     private @Nullable String identifiedSpeaker;
     private volatile boolean isClosed;
+    private io.casehub.connectors.voice.spi.@Nullable EndpointDetectionPolicy endpointPolicy;
+
     private final float[] ringBuffer = new float[RING_BUFFER_SIZE];
     private int ringBufferPos = 0;
     private @Nullable SpeakerEmbedding pendingEmbedding;
@@ -179,6 +181,13 @@ public class SpeechSession {
         this.cognitionTenantId = tenantId;
         return this;
     }
+
+    public SpeechSession withEndpointPolicy(
+            io.casehub.connectors.voice.spi.EndpointDetectionPolicy policy) {
+        this.endpointPolicy = policy;
+        return this;
+    }
+
 
     public void handleProactiveSpeech(String content) {
         turnExecutor.enqueueProactiveTurn(content, System.currentTimeMillis());
@@ -340,7 +349,7 @@ public class SpeechSession {
     }
 
     private void startPolling() {
-        polling = true;
+        polling       = true;
         pollingThread = Thread.ofVirtual().name("stt-partial-poll").start(() -> {
             String lastPartial = "";
             while (polling && stream != null) {
@@ -349,6 +358,24 @@ public class SpeechSession {
                     if (partial != null && !partial.isEmpty() && !partial.equals(lastPartial)) {
                         lastPartial = partial;
                         send(new AvatarMessage.Partial(partial));
+                    }
+                    if (endpointPolicy != null && partial != null && !partial.isEmpty()) {
+                        var action = endpointPolicy.evaluate(stream, partial);
+                        if (action != io.casehub.connectors.voice.spi.EndpointAction.CONTINUE) {
+                            TranscriptionResult segment = stream.segmentResult();
+                            lastPartial = "";
+                            String cleanText = ensureTrailingPunctuation(
+                                    pipeline.postSttChain().apply(segment.text()));
+                            if (!cleanText.isBlank()) {
+                                send(new AvatarMessage.Transcript(cleanText));
+                                floorState.onStopOrText();
+                                String speakerLabel = identifySpeaker();
+                                turnExecutor.executeUserTurn(
+                                        new UserTurn(cleanText, speakerLabel,
+                                                     activeLlmModel, activeTtsModel));
+                                recordCognitionInteraction(cleanText);
+                            }
+                        }
                     }
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
