@@ -231,10 +231,8 @@ public class CognitionCompiler {
         var d = RetentionConfig.DEFAULT;
         return new RetentionConfig(
                 spec.retentionThreshold() != null ? spec.retentionThreshold() : d.retentionThreshold(),
-                spec.confidenceWeight() != null ? spec.confidenceWeight() : d.confidenceWeight(),
                 spec.recencyWeight() != null ? spec.recencyWeight() : d.recencyWeight(),
-                spec.scopeWeight() != null ? spec.scopeWeight() : d.scopeWeight(),
-                spec.trustWeight() != null ? spec.trustWeight() : d.trustWeight());
+                d.frequencyWeight());
     }
 
     private CognitiveGoalConfig compileCognitiveGoal(@Nullable CognitiveGoalConfigSpec spec) {
