@@ -221,6 +221,7 @@ public class SpeechSession {
 
     public void handleStop() {
         stopPolling();
+        turnExecutor.cancelCurrentTurn();
         if (stream == null) {
             send(new AvatarMessage.Error("No active recording session"));
             return;
@@ -241,7 +242,7 @@ public class SpeechSession {
 
             String speakerLabel = identifySpeaker();
 
-            turnExecutor.executeUserTurn(
+            turnExecutor.executeUserTurnBlocking(
                     new UserTurn(cleanText, speakerLabel, activeLlmModel, activeTtsModel));
 
             recordCognitionInteraction(cleanText);
@@ -260,7 +261,7 @@ public class SpeechSession {
             send(new AvatarMessage.Transcript(cleanText));
             floorState.onStopOrText();
 
-            turnExecutor.executeUserTurn(
+            turnExecutor.executeUserTurnBlocking(
                     new UserTurn(cleanText, null, llmModel, ttsModel));
 
             recordCognitionInteraction(cleanText);
@@ -362,6 +363,7 @@ public class SpeechSession {
                     if (endpointPolicy != null && partial != null && !partial.isEmpty()) {
                         var action = endpointPolicy.evaluate(stream, partial);
                         if (action != io.casehub.connectors.voice.spi.EndpointAction.CONTINUE) {
+                            turnExecutor.cancelCurrentTurn();
                             TranscriptionResult segment = stream.segmentResult();
                             lastPartial = "";
                             String cleanText = ensureTrailingPunctuation(

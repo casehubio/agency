@@ -69,7 +69,7 @@ class TurnExecutorTest {
 
     @Test
     void executeUserTurnSendsSegmentAndTurnComplete() {
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(sentText).anySatisfy(json ->
                 assertThat(json).contains("\"type\":\"segment\""));
@@ -81,8 +81,8 @@ class TurnExecutorTest {
 
     @Test
     void turnSeqIncrementsPerTurn() {
-        executor.executeUserTurn(new UserTurn("first", null, null, null));
-        executor.executeUserTurn(new UserTurn("second", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("first", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("second", null, null, null));
 
         var turnCompletes = sentText.stream()
                 .filter(json -> json.contains("\"type\":\"turnComplete\""))
@@ -94,13 +94,13 @@ class TurnExecutorTest {
 
     @Test
     void executeUserTurnAddsToHistory() {
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
         assertThat(executor.historySize()).isEqualTo(2);
     }
 
     @Test
     void executeUserTurnSendsSegmentAndTurnCompleteNotLegacy() {
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(sentText).noneSatisfy(json ->
                                                  assertThat(json).contains("\"type\":\"response\""));
@@ -133,7 +133,7 @@ class TurnExecutorTest {
                 null,
                 CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         var segments = sentText.stream()
                 .filter(json -> json.contains("\"type\":\"segment\""))
@@ -167,7 +167,7 @@ class TurnExecutorTest {
                 null,
                 CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         var segments = sentText.stream()
                                .filter(json -> json.contains("\"type\":\"segment\""))
@@ -200,7 +200,7 @@ class TurnExecutorTest {
                 null,
                 CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(sentText).anySatisfy(json ->
                 assertThat(json).contains("\"type\":\"turnComplete\""));
@@ -229,7 +229,7 @@ class TurnExecutorTest {
                 sentText::add, sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         var segments = sentText.stream()
                 .filter(json -> json.contains("\"type\":\"segment\""))
@@ -252,7 +252,7 @@ class TurnExecutorTest {
                 sentText::add, sentBinary::add,
                 new UtteranceSegmenter(EMPTY_VOCAB), floorState, null, CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(sentText).anySatisfy(json ->
                 assertThat(json).contains("\"type\":\"error\""));
@@ -314,7 +314,7 @@ class TurnExecutorTest {
                 null,
                 CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, "kokoro:af_heart"));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, "kokoro:af_heart"));
 
         org.mockito.Mockito.verify(altTts, org.mockito.Mockito.atLeastOnce()).synthesise(any(), any());
         org.mockito.Mockito.verify(ttsService, org.mockito.Mockito.never()).synthesise(any(), any());
@@ -336,14 +336,14 @@ class TurnExecutorTest {
                 responses::add,
                 CompiledSpeechPipeline.EMPTY);
 
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(responses).containsExactly("LLM says hello.");
     }
 
     @Test
     void floorStateTransitionsDuringTurn() {
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         assertThat(floorState.hasUnacknowledgedTurn()).isTrue();
         assertThat(floorState.shouldSuppressProactive()).isTrue();
@@ -365,7 +365,7 @@ class TurnExecutorTest {
                 CompiledSpeechPipeline.EMPTY);
 
         long before = System.currentTimeMillis();
-        executor.executeUserTurn(new UserTurn("hello", null, null, null));
+        executor.executeUserTurnBlocking(new UserTurn("hello", null, null, null));
 
         long expiresAt = floorState.expiresAt();
         long elapsed = expiresAt - before;

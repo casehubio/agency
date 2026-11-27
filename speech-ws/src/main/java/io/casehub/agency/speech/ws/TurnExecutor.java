@@ -49,6 +49,8 @@ public class TurnExecutor implements AutoCloseable {
     private int turnSeq;
     private double minPlaybackRate = 0.6;
     private long turnEstimatedAudioMs;
+    private volatile boolean turnCancelled;
+    private java.util.concurrent.@Nullable Future<?> currentTurnFuture;
 
     public TurnExecutor(SpeechPromptAssembler assembler,
                         @Nullable Function<AssembledPrompt, String> responseGenerator,
@@ -76,14 +78,29 @@ public class TurnExecutor implements AutoCloseable {
 
     void setMinPlaybackRate(double rate) { this.minPlaybackRate = rate; }
 
-    public void executeUserTurn(UserTurn turn) {
+    public java.util.concurrent.Future<?> executeUserTurn(UserTurn turn) {
+        turnCancelled = false;
+        var future = executor.submit(() -> processUserTurn(turn));
+        currentTurnFuture = future;
+        return future;
+    }
+
+    public void executeUserTurnBlocking(UserTurn turn) {
         try {
-            executor.submit(() -> processUserTurn(turn)).get();
+            executeUserTurn(turn).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOG.log(System.Logger.Level.WARNING, "Turn execution interrupted", e);
         } catch (java.util.concurrent.ExecutionException e) {
             LOG.log(System.Logger.Level.WARNING, "Turn execution failed", e.getCause());
+        }
+    }
+
+    public void cancelCurrentTurn() {
+        turnCancelled = true;
+        var f = currentTurnFuture;
+        if (f != null) {
+            f.cancel(true);
         }
     }
 
@@ -124,25 +141,32 @@ public class TurnExecutor implements AutoCloseable {
             if (streamingGenerator != null) {
                 var ttsFutures = new java.util.ArrayList<java.util.concurrent.Future<?>>();
                 responseText = streamingGenerator.generate(prompt, sentence -> {
+                    if (turnCancelled) return;
                     String filtered = pipeline.postLlmChain().apply(sentence);
                     var segments = segmenter.segment(filtered);
                     for (var seg : segments) {
+                        if (turnCancelled) return;
                         int idx = segmentIndex[0]++;
                         ttsFutures.add(ttsExecutor.submit(() ->
                                                                   synthesiseAndSendSegment(tts, seg, currentTurnSeq, idx)));
                     }
                 });
-                for (var f : ttsFutures) {
-                    try {f.get();} catch (java.util.concurrent.ExecutionException e) {
-                        LOG.log(System.Logger.Level.WARNING, "TTS segment failed", e.getCause());
+                if (turnCancelled) {
+                    for (var f : ttsFutures) f.cancel(true);
+                } else {
+                    for (var f : ttsFutures) {
+                        try {f.get();} catch (java.util.concurrent.ExecutionException e) {
+                            LOG.log(System.Logger.Level.WARNING, "TTS segment failed", e.getCause());
+                        } catch (java.util.concurrent.CancellationException ignored) {}
                     }
                 }
             } else if (responseGenerator != null) {
                 responseText = responseGenerator.apply(prompt);
-                if (responseText != null) {
+                if (responseText != null && !turnCancelled) {
                     String filtered = pipeline.postLlmChain().apply(responseText);
                     var segments = segmenter.segment(filtered);
                     for (var seg : segments) {
+                        if (turnCancelled) break;
                         synthesiseAndSendSegment(tts, seg, currentTurnSeq, segmentIndex[0]++);
                     }
                 }
@@ -156,14 +180,16 @@ public class TurnExecutor implements AutoCloseable {
                 if (onResponse != null) {onResponse.accept(responseText);}
             }
         } catch (Exception e) {
-            send(new AvatarMessage.Error(e.getMessage()));
+            if (!turnCancelled) {
+                send(new AvatarMessage.Error(e.getMessage()));
+            }
         } finally {
             long expiresAt = System.currentTimeMillis()
                              + (long) (turnEstimatedAudioMs / minPlaybackRate) + EXPIRY_BUFFER_MS;
             floorState.onTurnComplete(currentTurnSeq, expiresAt);
             floorState.onTurnEnd();
             send(new AvatarMessage.TurnComplete(currentTurnSeq, segmentIndex[0],
-                                                TurnOrigin.USER));
+                                                TurnOrigin.USER, turnCancelled));
         }
     }
 

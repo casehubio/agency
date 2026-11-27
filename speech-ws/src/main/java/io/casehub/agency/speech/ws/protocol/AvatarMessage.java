@@ -76,7 +76,12 @@ public sealed interface AvatarMessage {
 
     record TurnComplete(@JsonAlias("turn-seq") int turnSeq,
                         @JsonAlias("segment-count") int segmentCount,
-                        TurnOrigin origin) implements AvatarMessage {}
+                        TurnOrigin origin,
+                        boolean cancelled) implements AvatarMessage {
+        public TurnComplete(int turnSeq, int segmentCount, TurnOrigin origin) {
+            this(turnSeq, segmentCount, origin, false);
+        }
+    }
 
     record Gesture(String tag, GestureOrigin origin) implements AvatarMessage {}
 
