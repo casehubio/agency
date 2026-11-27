@@ -88,9 +88,8 @@ class HistoricalEncounterExampleTest extends ExampleTestBase {
         assertThat(compiled.narrative().synthesisGate().quietPeriodBypass()).isNotNull();
 
         assertThat(compiled.retention().retentionThreshold()).isEqualTo(0.3);
-        assertThat(compiled.retention().confidenceWeight()).isEqualTo(0.25);
-        assertThat(compiled.retention().scopeWeight()).isEqualTo(0.2);
-        assertThat(compiled.retention().trustWeight()).isEqualTo(0.2);
+        assertThat(compiled.retention().recencyWeight()).isEqualTo(1.0);
+        assertThat(compiled.retention().frequencyWeight()).isEqualTo(0.0);
     }
 
     @Test
